@@ -25,15 +25,10 @@ connected. Don't share the demo build with players as-is.
 
 ## Adding your map image
 
-Drop your chosen town map at:
-
-```
-public/map/jalanthar-map.jpg
-```
-
-The code assumes a 1600×1600px image by default. If your map has a different
-resolution or aspect ratio, update `MAP_WIDTH` / `MAP_HEIGHT` at the top of
-`src/components/tabs/MapTab.jsx` to match.
+Your chosen map is already in place at `public/map/jalanthar-map.jpg`
+(1024×1024px). If you swap in a different image later, update `MAP_WIDTH` /
+`MAP_HEIGHT` at the top of `src/components/tabs/MapTab.jsx` to match its
+resolution.
 
 Building positions are stored as **percentages** of that image (`coords: {x,
 y}`, each 0–100), not pixels — so they stay correct even if you later swap in
@@ -64,7 +59,7 @@ that builds and deploys automatically on every push to `main`.
    Secrets and variables > Actions > Repository secrets**, using the exact
    names in the workflow file (`VITE_FIREBASE_API_KEY`, etc.). If you skip
    this, the deployed site will run in demo mode.
-4. Check `vite.config.js` — `base` is set to `/jalanthar-site/`. If your
+4. Check `vite.config.js` — `base` is set to `/Jalanthar/`. If your
    GitHub repo has a different name, update that to match
    (`/your-repo-name/`), or to `/` if this is a `username.github.io` repo.
 5. Push to `main`. The Actions tab will show the build/deploy running; once

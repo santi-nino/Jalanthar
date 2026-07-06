@@ -8,7 +8,7 @@ export const mockBuildings = [
     name: "Magistrate's House",
     subheader: 'Seat of Governance',
     type: 'civic',
-    coords: { x: 34, y: 22 },
+    coords: { x: 24, y: 22 },
     quadrant: 'inhabited',
     description:
       "Originally built as a guildhall for a town three times Jalanthar's current size, this squared timber building now serves as both home and office for the magistrate. Its outer rooms sit empty and dust-sheeted; only the study and a single bedroom see regular use.",
@@ -23,7 +23,7 @@ export const mockBuildings = [
     name: 'The Crowing Cockatrice',
     subheader: 'Tavern & Inn',
     type: 'tavern',
-    coords: { x: 62, y: 55 },
+    coords: { x: 32, y: 71 },
     quadrant: 'inhabited',
     description:
       "A tavern built to serve a much larger town, now warmly overfull with the handful of regulars who keep its hearth lit. Most of its guest rooms are shuttered, but the common room still fills most nights.",
@@ -42,7 +42,7 @@ export const mockBuildings = [
     name: 'Shrine of the Triad',
     subheader: 'Helm, Ilmater, Torm',
     type: 'shrine',
-    coords: { x: 47, y: 33 },
+    coords: { x: 50, y: 40 },
     quadrant: 'inhabited',
     description:
       'A modest shrine at the edge of the central plaza, tended without a proper cleric — the town relies on a lay caretaker and traveling priests passing the Moon Pass road.',
@@ -60,7 +60,7 @@ export const mockBuildings = [
     name: 'Garrison Quarters',
     subheader: "The Party's Posting",
     type: 'garrison',
-    coords: { x: 58, y: 38 },
+    coords: { x: 75, y: 38 },
     quadrant: 'inhabited',
     description:
       'Repurposed from what was once a militia hall, this building now houses the permanent protective garrison assigned to Jalanthar.',

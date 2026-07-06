@@ -7,8 +7,8 @@ import BuildingDetailPanel from '../BuildingDetailPanel'
 
 // Author your map image at this resolution (or update these constants to match).
 // Building `coords` are stored as {x, y} percentages (0-100) of this frame.
-const MAP_WIDTH = 1600
-const MAP_HEIGHT = 1600
+const MAP_WIDTH = 1024
+const MAP_HEIGHT = 1024
 
 // How close to the viewport center a building must be (in px, at 1x zoom-adjusted
 // screen space) for its label to appear.
