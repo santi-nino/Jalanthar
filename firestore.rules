@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Buildings and families have no spoiler concerns — anyone can read them.
+    // Only the authenticated DM can write.
+    match /buildings/{buildingId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /families/{familyId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // NPCs are spoiler-sensitive: an unrevealed NPC's `visible` field is
+    // false, and the rule below enforces that at the database level (not
+    // just hidden in the UI) — a player opening devtools can't read an NPC
+    // document until you've flipped it to visible. The DM (authenticated)
+    // can always read everything, revealed or not.
+    match /npcs/{npcId} {
+      allow read: if resource.data.visible == true || request.auth != null;
+      allow write: if request.auth != null;
+    }
+  }
+}
