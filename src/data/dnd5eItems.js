@@ -241,19 +241,21 @@ export const DND5E_ITEMS = [
   make('wares', 'Vehicle', 'Galley', 30000, 'Oar-driven and built to haul serious cargo.'),
   make('wares', 'Vehicle', 'Airship', 40000, 'A rare and fantastical vessel \u2014 no ordinary shop stocks one of these.'),
 
-  // ============ FOOD, DRINK, AND LODGING (menu pool) ============
+  // ============ FOOD AND DRINK (menu pool) ============
   make('menu', 'Drink', 'Ale (mug)', 0.04, 'The standard pour, brewed in-house.'),
   make('menu', 'Food', 'Bread (loaf)', 0.02, 'Baked fresh most mornings.'),
   make('menu', 'Food', 'Cheese (wedge)', 0.1, 'Local, sharp, and filling.'),
-  make('menu', 'Lodging', 'Inn Stay, Squalid (per night)', 0.07, 'A floor to sleep on and a roof overhead, nothing more.'),
-  make('menu', 'Lodging', 'Inn Stay, Poor (per night)', 0.1, 'A shared bunk in a room with several others.'),
-  make('menu', 'Lodging', 'Inn Stay, Modest (per night)', 0.5, 'A decent bed and a locked door.'),
-  make('menu', 'Lodging', 'Inn Stay, Comfortable (per night)', 0.8, 'A private room with a bit of comfort to it.'),
-  make('menu', 'Lodging', 'Inn Stay, Wealthy (per night)', 2, 'A room fit for someone used to better than the road.'),
-  make('menu', 'Lodging', 'Inn Stay, Aristocratic (per night)', 4, 'The finest room the house has \u2014 a rare booking out here.'),
-  make('menu', 'Meal', 'Meal, Squalid', 0.01, "Barely a meal, but it's hot."),
-  make('menu', 'Meal', 'Meal, Poor', 0.02, "Simple and filling, nothing more."),
-  make('menu', 'Meal', 'Meal, Modest', 0.1, "Stew, bread, and whatever's in season."),
+
+  // ============ LODGING AND MEALS (services pool) ============
+  make('services', 'Lodging', 'Inn Stay, Squalid (per night)', 0.07, 'A floor to sleep on and a roof overhead, nothing more.'),
+  make('services', 'Lodging', 'Inn Stay, Poor (per night)', 0.1, 'A shared bunk in a room with several others.'),
+  make('services', 'Lodging', 'Inn Stay, Modest (per night)', 0.5, 'A decent bed and a locked door.'),
+  make('services', 'Lodging', 'Inn Stay, Comfortable (per night)', 0.8, 'A private room with a bit of comfort to it.'),
+  make('services', 'Lodging', 'Inn Stay, Wealthy (per night)', 2, 'A room fit for someone used to better than the road.'),
+  make('services', 'Lodging', 'Inn Stay, Aristocratic (per night)', 4, 'The finest room the house has \u2014 a rare booking out here.'),
+  make('services', 'Meal', 'Meal, Squalid', 0.01, "Barely a meal, but it's hot."),
+  make('services', 'Meal', 'Meal, Poor', 0.02, "Simple and filling, nothing more."),
+  make('services', 'Meal', 'Meal, Modest', 0.1, "Stew, bread, and whatever's in season."),
 
   // ============ SERVICES ============
   make('services', 'Hireling', 'Skilled Hireling (per day)', 2, 'Trained labor \u2014 a scribe, guide, or specialist willing to work.'),

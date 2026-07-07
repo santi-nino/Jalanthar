@@ -8,21 +8,22 @@ import { formatPrice, effectivePrice } from '../utils/price'
 const DEFAULT_TYPES = ['Civic', 'Tavern', 'Shrine', 'Garrison', 'Shop', 'Residence', 'Ruin', 'Other']
 
 function CatalogList({ label, pool, rows, multiplier, onChange }) {
-  const [pendingId, setPendingId] = useState('')
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const [creating, setCreating] = useState(false)
+  const [customForm, setCustomForm] = useState({ name: '', priceGp: '', description: '' })
 
   const poolItems = useMemo(() => DND5E_ITEMS.filter((i) => i.pool === pool), [pool])
-  const grouped = useMemo(() => {
-    const map = {}
-    poolItems.forEach((i) => {
-      if (!map[i.category]) map[i.category] = []
-      map[i.category].push(i)
-    })
-    return map
-  }, [poolItems])
 
-  function handleAdd() {
-    const item = poolItems.find((i) => i.id === pendingId)
-    if (!item) return
+  const suggestions = useMemo(() => {
+    if (!query) return []
+    const q = query.toLowerCase()
+    return poolItems
+      .filter((i) => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q))
+      .slice(0, 20)
+  }, [poolItems, query])
+
+  function addItem(item) {
     onChange([
       ...rows,
       {
@@ -33,7 +34,24 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
         priceOverride: '',
       },
     ])
-    setPendingId('')
+    setQuery('')
+    setOpen(false)
+  }
+
+  function addCustom() {
+    if (!customForm.name.trim()) return
+    onChange([
+      ...rows,
+      {
+        rowId: `row-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        name: customForm.name.trim(),
+        basePrice: Number(customForm.priceGp) || 0,
+        description: customForm.description.trim(),
+        priceOverride: '',
+      },
+    ])
+    setCustomForm({ name: '', priceGp: '', description: '' })
+    setCreating(false)
   }
 
   function updateOverride(rowId, value) {
@@ -46,32 +64,88 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
 
   return (
     <div>
-      <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">{label}</h4>
-      <div className="flex gap-2 mb-2">
-        <select
-          value={pendingId}
-          onChange={(e) => setPendingId(e.target.value)}
-          className="flex-1 rounded-sm border border-leather bg-white/60 px-2 py-2 text-sm"
-        >
-          <option value="">— select an item to add —</option>
-          {Object.entries(grouped).map(([cat, items]) => (
-            <optgroup key={cat} label={cat}>
-              {items.map((i) => (
-                <option key={i.id} value={i.id}>
-                  {i.name} — {formatPrice(i.priceGp)}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+      <div className="flex items-center justify-between mb-1">
+        <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark">{label}</h4>
         <button
           type="button"
-          onClick={handleAdd}
-          disabled={!pendingId}
-          className="px-3 py-2 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40 shrink-0"
+          onClick={() => setCreating((c) => !c)}
+          className="text-xs text-moss-dark underline"
         >
-          Add
+          {creating ? 'Cancel' : `+ Create ${label.replace(/s$/, '')}`}
         </button>
+      </div>
+
+      {creating && (
+        <div className="border border-moss/50 rounded-sm p-3 mb-2 space-y-2 bg-moss/5">
+          <input
+            value={customForm.name}
+            onChange={(e) => setCustomForm((f) => ({ ...f, name: e.target.value }))}
+            placeholder="Name"
+            className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm"
+          />
+          <div className="flex gap-2">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={customForm.priceGp}
+              onChange={(e) => setCustomForm((f) => ({ ...f, priceGp: e.target.value }))}
+              placeholder="Base price (gp)"
+              className="w-32 rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm"
+            />
+            <input
+              value={customForm.description}
+              onChange={(e) => setCustomForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Description"
+              className="flex-1 rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={addCustom}
+            disabled={!customForm.name.trim()}
+            className="px-3 py-1.5 text-xs font-display uppercase tracking-wide bg-moss-dark text-parchment rounded-sm hover:bg-moss disabled:opacity-40"
+          >
+            Add to {label}
+          </button>
+        </div>
+      )}
+
+      <div className="relative mb-2">
+        <input
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            setOpen(true)
+          }}
+          onFocus={() => setOpen(true)}
+          placeholder={`Search ${label.toLowerCase()} by name or category…`}
+          className="w-full rounded-sm border border-leather bg-white/60 px-3 py-2 text-sm"
+        />
+        {open && suggestions.length > 0 && (
+          <ul className="absolute z-10 mt-1 w-full bg-parchment border border-leather rounded-sm shadow-lg max-h-56 overflow-y-auto">
+            {suggestions.map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  onClick={() => addItem(item)}
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-leather/10"
+                >
+                  <span>
+                    {item.name}
+                    <span className="text-xs text-ink-soft/60 italic"> — {item.category}</span>
+                  </span>
+                  <span className="font-mono text-xs shrink-0">{formatPrice(item.priceGp)}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {open && query && suggestions.length === 0 && (
+          <p className="absolute z-10 mt-1 w-full bg-parchment border border-leather rounded-sm shadow-lg px-3 py-2 text-xs text-ink-soft/60 italic">
+            No matches — try "+ Create {label.replace(/s$/, '')}" above instead.
+          </p>
+        )}
       </div>
       {rows.length === 0 && (
         <p className="text-xs text-ink-soft/60 italic mb-2">Nothing added yet.</p>
