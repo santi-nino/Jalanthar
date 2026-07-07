@@ -18,6 +18,16 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
   const { families, npcs } = useData()
   const { isDm } = useAuth()
   const [selectedNpcId, setSelectedNpcId] = useState(null)
+  const [collapsedFamilyIds, setCollapsedFamilyIds] = useState(() => new Set())
+
+  function toggleFamilyCollapse(famId) {
+    setCollapsedFamilyIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(famId)) next.delete(famId)
+      else next.add(famId)
+      return next
+    })
+  }
 
   const visibleNpcs = useMemo(
     () => npcs.filter((n) => isDm || n.visible),
@@ -36,16 +46,21 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
 
     families.forEach((fam, famIdx) => {
       const famX = famIdx * FAMILY_GAP_X
+      const collapsed = collapsedFamilyIds.has(fam.id)
       nodes.push({
         id: `fam-node-${fam.id}`,
         type: 'family',
         position: { x: famX, y: 0 },
         data: {
           label: fam.name,
-          onClick: isDm && onEditFamily ? () => onEditFamily(fam) : undefined,
+          collapsed,
+          onToggleCollapse: () => toggleFamilyCollapse(fam.id),
+          onEdit: isDm && onEditFamily ? () => onEditFamily(fam) : undefined,
         },
         draggable: false,
       })
+
+      if (collapsed) return
 
       const members = visibleNpcs.filter((n) => n.familyName === fam.name)
       members.forEach((npc, i) => {
@@ -65,12 +80,15 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       })
     })
 
-    // Friend/rival edges between visible NPCs (avoid duplicating a<->b twice)
+    // Friend/rival edges between visible NPCs whose families are both expanded
+    // (avoid duplicating a<->b twice, and avoid dangling edges to hidden nodes)
+    const renderedNpcIds = new Set(nodes.filter((n) => n.type === 'npc').map((n) => n.id))
     const seen = new Set()
     visibleNpcs.forEach((npc) => {
+      if (!renderedNpcIds.has(npc.id)) return
       ;(npc.relationships || []).forEach((rel) => {
         if (rel.type === 'family') return
-        if (!npcsById[rel.targetId] || !visibleNpcs.find((n) => n.id === rel.targetId)) return
+        if (!renderedNpcIds.has(rel.targetId)) return
         const key = [npc.id, rel.targetId].sort().join('|') + rel.type
         if (seen.has(key)) return
         seen.add(key)
@@ -85,7 +103,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     })
 
     return { nodes, edges }
-  }, [families, visibleNpcs, npcsById, isDm, onEditFamily])
+  }, [families, visibleNpcs, npcsById, isDm, onEditFamily, collapsedFamilyIds])
 
   const selectedNpc = selectedNpcId ? npcsById[selectedNpcId] : null
 

@@ -3,6 +3,8 @@ import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
 import BuildingDetailPanel from '../BuildingDetailPanel'
 import NpcDetailModal from '../NpcDetailModal'
+import { HeaderDivider } from '../decorations'
+import Decoration from '../Decoration'
 
 export default function BuildingListTab({ onEditBuilding, onEditNpc }) {
   const { buildings } = useData()
@@ -35,8 +37,11 @@ export default function BuildingListTab({ onEditBuilding, onEditNpc }) {
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6 max-w-3xl mx-auto">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h2 className="font-display text-2xl sm:text-3xl text-leather-dark">Buildings of Jalanthar</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
+        <div className="flex items-center gap-3">
+          <Decoration src="sea-serpent.jpeg" alt="" className="w-12 h-12 object-contain" />
+          <h2 className="font-display text-2xl sm:text-3xl text-leather-dark">Buildings of Jalanthar</h2>
+        </div>
         {isDm && onEditBuilding && (
           <button
             onClick={() => onEditBuilding(null)}
@@ -46,6 +51,7 @@ export default function BuildingListTab({ onEditBuilding, onEditNpc }) {
           </button>
         )}
       </div>
+      <HeaderDivider className="mb-4" />
 
       <div className="flex flex-wrap gap-3 mb-6 sticky top-0 bg-parchment/95 backdrop-blur-sm py-3 z-10">
         <input

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { isFirebaseConfigured } from '../firebase'
+import Decoration from './Decoration'
 
 export default function DmLogin({ onClose }) {
   const { login, error } = useAuth()
@@ -31,8 +32,9 @@ export default function DmLogin({ onClose }) {
       >
         <h2
           id="dm-login-title"
-          className="font-display text-xl text-leather-dark mb-1 uppercase tracking-wide"
+          className="font-display text-xl text-leather-dark mb-1 uppercase tracking-wide flex items-center gap-2"
         >
+          <Decoration src="knight-horseback.webp" alt="" className="w-10 h-10 object-contain" />
           DM Access
         </h2>
         <p className="text-sm text-ink-soft mb-4 font-body italic">
