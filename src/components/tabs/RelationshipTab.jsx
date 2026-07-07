@@ -359,6 +359,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
               sourceHandle: 'bottom',
               target: m.id,
               targetHandle: 'top',
+              type: 'smoothstep',
               style: EDGE_STYLE.root,
             })
           })
@@ -397,8 +398,13 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             x: cursorX + (layout.positions[parentBId] - layout.minX),
             y: FAMILY_HEADER_Y + 90 + layout.gen[parentBId] * GEN_ROW_HEIGHT,
           }
+          // The junction sits directly on the marriage line itself (same
+          // row, at the midpoint) rather than floating below it — so no
+          // separate line is needed connecting each parent to it, matching
+          // the standard genogram convention where children drop from the
+          // couple's own connecting line, not from two extra diagonals.
           const jx = (posA.x + posB.x) / 2
-          const jy = posA.y + GEN_ROW_HEIGHT * 0.5
+          const jy = posA.y
 
           familyIdByNpc[junctionId] = fam.id
           nodes.push({
@@ -408,22 +414,6 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             data: { familyId: fam.id },
             draggable: false,
           })
-          edges.push({
-            id: `e-junc-a-${junctionId}`,
-            source: parentAId,
-            sourceHandle: 'bottom',
-            target: junctionId,
-            targetHandle: 'top',
-            style: EDGE_STYLE.lineage,
-          })
-          edges.push({
-            id: `e-junc-b-${junctionId}`,
-            source: parentBId,
-            sourceHandle: 'bottom',
-            target: junctionId,
-            targetHandle: 'top',
-            style: EDGE_STYLE.lineage,
-          })
           childIds.forEach((childId) => {
             edges.push({
               id: `e-lineage-${junctionId}-${childId}`,
@@ -431,6 +421,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
               sourceHandle: 'bottom',
               target: childId,
               targetHandle: 'top',
+              type: 'smoothstep',
               style: EDGE_STYLE.lineage,
             })
           })
@@ -443,6 +434,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             sourceHandle: 'bottom',
             target: childId,
             targetHandle: 'top',
+            type: 'smoothstep',
             style: EDGE_STYLE.lineage,
           })
         })
@@ -505,6 +497,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
               sourceHandle: 'bottom',
               target: npc.id,
               targetHandle: 'top',
+              type: 'smoothstep',
               style: EDGE_STYLE.lineage,
             })
           })
@@ -594,6 +587,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           sourceHandle: 'bottom',
           target: childId,
           targetHandle: 'top',
+          type: 'smoothstep',
           style: EDGE_STYLE.crossLineage,
         })
       })
