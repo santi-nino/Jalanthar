@@ -30,6 +30,15 @@ export function FamilyNode({ data }) {
   )
 }
 
+export function JunctionNode() {
+  return (
+    <div className="w-1.5 h-1.5 rounded-full bg-leather/40">
+      <Handle type="target" position={Position.Top} id="top" className="!opacity-0" isConnectable={false} />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="!opacity-0" isConnectable={false} />
+    </div>
+  )
+}
+
 export function NpcNode({ data }) {
   return (
     <button

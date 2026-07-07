@@ -3,10 +3,10 @@ import ReactFlow, { Background, Controls, useNodesState, useEdgesState } from 'r
 import 'reactflow/dist/style.css'
 import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { FamilyNode, NpcNode } from '../relationshipNodes'
+import { FamilyNode, NpcNode, JunctionNode } from '../relationshipNodes'
 import NpcDetailPanel from '../NpcDetailPanel'
 
-const nodeTypes = { family: FamilyNode, npc: NpcNode }
+const nodeTypes = { family: FamilyNode, npc: NpcNode, junction: JunctionNode }
 
 const EDGE_STYLE = {
   lineage: { stroke: '#33352B', strokeWidth: 1.5 },
@@ -236,11 +236,11 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
   const { families, npcs } = useData()
   const { isDm } = useAuth()
   const [selectedNpcId, setSelectedNpcId] = useState(null)
-  const [collapsedFamilyIds, setCollapsedFamilyIds] = useState(() => new Set())
+  const [expandedFamilyIds, setExpandedFamilyIds] = useState(() => new Set())
   const dragState = useRef(null)
 
   function toggleFamilyCollapse(famId) {
-    setCollapsedFamilyIds((prev) => {
+    setExpandedFamilyIds((prev) => {
       const next = new Set(prev)
       if (next.has(famId)) next.delete(famId)
       else next.add(famId)
@@ -259,7 +259,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     const positionByNpc = {}
 
     families.forEach((fam) => {
-      const collapsed = collapsedFamilyIds.has(fam.id)
+      const collapsed = !expandedFamilyIds.has(fam.id)
       const members = visibleNpcs.filter((n) => n.familyName === fam.name)
       const layout = collapsed
         ? { positions: {}, gen: {}, minX: 0, width: NPC_SLOT * 1.2, memberIds: new Set() }
@@ -314,23 +314,83 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             })
           })
 
-        // Parent -> child lineage: one line per child (first in-family parent
-        // found), so two-parent children don't get double diagonal lines
-        const lineageDrawnForChild = new Set()
+        // Parent -> child lineage. Children with two in-family parents route
+        // through a small shared junction point below the couple, so both
+        // parents visibly connect without drawing two crossing diagonals.
+        // Children with only one in-family parent connect directly.
+        const childrenByParentPair = new Map()
+        const singleParentChildren = new Map() // childId -> parentId
+
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
             if (!layout.memberIds.has(r.targetId)) return
             if (noteType(r.note) !== 'child') return
-            if (lineageDrawnForChild.has(r.targetId)) return
-            lineageDrawnForChild.add(r.targetId)
+            const childId = r.targetId
+            const existing = singleParentChildren.get(childId)
+            if (existing == null) {
+              singleParentChildren.set(childId, npc.id)
+            } else if (existing !== npc.id) {
+              // second in-family parent found — this child has a pair
+              const pairKey = [existing, npc.id].sort().join('|')
+              if (!childrenByParentPair.has(pairKey)) childrenByParentPair.set(pairKey, [])
+              childrenByParentPair.get(pairKey).push(childId)
+              singleParentChildren.delete(childId)
+            }
+          })
+        })
+
+        childrenByParentPair.forEach((childIds, pairKey) => {
+          const [parentAId, parentBId] = pairKey.split('|')
+          const junctionId = `junction-${fam.id}-${pairKey}`
+          const jx = (layout.positions[parentAId] + layout.positions[parentBId]) / 2
+          const parentY = FAMILY_HEADER_Y + 90 + layout.gen[parentAId] * GEN_ROW_HEIGHT
+          const childGen = layout.gen[childIds[0]]
+          const jy = parentY + (childGen - layout.gen[parentAId]) * GEN_ROW_HEIGHT * 0.5
+
+          familyIdByNpc[junctionId] = fam.id
+          nodes.push({
+            id: junctionId,
+            type: 'junction',
+            position: { x: cursorX + (jx - layout.minX), y: jy },
+            data: { familyId: fam.id },
+            draggable: false,
+          })
+          edges.push({
+            id: `e-junc-a-${junctionId}`,
+            source: parentAId,
+            sourceHandle: 'bottom',
+            target: junctionId,
+            targetHandle: 'top',
+            style: EDGE_STYLE.lineage,
+          })
+          edges.push({
+            id: `e-junc-b-${junctionId}`,
+            source: parentBId,
+            sourceHandle: 'bottom',
+            target: junctionId,
+            targetHandle: 'top',
+            style: EDGE_STYLE.lineage,
+          })
+          childIds.forEach((childId) => {
             edges.push({
-              id: `e-lineage-${npc.id}-${r.targetId}`,
-              source: npc.id,
+              id: `e-lineage-${junctionId}-${childId}`,
+              source: junctionId,
               sourceHandle: 'bottom',
-              target: r.targetId,
+              target: childId,
               targetHandle: 'top',
               style: EDGE_STYLE.lineage,
             })
+          })
+        })
+
+        singleParentChildren.forEach((parentId, childId) => {
+          edges.push({
+            id: `e-lineage-${parentId}-${childId}`,
+            source: parentId,
+            sourceHandle: 'bottom',
+            target: childId,
+            targetHandle: 'top',
+            style: EDGE_STYLE.lineage,
           })
         })
 
@@ -446,7 +506,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     })
 
     return { nodes, edges }
-  }, [families, visibleNpcs, npcsById, isDm, onEditFamily, collapsedFamilyIds])
+  }, [families, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds])
 
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
@@ -462,7 +522,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       const familyId = node.data.familyId
       const members = {}
       nodes.forEach((n) => {
-        if (n.type === 'npc' && n.data.familyId === familyId) {
+        if ((n.type === 'npc' || n.type === 'junction') && n.data.familyId === familyId) {
           members[n.id] = n.position
         }
       })
@@ -480,7 +540,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       const dy = node.position.y - startFamilyPos.y
       setNodes((prev) =>
         prev.map((n) => {
-          if (n.type === 'npc' && n.data.familyId === familyId && members[n.id]) {
+          if ((n.type === 'npc' || n.type === 'junction') && n.data.familyId === familyId && members[n.id]) {
             return { ...n, position: { x: members[n.id].x + dx, y: members[n.id].y + dy } }
           }
           return n

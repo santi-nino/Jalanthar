@@ -253,6 +253,8 @@ export const mockNpcs = [
     relationships: [
       { targetId: 'npc-branner-vod', type: 'family', note: 'Siblings' },
       { targetId: 'npc-aldous-vod', type: 'family', note: 'Spouse' },
+      { targetId: 'npc-tomas-vod', type: 'family', note: 'Child' },
+      { targetId: 'npc-garrick-vod', type: 'family', note: 'Child' },
     ],
   },
   {
@@ -280,7 +282,7 @@ export const mockNpcs = [
     personality: "Even-tempered and methodical, unbothered by the family's reputation politics.",
     clothing: "A neat clerk's coat.",
     history: 'Married Senna and took the Vod name. Maintains the town\'s rolls, warrants, and records for the magistrate.',
-    relationships: [{ targetId: 'npc-senna-vod', type: 'family', note: 'Spouse' }],
+    relationships: [{ targetId: 'npc-senna-vod', type: 'family', note: 'Spouse' }, { targetId: 'npc-tomas-vod', type: 'family', note: 'Child' }, { targetId: 'npc-garrick-vod', type: 'family', note: 'Child' }],
   },
   {
     id: 'npc-tomas-vod', name: 'Tomas Vod', familyName: 'The Vods', homeBuildingId: 'bld-vod-homestead', visible: false,
@@ -297,6 +299,8 @@ export const mockNpcs = [
       { targetId: 'npc-garrick-vod', type: 'family', note: 'Siblings' },
       { targetId: 'npc-emeric-vod', type: 'family', note: 'Child' },
       { targetId: 'npc-wren-vod', type: 'family', note: 'Child' },
+      { targetId: 'npc-senna-vod', type: 'family', note: 'Parent' },
+      { targetId: 'npc-aldous-vod', type: 'family', note: 'Parent' },
     ],
   },
   {
@@ -328,6 +332,8 @@ export const mockNpcs = [
     relationships: [
       { targetId: 'npc-tomas-vod', type: 'family', note: 'Siblings' },
       { targetId: 'npc-finn-vod', type: 'family', note: 'Child' },
+      { targetId: 'npc-senna-vod', type: 'family', note: 'Parent' },
+      { targetId: 'npc-aldous-vod', type: 'family', note: 'Parent' },
     ],
   },
   {

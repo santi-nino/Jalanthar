@@ -3,7 +3,7 @@ import { BuildingMarkerIcon } from './buildingIcons'
 export default function MapMarker({ building, expanded, onToggle, onSeeMore }) {
   return (
     <div
-      className="absolute -translate-x-1/2 -translate-y-1/2"
+      className={`absolute -translate-x-1/2 -translate-y-1/2 ${expanded ? 'z-20' : 'z-0'}`}
       style={{ left: `${building.coords.x}%`, top: `${building.coords.y}%` }}
     >
       <button
