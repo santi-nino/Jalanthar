@@ -32,7 +32,7 @@ function edgeStyleFor(typeId) {
   return EDGE_STYLE.friendly
 }
 
-const NPC_SLOT = 150
+const NPC_SLOT = 170
 const GEN_ROW_HEIGHT = 140
 const FAMILY_HEADER_Y = 0
 const FAMILY_GAP = 100
@@ -55,17 +55,23 @@ function makeUnionFind(ids) {
   return { find, union }
 }
 
-function layoutFamily(members, npcsById) {
+function layoutFamily(members, npcsById, genOverrides = {}) {
   const memberIds = new Set(members.map((m) => m.id))
   const gen = {}
 
-  // Phase 1: unambiguous roots — no parent-type relationship anywhere
+  // DM-assigned generations take priority and seed the BFS directly.
+  members.forEach((m) => {
+    if (genOverrides[m.id] != null) gen[m.id] = genOverrides[m.id]
+  })
+
+  // Remaining unambiguous roots — no parent-type relationship anywhere
   // (in-family or not) AND no spouse/partner within this family. Anyone
   // with a spouse is deliberately excluded here, even if they have no
   // recorded parents themselves (e.g. a minor character married into the
   // family) — their generation should come from their spouse, not default
   // to 0, which was the source of an earlier layout bug.
   members.forEach((m) => {
+    if (gen[m.id] != null) return
     const hasParentAnywhere = (m.relationships || []).some(
       (r) => getRelationshipType(r.type).genDelta < 0
     )
@@ -291,9 +297,10 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     sortedFamilies.forEach((fam) => {
       const collapsed = !expandedFamilyIds.has(fam.id)
       const members = visibleNpcs.filter((n) => n.familyName === fam.name)
+      const genOverrides = fam.genOverrides || {}
       const layout = collapsed
         ? { positions: {}, gen: {}, minX: 0, width: NPC_SLOT * 1.2, memberIds: new Set() }
-        : layoutFamily(members, npcsById)
+        : layoutFamily(members, npcsById, genOverrides)
 
       const familyX = cursorX + layout.width / 2
       const famNodeId = `fam-node-${fam.id}`
@@ -325,7 +332,9 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             x: cursorX + (layout.positions[npc.id] - layout.minX),
             y: FAMILY_HEADER_Y + 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT,
           }
-          const pos = override[npc.id] || auto
+          // A manually-pinned generation always wins over a stale drag
+          // position, which would otherwise float in the wrong row.
+          const pos = genOverrides[npc.id] != null ? auto : override[npc.id] || auto
           familyIdByNpc[npc.id] = fam.id
           nodes.push({
             id: npc.id,
@@ -679,6 +688,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
+            defaultEdgeOptions={{ type: 'straight' }}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onNodeDragStart={handleNodeDragStart}

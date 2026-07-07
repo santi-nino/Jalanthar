@@ -71,15 +71,15 @@ export function NpcNode({ data }) {
   return (
     <button
       onClick={data.onClick}
-      className="relative px-3 py-2 rounded-sm bg-parchment border-2 border-leather shadow-sm font-body text-sm text-ink hover:border-wax hover:text-wax transition-colors min-w-[120px] text-center cursor-pointer"
+      className="relative px-3 py-2 rounded-sm bg-parchment border-2 border-leather shadow-sm font-body text-sm text-ink hover:border-wax hover:text-wax transition-colors w-[150px] text-center cursor-pointer overflow-hidden"
     >
       <Handle type="target" position={Position.Top} id="top" className="!bg-leather" isConnectable={false} />
       <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-leather opacity-0" isConnectable={false} />
       <Handle type="source" position={Position.Left} id="left" className="!bg-gold opacity-0" isConnectable={false} />
       <Handle type="source" position={Position.Right} id="right" className="!bg-gold opacity-0" isConnectable={false} />
-      <span className="block">{data.label}</span>
+      <span className="block truncate">{data.label}</span>
       {(data.job || age) && (
-        <span className="block text-[10px] text-ink-soft/70 font-body italic leading-tight mt-0.5">
+        <span className="block text-[10px] text-ink-soft/70 font-body italic leading-tight mt-0.5 truncate">
           {data.job}
           {data.job && age && ' · '}
           {age}

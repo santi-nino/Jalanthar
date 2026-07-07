@@ -2,12 +2,23 @@ import { useState } from 'react'
 import { useData } from '../contexts/DataContext'
 
 export default function DmEditFamilyForm({ family, onClose }) {
-  const { saveFamily, removeFamily } = useData()
-  const [form, setForm] = useState(family || { name: '', description: '' })
+  const { saveFamily, removeFamily, npcs } = useData()
+  const [form, setForm] = useState(
+    family || { name: '', description: '', genOverrides: {} }
+  )
 
   function set(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
   }
+
+  function setGen(npcId, value) {
+    const genOverrides = { ...(form.genOverrides || {}) }
+    if (value === '') delete genOverrides[npcId]
+    else genOverrides[npcId] = Number(value)
+    set('genOverrides', genOverrides)
+  }
+
+  const members = npcs.filter((n) => n.familyName === form.name)
 
   const [saveError, setSaveError] = useState('')
 
@@ -74,6 +85,34 @@ export default function DmEditFamilyForm({ family, onClose }) {
             className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
           />
         </label>
+
+        {members.length > 0 && (
+          <div>
+            <span className="text-sm font-display uppercase text-ink-soft block mb-1">
+              Generations
+            </span>
+            <p className="text-xs text-ink-soft/60 italic mb-2">
+              Row 0 is the eldest generation shown on the tree. Leave blank to let the tree
+              figure it out automatically from Parent/Sibling/Spouse relationships — set it
+              here only to correct a member who's landing in the wrong row.
+            </p>
+            <ul className="space-y-1.5 max-h-56 overflow-y-auto">
+              {members.map((m) => (
+                <li key={m.id} className="flex items-center justify-between gap-2">
+                  <span className="text-sm">{m.name}</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={form.genOverrides?.[m.id] ?? ''}
+                    onChange={(e) => setGen(m.id, e.target.value)}
+                    placeholder="auto"
+                    className="w-20 rounded-sm border border-leather bg-white/60 px-2 py-1 text-sm text-right"
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="flex justify-between pt-2">
           <div>
