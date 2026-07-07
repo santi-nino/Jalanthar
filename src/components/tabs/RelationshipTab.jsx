@@ -447,13 +447,58 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           })
         })
 
-        // Grandparent / uncle-aunt / other lineage-flavored ties: simple
-        // direct edges (no junction merging — these are rarer and usually
-        // one-sided anyway).
+        // Every parent-child pair that actually got a rendered line above
+        // (via junction or single-parent), used below to detect when a
+        // sibling/avuncular/grandparent tie is already visually implied and
+        // doesn't need its own separate line.
+        const renderedParentOf = new Map() // childId -> Set(parentIds)
+        function noteParent(childId, parentId) {
+          if (!renderedParentOf.has(childId)) renderedParentOf.set(childId, new Set())
+          renderedParentOf.get(childId).add(parentId)
+        }
+        childrenByParentPair.forEach((childIds, pairKey) => {
+          const [a, b] = pairKey.split('|')
+          childIds.forEach((c) => {
+            noteParent(c, a)
+            noteParent(c, b)
+          })
+        })
+        singleParentChildren.forEach((parentId, childId) => noteParent(childId, parentId))
+
+        function sharesRenderedParent(idA, idB) {
+          const pa = renderedParentOf.get(idA)
+          const pb = renderedParentOf.get(idB)
+          if (!pa || !pb) return false
+          for (const p of pa) if (pb.has(p)) return true
+          return false
+        }
+
+        // Grandparent / uncle-aunt ties: skip drawing a direct line when the
+        // connection is already fully traceable through lines already on
+        // screen (a rendered parent who is themselves a rendered sibling of
+        // the target, or a rendered parent whose own rendered parent is the
+        // target) — drawing it anyway would just be a redundant extra line
+        // crossing through the same two people.
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
             if (!layout.memberIds.has(r.targetId)) return
             if (r.type !== 'grandparent' && r.type !== 'uncle' && r.type !== 'aunt') return
+
+            const myParents = renderedParentOf.get(npc.id) || new Set()
+            let inferable = false
+            for (const p of myParents) {
+              if (r.type === 'grandparent') {
+                const grandparentsOfP = renderedParentOf.get(p)
+                if (grandparentsOfP && grandparentsOfP.has(r.targetId)) inferable = true
+              } else {
+                // uncle/aunt: inferable if my parent and the target share a
+                // rendered parent (i.e. are rendered siblings)
+                if (sharesRenderedParent(p, r.targetId)) inferable = true
+              }
+              if (inferable) break
+            }
+            if (inferable) return
+
             edges.push({
               id: `e-avuncular-${npc.id}-${r.targetId}`,
               source: r.targetId,
@@ -513,6 +558,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             (a, b) => (override[a]?.x ?? layout.positions[a]) - (override[b]?.x ?? layout.positions[b])
           )
           for (let i = 0; i < sorted.length - 1; i++) {
+            if (sharesRenderedParent(sorted[i], sorted[i + 1])) continue
             edges.push({
               id: `e-chain-${sorted[i]}-${sorted[i + 1]}`,
               source: sorted[i],
