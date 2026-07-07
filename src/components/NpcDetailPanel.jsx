@@ -1,10 +1,10 @@
 import { useAuth } from '../contexts/AuthContext'
+import { getLabel } from '../data/relationshipTypes'
 
-const REL_LABELS = { family: 'Family', friend: 'Friend', rival: 'Rival' }
-const REL_COLORS = {
-  family: 'text-ink-soft',
-  friend: 'text-moss-dark',
-  rival: 'text-wax-dark',
+const ADVERSE = new Set(['rival', 'enemy'])
+function relColor(typeId) {
+  if (ADVERSE.has(typeId)) return 'text-wax-dark'
+  return 'text-moss-dark'
 }
 
 export default function NpcDetailPanel({ npc, npcsById, onEdit, onSelectRelated }) {
@@ -77,12 +77,9 @@ export default function NpcDetailPanel({ npc, npcsById, onEdit, onSelectRelated 
                     >
                       {target.name}
                     </button>
-                    <span className={`ml-2 text-xs font-display uppercase tracking-wide ${REL_COLORS[rel.type]}`}>
-                      {REL_LABELS[rel.type] || rel.type}
+                    <span className={`ml-2 text-xs font-display uppercase tracking-wide ${relColor(rel.type)}`}>
+                      {getLabel(rel.type)}
                     </span>
-                    {rel.note && (
-                      <span className="block text-sm italic text-ink-soft/80">{rel.note}</span>
-                    )}
                   </li>
                 )
               })}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useData } from '../contexts/DataContext'
+import { SELECTABLE_TYPES, getRelationshipType, getLabel } from '../data/relationshipTypes'
 
 export default function DmEditNpcForm({ npc, onClose }) {
   const {
@@ -21,6 +22,7 @@ export default function DmEditNpcForm({ npc, onClose }) {
       visible: false,
       job: '',
       famousQuote: '',
+      age: '',
       eyeColor: '',
       hairColor: '',
       height: '',
@@ -45,7 +47,7 @@ export default function DmEditNpcForm({ npc, onClose }) {
   }
 
   function addRel() {
-    set('relationships', [...form.relationships, { targetId: '', type: 'friend', note: '' }])
+    set('relationships', [...form.relationships, { targetId: '', type: 'friend' }])
   }
 
   function removeRel(i) {
@@ -78,6 +80,30 @@ export default function DmEditNpcForm({ npc, onClose }) {
           await addResidentToBuilding(newBuildingId, resolvedId)
         }
       }
+
+      // Keep relationships bidirectional: whatever this NPC's relationship
+      // list says, the target's own page must show the reciprocal.
+      if (resolvedId) {
+        const oldRels = npc?.relationships || []
+        const newRels = form.relationships.filter((r) => r.targetId)
+        const oldByTarget = Object.fromEntries(oldRels.map((r) => [r.targetId, r.type]))
+        const newByTarget = Object.fromEntries(newRels.map((r) => [r.targetId, r.type]))
+        const allTargetIds = new Set([...Object.keys(oldByTarget), ...Object.keys(newByTarget)])
+
+        for (const targetId of allTargetIds) {
+          const oldType = oldByTarget[targetId]
+          const newType = newByTarget[targetId]
+          if (oldType === newType) continue
+          const target = npcs.find((n) => n.id === targetId)
+          if (!target) continue
+          const targetRels = (target.relationships || []).filter((r) => r.targetId !== resolvedId)
+          if (newType) {
+            targetRels.push({ targetId: resolvedId, type: getRelationshipType(newType).reciprocal })
+          }
+          await saveNpc({ ...target, relationships: targetRels })
+        }
+      }
+
       onClose()
     } catch (err) {
       console.error('Failed to save resident:', err)
@@ -198,6 +224,18 @@ export default function DmEditNpcForm({ npc, onClose }) {
           />
         </label>
 
+        <label className="block max-w-[10rem]">
+          <span className="text-sm font-display uppercase text-ink-soft">Age</span>
+          <input
+            type="number"
+            min="0"
+            value={form.age}
+            onChange={(e) => set('age', e.target.value)}
+            placeholder="Years"
+            className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+          />
+        </label>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label>
             <span className="text-sm font-display uppercase text-ink-soft">Eye Color</span>
@@ -291,46 +329,67 @@ export default function DmEditNpcForm({ npc, onClose }) {
               + Add relationship
             </button>
           </div>
+          <p className="text-xs text-ink-soft/60 italic mb-2">
+            Each person can only have one relationship with this resident — adding a new one
+            replaces any existing tie to that person, on both pages.
+          </p>
           <div className="space-y-2">
-            {form.relationships.map((rel, i) => (
-              <div key={i} className="flex gap-2 items-center">
-                <select
-                  value={rel.targetId}
-                  onChange={(e) => updateRel(i, 'targetId', e.target.value)}
-                  className="flex-1 rounded-sm border border-leather bg-white/60 px-2 py-1 text-sm"
-                >
-                  <option value="">— select resident —</option>
-                  {otherNpcs.map((n) => (
-                    <option key={n.id} value={n.id}>
-                      {n.name}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={rel.type}
-                  onChange={(e) => updateRel(i, 'type', e.target.value)}
-                  className="rounded-sm border border-leather bg-white/60 px-2 py-1 text-sm"
-                >
-                  <option value="family">Family</option>
-                  <option value="friend">Friend</option>
-                  <option value="rival">Rival</option>
-                </select>
-                <input
-                  value={rel.note}
-                  onChange={(e) => updateRel(i, 'note', e.target.value)}
-                  placeholder="Note"
-                  className="flex-1 rounded-sm border border-leather bg-white/60 px-2 py-1 text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeRel(i)}
-                  aria-label="Remove relationship"
-                  className="text-wax text-lg leading-none px-1"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+            {form.relationships.map((rel, i) => {
+              const usedElsewhere = new Set(
+                form.relationships.filter((_, idx) => idx !== i).map((r) => r.targetId)
+              )
+              const availableTargets = otherNpcs.filter(
+                (n) => n.id === rel.targetId || !usedElsewhere.has(n.id)
+              )
+              const isCustomType = rel.type && !SELECTABLE_TYPES.some((t) => t.id === rel.type)
+              return (
+                <div key={i} className="flex flex-wrap gap-2 items-center">
+                  <select
+                    value={rel.targetId}
+                    onChange={(e) => updateRel(i, 'targetId', e.target.value)}
+                    className="flex-1 min-w-[140px] rounded-sm border border-leather bg-white/60 px-2 py-1 text-sm"
+                  >
+                    <option value="">— select resident —</option>
+                    {availableTargets.map((n) => (
+                      <option key={n.id} value={n.id}>
+                        {n.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={isCustomType ? '__custom__' : rel.type}
+                    onChange={(e) => {
+                      if (e.target.value === '__custom__') updateRel(i, 'type', '')
+                      else updateRel(i, 'type', e.target.value)
+                    }}
+                    className="rounded-sm border border-leather bg-white/60 px-2 py-1 text-sm"
+                  >
+                    {SELECTABLE_TYPES.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}
+                      </option>
+                    ))}
+                    <option value="__custom__">+ Custom…</option>
+                  </select>
+                  {isCustomType && (
+                    <input
+                      value={rel.type}
+                      onChange={(e) => updateRel(i, 'type', e.target.value)}
+                      placeholder="Custom relationship name"
+                      className="rounded-sm border border-leather bg-white/60 px-2 py-1 text-sm w-40"
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeRel(i)}
+                    aria-label="Remove relationship"
+                    className="text-wax text-lg leading-none px-1"
+                  >
+                    ×
+                  </button>
+                </div>
+              )
+            })}
           </div>
         </div>
 

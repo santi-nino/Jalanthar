@@ -5,6 +5,7 @@ import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { FamilyNode, NpcNode, JunctionNode } from '../relationshipNodes'
 import NpcDetailPanel from '../NpcDetailPanel'
+import { getRelationshipType } from '../../data/relationshipTypes'
 
 const nodeTypes = { family: FamilyNode, npc: NpcNode, junction: JunctionNode }
 
@@ -13,28 +14,28 @@ const EDGE_STYLE = {
   crossLineage: { stroke: '#33352B', strokeWidth: 1.3, strokeDasharray: '3 4', opacity: 0.7 },
   spouse: { stroke: '#8C6B2E', strokeWidth: 2 },
   sibling: { stroke: '#5C6B34', strokeWidth: 1.5, strokeDasharray: '5 4' },
-  friend: { stroke: '#5C6B34', strokeWidth: 2 },
-  rival: { stroke: '#6B1F1A', strokeWidth: 2, strokeDasharray: '6 4' },
+  friendly: { stroke: '#5C6B34', strokeWidth: 2 },
+  adverse: { stroke: '#6B1F1A', strokeWidth: 2, strokeDasharray: '6 4' },
   root: { stroke: '#33352B', strokeWidth: 1, opacity: 0.5 },
+}
+
+const LINEAGE_TYPES = new Set(['parent', 'child', 'grandparent', 'grandchild', 'uncle', 'aunt', 'niece_nephew'])
+const PAIR_TYPES = new Set(['spouse', 'partner'])
+const CHAIN_TYPES = new Set(['sibling', 'cousin'])
+const ADVERSE_TYPES = new Set(['rival', 'enemy'])
+
+function edgeStyleFor(typeId) {
+  if (LINEAGE_TYPES.has(typeId)) return EDGE_STYLE.lineage
+  if (PAIR_TYPES.has(typeId)) return EDGE_STYLE.spouse
+  if (CHAIN_TYPES.has(typeId)) return EDGE_STYLE.sibling
+  if (ADVERSE_TYPES.has(typeId)) return EDGE_STYLE.adverse
+  return EDGE_STYLE.friendly
 }
 
 const NPC_SLOT = 150
 const GEN_ROW_HEIGHT = 140
 const FAMILY_HEADER_Y = 0
 const FAMILY_GAP = 100
-
-// Note-text keywords drive the generational layout, since family relationships
-// are stored as free-text notes rather than a fixed subtype. Keep to these
-// words ("Parent", "Child", "Spouse", "Sibling"/"Siblings") in a relationship's
-// note for it to be read correctly by the tree layout.
-function noteType(note) {
-  const n = (note || '').toLowerCase()
-  if (n.includes('parent')) return 'parent'
-  if (n.includes('child')) return 'child'
-  if (n.includes('spouse')) return 'spouse'
-  if (n.includes('sibling')) return 'sibling'
-  return null
-}
 
 function makeUnionFind(ids) {
   const parent = {}
@@ -58,49 +59,76 @@ function layoutFamily(members, npcsById) {
   const memberIds = new Set(members.map((m) => m.id))
   const gen = {}
 
-  // A member is only a generation-0 "root" if they have NO parent recorded
-  // anywhere (in this family or otherwise) — someone who married in from
-  // another family (a parent recorded elsewhere) should NOT be treated as a
-  // root; their generation comes from their spouse instead, via the BFS below.
+  // Phase 1: unambiguous roots — no parent-type relationship anywhere
+  // (in-family or not) AND no spouse/partner within this family. Anyone
+  // with a spouse is deliberately excluded here, even if they have no
+  // recorded parents themselves (e.g. a minor character married into the
+  // family) — their generation should come from their spouse, not default
+  // to 0, which was the source of an earlier layout bug.
   members.forEach((m) => {
-    const hasAnyParent = (m.relationships || []).some((r) => noteType(r.note) === 'parent')
-    if (!hasAnyParent) gen[m.id] = 0
+    const hasParentAnywhere = (m.relationships || []).some(
+      (r) => getRelationshipType(r.type).genDelta < 0
+    )
+    const hasInFamilySpouse = (m.relationships || []).some(
+      (r) => PAIR_TYPES.has(r.type) && memberIds.has(r.targetId)
+    )
+    if (!hasParentAnywhere && !hasInFamilySpouse) gen[m.id] = 0
   })
   if (Object.keys(gen).length === 0 && members.length) gen[members[0].id] = 0
 
+  // Phase 2: BFS out from those roots using every relationship's genDelta
   const queue = Object.keys(gen)
   let iter = 0
-  while (queue.length && iter < 2000) {
+  while (queue.length && iter < 4000) {
     iter++
     const id = queue.shift()
     const npc = npcsById[id]
     if (!npc) continue
     ;(npc.relationships || []).forEach((r) => {
       if (!memberIds.has(r.targetId)) return
-      const t = noteType(r.note)
-      let targetGen = null
-      if (t === 'child') targetGen = gen[id] + 1
-      else if (t === 'parent') targetGen = gen[id] - 1
-      else if (t === 'spouse' || t === 'sibling') targetGen = gen[id]
-      if (targetGen == null) return
+      const delta = getRelationshipType(r.type).genDelta
+      const targetGen = gen[id] + delta
       if (gen[r.targetId] == null) {
         gen[r.targetId] = targetGen
         queue.push(r.targetId)
       }
     })
   }
+
+  // Phase 3: anyone still unresolved (e.g. a spouse whose partner just got
+  // assigned) inherits from any already-resolved relation. Loop until no
+  // more progress.
+  let progressed = true
+  let safety = 0
+  while (progressed && safety < 50) {
+    progressed = false
+    safety++
+    members.forEach((m) => {
+      if (gen[m.id] != null) return
+      for (const r of m.relationships || []) {
+        if (!memberIds.has(r.targetId)) continue
+        if (gen[r.targetId] == null) continue
+        gen[m.id] = gen[r.targetId] - getRelationshipType(r.type).genDelta
+        progressed = true
+        break
+      }
+    })
+  }
+
+  // Phase 4: truly isolated members default to 0
   members.forEach((m) => {
     if (gen[m.id] == null) gen[m.id] = 0
   })
+
   const minGen = Math.min(...Object.values(gen))
   members.forEach((m) => {
     gen[m.id] -= minGen
   })
 
-  // Group same-generation members: blood siblings form a contiguous chain,
-  // and a spouse who married in (not a blood relative of this family) is
-  // pushed to whichever end of that chain sits nearest their partner, rather
-  // than being wedged between two siblings.
+  // Group same-generation members: blood siblings/cousins form a contiguous
+  // chain, and a spouse/partner who married in is pushed to whichever end
+  // of that chain sits nearest their partner, rather than wedged between
+  // two blood relatives.
   const byGen = {}
   members.forEach((m) => {
     ;(byGen[gen[m.id]] ||= []).push(m.id)
@@ -112,31 +140,29 @@ function layoutFamily(members, npcsById) {
     const genIds = byGen[g]
     const genIdSet = new Set(genIds)
 
-    // Pure sibling-only union-find (blood relatives at this generation)
-    const siblingUf = makeUnionFind(genIds)
+    const chainUf = makeUnionFind(genIds)
     genIds.forEach((id) => {
       const npc = npcsById[id]
       ;(npc.relationships || []).forEach((r) => {
-        if (noteType(r.note) === 'sibling' && genIdSet.has(r.targetId)) {
-          siblingUf.union(id, r.targetId)
+        if (CHAIN_TYPES.has(r.type) && genIdSet.has(r.targetId)) {
+          chainUf.union(id, r.targetId)
         }
       })
     })
     const chainMap = new Map()
     genIds.forEach((id) => {
-      const root = siblingUf.find(id)
+      const root = chainUf.find(id)
       if (!chainMap.has(root)) chainMap.set(root, [])
       chainMap.get(root).push(id)
     })
 
-    // Spouse pairs within this generation
-    const spouseOf = {}
+    const pairOf = {}
     genIds.forEach((id) => {
       const npc = npcsById[id]
       const rel = (npc.relationships || []).find(
-        (r) => noteType(r.note) === 'spouse' && genIdSet.has(r.targetId)
+        (r) => PAIR_TYPES.has(r.type) && genIdSet.has(r.targetId)
       )
-      if (rel) spouseOf[id] = rel.targetId
+      if (rel) pairOf[id] = rel.targetId
     })
 
     const consumed = new Set()
@@ -145,10 +171,8 @@ function layoutFamily(members, npcsById) {
       if (chain.some((id) => consumed.has(id))) return
       let order = [...chain]
 
-      // If a spouse belongs to someone in the middle of the chain, move that
-      // person to the nearer end so their spouse can attach outside the chain
       order.forEach((id) => {
-        const sp = spouseOf[id]
+        const sp = pairOf[id]
         if (!sp || order.includes(sp)) return
         const i = order.indexOf(id)
         if (i !== 0 && i !== order.length - 1) {
@@ -160,14 +184,14 @@ function layoutFamily(members, npcsById) {
 
       const finalOrder = []
       order.forEach((id, i) => {
-        const sp = spouseOf[id]
-        const spouseIsOutsideChain = sp && !order.includes(sp)
-        if (i === 0 && spouseIsOutsideChain) {
+        const sp = pairOf[id]
+        const partnerOutside = sp && !order.includes(sp)
+        if (i === 0 && partnerOutside) {
           finalOrder.push(sp)
           consumed.add(sp)
         }
         finalOrder.push(id)
-        if (i === order.length - 1 && spouseIsOutsideChain) {
+        if (i === order.length - 1 && partnerOutside) {
           finalOrder.push(sp)
           consumed.add(sp)
         }
@@ -214,7 +238,7 @@ function layoutFamily(members, npcsById) {
         const npc = npcsById[id]
         ;(npc.relationships || []).forEach((r) => {
           if (!memberIds.has(r.targetId)) return
-          if (noteType(r.note) === 'parent' && positions[r.targetId] != null) {
+          if (getRelationshipType(r.type).genDelta < 0 && positions[r.targetId] != null) {
             sum += positions[r.targetId]
             count++
           }
@@ -233,7 +257,7 @@ function layoutFamily(members, npcsById) {
 }
 
 export default function RelationshipTab({ onEditNpc, onEditFamily }) {
-  const { families, npcs } = useData()
+  const { families, npcs, saveFamily } = useData()
   const { isDm } = useAuth()
   const [selectedNpcId, setSelectedNpcId] = useState(null)
   const [expandedFamilyIds, setExpandedFamilyIds] = useState(() => new Set())
@@ -250,15 +274,21 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
 
   const visibleNpcs = useMemo(() => npcs.filter((n) => isDm || n.visible), [npcs, isDm])
   const npcsById = useMemo(() => Object.fromEntries(npcs.map((n) => [n.id, n])), [npcs])
+  // Firestore doesn't guarantee document order, so without sorting explicitly
+  // the family left-to-right order could shuffle on any unrelated update,
+  // making previously-dragged positions look like they "reset."
+  const sortedFamilies = useMemo(
+    () => [...families].sort((a, b) => a.id.localeCompare(b.id)),
+    [families]
+  )
 
   const computed = useMemo(() => {
     const nodes = []
     const edges = []
     let cursorX = 0
     const familyIdByNpc = {}
-    const positionByNpc = {}
 
-    families.forEach((fam) => {
+    sortedFamilies.forEach((fam) => {
       const collapsed = !expandedFamilyIds.has(fam.id)
       const members = visibleNpcs.filter((n) => n.familyName === fam.name)
       const layout = collapsed
@@ -267,42 +297,52 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
 
       const familyX = cursorX + layout.width / 2
       const famNodeId = `fam-node-${fam.id}`
+      const treeLayout = fam.treeLayout || {}
+      const headerPos = treeLayout.__self__ || { x: familyX - 70, y: FAMILY_HEADER_Y }
 
       nodes.push({
         id: famNodeId,
         type: 'family',
-        position: { x: familyX - 70, y: FAMILY_HEADER_Y },
+        position: headerPos,
         data: {
           label: fam.name,
           collapsed,
           familyId: fam.id,
           onToggleCollapse: () => toggleFamilyCollapse(fam.id),
           onEdit: isDm && onEditFamily ? () => onEditFamily(fam) : undefined,
+          onResetLayout:
+            isDm && fam.treeLayout && Object.keys(fam.treeLayout).length
+              ? () => saveFamily({ ...fam, treeLayout: {} })
+              : undefined,
         },
         draggable: true,
       })
 
       if (!collapsed) {
+        const override = treeLayout
         members.forEach((npc) => {
-          const x = cursorX + (layout.positions[npc.id] - layout.minX)
-          const y = FAMILY_HEADER_Y + 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT
+          const auto = {
+            x: cursorX + (layout.positions[npc.id] - layout.minX),
+            y: FAMILY_HEADER_Y + 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT,
+          }
+          const pos = override[npc.id] || auto
           familyIdByNpc[npc.id] = fam.id
-          positionByNpc[npc.id] = { x, y }
           nodes.push({
             id: npc.id,
             type: 'npc',
-            position: { x, y },
+            position: pos,
             data: {
               label: npc.name,
+              job: npc.job,
+              age: npc.age,
               familyId: fam.id,
               onClick: () => setSelectedNpcId(npc.id),
             },
           })
         })
 
-        // Root generation gets a thin connector up to the family header
         members
-          .filter((m) => layout.gen[m.id] === 0)
+          .filter((m) => layout.gen[m.id] === 0 && !override[m.id])
           .forEach((m) => {
             edges.push({
               id: `e-root-${m.id}`,
@@ -317,20 +357,18 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         // Parent -> child lineage. Children with two in-family parents route
         // through a small shared junction point below the couple, so both
         // parents visibly connect without drawing two crossing diagonals.
-        // Children with only one in-family parent connect directly.
         const childrenByParentPair = new Map()
-        const singleParentChildren = new Map() // childId -> parentId
+        const singleParentChildren = new Map()
 
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
             if (!layout.memberIds.has(r.targetId)) return
-            if (noteType(r.note) !== 'child') return
+            if (r.type !== 'parent') return
             const childId = r.targetId
             const existing = singleParentChildren.get(childId)
             if (existing == null) {
               singleParentChildren.set(childId, npc.id)
             } else if (existing !== npc.id) {
-              // second in-family parent found — this child has a pair
               const pairKey = [existing, npc.id].sort().join('|')
               if (!childrenByParentPair.has(pairKey)) childrenByParentPair.set(pairKey, [])
               childrenByParentPair.get(pairKey).push(childId)
@@ -342,16 +380,22 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         childrenByParentPair.forEach((childIds, pairKey) => {
           const [parentAId, parentBId] = pairKey.split('|')
           const junctionId = `junction-${fam.id}-${pairKey}`
-          const jx = (layout.positions[parentAId] + layout.positions[parentBId]) / 2
-          const parentY = FAMILY_HEADER_Y + 90 + layout.gen[parentAId] * GEN_ROW_HEIGHT
-          const childGen = layout.gen[childIds[0]]
-          const jy = parentY + (childGen - layout.gen[parentAId]) * GEN_ROW_HEIGHT * 0.5
+          const posA = override[parentAId] || {
+            x: cursorX + (layout.positions[parentAId] - layout.minX),
+            y: FAMILY_HEADER_Y + 90 + layout.gen[parentAId] * GEN_ROW_HEIGHT,
+          }
+          const posB = override[parentBId] || {
+            x: cursorX + (layout.positions[parentBId] - layout.minX),
+            y: FAMILY_HEADER_Y + 90 + layout.gen[parentBId] * GEN_ROW_HEIGHT,
+          }
+          const jx = (posA.x + posB.x) / 2
+          const jy = posA.y + GEN_ROW_HEIGHT * 0.5
 
           familyIdByNpc[junctionId] = fam.id
           nodes.push({
             id: junctionId,
             type: 'junction',
-            position: { x: cursorX + (jx - layout.minX), y: jy },
+            position: override[junctionId] || { x: jx, y: jy },
             data: { familyId: fam.id },
             draggable: false,
           })
@@ -394,20 +438,38 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           })
         })
 
-        // Spouse edges (one per pair)
-        const seenSpousePairs = new Set()
+        // Grandparent / uncle-aunt / other lineage-flavored ties: simple
+        // direct edges (no junction merging — these are rarer and usually
+        // one-sided anyway).
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
             if (!layout.memberIds.has(r.targetId)) return
-            if (noteType(r.note) !== 'spouse') return
-            const key = [npc.id, r.targetId].sort().join('|')
-            if (seenSpousePairs.has(key)) return
-            seenSpousePairs.add(key)
-            const aX = layout.positions[npc.id]
-            const bX = layout.positions[r.targetId]
-            const [leftId, rightId] = aX <= bX ? [npc.id, r.targetId] : [r.targetId, npc.id]
+            if (r.type !== 'grandparent' && r.type !== 'uncle' && r.type !== 'aunt') return
             edges.push({
-              id: `e-spouse-${key}`,
+              id: `e-avuncular-${npc.id}-${r.targetId}`,
+              source: r.targetId,
+              sourceHandle: 'bottom',
+              target: npc.id,
+              targetHandle: 'top',
+              style: EDGE_STYLE.lineage,
+            })
+          })
+        })
+
+        // Spouse/partner edges (one per pair)
+        const seenPairs = new Set()
+        members.forEach((npc) => {
+          ;(npc.relationships || []).forEach((r) => {
+            if (!layout.memberIds.has(r.targetId)) return
+            if (!PAIR_TYPES.has(r.type)) return
+            const key = [npc.id, r.targetId].sort().join('|')
+            if (seenPairs.has(key)) return
+            seenPairs.add(key)
+            const posA = override[npc.id] || { x: layout.positions[npc.id] }
+            const posB = override[r.targetId] || { x: layout.positions[r.targetId] }
+            const [leftId, rightId] = posA.x <= posB.x ? [npc.id, r.targetId] : [r.targetId, npc.id]
+            edges.push({
+              id: `e-pair-${key}`,
               source: leftId,
               sourceHandle: 'right',
               target: rightId,
@@ -417,32 +479,33 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           })
         })
 
-        // Sibling edges: chain only adjacent-by-position siblings within a
-        // sibling-only grouping (ignores any spouse sitting between them),
-        // so a group of N siblings gets N-1 connecting lines, not every pair.
-        const siblingUf = makeUnionFind(members.map((m) => m.id))
+        // Sibling/cousin chains: connect adjacent-by-position only, so a
+        // group of N siblings gets N-1 lines rather than every pair.
+        const chainUf2 = makeUnionFind(members.map((m) => m.id))
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
             if (!layout.memberIds.has(r.targetId)) return
-            if (noteType(r.note) !== 'sibling') return
-            if (layout.gen[r.targetId] === layout.gen[npc.id]) siblingUf.union(npc.id, r.targetId)
+            if (!CHAIN_TYPES.has(r.type)) return
+            if (layout.gen[r.targetId] === layout.gen[npc.id]) chainUf2.union(npc.id, r.targetId)
           })
         })
-        const siblingGroups = new Map()
+        const chainGroups = new Map()
         members.forEach((npc) => {
-          const isInAnySiblingRel = (npc.relationships || []).some(
-            (r) => layout.memberIds.has(r.targetId) && noteType(r.note) === 'sibling'
+          const inChain = (npc.relationships || []).some(
+            (r) => layout.memberIds.has(r.targetId) && CHAIN_TYPES.has(r.type)
           )
-          if (!isInAnySiblingRel) return
-          const root = siblingUf.find(npc.id)
-          if (!siblingGroups.has(root)) siblingGroups.set(root, [])
-          siblingGroups.get(root).push(npc.id)
+          if (!inChain) return
+          const root = chainUf2.find(npc.id)
+          if (!chainGroups.has(root)) chainGroups.set(root, [])
+          chainGroups.get(root).push(npc.id)
         })
-        siblingGroups.forEach((group) => {
-          const sorted = [...group].sort((a, b) => layout.positions[a] - layout.positions[b])
+        chainGroups.forEach((group) => {
+          const sorted = [...group].sort(
+            (a, b) => (override[a]?.x ?? layout.positions[a]) - (override[b]?.x ?? layout.positions[b])
+          )
           for (let i = 0; i < sorted.length - 1; i++) {
             edges.push({
-              id: `e-sibling-${sorted[i]}-${sorted[i + 1]}`,
+              id: `e-chain-${sorted[i]}-${sorted[i + 1]}`,
               source: sorted[i],
               sourceHandle: 'right',
               target: sorted[i + 1],
@@ -457,21 +520,19 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     })
 
     // Cross-family lineage: a parent/child link where the two people ended up
-    // in different rendered family clusters (e.g. someone married in and their
-    // birth parents are shown under a different family name)
+    // in different rendered family clusters
     const renderedNpcIds = new Set(nodes.filter((n) => n.type === 'npc').map((n) => n.id))
     const seenCross = new Set()
     visibleNpcs.forEach((npc) => {
       if (!renderedNpcIds.has(npc.id)) return
       ;(npc.relationships || []).forEach((r) => {
-        const t = noteType(r.note)
-        if (t !== 'parent' && t !== 'child') return
+        if (r.type !== 'parent' && r.type !== 'child') return
         if (!renderedNpcIds.has(r.targetId)) return
         if (familyIdByNpc[r.targetId] === familyIdByNpc[npc.id]) return
         const key = [npc.id, r.targetId].sort().join('|')
         if (seenCross.has(key)) return
         seenCross.add(key)
-        const [parentId, childId] = t === 'parent' ? [r.targetId, npc.id] : [npc.id, r.targetId]
+        const [parentId, childId] = r.type === 'parent' ? [r.targetId, npc.id] : [npc.id, r.targetId]
         edges.push({
           id: `e-cross-${key}`,
           source: parentId,
@@ -483,12 +544,13 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       })
     })
 
-    // Friend/rival edges between visible NPCs (cross-family, dedup)
+    // Everything else (Friend, Coworker, Rival, Enemy, custom types) — a
+    // simple direct edge, deduped, cross-family included
     const seen = new Set()
     visibleNpcs.forEach((npc) => {
       if (!renderedNpcIds.has(npc.id)) return
       ;(npc.relationships || []).forEach((rel) => {
-        if (rel.type === 'family') return
+        if (LINEAGE_TYPES.has(rel.type) || PAIR_TYPES.has(rel.type) || CHAIN_TYPES.has(rel.type)) return
         if (!renderedNpcIds.has(rel.targetId)) return
         const key = [npc.id, rel.targetId].sort().join('|') + rel.type
         if (seen.has(key)) return
@@ -499,14 +561,14 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           sourceHandle: 'bottom',
           target: rel.targetId,
           targetHandle: 'bottom',
-          style: EDGE_STYLE[rel.type] || EDGE_STYLE.friend,
-          label: rel.type,
+          style: edgeStyleFor(rel.type),
+          label: getRelationshipType(rel.type).label,
         })
       })
     })
 
     return { nodes, edges }
-  }, [families, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds])
+  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily])
 
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
@@ -550,9 +612,28 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     [setNodes]
   )
 
-  const handleNodeDragStop = useCallback(() => {
-    dragState.current = null
-  }, [])
+  const handleNodeDragStop = useCallback(
+    (_event, node) => {
+      const familyId = node.data.familyId
+      const fam = families.find((f) => f.id === familyId)
+      if (isDm && fam) {
+        if (node.type === 'npc' || node.type === 'junction') {
+          const treeLayout = { ...(fam.treeLayout || {}), [node.id]: node.position }
+          saveFamily({ ...fam, treeLayout })
+        } else if (node.type === 'family' && dragState.current) {
+          const treeLayout = { ...(fam.treeLayout || {}), __self__: node.position }
+          nodes.forEach((n) => {
+            if ((n.type === 'npc' || n.type === 'junction') && n.data.familyId === familyId) {
+              treeLayout[n.id] = n.position
+            }
+          })
+          saveFamily({ ...fam, treeLayout })
+        }
+      }
+      dragState.current = null
+    },
+    [families, isDm, saveFamily, nodes]
+  )
 
   const selectedNpc = selectedNpcId ? npcsById[selectedNpcId] : null
 
@@ -578,6 +659,12 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
               </button>
             )}
           </div>
+        )}
+        {isDm && (
+          <p className="absolute bottom-3 left-3 z-10 text-xs font-mono bg-ink/70 text-parchment px-2 py-1 rounded-sm max-w-xs">
+            Drag any resident to reposition them — it's saved automatically. Drag a family's
+            banner to move everyone in it together.
+          </p>
         )}
         {nodes.length === 0 ? (
           <div className="h-full flex items-center justify-center">
