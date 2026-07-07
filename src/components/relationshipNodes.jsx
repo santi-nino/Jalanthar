@@ -1,11 +1,17 @@
 import { Handle, Position } from 'reactflow'
 
 export function FamilyNode({ data }) {
+  const Tag = data.onClick ? 'button' : 'div'
   return (
-    <div className="px-4 py-2 rounded-sm bg-leather text-parchment border-2 border-gold shadow-md font-display uppercase tracking-wide text-sm text-center min-w-[140px]">
+    <Tag
+      onClick={data.onClick}
+      className={`px-4 py-2 rounded-sm bg-leather text-parchment border-2 border-gold shadow-md font-display uppercase tracking-wide text-sm text-center min-w-[140px] ${
+        data.onClick ? 'cursor-pointer hover:border-gold-light hover:text-gold-light transition-colors' : ''
+      }`}
+    >
       <Handle type="source" position={Position.Bottom} className="!bg-gold" />
       {data.label}
-    </div>
+    </Tag>
   )
 }
 

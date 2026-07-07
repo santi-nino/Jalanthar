@@ -97,7 +97,7 @@ export default function MapTab({ onEditBuilding }) {
           >
             {!imgError ? (
               <img
-                src="/map/jalanthar-map.jpg"
+                src={`${import.meta.env.BASE_URL}map/jalanthar-map.jpg`}
                 alt="Map of Jalanthar"
                 width={MAP_WIDTH}
                 height={MAP_HEIGHT}

@@ -9,13 +9,12 @@ import NpcDetailPanel from '../NpcDetailPanel'
 const nodeTypes = { family: FamilyNode, npc: NpcNode }
 
 const REL_EDGE_STYLE = {
-  family: { stroke: '#6B4226', strokeWidth: 1.5 },
-  friend: { stroke: '#5C6B47', strokeWidth: 2 },
-  rival: { stroke: '#8B2E2E', strokeWidth: 2, strokeDasharray: '6 4' },
+  family: { stroke: '#33352B', strokeWidth: 1.5 },
+  friend: { stroke: '#5C6B34', strokeWidth: 2 },
+  rival: { stroke: '#6B1F1A', strokeWidth: 2, strokeDasharray: '6 4' },
 }
 
-export default function RelationshipTab({ onEditNpc }) {
-  // Add-resident affordance lives in the top-right overlay below.
+export default function RelationshipTab({ onEditNpc, onEditFamily }) {
   const { families, npcs } = useData()
   const { isDm } = useAuth()
   const [selectedNpcId, setSelectedNpcId] = useState(null)
@@ -41,7 +40,10 @@ export default function RelationshipTab({ onEditNpc }) {
         id: `fam-node-${fam.id}`,
         type: 'family',
         position: { x: famX, y: 0 },
-        data: { label: fam.name },
+        data: {
+          label: fam.name,
+          onClick: isDm && onEditFamily ? () => onEditFamily(fam) : undefined,
+        },
         draggable: false,
       })
 
@@ -83,26 +85,39 @@ export default function RelationshipTab({ onEditNpc }) {
     })
 
     return { nodes, edges }
-  }, [families, visibleNpcs, npcsById])
+  }, [families, visibleNpcs, npcsById, isDm, onEditFamily])
 
   const selectedNpc = selectedNpcId ? npcsById[selectedNpcId] : null
 
   return (
     <div className="relative h-full w-full flex">
       <div className="flex-1 relative">
-        {isDm && onEditNpc && (
-          <button
-            onClick={() => onEditNpc(null)}
-            className="absolute top-3 right-3 z-10 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm px-3 py-2 hover:bg-leather-dark shadow"
-          >
-            + Add Resident
-          </button>
+        {isDm && (onEditNpc || onEditFamily) && (
+          <div className="absolute top-3 right-3 z-10 flex gap-2">
+            {onEditFamily && (
+              <button
+                onClick={() => onEditFamily(null)}
+                className="text-sm font-display uppercase tracking-wide bg-moss-dark text-parchment rounded-sm px-3 py-2 hover:bg-moss shadow"
+              >
+                + Add Family
+              </button>
+            )}
+            {onEditNpc && (
+              <button
+                onClick={() => onEditNpc(null)}
+                className="text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm px-3 py-2 hover:bg-leather-dark shadow"
+              >
+                + Add Resident
+              </button>
+            )}
+          </div>
         )}
         {nodes.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <p className="font-display text-leather text-lg italic px-8 text-center max-w-md">
-              No families recorded yet. The DM can add family lines from the edit
-              panel to begin the tree.
+              {isDm
+                ? 'No families recorded yet. Use "+ Add Family" above to begin the tree.'
+                : 'No families recorded yet.'}
             </p>
           </div>
         ) : (
@@ -113,7 +128,7 @@ export default function RelationshipTab({ onEditNpc }) {
             fitView
             proOptions={{ hideAttribution: true }}
           >
-            <Background color="#6B4226" gap={24} />
+            <Background color="#33352B" gap={24} />
             <Controls />
           </ReactFlow>
         )}
