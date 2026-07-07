@@ -4,6 +4,7 @@ import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
 import ScrollLabel, { LABEL_WIDTH, LABEL_HEIGHT } from '../ScrollLabel'
 import BuildingDetailPanel from '../BuildingDetailPanel'
+import NpcDetailModal from '../NpcDetailModal'
 
 // Author your map image at this resolution (or update these constants to match).
 // Building `coords` are stored as {x, y} percentages (0-100) of this frame.
@@ -20,13 +21,14 @@ const LOCKED_SCALE = 1.6
 // screen space) for its label to appear.
 const CENTER_RADIUS_FRACTION = 0.4 // fraction of min(container width, height)
 
-export default function MapTab({ onEditBuilding }) {
+export default function MapTab({ onEditBuilding, onEditNpc }) {
   const { buildings } = useData()
   const { isDm } = useAuth()
   const containerRef = useRef(null)
   const [transform, setTransform] = useState({ scale: 1, positionX: 0, positionY: 0 })
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
   const [selectedId, setSelectedId] = useState(null)
+  const [selectedNpcId, setSelectedNpcId] = useState(null)
   const [imgError, setImgError] = useState(false)
 
   useEffect(() => {
@@ -166,8 +168,18 @@ export default function MapTab({ onEditBuilding }) {
           <BuildingDetailPanel
             building={selectedBuilding}
             onEdit={onEditBuilding ? () => onEditBuilding(selectedBuilding) : undefined}
+            onSelectResident={setSelectedNpcId}
           />
         </aside>
+      )}
+
+      {selectedNpcId && (
+        <NpcDetailModal
+          npcId={selectedNpcId}
+          onNavigate={setSelectedNpcId}
+          onClose={() => setSelectedNpcId(null)}
+          onEditNpc={onEditNpc}
+        />
       )}
     </div>
   )

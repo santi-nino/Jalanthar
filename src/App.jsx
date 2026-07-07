@@ -39,11 +39,13 @@ function AppShell() {
           {activeTab === 'map' && (
             <MapTab
               onEditBuilding={isDm ? (b) => setEditingBuilding(b) : undefined}
+              onEditNpc={isDm ? (n) => setEditingNpc(n) : undefined}
             />
           )}
           {activeTab === 'buildings' && (
             <BuildingListTab
               onEditBuilding={isDm ? (b) => setEditingBuilding(b) : undefined}
+              onEditNpc={isDm ? (n) => setEditingNpc(n) : undefined}
             />
           )}
           {activeTab === 'residents' && (

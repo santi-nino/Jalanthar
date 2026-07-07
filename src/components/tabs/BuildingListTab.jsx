@@ -2,26 +2,21 @@ import { useState, useMemo } from 'react'
 import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
 import BuildingDetailPanel from '../BuildingDetailPanel'
+import NpcDetailModal from '../NpcDetailModal'
 
-const TYPE_OPTIONS = [
-  { value: 'all', label: 'All Types' },
-  { value: 'civic', label: 'Civic' },
-  { value: 'tavern', label: 'Tavern & Inn' },
-  { value: 'shrine', label: 'Shrine' },
-  { value: 'garrison', label: 'Garrison' },
-  { value: 'shop', label: 'Shop' },
-  { value: 'residence', label: 'Residence' },
-  { value: 'ruin', label: 'Ruin' },
-  { value: 'other', label: 'Other' },
-]
-
-export default function BuildingListTab({ onEditBuilding }) {
+export default function BuildingListTab({ onEditBuilding, onEditNpc }) {
   const { buildings } = useData()
   const { isDm } = useAuth()
   const [query, setQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [sortBy, setSortBy] = useState('name')
   const [openId, setOpenId] = useState(null)
+  const [selectedNpcId, setSelectedNpcId] = useState(null)
+
+  const typeOptions = useMemo(
+    () => ['all', ...new Set(buildings.map((b) => b.type).filter(Boolean))],
+    [buildings]
+  )
 
   const filtered = useMemo(() => {
     let list = buildings.filter((b) =>
@@ -67,9 +62,9 @@ export default function BuildingListTab({ onEditBuilding }) {
           aria-label="Filter by type"
           className="rounded-sm border border-leather bg-white/60 px-3 py-2 font-body"
         >
-          {TYPE_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
+          {typeOptions.map((t) => (
+            <option key={t} value={t}>
+              {t === 'all' ? 'All Types' : t}
             </option>
           ))}
         </select>
@@ -118,6 +113,7 @@ export default function BuildingListTab({ onEditBuilding }) {
                   <BuildingDetailPanel
                     building={b}
                     onEdit={isDm && onEditBuilding ? () => onEditBuilding(b) : undefined}
+                    onSelectResident={setSelectedNpcId}
                   />
                 </div>
               )}
@@ -125,6 +121,15 @@ export default function BuildingListTab({ onEditBuilding }) {
           )
         })}
       </ul>
+
+      {selectedNpcId && (
+        <NpcDetailModal
+          npcId={selectedNpcId}
+          onNavigate={setSelectedNpcId}
+          onClose={() => setSelectedNpcId(null)}
+          onEditNpc={onEditNpc}
+        />
+      )}
     </div>
   )
 }

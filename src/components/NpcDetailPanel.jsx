@@ -17,6 +17,7 @@ export default function NpcDetailPanel({ npc, npcsById, onEdit, onSelectRelated 
           <h3 className="font-display text-2xl text-leather-dark leading-tight">{npc.name}</h3>
           <p className="text-sm uppercase tracking-wide text-ink-soft/70 font-display mt-1">
             {npc.familyName}
+            {npc.job && <span> · {npc.job}</span>}
           </p>
         </div>
         {isDm && onEdit && (
@@ -29,7 +30,29 @@ export default function NpcDetailPanel({ npc, npcsById, onEdit, onSelectRelated 
         )}
       </div>
 
+      {npc.famousQuote && (
+        <p className="mt-3 italic text-ink-soft border-l-2 border-gold pl-3">
+          "{npc.famousQuote}"
+        </p>
+      )}
+
       <div className="mt-4 space-y-4">
+        {(npc.eyeColor || npc.hairColor || npc.height || npc.weight) && (
+          <div>
+            <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">
+              At a Glance
+            </h4>
+            <ul className="text-ink-soft text-sm grid grid-cols-2 gap-x-4 gap-y-0.5">
+              {npc.eyeColor && <li>Eyes: {npc.eyeColor}</li>}
+              {npc.hairColor && <li>Hair: {npc.hairColor}</li>}
+              {npc.height && <li>Height: {npc.height}</li>}
+              {npc.weight && <li>Weight: {npc.weight}</li>}
+            </ul>
+          </div>
+        )}
+        {npc.distinguishingFeatures && (
+          <Section title="Distinguishing Features" text={npc.distinguishingFeatures} />
+        )}
         {npc.appearance && (
           <Section title="Appearance" text={npc.appearance} />
         )}

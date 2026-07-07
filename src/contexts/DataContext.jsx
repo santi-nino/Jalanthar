@@ -68,15 +68,17 @@ export function DataProvider({ children }) {
           ? doc(db, 'buildings', building.id)
           : doc(collection(db, 'buildings'))
         await setDoc(ref, { ...building, id: undefined }, { merge: true })
+        return ref.id
       } else {
+        const id = building.id || `bld-${Date.now()}`
         setBuildings((prev) => {
-          const id = building.id || `bld-${Date.now()}`
           const next = building.id
             ? prev.map((b) => (b.id === id ? { ...b, ...building } : b))
             : [...prev, { ...building, id }]
           saveDemo(LS_KEYS.buildings, next)
           return next
         })
+        return id
       }
     },
     []
@@ -99,15 +101,17 @@ export function DataProvider({ children }) {
     if (isFirebaseConfigured) {
       const ref = npc.id ? doc(db, 'npcs', npc.id) : doc(collection(db, 'npcs'))
       await setDoc(ref, { ...npc, id: undefined }, { merge: true })
+      return ref.id
     } else {
+      const id = npc.id || `npc-${Date.now()}`
       setNpcs((prev) => {
-        const id = npc.id || `npc-${Date.now()}`
         const next = npc.id
           ? prev.map((n) => (n.id === id ? { ...n, ...npc } : n))
           : [...prev, { ...npc, id }]
         saveDemo(LS_KEYS.npcs, next)
         return next
       })
+      return id
     }
   }, [])
 

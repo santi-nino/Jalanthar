@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useData } from '../contexts/DataContext'
 
 export default function DmEditNpcForm({ npc, onClose }) {
-  const { saveNpc, removeNpc, npcs, families, saveFamily } = useData()
+  const { saveNpc, removeNpc, npcs, families, saveFamily, buildings, saveBuilding } = useData()
   const [newFamilyName, setNewFamilyName] = useState('')
   const [form, setForm] = useState(
     npc || {
@@ -10,6 +10,13 @@ export default function DmEditNpcForm({ npc, onClose }) {
       familyName: families[0]?.name || '',
       homeBuildingId: '',
       visible: false,
+      job: '',
+      famousQuote: '',
+      eyeColor: '',
+      hairColor: '',
+      height: '',
+      weight: '',
+      distinguishingFeatures: '',
       appearance: '',
       personality: '',
       clothing: '',
@@ -45,7 +52,30 @@ export default function DmEditNpcForm({ npc, onClose }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    await saveNpc(form)
+    const savedId = await saveNpc(form)
+    const resolvedId = savedId || npc?.id
+
+    const oldBuildingId = npc?.homeBuildingId || ''
+    const newBuildingId = form.homeBuildingId || ''
+    if (resolvedId && oldBuildingId !== newBuildingId) {
+      if (oldBuildingId) {
+        const oldB = buildings.find((b) => b.id === oldBuildingId)
+        if (oldB) {
+          await saveBuilding({
+            ...oldB,
+            residents: (oldB.residents || []).filter((id) => id !== resolvedId),
+          })
+        }
+      }
+      if (newBuildingId) {
+        const newB = buildings.find((b) => b.id === newBuildingId)
+        if (newB) {
+          const residents = new Set(newB.residents || [])
+          residents.add(resolvedId)
+          await saveBuilding({ ...newB, residents: [...residents] })
+        }
+      }
+    }
     onClose()
   }
 
@@ -124,6 +154,91 @@ export default function DmEditNpcForm({ npc, onClose }) {
           <span className="text-sm font-display uppercase text-ink-soft">
             Visible to players (introduced in game)
           </span>
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-display uppercase text-ink-soft">Home Building</span>
+          <select
+            value={form.homeBuildingId || ''}
+            onChange={(e) => set('homeBuildingId', e.target.value)}
+            className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+          >
+            <option value="">— none —</option>
+            {buildings.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-display uppercase text-ink-soft">Job / Role</span>
+          <input
+            value={form.job}
+            onChange={(e) => set('job', e.target.value)}
+            placeholder="e.g. Blacksmith, Magistrate's clerk, Ranger"
+            className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-display uppercase text-ink-soft">Famous Quote</span>
+          <input
+            value={form.famousQuote}
+            onChange={(e) => set('famousQuote', e.target.value)}
+            placeholder="Something they're known for saying"
+            className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2 italic"
+          />
+        </label>
+
+        <div className="grid grid-cols-2 gap-3">
+          <label>
+            <span className="text-sm font-display uppercase text-ink-soft">Eye Color</span>
+            <input
+              value={form.eyeColor}
+              onChange={(e) => set('eyeColor', e.target.value)}
+              className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+            />
+          </label>
+          <label>
+            <span className="text-sm font-display uppercase text-ink-soft">Hair Color</span>
+            <input
+              value={form.hairColor}
+              onChange={(e) => set('hairColor', e.target.value)}
+              className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+            />
+          </label>
+          <label>
+            <span className="text-sm font-display uppercase text-ink-soft">Height</span>
+            <input
+              value={form.height}
+              onChange={(e) => set('height', e.target.value)}
+              placeholder={`e.g. 5'8"`}
+              className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+            />
+          </label>
+          <label>
+            <span className="text-sm font-display uppercase text-ink-soft">Weight</span>
+            <input
+              value={form.weight}
+              onChange={(e) => set('weight', e.target.value)}
+              placeholder="e.g. 160 lb"
+              className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+            />
+          </label>
+        </div>
+
+        <label className="block">
+          <span className="text-sm font-display uppercase text-ink-soft">
+            Distinguishing Features
+          </span>
+          <input
+            value={form.distinguishingFeatures}
+            onChange={(e) => set('distinguishingFeatures', e.target.value)}
+            placeholder="Scars, tattoos, a missing finger, anything memorable"
+            className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+          />
         </label>
 
         <label className="block">

@@ -1,19 +1,9 @@
 import { useState } from 'react'
 import { useData } from '../contexts/DataContext'
 import { useAuth } from '../contexts/AuthContext'
+import { formatPrice, effectivePrice } from '../utils/price'
 
-const TYPE_LABELS = {
-  civic: 'Civic Building',
-  tavern: 'Tavern & Inn',
-  shrine: 'Shrine',
-  garrison: 'Garrison',
-  shop: 'Shop',
-  residence: 'Residence',
-  ruin: 'Ruin',
-  other: 'Building',
-}
-
-export default function BuildingDetailPanel({ building, onEdit }) {
+export default function BuildingDetailPanel({ building, onEdit, onSelectResident }) {
   const [revealed, setRevealed] = useState(false)
   const { npcs } = useData()
   const { isDm } = useAuth()
@@ -23,6 +13,8 @@ export default function BuildingDetailPanel({ building, onEdit }) {
     .filter(Boolean)
     .filter((n) => isDm || n.visible)
 
+  const multiplier = building.priceMultiplier ?? 1.5
+
   return (
     <div className="font-body">
       <div className="flex items-start justify-between gap-3">
@@ -31,7 +23,7 @@ export default function BuildingDetailPanel({ building, onEdit }) {
             {building.name}
           </h3>
           <p className="text-sm uppercase tracking-wide text-ink-soft/70 font-display mt-1">
-            {building.subheader || TYPE_LABELS[building.type] || ''}
+            {building.subheader || building.type || ''}
           </p>
         </div>
         {isDm && onEdit && (
@@ -53,17 +45,21 @@ export default function BuildingDetailPanel({ building, onEdit }) {
         </button>
       ) : (
         <div className="mt-4 space-y-4">
-          {building.description && (
-            <p className="leading-relaxed text-ink-soft">{building.description}</p>
-          )}
-
-          {building.interiorLayout && (
+          {building.interiorLayoutImage && (
             <div>
               <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">
                 Layout
               </h4>
-              <p className="text-ink-soft whitespace-pre-line">{building.interiorLayout}</p>
+              <img
+                src={building.interiorLayoutImage}
+                alt={`${building.name} interior layout`}
+                className="w-full rounded-sm border border-leather/40"
+              />
             </div>
+          )}
+
+          {building.description && (
+            <p className="leading-relaxed text-ink-soft">{building.description}</p>
           )}
 
           {residents.length > 0 && (
@@ -71,68 +67,57 @@ export default function BuildingDetailPanel({ building, onEdit }) {
               <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">
                 Residents
               </h4>
-              <ul className="list-disc list-inside text-ink-soft">
+              <ul className="space-y-1">
                 {residents.map((r) => (
-                  <li key={r.id}>{r.name}</li>
+                  <li key={r.id}>
+                    <button
+                      onClick={() => onSelectResident?.(r.id)}
+                      className="underline decoration-dotted hover:text-wax text-left"
+                    >
+                      {r.name}
+                    </button>
+                  </li>
                 ))}
               </ul>
             </div>
           )}
 
           {building.wares?.length > 0 && (
-            <div>
-              <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">
-                Wares
-              </h4>
-              <ul className="text-ink-soft space-y-0.5">
-                {building.wares.map((w, i) => (
-                  <li key={i} className="flex justify-between">
-                    <span>{w.item}</span>
-                    <span className="font-mono text-sm">{w.price}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <CatalogSection title="Wares" rows={building.wares} multiplier={multiplier} />
           )}
-
           {building.menu?.length > 0 && (
-            <div>
-              <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">
-                Menu
-              </h4>
-              <ul className="text-ink-soft space-y-0.5">
-                {building.menu.map((m, i) => (
-                  <li key={i} className="flex justify-between gap-2">
-                    <span>
-                      {m.item}
-                      {m.notes && (
-                        <span className="text-xs italic text-ink-soft/70"> — {m.notes}</span>
-                      )}
-                    </span>
-                    <span className="font-mono text-sm shrink-0">{m.price}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <CatalogSection title="Menu" rows={building.menu} multiplier={multiplier} />
           )}
-
           {building.services?.length > 0 && (
-            <div>
-              <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">
-                Services
-              </h4>
-              <ul className="text-ink-soft space-y-0.5">
-                {building.services.map((s, i) => (
-                  <li key={i}>
-                    <span className="font-semibold">{s.service}</span>
-                    {s.notes && <span className="text-sm italic"> — {s.notes}</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <CatalogSection title="Services" rows={building.services} multiplier={multiplier} />
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+function CatalogSection({ title, rows, multiplier }) {
+  return (
+    <div>
+      <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">
+        {title}
+      </h4>
+      <ul className="space-y-1.5">
+        {rows.map((row, i) => (
+          <li key={row.rowId || i} className="flex justify-between gap-2">
+            <span>
+              {row.name}
+              {row.description && (
+                <span className="block text-xs italic text-ink-soft/70">{row.description}</span>
+              )}
+            </span>
+            <span className="font-mono text-sm shrink-0">
+              {formatPrice(effectivePrice(row, multiplier))}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
