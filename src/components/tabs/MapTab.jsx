@@ -17,9 +17,10 @@ const MAP_HEIGHT = 886
 // (click-drag / touch-drag) is still enabled at this fixed scale.
 const LOCKED_SCALE = 1.6
 
-// How close to the viewport center a building must be (in px, at 1x zoom-adjusted
-// screen space) for its label to appear.
-const CENTER_RADIUS_FRACTION = 0.4 // fraction of min(container width, height)
+// A label shows whenever it's fully visible within the current viewport.
+// It only hides once panning would push it off-screen or clip it at an
+// edge — not based on how close it is to the exact center.
+const EDGE_MARGIN = 12 // px of breathing room from the container edge
 
 export default function MapTab({ onEditBuilding, onEditNpc }) {
   const { buildings } = useData()
@@ -51,28 +52,21 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
     const { width: cw, height: ch } = containerSize
     if (!cw || !ch) return []
 
-    const centerX = cw / 2
-    const centerY = ch / 2
-    const radius = Math.min(cw, ch) * CENTER_RADIUS_FRACTION
-
     return buildings.map((b) => {
       const screenX = positionX + (b.coords.x / 100) * MAP_WIDTH * scale
       const screenY = positionY + (b.coords.y / 100) * MAP_HEIGHT * scale
 
-      const distFromCenter = Math.hypot(screenX - centerX, screenY - centerY)
-      const withinCenter = distFromCenter <= radius
-
       const wouldClip =
-        screenX - LABEL_WIDTH / 2 < 0 ||
-        screenX + LABEL_WIDTH / 2 > cw ||
-        screenY - LABEL_HEIGHT < 0 ||
-        screenY > ch
+        screenX - LABEL_WIDTH / 2 < EDGE_MARGIN ||
+        screenX + LABEL_WIDTH / 2 > cw - EDGE_MARGIN ||
+        screenY - LABEL_HEIGHT < EDGE_MARGIN ||
+        screenY > ch - EDGE_MARGIN
 
       return {
         building: b,
         screenX,
         screenY,
-        visible: withinCenter && !wouldClip,
+        visible: !wouldClip,
       }
     })
   }, [buildings, transform, containerSize])
@@ -86,6 +80,7 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
           initialScale={LOCKED_SCALE}
           minScale={LOCKED_SCALE}
           maxScale={LOCKED_SCALE}
+          centerOnInit={true}
           onTransformed={handleTransformed}
           limitToBounds={true}
           wheel={{ disabled: true }}
