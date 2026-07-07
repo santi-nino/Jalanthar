@@ -97,19 +97,10 @@ function layoutFamily(members, npcsById) {
     gen[m.id] -= minGen
   })
 
-  // Cluster same-generation members linked by spouse/sibling ties, for spacing
-  const memberIdList = members.map((m) => m.id)
-  const uf = makeUnionFind(memberIdList)
-  members.forEach((m) => {
-    ;(m.relationships || []).forEach((r) => {
-      if (!memberIds.has(r.targetId)) return
-      const t = noteType(r.note)
-      if ((t === 'spouse' || t === 'sibling') && gen[r.targetId] === gen[m.id]) {
-        uf.union(m.id, r.targetId)
-      }
-    })
-  })
-
+  // Group same-generation members: blood siblings form a contiguous chain,
+  // and a spouse who married in (not a blood relative of this family) is
+  // pushed to whichever end of that chain sits nearest their partner, rather
+  // than being wedged between two siblings.
   const byGen = {}
   members.forEach((m) => {
     ;(byGen[gen[m.id]] ||= []).push(m.id)
@@ -118,37 +109,77 @@ function layoutFamily(members, npcsById) {
 
   const clustersByGen = {}
   Object.keys(byGen).forEach((g) => {
-    const map = new Map()
-    byGen[g].forEach((id) => {
-      const root = uf.find(id)
-      if (!map.has(root)) map.set(root, [])
-      map.get(root).push(id)
-    })
-    // Reorder each cluster so spouse pairs sit immediately next to each other
-    clustersByGen[g] = [...map.values()].map((cluster) => {
-      const remaining = new Set(cluster)
-      const ordered = []
-      while (remaining.size) {
-        const next = cluster.find((id) => remaining.has(id))
-        ordered.push(next)
-        remaining.delete(next)
-        let changed = true
-        while (changed) {
-          changed = false
-          const last = ordered[ordered.length - 1]
-          const npc = npcsById[last]
-          const spouseRel = (npc?.relationships || []).find(
-            (r) => noteType(r.note) === 'spouse' && remaining.has(r.targetId)
-          )
-          if (spouseRel) {
-            ordered.push(spouseRel.targetId)
-            remaining.delete(spouseRel.targetId)
-            changed = true
-          }
+    const genIds = byGen[g]
+    const genIdSet = new Set(genIds)
+
+    // Pure sibling-only union-find (blood relatives at this generation)
+    const siblingUf = makeUnionFind(genIds)
+    genIds.forEach((id) => {
+      const npc = npcsById[id]
+      ;(npc.relationships || []).forEach((r) => {
+        if (noteType(r.note) === 'sibling' && genIdSet.has(r.targetId)) {
+          siblingUf.union(id, r.targetId)
         }
-      }
-      return ordered
+      })
     })
+    const chainMap = new Map()
+    genIds.forEach((id) => {
+      const root = siblingUf.find(id)
+      if (!chainMap.has(root)) chainMap.set(root, [])
+      chainMap.get(root).push(id)
+    })
+
+    // Spouse pairs within this generation
+    const spouseOf = {}
+    genIds.forEach((id) => {
+      const npc = npcsById[id]
+      const rel = (npc.relationships || []).find(
+        (r) => noteType(r.note) === 'spouse' && genIdSet.has(r.targetId)
+      )
+      if (rel) spouseOf[id] = rel.targetId
+    })
+
+    const consumed = new Set()
+    const clusters = []
+    chainMap.forEach((chain) => {
+      if (chain.some((id) => consumed.has(id))) return
+      let order = [...chain]
+
+      // If a spouse belongs to someone in the middle of the chain, move that
+      // person to the nearer end so their spouse can attach outside the chain
+      order.forEach((id) => {
+        const sp = spouseOf[id]
+        if (!sp || order.includes(sp)) return
+        const i = order.indexOf(id)
+        if (i !== 0 && i !== order.length - 1) {
+          order.splice(i, 1)
+          if (i < order.length / 2) order.unshift(id)
+          else order.push(id)
+        }
+      })
+
+      const finalOrder = []
+      order.forEach((id, i) => {
+        const sp = spouseOf[id]
+        const spouseIsOutsideChain = sp && !order.includes(sp)
+        if (i === 0 && spouseIsOutsideChain) {
+          finalOrder.push(sp)
+          consumed.add(sp)
+        }
+        finalOrder.push(id)
+        if (i === order.length - 1 && spouseIsOutsideChain) {
+          finalOrder.push(sp)
+          consumed.add(sp)
+        }
+      })
+      order.forEach((id) => consumed.add(id))
+      clusters.push(finalOrder)
+    })
+    genIds.forEach((id) => {
+      if (!consumed.has(id)) clusters.push([id])
+    })
+
+    clustersByGen[g] = clusters
   })
 
   const positions = {}

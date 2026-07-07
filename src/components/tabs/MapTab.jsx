@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -24,13 +24,34 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
   const [expandedId, setExpandedId] = useState(null)
   const [selectedNpcId, setSelectedNpcId] = useState(null)
   const [imgError, setImgError] = useState(false)
+  const [query, setQuery] = useState('')
+  const [suggestOpen, setSuggestOpen] = useState(false)
+  const transformRef = useRef(null)
+  const containerRef = useRef(null)
 
   const selectedBuilding = buildings.find((b) => b.id === selectedId)
 
+  const suggestions = query
+    ? buildings.filter((b) => b.name.toLowerCase().includes(query.toLowerCase())).slice(0, 8)
+    : []
+
+  function goToBuilding(building) {
+    const container = containerRef.current
+    if (!container || !transformRef.current) return
+    const rect = container.getBoundingClientRect()
+    const targetX = rect.width / 2 - (building.coords.x / 100) * MAP_WIDTH * LOCKED_SCALE
+    const targetY = rect.height / 2 - (building.coords.y / 100) * MAP_HEIGHT * LOCKED_SCALE
+    transformRef.current.setTransform(targetX, targetY, LOCKED_SCALE, 450)
+    setExpandedId(building.id)
+    setQuery('')
+    setSuggestOpen(false)
+  }
+
   return (
     <div className="relative h-full w-full flex">
-      <div className="relative flex-1 overflow-hidden bg-ink-soft/10">
+      <div ref={containerRef} className="relative flex-1 overflow-hidden bg-ink-soft/10">
         <TransformWrapper
+          ref={transformRef}
           initialScale={LOCKED_SCALE}
           minScale={LOCKED_SCALE}
           maxScale={LOCKED_SCALE}
@@ -92,6 +113,36 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
             </div>
           </TransformComponent>
         </TransformWrapper>
+
+        <div className="absolute top-3 left-3 z-10 w-64">
+          <input
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              setSuggestOpen(true)
+            }}
+            onFocus={() => setSuggestOpen(true)}
+            placeholder="Search locations…"
+            className="w-full rounded-sm border border-leather bg-parchment/95 px-3 py-2 text-sm shadow"
+          />
+          {suggestOpen && suggestions.length > 0 && (
+            <ul className="mt-1 bg-parchment border border-leather rounded-sm shadow-lg max-h-56 overflow-y-auto">
+              {suggestions.map((b) => (
+                <li key={b.id}>
+                  <button
+                    onClick={() => goToBuilding(b)}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-leather/10"
+                  >
+                    {b.name}
+                    {b.subheader && (
+                      <span className="block text-xs text-ink-soft/60 italic">{b.subheader}</span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {isDm && (
           <>

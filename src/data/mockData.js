@@ -86,7 +86,7 @@ export const mockBuildings = [
   {
     id: 'bld-branners-cottage',
     name: "Branner's Cottage",
-    subheader: '',
+    subheader: "A Hunter's Retirement",
     type: 'Residence',
     coords: { x: 50, y: 50 },
     quadrant: 'inhabited',
@@ -100,7 +100,7 @@ export const mockBuildings = [
   {
     id: 'bld-old-vod-house',
     name: 'The Old Vod House',
-    subheader: '',
+    subheader: 'Where the Ledgers Are Kept',
     type: 'Residence',
     coords: { x: 50, y: 50 },
     quadrant: 'inhabited',
@@ -115,8 +115,8 @@ export const mockBuildings = [
   // ---- Pasho residences and venues ----
   {
     id: 'bld-lu-tana-residence',
-    name: "Lu & Tana's Residence",
-    subheader: '',
+    name: 'Willowmere Cottage',
+    subheader: 'A Home Half Full of Books',
     type: 'Residence',
     coords: { x: 50, y: 50 },
     quadrant: 'inhabited',
@@ -157,8 +157,8 @@ export const mockBuildings = [
   },
   {
     id: 'bld-met-pasho-residence',
-    name: "Met Pasho's Residence",
-    subheader: '',
+    name: 'The Hollow Bough',
+    subheader: 'A Quiet Devotion',
     type: 'Residence',
     coords: { x: 50, y: 50 },
     quadrant: 'inhabited',
@@ -184,8 +184,8 @@ export const mockBuildings = [
   },
   {
     id: 'bld-ven-pasho-residence',
-    name: "Ven Pasho's Residence",
-    subheader: '',
+    name: 'The Inkwell',
+    subheader: 'Drafts and Ambition',
     type: 'Residence',
     coords: { x: 50, y: 50 },
     quadrant: 'inhabited',
@@ -200,7 +200,7 @@ export const mockBuildings = [
   {
     id: 'bld-rihlo-house',
     name: 'Rihlo House',
-    subheader: '',
+    subheader: 'Where the Garden Never Wilts',
     type: 'Residence',
     coords: { x: 50, y: 50 },
     quadrant: 'inhabited',
@@ -411,6 +411,8 @@ export const mockNpcs = [
     relationships: [
       { targetId: 'npc-lu-pasho', type: 'family', note: 'Spouse' },
       { targetId: 'npc-nyra-pasho', type: 'family', note: 'Child' },
+      { targetId: 'npc-krikas-rihlo', type: 'family', note: 'Parent' },
+      { targetId: 'npc-olma-rihlo', type: 'family', note: 'Parent' },
       { targetId: 'npc-maya-pasho', type: 'family', note: 'Siblings' },
       { targetId: 'npc-el-pasho', type: 'family', note: 'Siblings' },
     ],
@@ -495,7 +497,6 @@ export const mockNpcs = [
       { targetId: 'npc-met-pasho', type: 'family', note: 'Siblings' },
       { targetId: 'npc-cassian-pasho', type: 'family', note: 'Parent' },
       { targetId: 'npc-liora-pasho', type: 'family', note: 'Parent' },
-      { targetId: 'npc-lu-pasho', type: 'friend', note: 'Creative partnership on the Silverleaf Stage' },
     ],
   },
 
