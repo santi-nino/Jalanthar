@@ -7,8 +7,14 @@ import BuildingDetailPanel from '../BuildingDetailPanel'
 
 // Author your map image at this resolution (or update these constants to match).
 // Building `coords` are stored as {x, y} percentages (0-100) of this frame.
-const MAP_WIDTH = 1024
-const MAP_HEIGHT = 1024
+const MAP_WIDTH = 886
+const MAP_HEIGHT = 886
+
+// The map is intentionally locked at this zoom level rather than allowing
+// pinch/scroll zoom — this is the sweet spot where the art stays crisp
+// (not upscaled into blur) while still reading as "zoomed in." Panning
+// (click-drag / touch-drag) is still enabled at this fixed scale.
+const LOCKED_SCALE = 1.6
 
 // How close to the viewport center a building must be (in px, at 1x zoom-adjusted
 // screen space) for its label to appear.
@@ -75,11 +81,15 @@ export default function MapTab({ onEditBuilding }) {
     <div className="relative h-full w-full flex">
       <div ref={containerRef} className="relative flex-1 overflow-hidden bg-ink-soft/10">
         <TransformWrapper
-          initialScale={1}
-          minScale={0.4}
-          maxScale={4}
+          initialScale={LOCKED_SCALE}
+          minScale={LOCKED_SCALE}
+          maxScale={LOCKED_SCALE}
           onTransformed={handleTransformed}
-          limitToBounds={false}
+          limitToBounds={true}
+          wheel={{ disabled: true }}
+          pinch={{ disabled: true }}
+          doubleClick={{ disabled: true }}
+          panning={{ disabled: false }}
         >
           <TransformComponent
             wrapperStyle={{ width: '100%', height: '100%' }}

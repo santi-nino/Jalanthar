@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { IconMap, IconBuildings, IconResidents, IconKey, IconExit } from './icons'
 
 const TABS = [
-  { id: 'map', label: 'Map', glyph: '🗺' },
-  { id: 'buildings', label: 'Buildings', glyph: '🏚' },
-  { id: 'residents', label: 'Residents', glyph: '☙' },
+  { id: 'map', label: 'Map', Icon: IconMap },
+  { id: 'buildings', label: 'Buildings', Icon: IconBuildings },
+  { id: 'residents', label: 'Residents', Icon: IconResidents },
 ]
 
 export default function Sidebar({ activeTab, onTabChange, onOpenDm }) {
@@ -40,7 +41,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm }) {
             }`}
           >
             <span className="text-xl leading-none" aria-hidden="true">
-              {tab.glyph}
+              <tab.Icon className="w-5 h-5" />
             </span>
             {!collapsed && (
               <span className="font-display text-sm tracking-wide uppercase">
@@ -55,18 +56,20 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm }) {
         {isDm ? (
           <button
             onClick={logout}
-            className="w-full text-xs font-display uppercase tracking-wide text-gold-light hover:text-parchment transition-colors py-2"
+            className="w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide text-gold-light hover:text-parchment transition-colors py-2"
             title={collapsed ? 'End DM session' : undefined}
           >
-            {collapsed ? '⏻' : 'End DM Session'}
+            <IconExit className="w-4 h-4 shrink-0" />
+            {!collapsed && 'End DM Session'}
           </button>
         ) : (
           <button
             onClick={onOpenDm}
-            className="w-full text-xs font-display uppercase tracking-wide text-parchment/60 hover:text-gold-light transition-colors py-2"
+            className="w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide text-parchment/60 hover:text-gold-light transition-colors py-2"
             title={collapsed ? 'DM login' : undefined}
           >
-            {collapsed ? '⚿' : 'DM Login'}
+            <IconKey className="w-4 h-4 shrink-0" />
+            {!collapsed && 'DM Login'}
           </button>
         )}
       </div>
