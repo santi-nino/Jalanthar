@@ -135,7 +135,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       </div>
 
       {selectedNpc && (
-        <aside className="w-96 shrink-0 border-l-2 border-leather bg-parchment paper-texture overflow-y-auto p-6 relative">
+        <aside className="fixed inset-0 z-30 md:static md:z-auto w-full md:w-96 shrink-0 border-l-0 md:border-l-2 border-leather bg-parchment paper-texture overflow-y-auto p-6 relative">
           <button
             onClick={() => setSelectedNpcId(null)}
             aria-label="Close resident details"

@@ -45,7 +45,7 @@ export default function DmEditFamilyForm({ family, onClose }) {
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-parchment paper-texture border-2 border-gold rounded-sm shadow-2xl w-full max-w-md p-6 space-y-4"
+        className="bg-parchment paper-texture border-2 border-gold rounded-sm shadow-2xl w-full max-w-md p-4 sm:p-6 space-y-4"
       >
         <h2 className="font-display text-xl text-leather-dark uppercase tracking-wide">
           {family ? 'Edit Family' : 'New Family'}

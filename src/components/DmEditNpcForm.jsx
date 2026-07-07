@@ -2,7 +2,16 @@ import { useState } from 'react'
 import { useData } from '../contexts/DataContext'
 
 export default function DmEditNpcForm({ npc, onClose }) {
-  const { saveNpc, removeNpc, npcs, families, saveFamily, buildings, saveBuilding } = useData()
+  const {
+    saveNpc,
+    removeNpc,
+    npcs,
+    families,
+    saveFamily,
+    buildings,
+    addResidentToBuilding,
+    removeResidentFromBuilding,
+  } = useData()
   const [newFamilyName, setNewFamilyName] = useState('')
   const [form, setForm] = useState(
     npc || {
@@ -63,21 +72,10 @@ export default function DmEditNpcForm({ npc, onClose }) {
       const newBuildingId = form.homeBuildingId || ''
       if (resolvedId && oldBuildingId !== newBuildingId) {
         if (oldBuildingId) {
-          const oldB = buildings.find((b) => b.id === oldBuildingId)
-          if (oldB) {
-            await saveBuilding({
-              ...oldB,
-              residents: (oldB.residents || []).filter((id) => id !== resolvedId),
-            })
-          }
+          await removeResidentFromBuilding(oldBuildingId, resolvedId)
         }
         if (newBuildingId) {
-          const newB = buildings.find((b) => b.id === newBuildingId)
-          if (newB) {
-            const residents = new Set(newB.residents || [])
-            residents.add(resolvedId)
-            await saveBuilding({ ...newB, residents: [...residents] })
-          }
+          await addResidentToBuilding(newBuildingId, resolvedId)
         }
       }
       onClose()
@@ -106,7 +104,7 @@ export default function DmEditNpcForm({ npc, onClose }) {
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-parchment paper-texture border-2 border-gold rounded-sm shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 space-y-4"
+        className="bg-parchment paper-texture border-2 border-gold rounded-sm shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 space-y-4"
       >
         <h2 className="font-display text-xl text-leather-dark uppercase tracking-wide">
           {npc ? 'Edit Resident' : 'New Resident'}
@@ -200,7 +198,7 @@ export default function DmEditNpcForm({ npc, onClose }) {
           />
         </label>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label>
             <span className="text-sm font-display uppercase text-ink-soft">Eye Color</span>
             <input

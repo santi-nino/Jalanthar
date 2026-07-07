@@ -4,8 +4,10 @@ import {
   onSnapshot,
   doc,
   setDoc,
+  updateDoc,
   deleteDoc,
-  addDoc,
+  arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from '../firebase'
 import { mockBuildings, mockNpcs, mockFamilies } from '../data/mockData'
@@ -97,6 +99,41 @@ export function DataProvider({ children }) {
     }
   }, [])
 
+  // Atomic add/remove for a single resident id, so two simultaneous edits
+  // (e.g. from two DM sessions) can't clobber each other's changes to the
+  // same building's residents array the way a full read-modify-write would.
+  const addResidentToBuilding = useCallback(async (buildingId, npcId) => {
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'buildings', buildingId), { residents: arrayUnion(npcId) })
+    } else {
+      setBuildings((prev) => {
+        const next = prev.map((b) =>
+          b.id === buildingId
+            ? { ...b, residents: [...new Set([...(b.residents || []), npcId])] }
+            : b
+        )
+        saveDemo(LS_KEYS.buildings, next)
+        return next
+      })
+    }
+  }, [])
+
+  const removeResidentFromBuilding = useCallback(async (buildingId, npcId) => {
+    if (isFirebaseConfigured) {
+      await updateDoc(doc(db, 'buildings', buildingId), { residents: arrayRemove(npcId) })
+    } else {
+      setBuildings((prev) => {
+        const next = prev.map((b) =>
+          b.id === buildingId
+            ? { ...b, residents: (b.residents || []).filter((id) => id !== npcId) }
+            : b
+        )
+        saveDemo(LS_KEYS.buildings, next)
+        return next
+      })
+    }
+  }, [])
+
   // ---- NPCs ----
   const saveNpc = useCallback(async (npc) => {
     if (isFirebaseConfigured) {
@@ -172,6 +209,8 @@ export function DataProvider({ children }) {
         loading,
         saveBuilding,
         removeBuilding,
+        addResidentToBuilding,
+        removeResidentFromBuilding,
         saveNpc,
         removeNpc,
         saveFamily,

@@ -27,7 +27,7 @@ export default function DmLogin({ onClose }) {
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-parchment paper-texture border-2 border-gold rounded-sm shadow-2xl w-full max-w-sm p-6"
+        className="bg-parchment paper-texture border-2 border-gold rounded-sm shadow-2xl w-full max-w-sm p-4 sm:p-6"
       >
         <h2
           id="dm-login-title"

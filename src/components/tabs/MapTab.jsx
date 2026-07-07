@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
-import ScrollLabel from '../ScrollLabel'
+import MapMarker from '../MapMarker'
 import BuildingDetailPanel from '../BuildingDetailPanel'
 import NpcDetailModal from '../NpcDetailModal'
 
@@ -21,6 +21,7 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
   const { buildings } = useData()
   const { isDm } = useAuth()
   const [selectedId, setSelectedId] = useState(null)
+  const [expandedId, setExpandedId] = useState(null)
   const [selectedNpcId, setSelectedNpcId] = useState(null)
   const [imgError, setImgError] = useState(false)
 
@@ -48,7 +49,10 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
                 own MAP_WIDTH x MAP_HEIGHT frame) and pans together as a
                 single transformed block — no separate position-tracking
                 logic needed to keep labels aligned with the map. */}
-            <div style={{ position: 'relative', width: MAP_WIDTH, height: MAP_HEIGHT }}>
+            <div
+              style={{ position: 'relative', width: MAP_WIDTH, height: MAP_HEIGHT }}
+              onClick={() => setExpandedId(null)}
+            >
               {!imgError ? (
                 <img
                   src={`${import.meta.env.BASE_URL}map/jalanthar-map.jpg`}
@@ -74,14 +78,14 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
               )}
 
               {buildings.map((b) => (
-                <ScrollLabel
+                <MapMarker
                   key={b.id}
-                  name={b.name}
-                  onClick={() => setSelectedId(b.id)}
-                  style={{
-                    position: 'absolute',
-                    left: `${b.coords.x}%`,
-                    top: `${b.coords.y}%`,
+                  building={b}
+                  expanded={expandedId === b.id}
+                  onToggle={() => setExpandedId(expandedId === b.id ? null : b.id)}
+                  onSeeMore={() => {
+                    setSelectedId(b.id)
+                    setExpandedId(null)
                   }}
                 />
               ))}
@@ -107,7 +111,7 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
       </div>
 
       {selectedBuilding && (
-        <aside className="w-96 shrink-0 border-l-2 border-leather bg-parchment paper-texture overflow-y-auto p-6 relative">
+        <aside className="fixed inset-0 z-30 md:static md:z-auto w-full md:w-96 shrink-0 border-l-0 md:border-l-2 border-leather bg-parchment paper-texture overflow-y-auto p-6 relative">
           <button
             onClick={() => setSelectedId(null)}
             aria-label="Close building details"

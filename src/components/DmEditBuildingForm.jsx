@@ -316,7 +316,7 @@ export default function DmEditBuildingForm({ building, onClose }) {
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-parchment paper-texture border-2 border-gold rounded-sm shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 space-y-5"
+        className="bg-parchment paper-texture border-2 border-gold rounded-sm shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 space-y-5"
       >
         <h2 className="font-display text-xl text-leather-dark uppercase tracking-wide">
           {building ? 'Edit Building' : 'New Building'}
@@ -379,7 +379,7 @@ export default function DmEditBuildingForm({ building, onClose }) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label>
             <span className="text-sm font-display uppercase text-ink-soft">Type</span>
             {!customTypeMode ? (
