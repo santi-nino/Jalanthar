@@ -43,8 +43,8 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
     return () => observer.disconnect()
   }, [])
 
-  const handleTransformed = useCallback((_ref, state) => {
-    setTransform(state)
+  const handleTransformed = useCallback((ref) => {
+    setTransform(ref.state)
   }, [])
 
   const labelPositions = useMemo(() => {
@@ -81,7 +81,8 @@ export default function MapTab({ onEditBuilding, onEditNpc }) {
           minScale={LOCKED_SCALE}
           maxScale={LOCKED_SCALE}
           centerOnInit={true}
-          onTransformed={handleTransformed}
+          onInit={handleTransformed}
+          onPanning={handleTransformed}
           limitToBounds={true}
           wheel={{ disabled: true }}
           pinch={{ disabled: true }}
