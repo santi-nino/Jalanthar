@@ -50,33 +50,41 @@ export default function DmEditNpcForm({ npc, onClose }) {
     setNewFamilyName('')
   }
 
+  const [saveError, setSaveError] = useState('')
+
   async function handleSubmit(e) {
     e.preventDefault()
-    const savedId = await saveNpc(form)
-    const resolvedId = savedId || npc?.id
+    setSaveError('')
+    try {
+      const savedId = await saveNpc(form)
+      const resolvedId = savedId || npc?.id
 
-    const oldBuildingId = npc?.homeBuildingId || ''
-    const newBuildingId = form.homeBuildingId || ''
-    if (resolvedId && oldBuildingId !== newBuildingId) {
-      if (oldBuildingId) {
-        const oldB = buildings.find((b) => b.id === oldBuildingId)
-        if (oldB) {
-          await saveBuilding({
-            ...oldB,
-            residents: (oldB.residents || []).filter((id) => id !== resolvedId),
-          })
+      const oldBuildingId = npc?.homeBuildingId || ''
+      const newBuildingId = form.homeBuildingId || ''
+      if (resolvedId && oldBuildingId !== newBuildingId) {
+        if (oldBuildingId) {
+          const oldB = buildings.find((b) => b.id === oldBuildingId)
+          if (oldB) {
+            await saveBuilding({
+              ...oldB,
+              residents: (oldB.residents || []).filter((id) => id !== resolvedId),
+            })
+          }
+        }
+        if (newBuildingId) {
+          const newB = buildings.find((b) => b.id === newBuildingId)
+          if (newB) {
+            const residents = new Set(newB.residents || [])
+            residents.add(resolvedId)
+            await saveBuilding({ ...newB, residents: [...residents] })
+          }
         }
       }
-      if (newBuildingId) {
-        const newB = buildings.find((b) => b.id === newBuildingId)
-        if (newB) {
-          const residents = new Set(newB.residents || [])
-          residents.add(resolvedId)
-          await saveBuilding({ ...newB, residents: [...residents] })
-        }
-      }
+      onClose()
+    } catch (err) {
+      console.error('Failed to save resident:', err)
+      setSaveError(err.message || 'Something went wrong while saving. Check the console for details.')
     }
-    onClose()
   }
 
   async function handleDelete() {
@@ -356,6 +364,11 @@ export default function DmEditNpcForm({ npc, onClose }) {
             </button>
           </div>
         </div>
+        {saveError && (
+          <p className="text-sm text-wax bg-wax/10 border border-wax/40 rounded-sm px-3 py-2">
+            {saveError}
+          </p>
+        )}
       </form>
     </div>
   )

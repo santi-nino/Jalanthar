@@ -10,10 +10,19 @@ const DEFAULT_TYPES = ['Civic', 'Tavern', 'Shrine', 'Garrison', 'Shop', 'Residen
 function CatalogList({ label, pool, rows, multiplier, onChange }) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
+  const [pendingId, setPendingId] = useState('')
   const [creating, setCreating] = useState(false)
   const [customForm, setCustomForm] = useState({ name: '', priceGp: '', description: '' })
 
   const poolItems = useMemo(() => DND5E_ITEMS.filter((i) => i.pool === pool), [pool])
+  const grouped = useMemo(() => {
+    const map = {}
+    poolItems.forEach((i) => {
+      if (!map[i.category]) map[i.category] = []
+      map[i.category].push(i)
+    })
+    return map
+  }, [poolItems])
 
   const suggestions = useMemo(() => {
     if (!query) return []
@@ -36,6 +45,12 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
     ])
     setQuery('')
     setOpen(false)
+    setPendingId('')
+  }
+
+  function handleDropdownAdd() {
+    const item = poolItems.find((i) => i.id === pendingId)
+    if (item) addItem(item)
   }
 
   function addCustom() {
@@ -111,6 +126,33 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
         </div>
       )}
 
+      <div className="flex gap-2 mb-2">
+        <select
+          value={pendingId}
+          onChange={(e) => setPendingId(e.target.value)}
+          className="flex-1 rounded-sm border border-leather bg-white/60 px-2 py-2 text-sm"
+        >
+          <option value="">— browse by category —</option>
+          {Object.entries(grouped).map(([cat, items]) => (
+            <optgroup key={cat} label={cat}>
+              {items.map((i) => (
+                <option key={i.id} value={i.id}>
+                  {i.name} — {formatPrice(i.priceGp)}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={handleDropdownAdd}
+          disabled={!pendingId}
+          className="px-3 py-2 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40 shrink-0"
+        >
+          Add
+        </button>
+      </div>
+
       <div className="relative mb-2">
         <input
           value={query}
@@ -119,7 +161,7 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
             setOpen(true)
           }}
           onFocus={() => setOpen(true)}
-          placeholder={`Search ${label.toLowerCase()} by name or category…`}
+          placeholder={`…or search ${label.toLowerCase()} by name or category`}
           className="w-full rounded-sm border border-leather bg-white/60 px-3 py-2 text-sm"
         />
         {open && suggestions.length > 0 && (
@@ -221,6 +263,10 @@ export default function DmEditBuildingForm({ building, onClose }) {
     return [...new Set([...DEFAULT_TYPES, ...fromData])]
   }, [buildings])
 
+  const [customTypeMode, setCustomTypeMode] = useState(
+    () => building && building.type && !DEFAULT_TYPES.includes(building.type)
+  )
+
   function set(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
   }
@@ -239,10 +285,18 @@ export default function DmEditBuildingForm({ building, onClose }) {
     reader.readAsDataURL(file)
   }
 
+  const [saveError, setSaveError] = useState('')
+
   async function handleSubmit(e) {
     e.preventDefault()
-    await saveBuilding(form)
-    onClose()
+    setSaveError('')
+    try {
+      await saveBuilding(form)
+      onClose()
+    } catch (err) {
+      console.error('Failed to save building:', err)
+      setSaveError(err.message || 'Something went wrong while saving. Check the console for details.')
+    }
   }
 
   async function handleDelete() {
@@ -328,18 +382,47 @@ export default function DmEditBuildingForm({ building, onClose }) {
         <div className="grid grid-cols-2 gap-3">
           <label>
             <span className="text-sm font-display uppercase text-ink-soft">Type</span>
-            <input
-              list="building-type-options"
-              value={form.type}
-              onChange={(e) => set('type', e.target.value)}
-              placeholder="Type or choose…"
-              className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
-            />
-            <datalist id="building-type-options">
-              {typeOptions.map((t) => (
-                <option key={t} value={t} />
-              ))}
-            </datalist>
+            {!customTypeMode ? (
+              <select
+                value={typeOptions.includes(form.type) ? form.type : ''}
+                onChange={(e) => {
+                  if (e.target.value === '__custom__') {
+                    setCustomTypeMode(true)
+                    set('type', '')
+                  } else {
+                    set('type', e.target.value)
+                  }
+                }}
+                className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+              >
+                {typeOptions.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+                <option value="__custom__">+ Custom type…</option>
+              </select>
+            ) : (
+              <div className="flex gap-2 mt-1">
+                <input
+                  autoFocus
+                  value={form.type}
+                  onChange={(e) => set('type', e.target.value)}
+                  placeholder="Type a new category name"
+                  className="flex-1 rounded-sm border border-leather bg-white/60 px-3 py-2"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomTypeMode(false)
+                    set('type', typeOptions[0] || 'Other')
+                  }}
+                  className="text-xs text-ink-soft underline shrink-0"
+                >
+                  Use list
+                </button>
+              </div>
+            )}
           </label>
           <label>
             <span className="text-sm font-display uppercase text-ink-soft">Quadrant</span>
@@ -455,6 +538,11 @@ export default function DmEditBuildingForm({ building, onClose }) {
             </button>
           </div>
         </div>
+        {saveError && (
+          <p className="text-sm text-wax bg-wax/10 border border-wax/40 rounded-sm px-3 py-2">
+            {saveError}
+          </p>
+        )}
       </form>
     </div>
   )

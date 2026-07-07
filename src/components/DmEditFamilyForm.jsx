@@ -9,10 +9,18 @@ export default function DmEditFamilyForm({ family, onClose }) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
+  const [saveError, setSaveError] = useState('')
+
   async function handleSubmit(e) {
     e.preventDefault()
-    await saveFamily(form)
-    onClose()
+    setSaveError('')
+    try {
+      await saveFamily(form)
+      onClose()
+    } catch (err) {
+      console.error('Failed to save family:', err)
+      setSaveError(err.message || 'Something went wrong while saving. Check the console for details.')
+    }
   }
 
   async function handleDelete() {
@@ -95,6 +103,11 @@ export default function DmEditFamilyForm({ family, onClose }) {
             </button>
           </div>
         </div>
+        {saveError && (
+          <p className="text-sm text-wax bg-wax/10 border border-wax/40 rounded-sm px-3 py-2">
+            {saveError}
+          </p>
+        )}
       </form>
     </div>
   )

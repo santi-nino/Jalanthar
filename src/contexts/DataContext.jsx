@@ -67,7 +67,8 @@ export function DataProvider({ children }) {
         const ref = building.id
           ? doc(db, 'buildings', building.id)
           : doc(collection(db, 'buildings'))
-        await setDoc(ref, { ...building, id: undefined }, { merge: true })
+        const { id: _discard, ...rest } = building
+        await setDoc(ref, rest, { merge: true })
         return ref.id
       } else {
         const id = building.id || `bld-${Date.now()}`
@@ -100,7 +101,8 @@ export function DataProvider({ children }) {
   const saveNpc = useCallback(async (npc) => {
     if (isFirebaseConfigured) {
       const ref = npc.id ? doc(db, 'npcs', npc.id) : doc(collection(db, 'npcs'))
-      await setDoc(ref, { ...npc, id: undefined }, { merge: true })
+      const { id: _discard, ...rest } = npc
+      await setDoc(ref, rest, { merge: true })
       return ref.id
     } else {
       const id = npc.id || `npc-${Date.now()}`
@@ -133,16 +135,19 @@ export function DataProvider({ children }) {
       const ref = family.id
         ? doc(db, 'families', family.id)
         : doc(collection(db, 'families'))
-      await setDoc(ref, { ...family, id: undefined }, { merge: true })
+      const { id: _discard, ...rest } = family
+      await setDoc(ref, rest, { merge: true })
+      return ref.id
     } else {
+      const id = family.id || `fam-${Date.now()}`
       setFamilies((prev) => {
-        const id = family.id || `fam-${Date.now()}`
         const next = family.id
           ? prev.map((f) => (f.id === id ? { ...f, ...family } : f))
           : [...prev, { ...family, id }]
         saveDemo(LS_KEYS.families, next)
         return next
       })
+      return id
     }
   }, [])
 
