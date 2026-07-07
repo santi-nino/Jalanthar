@@ -373,7 +373,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
             if (!layout.memberIds.has(r.targetId)) return
-            if (r.type !== 'parent') return
+            if (r.type !== 'child') return
             const childId = r.targetId
             const existing = singleParentChildren.get(childId)
             if (existing == null) {
@@ -398,13 +398,14 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             x: cursorX + (layout.positions[parentBId] - layout.minX),
             y: FAMILY_HEADER_Y + 90 + layout.gen[parentBId] * GEN_ROW_HEIGHT,
           }
-          // The junction sits directly on the marriage line itself (same
-          // row, at the midpoint) rather than floating below it — so no
-          // separate line is needed connecting each parent to it, matching
-          // the standard genogram convention where children drop from the
-          // couple's own connecting line, not from two extra diagonals.
+          // The junction sits below the marriage line, halfway to the
+          // children's row, at the horizontal midpoint of the couple —
+          // giving each connecting line real room to step down cleanly
+          // (exit the bottom of its source, enter the top of its target)
+          // instead of relying on the junction visually overlapping the
+          // marriage line with no real connection drawn to it.
           const jx = (posA.x + posB.x) / 2
-          const jy = posA.y
+          const jy = posA.y + GEN_ROW_HEIGHT * 0.55
 
           familyIdByNpc[junctionId] = fam.id
           nodes.push({
@@ -413,6 +414,24 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             position: override[junctionId] || { x: jx, y: jy },
             data: { familyId: fam.id },
             draggable: false,
+          })
+          edges.push({
+            id: `e-junc-a-${junctionId}`,
+            source: parentAId,
+            sourceHandle: 'bottom',
+            target: junctionId,
+            targetHandle: 'top',
+            type: 'smoothstep',
+            style: EDGE_STYLE.lineage,
+          })
+          edges.push({
+            id: `e-junc-b-${junctionId}`,
+            source: parentBId,
+            sourceHandle: 'bottom',
+            target: junctionId,
+            targetHandle: 'top',
+            type: 'smoothstep',
+            style: EDGE_STYLE.lineage,
           })
           childIds.forEach((childId) => {
             edges.push({
