@@ -54,6 +54,18 @@ const FAMILY_GAP = 100
 // family after it.
 const FAMILY_DEFAULT_SPACING = 900
 
+// A stored offset should never realistically be more than a couple thousand
+// pixels from its family's anchor. A value beyond that can only be leftover
+// data saved before positions were switched from absolute canvas
+// coordinates to anchor-relative offsets — silently falling back to the
+// automatic position instead of using it lets old saved layouts self-heal
+// rather than flinging a card off-screen forever.
+function sanitizeOffset(offset) {
+  if (!offset) return null
+  if (Math.abs(offset.x) > 4000 || Math.abs(offset.y) > 3000) return null
+  return offset
+}
+
 function makeUnionFind(ids) {
   const parent = {}
   ids.forEach((id) => (parent[id] = id))
@@ -267,6 +279,19 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
   const [expandedFamilyIds, setExpandedFamilyIds] = useState(() => new Set())
   const dragState = useRef(null)
 
+  // Non-DM visitors can still drag cards around to declutter their own
+  // view, but that only needs to last until they reload the page — no
+  // database write required. Kept in sessionStorage (not localStorage) so
+  // it clears on its own once the tab/browser closes, matching "until the
+  // page is reloaded."
+  const [sessionOverrides, setSessionOverrides] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('jalanthar-tree-session-overrides') || '{}')
+    } catch {
+      return {}
+    }
+  })
+
   function toggleFamilyCollapse(famId) {
     setExpandedFamilyIds((prev) => {
       const next = new Set(prev)
@@ -294,7 +319,11 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       const layout = collapsed
         ? { positions: {}, gen: {}, minX: 0, width: NPC_SLOT * 1.2, memberIds: new Set() }
         : layoutFamily(members, npcsById, genOverrides)
-      const treeLayout = fam.treeLayout || {}
+      // The DM's saved layout is the shared source of truth for everyone.
+      // A non-DM visitor's own local drags (this session only) are layered
+      // on top of that, so they see the DM's real arrangement as a
+      // starting point but can still nudge things for their own screen.
+      const treeLayout = { ...(fam.treeLayout || {}), ...(sessionOverrides[fam.id] || {}) }
       const hasManualHeader = treeLayout.__self__ != null
       const defaultHeaderX = index * FAMILY_DEFAULT_SPACING
       const headerPos = treeLayout.__self__ || { x: defaultHeaderX, y: FAMILY_HEADER_Y }
@@ -358,7 +387,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             x: layout.positions[npc.id] - layout.minX,
             y: 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT,
           }
-          const offset = genOverrides[npc.id] != null ? autoOffset : override[npc.id] || autoOffset
+          const offset = genOverrides[npc.id] != null ? autoOffset : sanitizeOffset(override[npc.id]) || autoOffset
           const pos = { x: anchorX + offset.x, y: anchorY + offset.y }
           familyIdByNpc[npc.id] = fam.id
           nodes.push({
@@ -376,7 +405,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         })
 
         members
-          .filter((m) => layout.gen[m.id] === 0 && !override[m.id])
+          .filter((m) => layout.gen[m.id] === 0 && !sanitizeOffset(override[m.id]))
           .forEach((m) => {
             edges.push({
               id: `e-root-${m.id}`,
@@ -394,7 +423,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             x: layout.positions[id] - layout.minX,
             y: 90 + layout.gen[id] * GEN_ROW_HEIGHT,
           }
-          const offset = genOverrides[id] != null ? auto : override[id] || auto
+          const offset = genOverrides[id] != null ? auto : sanitizeOffset(override[id]) || auto
           return { x: anchorX + offset.x, y: anchorY + offset.y }
         }
 
@@ -424,7 +453,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           const posB = memberPos(parentBId)
           const jx = (posA.x + posB.x) / 2
           const jy = posA.y + GEN_ROW_HEIGHT * 0.55
-          const jOffset = override[junctionId]
+          const jOffset = sanitizeOffset(override[junctionId])
           const jPos = jOffset ? { x: anchorX + jOffset.x, y: anchorY + jOffset.y } : { x: jx, y: jy }
 
           familyIdByNpc[junctionId] = fam.id
@@ -596,7 +625,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             const positions = sorted.map((id) => memberPos(id))
             const jx = positions.reduce((s, p) => s + p.x, 0) / positions.length
             const jy = positions[0].y
-            const jOffset = override[groupJunctionId]
+            const jOffset = sanitizeOffset(override[groupJunctionId])
             const jPos = jOffset
               ? { x: anchorX + jOffset.x, y: anchorY + jOffset.y }
               : { x: jx, y: jy }
@@ -698,7 +727,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       .map((e) => (allEdgeOverrides[e.id]?.type ? { ...e, type: allEdgeOverrides[e.id].type } : e))
 
     return { nodes, edges: finalEdges, familyIdByNpc }
-  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily, selectedNpcId, families])
+  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily, selectedNpcId, families, sessionOverrides])
 
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
@@ -787,24 +816,39 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
   const handleNodeDragStop = useCallback(
     (_event, node) => {
       dragState.current = null
-      if (!isDm) return
       const familyId = node.data.familyId
       const fam = families.find((f) => f.id === familyId)
       if (!fam) return
 
+      let update = null
       if (node.type === 'npc' || node.type === 'junction') {
         const headerNode = nodes.find((n) => n.id === `fam-node-${familyId}`)
         const anchorX = (headerNode?.position.x ?? 0) + 70
         const anchorY = headerNode?.position.y ?? 0
-        const offset = { x: node.position.x - anchorX, y: node.position.y - anchorY }
-        const treeLayout = { ...(fam.treeLayout || {}), [node.id]: offset }
-        saveFamily({ ...fam, treeLayout })
+        update = { [node.id]: { x: node.position.x - anchorX, y: node.position.y - anchorY } }
       } else if (node.type === 'family') {
         // Members are already stored as offsets relative to the header, so
         // they stay correct automatically when the header itself moves —
         // only the header's own anchor position needs saving here.
-        const treeLayout = { ...(fam.treeLayout || {}), __self__: node.position }
+        update = { __self__: node.position }
+      }
+      if (!update) return
+
+      if (isDm) {
+        const treeLayout = { ...(fam.treeLayout || {}), ...update }
         saveFamily({ ...fam, treeLayout })
+      } else {
+        setSessionOverrides((prev) => {
+          const next = { ...prev, [familyId]: { ...(prev[familyId] || {}), ...update } }
+          try {
+            sessionStorage.setItem('jalanthar-tree-session-overrides', JSON.stringify(next))
+          } catch {
+            // Storage can fail quietly (private browsing, quota) — the drag
+            // still looks fine for the rest of this render, it just won't
+            // survive a reload in that case.
+          }
+          return next
+        })
       }
     },
     [families, isDm, saveFamily, nodes]
@@ -838,7 +882,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         <p className="absolute top-3 left-3 z-10 text-xs font-mono bg-ink/70 text-parchment px-2 py-1 rounded-sm max-w-xs">
           {isDm
             ? "Drag any card to reposition it — saved automatically. Drag a family's banner to move everyone in it together. Click a line to edit or delete it."
-            : 'Drag any card to rearrange your own view. Changes here are just for you and reset when you reload.'}
+            : "Drag any card to rearrange it for your own screen — that lasts until you reload the page."}
         </p>
         {isDm && selectedEdgeId && (
           <div className="absolute bottom-3 right-3 z-20 bg-parchment paper-texture border-2 border-gold rounded-sm shadow-lg p-3 flex items-center gap-2">
