@@ -27,6 +27,16 @@ jobs:
 
       - run: npm ci
 
+      - name: Debug - check if Gemini key is present (TEMPORARY, remove after)
+        run: |
+          if [ -z "$VITE_GEMINI_API_KEY" ]; then
+            echo "::warning::VITE_GEMINI_API_KEY is EMPTY or MISSING in this build"
+          else
+            echo "VITE_GEMINI_API_KEY is present, length: ${#VITE_GEMINI_API_KEY} characters"
+          fi
+        env:
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+
       - name: Build
         run: npm run build
         env:
