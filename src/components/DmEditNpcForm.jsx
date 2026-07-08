@@ -21,6 +21,9 @@ export default function DmEditNpcForm({ npc, onClose }) {
       homeBuildingId: '',
       visible: false,
       job: '',
+      species: '',
+      gender: '',
+      dndClass: '',
       famousQuote: '',
       age: '',
       eyeColor: '',
@@ -218,6 +221,65 @@ export default function DmEditNpcForm({ npc, onClose }) {
             className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
           />
         </label>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <label>
+            <span className="text-sm font-display uppercase text-ink-soft">Species</span>
+            <input
+              list="species-suggestions"
+              value={form.species || ''}
+              onChange={(e) => set('species', e.target.value)}
+              placeholder="e.g. Human"
+              className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+            />
+            <datalist id="species-suggestions">
+              {[
+                'Human', 'Elf', 'Half-Elf', 'Dwarf', 'Halfling', 'Gnome',
+                'Half-Orc', 'Orc', 'Tiefling', 'Dragonborn', 'Goliath',
+              ].map((s) => (
+                <option key={s} value={s} />
+              ))}
+            </datalist>
+          </label>
+          <label>
+            <span className="text-sm font-display uppercase text-ink-soft">Gender</span>
+            <input
+              list="gender-suggestions"
+              value={form.gender || ''}
+              onChange={(e) => set('gender', e.target.value)}
+              placeholder="e.g. Woman"
+              className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+            />
+            <datalist id="gender-suggestions">
+              {['Woman', 'Man', 'Nonbinary'].map((g) => (
+                <option key={g} value={g} />
+              ))}
+            </datalist>
+          </label>
+          <label>
+            <span className="text-sm font-display uppercase text-ink-soft">Class</span>
+            <input
+              list="class-suggestions"
+              value={form.dndClass || ''}
+              onChange={(e) => set('dndClass', e.target.value)}
+              placeholder="e.g. Commoner"
+              className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+            />
+            <datalist id="class-suggestions">
+              {[
+                'Commoner', 'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter',
+                'Monk', 'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard',
+              ].map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
+          </label>
+        </div>
+        <p className="text-xs text-ink-soft/60 italic -mt-2">
+          Species, Gender, and Class feed the Roster tab's category filters. Like Job, these only
+          surface to players once this resident is individually marked visible above — a
+          building-driven name-only reveal shows the name alone.
+        </p>
 
         <label className="block">
           <span className="text-sm font-display uppercase text-ink-soft">Famous Quote</span>

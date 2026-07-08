@@ -9,6 +9,7 @@ import DmEditFamilyForm from './components/DmEditFamilyForm'
 import MapTab from './components/tabs/MapTab'
 import BuildingListTab from './components/tabs/BuildingListTab'
 import RelationshipTab from './components/tabs/RelationshipTab'
+import ResidentListTab from './components/tabs/ResidentListTab'
 import { isFirebaseConfigured } from './firebase'
 
 function AppShell() {
@@ -77,6 +78,9 @@ function AppShell() {
               onEditNpc={isDm ? (n) => setEditingNpc(n) : undefined}
               onEditFamily={isDm ? (f) => setEditingFamily(f) : undefined}
             />
+          )}
+          {activeTab === 'roster' && (
+            <ResidentListTab onEditNpc={isDm ? (n) => setEditingNpc(n) : undefined} />
           )}
         </div>
       </main>

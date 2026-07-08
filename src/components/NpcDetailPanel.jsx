@@ -38,12 +38,15 @@ export default function NpcDetailPanel({ npc, npcsById, onEdit, onSelectRelated 
       )}
 
       <div className="mt-4 space-y-4">
-        {(npc.eyeColor || npc.hairColor || npc.height || npc.weight) && (
+        {(npc.species || npc.gender || npc.dndClass || npc.eyeColor || npc.hairColor || npc.height || npc.weight) && (
           <div>
             <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark mb-1">
               At a Glance
             </h4>
             <ul className="text-ink-soft text-sm grid grid-cols-2 gap-x-4 gap-y-0.5">
+              {npc.species && <li>Species: {npc.species}</li>}
+              {npc.gender && <li>Gender: {npc.gender}</li>}
+              {npc.dndClass && <li>Class: {npc.dndClass}</li>}
               {npc.eyeColor && <li>Eyes: {npc.eyeColor}</li>}
               {npc.hairColor && <li>Hair: {npc.hairColor}</li>}
               {npc.height && <li>Height: {npc.height}</li>}

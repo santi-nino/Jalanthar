@@ -59,6 +59,15 @@ export function IconResidents({ className }) {
   )
 }
 
+export function IconRoster({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <rect x="4" y="3.5" width="16" height="17" rx="1" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M7.5 8h9M7.5 12h9M7.5 16h5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function IconKey({ className }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
