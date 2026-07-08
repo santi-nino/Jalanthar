@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { IconMap, IconBuildings, IconResidents, IconKey, IconExit } from './icons'
+import ExportDataModal from './ExportDataModal'
 
 const TABS = [
   { id: 'map', label: 'Map', Icon: IconMap },
@@ -10,6 +11,7 @@ const TABS = [
 
 export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, onCloseMobile }) {
   const [collapsed, setCollapsed] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   const { isDm, logout } = useAuth()
 
   function selectTab(id) {
@@ -84,7 +86,17 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
           ))}
         </nav>
 
-        <div className="border-t border-leather-dark p-3">
+        <div className="border-t border-leather-dark p-3 space-y-1">
+          {isDm && (
+            <button
+              onClick={() => setExportOpen(true)}
+              className="w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide text-parchment/70 hover:text-gold-light transition-colors py-2"
+              title={collapsed ? 'Export data for Claude' : undefined}
+            >
+              <span className="w-4 h-4 shrink-0 flex items-center justify-center text-sm">⇩</span>
+              <span className={collapsed ? 'md:hidden' : ''}>Export Data</span>
+            </button>
+          )}
           {isDm ? (
             <button
               onClick={logout}
@@ -106,6 +118,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
           )}
         </div>
       </aside>
+      {exportOpen && <ExportDataModal onClose={() => setExportOpen(false)} />}
     </>
   )
 }

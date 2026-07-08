@@ -18,7 +18,7 @@ export default function MapMarker({ building, expanded, onToggle, onSeeMore }) {
             : 'bg-parchment border-leather text-ink hover:border-wax hover:text-wax'
         }`}
       >
-        <BuildingMarkerIcon type={building.type} className="w-4 h-4" />
+        <BuildingMarkerIcon type={building.type} icon={building.icon} className="w-4 h-4" />
       </button>
 
       {expanded && (

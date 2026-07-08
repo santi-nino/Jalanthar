@@ -47,6 +47,12 @@ const NPC_SLOT = 170
 const GEN_ROW_HEIGHT = 140
 const FAMILY_HEADER_Y = 0
 const FAMILY_GAP = 100
+// Each family's default horizontal slot is a fixed distance from the last,
+// based purely on its sorted position among all families — NOT on the
+// rendered width of whichever families happen to be expanded right now.
+// That's what stops collapsing/expanding one family from displacing every
+// family after it.
+const FAMILY_DEFAULT_SPACING = 900
 
 function makeUnionFind(ids) {
   const parent = {}
@@ -70,17 +76,9 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
   const memberIds = new Set(members.map((m) => m.id))
   const gen = {}
 
-  // DM-assigned generations take priority and seed the BFS directly.
   members.forEach((m) => {
     if (genOverrides[m.id] != null) gen[m.id] = genOverrides[m.id]
   })
-
-  // Remaining unambiguous roots — no parent-type relationship anywhere
-  // (in-family or not) AND no spouse/partner within this family. Anyone
-  // with a spouse is deliberately excluded here, even if they have no
-  // recorded parents themselves (e.g. a minor character married into the
-  // family) — their generation should come from their spouse, not default
-  // to 0, which was the source of an earlier layout bug.
   members.forEach((m) => {
     if (gen[m.id] != null) return
     const hasParentAnywhere = (m.relationships || []).some(
@@ -93,7 +91,6 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
   })
   if (Object.keys(gen).length === 0 && members.length) gen[members[0].id] = 0
 
-  // Phase 2: BFS out from those roots using every relationship's genDelta
   const queue = Object.keys(gen)
   let iter = 0
   while (queue.length && iter < 4000) {
@@ -112,9 +109,6 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
     })
   }
 
-  // Phase 3: anyone still unresolved (e.g. a spouse whose partner just got
-  // assigned) inherits from any already-resolved relation. Loop until no
-  // more progress.
   let progressed = true
   let safety = 0
   while (progressed && safety < 50) {
@@ -131,8 +125,6 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
       }
     })
   }
-
-  // Phase 4: truly isolated members default to 0
   members.forEach((m) => {
     if (gen[m.id] == null) gen[m.id] = 0
   })
@@ -142,10 +134,6 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
     gen[m.id] -= minGen
   })
 
-  // Group same-generation members: blood siblings/cousins form a contiguous
-  // chain, and a spouse/partner who married in is pushed to whichever end
-  // of that chain sits nearest their partner, rather than wedged between
-  // two blood relatives.
   const byGen = {}
   members.forEach((m) => {
     ;(byGen[gen[m.id]] ||= []).push(m.id)
@@ -187,7 +175,6 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
     chainMap.forEach((chain) => {
       if (chain.some((id) => consumed.has(id))) return
       let order = [...chain]
-
       order.forEach((id) => {
         const sp = pairOf[id]
         if (!sp || order.includes(sp)) return
@@ -198,7 +185,6 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
           else order.push(id)
         }
       })
-
       const finalOrder = []
       order.forEach((id, i) => {
         const sp = pairOf[id]
@@ -277,6 +263,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
   const { families, npcs, saveFamily } = useData()
   const { isDm } = useAuth()
   const [selectedNpcId, setSelectedNpcId] = useState(null)
+  const [selectedEdgeId, setSelectedEdgeId] = useState(null)
   const [expandedFamilyIds, setExpandedFamilyIds] = useState(() => new Set())
   const dragState = useRef(null)
 
@@ -291,32 +278,51 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
 
   const visibleNpcs = useMemo(() => npcs.filter((n) => isDm || n.visible), [npcs, isDm])
   const npcsById = useMemo(() => Object.fromEntries(npcs.map((n) => [n.id, n])), [npcs])
-  // Firestore doesn't guarantee document order, so without sorting explicitly
-  // the family left-to-right order could shuffle on any unrelated update,
-  // making previously-dragged positions look like they "reset."
   const sortedFamilies = useMemo(
     () => [...families].sort((a, b) => a.id.localeCompare(b.id)),
     [families]
   )
 
   const computed = useMemo(() => {
-    const nodes = []
-    const edges = []
-    let cursorX = 0
-    const familyIdByNpc = {}
-
-    sortedFamilies.forEach((fam) => {
+    // --- Pass 1: each family's own internal layout + its default anchor,
+    // which depends only on this family's fixed sorted index, never on any
+    // other family's collapsed/expanded width.
+    const perFamily = sortedFamilies.map((fam, index) => {
       const collapsed = !expandedFamilyIds.has(fam.id)
       const members = visibleNpcs.filter((n) => n.familyName === fam.name)
       const genOverrides = fam.genOverrides || {}
       const layout = collapsed
         ? { positions: {}, gen: {}, minX: 0, width: NPC_SLOT * 1.2, memberIds: new Set() }
         : layoutFamily(members, npcsById, genOverrides)
-
-      const familyX = cursorX + layout.width / 2
-      const famNodeId = `fam-node-${fam.id}`
       const treeLayout = fam.treeLayout || {}
-      const headerPos = treeLayout.__self__ || { x: familyX - 70, y: FAMILY_HEADER_Y }
+      const hasManualHeader = treeLayout.__self__ != null
+      const defaultHeaderX = index * FAMILY_DEFAULT_SPACING
+      const headerPos = treeLayout.__self__ || { x: defaultHeaderX, y: FAMILY_HEADER_Y }
+      return { fam, collapsed, members, layout, treeLayout, hasManualHeader, headerPos }
+    })
+
+    // --- Pass 2: collision avoidance. Only nudge families that are still
+    // using their default (never manually dragged) position, and only to
+    // the right, so a wide expanded family doesn't overlap the next one.
+    // Manually-placed families are never moved by this pass.
+    const byX = [...perFamily].sort((a, b) => a.headerPos.x - b.headerPos.x)
+    for (let i = 1; i < byX.length; i++) {
+      const prev = byX[i - 1]
+      const cur = byX[i]
+      if (cur.hasManualHeader) continue
+      const prevRight = prev.headerPos.x + prev.layout.width / 2 + 70
+      const curLeft = cur.headerPos.x - cur.layout.width / 2 + 70
+      const overlap = prevRight + FAMILY_GAP - curLeft
+      if (overlap > 0) cur.headerPos = { ...cur.headerPos, x: cur.headerPos.x + overlap }
+    }
+
+    const nodes = []
+    const edges = []
+    const familyIdByNpc = {}
+
+    perFamily.forEach(({ fam, collapsed, members, layout, treeLayout, headerPos }) => {
+      const famNodeId = `fam-node-${fam.id}`
+      const genOverrides = fam.genOverrides || {}
 
       nodes.push({
         id: famNodeId,
@@ -336,16 +342,24 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         draggable: true,
       })
 
+      // Everything in this family is positioned as an OFFSET from its own
+      // header ("anchor"), not as an absolute canvas coordinate. That's
+      // what makes a DM's manual arrangement survive other families
+      // collapsing/expanding — when the header gets nudged sideways, every
+      // member attached to it moves the same amount, since their stored
+      // position is relative to it, not to the canvas.
+      const anchorX = headerPos.x + 70
+      const anchorY = headerPos.y
+
       if (!collapsed) {
         const override = treeLayout
         members.forEach((npc) => {
-          const auto = {
-            x: cursorX + (layout.positions[npc.id] - layout.minX),
-            y: FAMILY_HEADER_Y + 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT,
+          const autoOffset = {
+            x: layout.positions[npc.id] - layout.minX,
+            y: 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT,
           }
-          // A manually-pinned generation always wins over a stale drag
-          // position, which would otherwise float in the wrong row.
-          const pos = genOverrides[npc.id] != null ? auto : override[npc.id] || auto
+          const offset = genOverrides[npc.id] != null ? autoOffset : override[npc.id] || autoOffset
+          const pos = { x: anchorX + offset.x, y: anchorY + offset.y }
           familyIdByNpc[npc.id] = fam.id
           nodes.push({
             id: npc.id,
@@ -375,12 +389,17 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             })
           })
 
-        // Parent -> child lineage. Children with two in-family parents route
-        // through a small shared junction point below the couple, so both
-        // parents visibly connect without drawing two crossing diagonals.
+        function memberPos(id) {
+          const auto = {
+            x: layout.positions[id] - layout.minX,
+            y: 90 + layout.gen[id] * GEN_ROW_HEIGHT,
+          }
+          const offset = genOverrides[id] != null ? auto : override[id] || auto
+          return { x: anchorX + offset.x, y: anchorY + offset.y }
+        }
+
         const childrenByParentPair = new Map()
         const singleParentChildren = new Map()
-
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
             if (!layout.memberIds.has(r.targetId)) return
@@ -401,28 +420,18 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         childrenByParentPair.forEach((childIds, pairKey) => {
           const [parentAId, parentBId] = pairKey.split('|')
           const junctionId = `junction-${fam.id}-${pairKey}`
-          const posA = override[parentAId] || {
-            x: cursorX + (layout.positions[parentAId] - layout.minX),
-            y: FAMILY_HEADER_Y + 90 + layout.gen[parentAId] * GEN_ROW_HEIGHT,
-          }
-          const posB = override[parentBId] || {
-            x: cursorX + (layout.positions[parentBId] - layout.minX),
-            y: FAMILY_HEADER_Y + 90 + layout.gen[parentBId] * GEN_ROW_HEIGHT,
-          }
-          // The junction sits below the marriage line, halfway to the
-          // children's row, at the horizontal midpoint of the couple —
-          // giving each connecting line real room to step down cleanly
-          // (exit the bottom of its source, enter the top of its target)
-          // instead of relying on the junction visually overlapping the
-          // marriage line with no real connection drawn to it.
+          const posA = memberPos(parentAId)
+          const posB = memberPos(parentBId)
           const jx = (posA.x + posB.x) / 2
           const jy = posA.y + GEN_ROW_HEIGHT * 0.55
+          const jOffset = override[junctionId]
+          const jPos = jOffset ? { x: anchorX + jOffset.x, y: anchorY + jOffset.y } : { x: jx, y: jy }
 
           familyIdByNpc[junctionId] = fam.id
           nodes.push({
             id: junctionId,
             type: 'junction',
-            position: override[junctionId] || { x: jx, y: jy },
+            position: jPos,
             data: { familyId: fam.id },
             draggable: true,
           })
@@ -469,11 +478,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           })
         })
 
-        // Every parent-child pair that actually got a rendered line above
-        // (via junction or single-parent), used below to detect when a
-        // sibling/avuncular/grandparent tie is already visually implied and
-        // doesn't need its own separate line.
-        const renderedParentOf = new Map() // childId -> Set(parentIds)
+        const renderedParentOf = new Map()
         function noteParent(childId, parentId) {
           if (!renderedParentOf.has(childId)) renderedParentOf.set(childId, new Set())
           renderedParentOf.get(childId).add(parentId)
@@ -495,12 +500,6 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           return false
         }
 
-        // Grandparent / uncle-aunt ties: skip drawing a direct line when the
-        // connection is already fully traceable through lines already on
-        // screen (a rendered parent who is themselves a rendered sibling of
-        // the target, or a rendered parent whose own rendered parent is the
-        // target) — drawing it anyway would just be a redundant extra line
-        // crossing through the same two people.
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
             if (!layout.memberIds.has(r.targetId)) return
@@ -513,8 +512,6 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
                 const grandparentsOfP = renderedParentOf.get(p)
                 if (grandparentsOfP && grandparentsOfP.has(r.targetId)) inferable = true
               } else {
-                // uncle/aunt: inferable if my parent and the target share a
-                // rendered parent (i.e. are rendered siblings)
                 if (sharesRenderedParent(p, r.targetId)) inferable = true
               }
               if (inferable) break
@@ -534,7 +531,6 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           })
         })
 
-        // Spouse/partner edges (one per pair)
         const seenPairs = new Set()
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
@@ -543,14 +539,8 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             const key = [npc.id, r.targetId].sort().join('|')
             if (seenPairs.has(key)) return
             seenPairs.add(key)
-            const posA = override[npc.id] || {
-              x: cursorX + (layout.positions[npc.id] - layout.minX),
-              y: FAMILY_HEADER_Y + 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT,
-            }
-            const posB = override[r.targetId] || {
-              x: cursorX + (layout.positions[r.targetId] - layout.minX),
-              y: FAMILY_HEADER_Y + 90 + layout.gen[r.targetId] * GEN_ROW_HEIGHT,
-            }
+            const posA = memberPos(npc.id)
+            const posB = memberPos(r.targetId)
             const handles = pickLateralHandles(posA, posB)
             edges.push({
               id: `e-pair-${key}`,
@@ -564,8 +554,6 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           })
         })
 
-        // Sibling/cousin chains: connect adjacent-by-position only, so a
-        // group of N siblings gets N-1 lines rather than every pair.
         const chainUf2 = makeUnionFind(members.map((m) => m.id))
         members.forEach((npc) => {
           ;(npc.relationships || []).forEach((r) => {
@@ -584,9 +572,18 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           if (!chainGroups.has(root)) chainGroups.set(root, [])
           chainGroups.get(root).push(npc.id)
         })
+
+        function chainRelType(idA, idB) {
+          const npcA = npcsById[idA]
+          const rel = (npcA?.relationships || []).find(
+            (r) => r.targetId === idB && CHAIN_TYPES.has(r.type)
+          )
+          return rel?.type || 'sibling'
+        }
+
         chainGroups.forEach((group) => {
           const sorted = [...group].sort(
-            (a, b) => (override[a]?.x ?? layout.positions[a]) - (override[b]?.x ?? layout.positions[b])
+            (a, b) => layout.positions[a] - layout.positions[b]
           )
           const need = []
           for (let i = 0; i < sorted.length - 1; i++) {
@@ -594,44 +591,26 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           }
           if (need.length === 0) return
 
-          function chainRelType(idA, idB) {
-            const npcA = npcsById[idA]
-            const rel = (npcA?.relationships || []).find(
-              (r) => r.targetId === idB && CHAIN_TYPES.has(r.type)
-            )
-            return rel?.type || 'sibling'
-          }
-
           if (sorted.length > 2) {
-            // A group of 3+ siblings/cousins with no shared-parent line
-            // shares one junction dot instead of a chain of separate lines
-            // — same pattern as the parent-couple junction, just for a
-            // lateral group.
             const groupJunctionId = `junction-chain-${fam.id}-${sorted.join('-')}`
-            const positions = sorted.map(
-              (id) =>
-                override[id] || {
-                  x: cursorX + (layout.positions[id] - layout.minX),
-                  y: FAMILY_HEADER_Y + 90 + layout.gen[id] * GEN_ROW_HEIGHT,
-                }
-            )
+            const positions = sorted.map((id) => memberPos(id))
             const jx = positions.reduce((s, p) => s + p.x, 0) / positions.length
             const jy = positions[0].y
+            const jOffset = override[groupJunctionId]
+            const jPos = jOffset
+              ? { x: anchorX + jOffset.x, y: anchorY + jOffset.y }
+              : { x: jx, y: jy }
             familyIdByNpc[groupJunctionId] = fam.id
             nodes.push({
               id: groupJunctionId,
               type: 'junction',
-              position: override[groupJunctionId] || { x: jx, y: jy },
+              position: jPos,
               data: { familyId: fam.id },
               draggable: true,
             })
             sorted.forEach((id, i) => {
-              const pos =
-                override[id] || {
-                  x: cursorX + (layout.positions[id] - layout.minX),
-                  y: FAMILY_HEADER_Y + 90 + layout.gen[id] * GEN_ROW_HEIGHT,
-                }
-              const handles = pickLateralHandles({ x: jx, y: jy }, pos)
+              const pos = memberPos(id)
+              const handles = pickLateralHandles(jPos, pos)
               const neighborId = sorted[i === 0 ? 1 : i - 1]
               const isCousinOnly = chainRelType(id, neighborId) === 'cousin'
               edges.push({
@@ -647,16 +626,8 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             })
           } else {
             const [a, b] = need[0]
-            const posA =
-              override[a] || {
-                x: cursorX + (layout.positions[a] - layout.minX),
-                y: FAMILY_HEADER_Y + 90 + layout.gen[a] * GEN_ROW_HEIGHT,
-              }
-            const posB =
-              override[b] || {
-                x: cursorX + (layout.positions[b] - layout.minX),
-                y: FAMILY_HEADER_Y + 90 + layout.gen[b] * GEN_ROW_HEIGHT,
-              }
+            const posA = memberPos(a)
+            const posB = memberPos(b)
             const handles = pickLateralHandles(posA, posB)
             const isCousinOnly = chainRelType(a, b) === 'cousin'
             edges.push({
@@ -672,12 +643,8 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           }
         })
       }
-
-      cursorX += layout.width + FAMILY_GAP
     })
 
-    // Cross-family lineage: a parent/child link where the two people ended up
-    // in different rendered family clusters
     const renderedNpcIds = new Set(nodes.filter((n) => n.type === 'npc').map((n) => n.id))
     const seenCross = new Set()
     visibleNpcs.forEach((npc) => {
@@ -702,8 +669,6 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       })
     })
 
-    // Everything else (Friend, Coworker, Rival, Enemy, custom types) — a
-    // simple direct edge, deduped, cross-family included
     const seen = new Set()
     visibleNpcs.forEach((npc) => {
       if (!renderedNpcIds.has(npc.id)) return
@@ -733,11 +698,10 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       .map((e) => (allEdgeOverrides[e.id]?.type ? { ...e, type: allEdgeOverrides[e.id].type } : e))
 
     return { nodes, edges: finalEdges, familyIdByNpc }
-  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily, selectedNpcId])
+  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily, selectedNpcId, families])
 
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [selectedEdgeId, setSelectedEdgeId] = useState(null)
 
   useEffect(() => {
     setNodes(computed.nodes)
@@ -782,6 +746,10 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     [edges, selectedEdgeId]
   )
 
+  // Anyone can drag cards around to declutter their own view (visual only,
+  // via reactflow's own node state). Only the DM's drags are ever written
+  // back to Firestore, so a player rearranging things doesn't overwrite the
+  // DM's actual saved layout — it just resets next time the page loads.
   const handleNodeDragStart = useCallback(
     (_event, node) => {
       if (node.type !== 'family') return
@@ -818,23 +786,26 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
 
   const handleNodeDragStop = useCallback(
     (_event, node) => {
+      dragState.current = null
+      if (!isDm) return
       const familyId = node.data.familyId
       const fam = families.find((f) => f.id === familyId)
-      if (isDm && fam) {
-        if (node.type === 'npc' || node.type === 'junction') {
-          const treeLayout = { ...(fam.treeLayout || {}), [node.id]: node.position }
-          saveFamily({ ...fam, treeLayout })
-        } else if (node.type === 'family' && dragState.current) {
-          const treeLayout = { ...(fam.treeLayout || {}), __self__: node.position }
-          nodes.forEach((n) => {
-            if ((n.type === 'npc' || n.type === 'junction') && n.data.familyId === familyId) {
-              treeLayout[n.id] = n.position
-            }
-          })
-          saveFamily({ ...fam, treeLayout })
-        }
+      if (!fam) return
+
+      if (node.type === 'npc' || node.type === 'junction') {
+        const headerNode = nodes.find((n) => n.id === `fam-node-${familyId}`)
+        const anchorX = (headerNode?.position.x ?? 0) + 70
+        const anchorY = headerNode?.position.y ?? 0
+        const offset = { x: node.position.x - anchorX, y: node.position.y - anchorY }
+        const treeLayout = { ...(fam.treeLayout || {}), [node.id]: offset }
+        saveFamily({ ...fam, treeLayout })
+      } else if (node.type === 'family') {
+        // Members are already stored as offsets relative to the header, so
+        // they stay correct automatically when the header itself moves —
+        // only the header's own anchor position needs saving here.
+        const treeLayout = { ...(fam.treeLayout || {}), __self__: node.position }
+        saveFamily({ ...fam, treeLayout })
       }
-      dragState.current = null
     },
     [families, isDm, saveFamily, nodes]
   )
@@ -864,12 +835,11 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             )}
           </div>
         )}
-        {isDm && (
-          <p className="absolute bottom-3 left-3 z-10 text-xs font-mono bg-ink/70 text-parchment px-2 py-1 rounded-sm max-w-xs">
-            Drag any resident to reposition them — it's saved automatically. Drag a family's
-            banner to move everyone in it together. Click a line to edit or delete it.
-          </p>
-        )}
+        <p className="absolute top-3 left-3 z-10 text-xs font-mono bg-ink/70 text-parchment px-2 py-1 rounded-sm max-w-xs">
+          {isDm
+            ? "Drag any card to reposition it — saved automatically. Drag a family's banner to move everyone in it together. Click a line to edit or delete it."
+            : 'Drag any card to rearrange your own view. Changes here are just for you and reset when you reload.'}
+        </p>
         {isDm && selectedEdgeId && (
           <div className="absolute bottom-3 right-3 z-20 bg-parchment paper-texture border-2 border-gold rounded-sm shadow-lg p-3 flex items-center gap-2">
             <span className="text-xs font-display uppercase text-ink-soft">Line style</span>

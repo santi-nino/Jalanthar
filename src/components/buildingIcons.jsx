@@ -94,6 +94,17 @@ function IconGeneric({ className }) {
   )
 }
 
+export const ICON_OPTIONS = [
+  { id: 'civic', label: 'Civic', Icon: IconCivic },
+  { id: 'tavern', label: 'Tavern', Icon: IconTavern },
+  { id: 'shrine', label: 'Shrine', Icon: IconShrine },
+  { id: 'garrison', label: 'Garrison', Icon: IconGarrison },
+  { id: 'shop', label: 'Shop', Icon: IconShop },
+  { id: 'residence', label: 'Residence', Icon: IconResidence },
+  { id: 'ruin', label: 'Ruin', Icon: IconRuin },
+  { id: 'generic', label: 'Generic', Icon: IconGeneric },
+]
+
 const ICON_BY_TYPE = {
   civic: IconCivic,
   tavern: IconTavern,
@@ -104,8 +115,10 @@ const ICON_BY_TYPE = {
   ruin: IconRuin,
 }
 
-// Matches the API MapMarker.jsx expects: a component taking `type` directly.
-export function BuildingMarkerIcon({ type, className }) {
-  const Icon = ICON_BY_TYPE[(type || '').toLowerCase()] || IconGeneric
+// A building's `icon` field (chosen explicitly by the DM) always wins over
+// guessing from its `type` text, which stays as a sensible fallback for
+// buildings nobody's picked an icon for yet.
+export function BuildingMarkerIcon({ type, icon, className }) {
+  const Icon = ICON_BY_TYPE[(icon || type || '').toLowerCase()] || IconGeneric
   return <Icon className={className} />
 }

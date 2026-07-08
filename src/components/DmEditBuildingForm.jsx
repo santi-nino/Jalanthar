@@ -4,13 +4,61 @@ import MiniMapPicker from './MiniMapPicker'
 import NpcPicker from './NpcPicker'
 import { DND5E_ITEMS } from '../data/dnd5eItems'
 import { formatPrice, effectivePrice } from '../utils/price'
+import { ICON_OPTIONS, BuildingMarkerIcon } from './buildingIcons'
 
 const DEFAULT_TYPES = ['Civic', 'Tavern', 'Shrine', 'Garrison', 'Shop', 'Residence', 'Ruin', 'Other']
+
+function QuantityEditor({ value, onChange }) {
+  const isInfinite = value === 'infinite'
+  return (
+    <div className="flex items-center gap-1 shrink-0">
+      <button
+        type="button"
+        onClick={() => onChange(isInfinite ? 1 : Math.max(0, Number(value || 0) - 1))}
+        disabled={isInfinite}
+        className="w-6 h-6 flex items-center justify-center border border-leather rounded-sm text-xs disabled:opacity-30"
+      >
+        −
+      </button>
+      <input
+        type="text"
+        value={isInfinite ? '∞' : value ?? 1}
+        onChange={(e) => {
+          const v = e.target.value.trim()
+          if (v === '' || v === '∞') return
+          const n = Number(v)
+          if (!Number.isNaN(n)) onChange(Math.max(0, Math.round(n)))
+        }}
+        readOnly={isInfinite}
+        className="w-10 text-center text-xs rounded-sm border border-leather bg-white/70 py-0.5"
+      />
+      <button
+        type="button"
+        onClick={() => onChange(isInfinite ? 1 : Number(value || 0) + 1)}
+        disabled={isInfinite}
+        className="w-6 h-6 flex items-center justify-center border border-leather rounded-sm text-xs disabled:opacity-30"
+      >
+        +
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange(isInfinite ? 1 : 'infinite')}
+        title={isInfinite ? 'Make finite' : 'Set unlimited stock'}
+        className={`w-6 h-6 flex items-center justify-center border rounded-sm text-xs ${
+          isInfinite ? 'bg-moss-dark text-parchment border-moss-dark' : 'border-leather'
+        }`}
+      >
+        ∞
+      </button>
+    </div>
+  )
+}
 
 function CatalogList({ label, pool, rows, multiplier, onChange }) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [pendingId, setPendingId] = useState('')
+  const [pendingCategory, setPendingCategory] = useState('')
   const [creating, setCreating] = useState(false)
   const [customForm, setCustomForm] = useState({ name: '', priceGp: '', description: '' })
 
@@ -32,17 +80,19 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
       .slice(0, 20)
   }, [poolItems, query])
 
+  function makeRow(item) {
+    return {
+      rowId: `row-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: item.name,
+      basePrice: item.priceGp,
+      description: item.description,
+      priceOverride: '',
+      quantity: 1,
+    }
+  }
+
   function addItem(item) {
-    onChange([
-      ...rows,
-      {
-        rowId: `row-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        name: item.name,
-        basePrice: item.priceGp,
-        description: item.description,
-        priceOverride: '',
-      },
-    ])
+    onChange([...rows, makeRow(item)])
     setQuery('')
     setOpen(false)
     setPendingId('')
@@ -51,6 +101,13 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
   function handleDropdownAdd() {
     const item = poolItems.find((i) => i.id === pendingId)
     if (item) addItem(item)
+  }
+
+  function addWholeCategory() {
+    if (!pendingCategory) return
+    const items = grouped[pendingCategory] || []
+    onChange([...rows, ...items.map(makeRow)])
+    setPendingCategory('')
   }
 
   function addCustom() {
@@ -63,14 +120,15 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
         basePrice: Number(customForm.priceGp) || 0,
         description: customForm.description.trim(),
         priceOverride: '',
+        quantity: 1,
       },
     ])
     setCustomForm({ name: '', priceGp: '', description: '' })
     setCreating(false)
   }
 
-  function updateOverride(rowId, value) {
-    onChange(rows.map((r) => (r.rowId === rowId ? { ...r, priceOverride: value } : r)))
+  function updateRow(rowId, key, value) {
+    onChange(rows.map((r) => (r.rowId === rowId ? { ...r, [key]: value } : r)))
   }
 
   function removeRow(rowId) {
@@ -153,6 +211,29 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
         </button>
       </div>
 
+      <div className="flex gap-2 mb-2">
+        <select
+          value={pendingCategory}
+          onChange={(e) => setPendingCategory(e.target.value)}
+          className="flex-1 rounded-sm border border-leather bg-white/60 px-2 py-2 text-sm"
+        >
+          <option value="">— add a whole category at once —</option>
+          {Object.keys(grouped).map((cat) => (
+            <option key={cat} value={cat}>
+              {cat} ({grouped[cat].length} items)
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={addWholeCategory}
+          disabled={!pendingCategory}
+          className="px-3 py-2 text-sm font-display uppercase tracking-wide bg-moss-dark text-parchment rounded-sm hover:bg-moss disabled:opacity-40 shrink-0"
+        >
+          Add All
+        </button>
+      </div>
+
       <div className="relative mb-2">
         <input
           value={query}
@@ -216,7 +297,7 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
                   ×
                 </button>
               </div>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 <span className="text-xs text-ink-soft/70 font-mono">
                   base {formatPrice(row.basePrice)} × {multiplier.toFixed(1)} = {formatPrice(price)}
                 </span>
@@ -225,10 +306,17 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
                   step="0.01"
                   min="0"
                   value={row.priceOverride}
-                  onChange={(e) => updateOverride(row.rowId, e.target.value)}
+                  onChange={(e) => updateRow(row.rowId, 'priceOverride', e.target.value)}
                   placeholder="override (gp)"
-                  className="ml-auto w-28 rounded-sm border border-leather bg-white/70 px-2 py-1 text-xs"
+                  className="w-24 rounded-sm border border-leather bg-white/70 px-2 py-1 text-xs"
                 />
+                <div className="ml-auto flex items-center gap-1.5">
+                  <span className="text-xs text-ink-soft/60 uppercase font-display">Qty</span>
+                  <QuantityEditor
+                    value={row.quantity ?? 1}
+                    onChange={(v) => updateRow(row.rowId, 'quantity', v)}
+                  />
+                </div>
               </div>
             </li>
           )
@@ -246,6 +334,7 @@ export default function DmEditBuildingForm({ building, onClose }) {
       name: '',
       subheader: '',
       type: 'Other',
+      icon: '',
       coords: { x: 50, y: 50 },
       quadrant: 'inhabited',
       interiorLayoutImage: '',
@@ -435,6 +524,40 @@ export default function DmEditBuildingForm({ building, onClose }) {
               <option value="abandoned">Abandoned</option>
             </select>
           </label>
+        </div>
+
+        <div>
+          <span className="text-sm font-display uppercase text-ink-soft block mb-1">
+            Map Icon
+          </span>
+          <p className="text-xs text-ink-soft/60 italic mb-2">
+            Leave on "Match Type" to pick automatically from the Type field above, or choose one
+            explicitly.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => set('icon', '')}
+              className={`px-2 py-2 rounded-sm border flex items-center gap-1.5 text-xs ${
+                !form.icon ? 'border-wax bg-wax/10' : 'border-leather'
+              }`}
+            >
+              Match Type
+            </button>
+            {ICON_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => set('icon', opt.id)}
+                title={opt.label}
+                className={`w-9 h-9 rounded-sm border flex items-center justify-center ${
+                  form.icon === opt.id ? 'border-wax bg-wax/10' : 'border-leather'
+                }`}
+              >
+                <BuildingMarkerIcon icon={opt.id} className="w-4.5 h-4.5" />
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Pin-drop map location picker, replacing raw X/Y inputs */}

@@ -3,10 +3,35 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Buildings and families have no spoiler concerns — anyone can read them.
-    // Only the authenticated DM can write.
+    // The DM (authenticated) can always write. Unauthenticated players can
+    // also write, but ONLY if every field except wares/menu/services stays
+    // byte-for-byte identical — in practice this means players can adjust
+    // item quantities (the site's UI only ever offers a "take one" control,
+    // never a way to raise stock) but can't touch the name, description,
+    // residents, map position, or anything else about the building.
+    //
+    // Worth knowing: Firestore rules can restrict *which fields* change, but
+    // can't practically enforce "only decreases, never increases" on values
+    // nested inside an array. That specific restriction is enforced by the
+    // app's own UI (players only ever see a minus button), not by the
+    // database itself — a technically determined player could still send a
+    // raw API write that raises a quantity. For a private, invite-only
+    // campaign site that's an acceptable trade-off; it would not be for a
+    // public product.
     match /buildings/{buildingId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if request.auth != null || (
+        request.resource.data.name == resource.data.name &&
+        request.resource.data.get('subheader', null) == resource.data.get('subheader', null) &&
+        request.resource.data.get('type', null) == resource.data.get('type', null) &&
+        request.resource.data.get('icon', null) == resource.data.get('icon', null) &&
+        request.resource.data.get('coords', null) == resource.data.get('coords', null) &&
+        request.resource.data.get('quadrant', null) == resource.data.get('quadrant', null) &&
+        request.resource.data.get('description', null) == resource.data.get('description', null) &&
+        request.resource.data.get('interiorLayoutImage', null) == resource.data.get('interiorLayoutImage', null) &&
+        request.resource.data.get('residents', null) == resource.data.get('residents', null) &&
+        request.resource.data.get('priceMultiplier', null) == resource.data.get('priceMultiplier', null)
+      );
     }
     match /families/{familyId} {
       allow read: if true;
