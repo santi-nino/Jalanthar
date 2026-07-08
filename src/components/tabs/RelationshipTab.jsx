@@ -32,6 +32,17 @@ function edgeStyleFor(typeId) {
   return EDGE_STYLE.friendly
 }
 
+// Sibling/cousin/spouse/partner ties always connect side-to-side, on
+// whichever side actually faces the other card — never top/bottom, since
+// these are same-generation relationships by definition. Parent/child/
+// grandparent/uncle/aunt ties always use fixed top/bottom instead (handled
+// separately, at the point each of those edges is built).
+function pickLateralHandles(posA, posB) {
+  return posB.x >= posA.x
+    ? { sourceHandle: 'right', targetHandle: 'left' }
+    : { sourceHandle: 'left', targetHandle: 'right' }
+}
+
 const NPC_SLOT = 170
 const GEN_ROW_HEIGHT = 140
 const FAMILY_HEADER_Y = 0
@@ -413,7 +424,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             type: 'junction',
             position: override[junctionId] || { x: jx, y: jy },
             data: { familyId: fam.id },
-            draggable: false,
+            draggable: true,
           })
           edges.push({
             id: `e-junc-a-${junctionId}`,
@@ -518,6 +529,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
               targetHandle: 'top',
               type: 'smoothstep',
               style: EDGE_STYLE.lineage,
+              conditionalFor: [npc.id, r.targetId],
             })
           })
         })
@@ -531,15 +543,22 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             const key = [npc.id, r.targetId].sort().join('|')
             if (seenPairs.has(key)) return
             seenPairs.add(key)
-            const posA = override[npc.id] || { x: layout.positions[npc.id] }
-            const posB = override[r.targetId] || { x: layout.positions[r.targetId] }
-            const [leftId, rightId] = posA.x <= posB.x ? [npc.id, r.targetId] : [r.targetId, npc.id]
+            const posA = override[npc.id] || {
+              x: cursorX + (layout.positions[npc.id] - layout.minX),
+              y: FAMILY_HEADER_Y + 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT,
+            }
+            const posB = override[r.targetId] || {
+              x: cursorX + (layout.positions[r.targetId] - layout.minX),
+              y: FAMILY_HEADER_Y + 90 + layout.gen[r.targetId] * GEN_ROW_HEIGHT,
+            }
+            const handles = pickLateralHandles(posA, posB)
             edges.push({
               id: `e-pair-${key}`,
-              source: leftId,
-              sourceHandle: 'right',
-              target: rightId,
-              targetHandle: 'left',
+              source: npc.id,
+              sourceHandle: handles.sourceHandle,
+              target: r.targetId,
+              targetHandle: handles.targetHandle,
+              type: 'straight',
               style: EDGE_STYLE.spouse,
             })
           })
@@ -569,15 +588,86 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           const sorted = [...group].sort(
             (a, b) => (override[a]?.x ?? layout.positions[a]) - (override[b]?.x ?? layout.positions[b])
           )
+          const need = []
           for (let i = 0; i < sorted.length - 1; i++) {
-            if (sharesRenderedParent(sorted[i], sorted[i + 1])) continue
+            if (!sharesRenderedParent(sorted[i], sorted[i + 1])) need.push([sorted[i], sorted[i + 1]])
+          }
+          if (need.length === 0) return
+
+          function chainRelType(idA, idB) {
+            const npcA = npcsById[idA]
+            const rel = (npcA?.relationships || []).find(
+              (r) => r.targetId === idB && CHAIN_TYPES.has(r.type)
+            )
+            return rel?.type || 'sibling'
+          }
+
+          if (sorted.length > 2) {
+            // A group of 3+ siblings/cousins with no shared-parent line
+            // shares one junction dot instead of a chain of separate lines
+            // — same pattern as the parent-couple junction, just for a
+            // lateral group.
+            const groupJunctionId = `junction-chain-${fam.id}-${sorted.join('-')}`
+            const positions = sorted.map(
+              (id) =>
+                override[id] || {
+                  x: cursorX + (layout.positions[id] - layout.minX),
+                  y: FAMILY_HEADER_Y + 90 + layout.gen[id] * GEN_ROW_HEIGHT,
+                }
+            )
+            const jx = positions.reduce((s, p) => s + p.x, 0) / positions.length
+            const jy = positions[0].y
+            familyIdByNpc[groupJunctionId] = fam.id
+            nodes.push({
+              id: groupJunctionId,
+              type: 'junction',
+              position: override[groupJunctionId] || { x: jx, y: jy },
+              data: { familyId: fam.id },
+              draggable: true,
+            })
+            sorted.forEach((id, i) => {
+              const pos =
+                override[id] || {
+                  x: cursorX + (layout.positions[id] - layout.minX),
+                  y: FAMILY_HEADER_Y + 90 + layout.gen[id] * GEN_ROW_HEIGHT,
+                }
+              const handles = pickLateralHandles({ x: jx, y: jy }, pos)
+              const neighborId = sorted[i === 0 ? 1 : i - 1]
+              const isCousinOnly = chainRelType(id, neighborId) === 'cousin'
+              edges.push({
+                id: `e-chainjunc-${groupJunctionId}-${id}`,
+                source: groupJunctionId,
+                sourceHandle: handles.sourceHandle,
+                target: id,
+                targetHandle: handles.targetHandle,
+                type: 'straight',
+                style: EDGE_STYLE.sibling,
+                conditionalFor: isCousinOnly ? [id] : undefined,
+              })
+            })
+          } else {
+            const [a, b] = need[0]
+            const posA =
+              override[a] || {
+                x: cursorX + (layout.positions[a] - layout.minX),
+                y: FAMILY_HEADER_Y + 90 + layout.gen[a] * GEN_ROW_HEIGHT,
+              }
+            const posB =
+              override[b] || {
+                x: cursorX + (layout.positions[b] - layout.minX),
+                y: FAMILY_HEADER_Y + 90 + layout.gen[b] * GEN_ROW_HEIGHT,
+              }
+            const handles = pickLateralHandles(posA, posB)
+            const isCousinOnly = chainRelType(a, b) === 'cousin'
             edges.push({
-              id: `e-chain-${sorted[i]}-${sorted[i + 1]}`,
-              source: sorted[i],
-              sourceHandle: 'right',
-              target: sorted[i + 1],
-              targetHandle: 'left',
+              id: `e-chain-${a}-${b}`,
+              source: a,
+              sourceHandle: handles.sourceHandle,
+              target: b,
+              targetHandle: handles.targetHandle,
+              type: 'straight',
               style: EDGE_STYLE.sibling,
+              conditionalFor: isCousinOnly ? [a, b] : undefined,
             })
           }
         })
@@ -631,20 +721,66 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           targetHandle: 'bottom',
           style: edgeStyleFor(rel.type),
           label: getRelationshipType(rel.type).label,
+          conditionalFor: [npc.id, rel.targetId],
         })
       })
     })
 
-    return { nodes, edges }
-  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily])
+    const allEdgeOverrides = Object.assign({}, ...families.map((f) => f.edgeOverrides || {}))
+    const finalEdges = edges
+      .filter((e) => !allEdgeOverrides[e.id]?.hidden)
+      .filter((e) => !e.conditionalFor || e.conditionalFor.includes(selectedNpcId))
+      .map((e) => (allEdgeOverrides[e.id]?.type ? { ...e, type: allEdgeOverrides[e.id].type } : e))
+
+    return { nodes, edges: finalEdges, familyIdByNpc }
+  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily, selectedNpcId])
 
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [selectedEdgeId, setSelectedEdgeId] = useState(null)
 
   useEffect(() => {
     setNodes(computed.nodes)
     setEdges(computed.edges)
   }, [computed, setNodes, setEdges])
+
+  const handleEdgeClick = useCallback(
+    (_event, edge) => {
+      if (!isDm) return
+      setSelectedEdgeId((prev) => (prev === edge.id ? null : edge.id))
+    },
+    [isDm]
+  )
+
+  function deleteSelectedEdge() {
+    if (!selectedEdgeId) return
+    const famId = computed.familyIdByNpc[edges.find((e) => e.id === selectedEdgeId)?.source]
+    const fam = families.find((f) => f.id === famId)
+    if (!fam) return
+    const edgeOverrides = { ...(fam.edgeOverrides || {}), [selectedEdgeId]: { hidden: true } }
+    saveFamily({ ...fam, edgeOverrides })
+    setSelectedEdgeId(null)
+  }
+
+  function restyleSelectedEdge(type) {
+    if (!selectedEdgeId) return
+    const famId = computed.familyIdByNpc[edges.find((e) => e.id === selectedEdgeId)?.source]
+    const fam = families.find((f) => f.id === famId)
+    if (!fam) return
+    const existing = fam.edgeOverrides?.[selectedEdgeId] || {}
+    const edgeOverrides = { ...(fam.edgeOverrides || {}), [selectedEdgeId]: { ...existing, type } }
+    saveFamily({ ...fam, edgeOverrides })
+  }
+
+  const displayEdges = useMemo(
+    () =>
+      edges.map((e) =>
+        e.id === selectedEdgeId
+          ? { ...e, style: { ...e.style, strokeWidth: (e.style?.strokeWidth || 1.5) + 1.5, stroke: '#B08F4A' } }
+          : e
+      ),
+    [edges, selectedEdgeId]
+  )
 
   const handleNodeDragStart = useCallback(
     (_event, node) => {
@@ -731,8 +867,38 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         {isDm && (
           <p className="absolute bottom-3 left-3 z-10 text-xs font-mono bg-ink/70 text-parchment px-2 py-1 rounded-sm max-w-xs">
             Drag any resident to reposition them — it's saved automatically. Drag a family's
-            banner to move everyone in it together.
+            banner to move everyone in it together. Click a line to edit or delete it.
           </p>
+        )}
+        {isDm && selectedEdgeId && (
+          <div className="absolute bottom-3 right-3 z-20 bg-parchment paper-texture border-2 border-gold rounded-sm shadow-lg p-3 flex items-center gap-2">
+            <span className="text-xs font-display uppercase text-ink-soft">Line style</span>
+            <select
+              defaultValue=""
+              onChange={(e) => e.target.value && restyleSelectedEdge(e.target.value)}
+              className="text-xs rounded-sm border border-leather bg-white/60 px-2 py-1"
+            >
+              <option value="" disabled>
+                Change to…
+              </option>
+              <option value="straight">Straight</option>
+              <option value="smoothstep">Right-angle</option>
+              <option value="step">Right-angle (sharp)</option>
+              <option value="bezier">Curved</option>
+            </select>
+            <button
+              onClick={deleteSelectedEdge}
+              className="text-xs font-display uppercase text-wax hover:text-wax-dark border border-wax rounded-sm px-2 py-1"
+            >
+              Delete line
+            </button>
+            <button
+              onClick={() => setSelectedEdgeId(null)}
+              className="text-xs text-ink-soft/60 hover:text-ink-soft px-1"
+            >
+              ✕
+            </button>
+          </div>
         )}
         {nodes.length === 0 ? (
           <div className="h-full flex items-center justify-center">
@@ -745,14 +911,15 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         ) : (
           <ReactFlow
             nodes={nodes}
-            edges={edges}
+            edges={displayEdges}
             nodeTypes={nodeTypes}
-            defaultEdgeOptions={{ type: 'straight' }}
+            defaultEdgeOptions={{ type: 'straight', interactionWidth: 30 }}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onNodeDragStart={handleNodeDragStart}
             onNodeDrag={handleNodeDrag}
             onNodeDragStop={handleNodeDragStop}
+            onEdgeClick={handleEdgeClick}
             fitView
             proOptions={{ hideAttribution: true }}
           >

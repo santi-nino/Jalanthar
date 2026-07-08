@@ -13,10 +13,34 @@ function ageLabel(age) {
   return `Age ${n}`
 }
 
+// Every connection point needs to work as BOTH a source and a target,
+// since the same "left" or "top" handle might be the starting point for
+// one edge and the ending point for another depending on which side of a
+// given relationship this particular person falls on. A single Handle can
+// only declare one type, so each position gets two stacked handles (same
+// id, one source and one target) rather than one handle doing double duty
+// — that mismatch was the actual cause of lines collapsing onto whichever
+// handle happened to be correctly typed.
+function FourWayHandles({ hidden = true }) {
+  const cls = hidden ? '!opacity-0' : ''
+  return (
+    <>
+      <Handle type="target" position={Position.Top} id="top" className={cls} isConnectable={false} />
+      <Handle type="source" position={Position.Top} id="top" className={cls} isConnectable={false} />
+      <Handle type="target" position={Position.Bottom} id="bottom" className={cls} isConnectable={false} />
+      <Handle type="source" position={Position.Bottom} id="bottom" className={cls} isConnectable={false} />
+      <Handle type="target" position={Position.Left} id="left" className={cls} isConnectable={false} />
+      <Handle type="source" position={Position.Left} id="left" className={cls} isConnectable={false} />
+      <Handle type="target" position={Position.Right} id="right" className={cls} isConnectable={false} />
+      <Handle type="source" position={Position.Right} id="right" className={cls} isConnectable={false} />
+    </>
+  )
+}
+
 export function FamilyNode({ data }) {
   return (
     <div className="relative px-4 py-2 rounded-sm bg-leather text-parchment border-2 border-gold shadow-md min-w-[140px] cursor-move">
-      <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-gold" isConnectable={false} />
+      <FourWayHandles />
       <button
         onClick={data.onToggleCollapse}
         onPointerDown={(e) => e.stopPropagation()}
@@ -59,9 +83,9 @@ export function FamilyNode({ data }) {
 
 export function JunctionNode() {
   return (
-    <div className="w-1.5 h-1.5 rounded-full bg-leather/40">
-      <Handle type="target" position={Position.Top} id="top" className="!opacity-0" isConnectable={false} />
-      <Handle type="source" position={Position.Bottom} id="bottom" className="!opacity-0" isConnectable={false} />
+    <div className="w-6 h-6 flex items-center justify-center cursor-move" style={{ pointerEvents: 'all' }}>
+      <FourWayHandles />
+      <div className="w-1.5 h-1.5 rounded-full bg-leather/50" style={{ pointerEvents: 'none' }} />
     </div>
   )
 }
@@ -73,10 +97,7 @@ export function NpcNode({ data }) {
       onClick={data.onClick}
       className="relative px-3 py-2 rounded-sm bg-parchment border-2 border-leather shadow-sm font-body text-sm text-ink hover:border-wax hover:text-wax transition-colors w-[150px] text-center cursor-pointer overflow-hidden"
     >
-      <Handle type="target" position={Position.Top} id="top" className="!bg-leather" isConnectable={false} />
-      <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-leather opacity-0" isConnectable={false} />
-      <Handle type="source" position={Position.Left} id="left" className="!bg-gold opacity-0" isConnectable={false} />
-      <Handle type="source" position={Position.Right} id="right" className="!bg-gold opacity-0" isConnectable={false} />
+      <FourWayHandles />
       <span className="block truncate">{data.label}</span>
       {(data.job || age) && (
         <span className="block text-[10px] text-ink-soft/70 font-body italic leading-tight mt-0.5 truncate">
