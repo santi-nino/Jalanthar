@@ -1,5 +1,6 @@
 import { useAuth } from '../contexts/AuthContext'
 import { getLabel } from '../data/relationshipTypes'
+import { isNpcFullyVisible } from '../utils/visibility'
 
 const ADVERSE = new Set(['rival', 'enemy'])
 function relColor(typeId) {
@@ -69,14 +70,24 @@ export default function NpcDetailPanel({ npc, npcsById, onEdit, onSelectRelated 
               {npc.relationships.map((rel, i) => {
                 const target = npcsById[rel.targetId]
                 if (!target) return null
+                const targetFullyVisible = isNpcFullyVisible(target, isDm)
                 return (
                   <li key={i}>
-                    <button
-                      onClick={() => onSelectRelated?.(target.id)}
-                      className="underline decoration-dotted hover:text-wax text-left"
-                    >
-                      {target.name}
-                    </button>
+                    {targetFullyVisible ? (
+                      <button
+                        onClick={() => onSelectRelated?.(target.id)}
+                        className="underline decoration-dotted hover:text-wax text-left"
+                      >
+                        {target.name}
+                      </button>
+                    ) : (
+                      <span
+                        className="text-ink-soft/70 italic"
+                        title="Not yet met — no detail page available"
+                      >
+                        {target.name}
+                      </span>
+                    )}
                     <span className={`ml-2 text-xs font-display uppercase tracking-wide ${relColor(rel.type)}`}>
                       {getLabel(rel.type)}
                     </span>

@@ -92,6 +92,18 @@ export function JunctionNode() {
 
 export function NpcNode({ data }) {
   const age = ageLabel(data.age)
+  const fullyVisible = data.fullyVisible !== false
+  if (!fullyVisible) {
+    return (
+      <div
+        title="Met, but not yet gotten to know — no detail page available"
+        className="relative px-3 py-2 rounded-sm bg-parchment/60 border-2 border-dashed border-leather/50 shadow-sm font-body text-sm text-ink-soft/80 italic w-[150px] text-center cursor-default overflow-hidden"
+      >
+        <FourWayHandles />
+        <span className="block truncate">{data.label}</span>
+      </div>
+    )
+  }
   return (
     <button
       onClick={data.onClick}

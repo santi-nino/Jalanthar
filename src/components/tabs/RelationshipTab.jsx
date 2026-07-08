@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { FamilyNode, NpcNode, JunctionNode } from '../relationshipNodes'
 import NpcDetailPanel from '../NpcDetailPanel'
 import { getRelationshipType } from '../../data/relationshipTypes'
+import { isNpcNameVisible, isNpcFullyVisible } from '../../utils/visibility'
 
 const nodeTypes = { family: FamilyNode, npc: NpcNode, junction: JunctionNode }
 
@@ -54,15 +55,24 @@ const FAMILY_GAP = 100
 // family after it.
 const FAMILY_DEFAULT_SPACING = 900
 
-// A stored offset should never realistically be more than a couple thousand
-// pixels from its family's anchor. A value beyond that can only be leftover
-// data saved before positions were switched from absolute canvas
-// coordinates to anchor-relative offsets — silently falling back to the
-// automatic position instead of using it lets old saved layouts self-heal
-// rather than flinging a card off-screen forever.
-function sanitizeOffset(offset) {
+// A DM decluttering a tangled tree by hand nudges a card a modest distance
+// from where the graph would otherwise put it — not several family-widths
+// away. So instead of comparing a stored offset to some arbitrary global
+// cutoff (which either flags legitimate large families as broken or lets
+// genuinely stale data through), compare it to THIS member's own current
+// auto-computed position. Anything that's drifted further than a few
+// card-slots from its natural spot is almost certainly leftover data from
+// before positions were switched from absolute canvas coordinates to
+// anchor-relative offsets, and gets discarded so the family self-heals back
+// under its own header rather than flinging a card off into a neighboring
+// family's territory forever.
+const MAX_OFFSET_DRIFT_X = NPC_SLOT * 5
+const MAX_OFFSET_DRIFT_Y = GEN_ROW_HEIGHT * 3
+
+function sanitizeOffset(offset, auto) {
   if (!offset) return null
-  if (Math.abs(offset.x) > 4000 || Math.abs(offset.y) > 3000) return null
+  if (Math.abs(offset.x - auto.x) > MAX_OFFSET_DRIFT_X) return null
+  if (Math.abs(offset.y - auto.y) > MAX_OFFSET_DRIFT_Y) return null
   return offset
 }
 
@@ -272,7 +282,7 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
 }
 
 export default function RelationshipTab({ onEditNpc, onEditFamily }) {
-  const { families, npcs, saveFamily } = useData()
+  const { families, npcs, buildings, saveFamily } = useData()
   const { isDm } = useAuth()
   const [selectedNpcId, setSelectedNpcId] = useState(null)
   const [selectedEdgeId, setSelectedEdgeId] = useState(null)
@@ -301,7 +311,15 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     })
   }
 
-  const visibleNpcs = useMemo(() => npcs.filter((n) => isDm || n.visible), [npcs, isDm])
+  // Someone appears on the tree the moment their NAME is knowable — either
+  // the DM marked them individually visible, or they're a resident of any
+  // building the DM has marked revealed (see utils/visibility.js). Whether
+  // their card can actually be opened to the full detail page is a
+  // separate, stricter check applied per-node below.
+  const visibleNpcs = useMemo(
+    () => npcs.filter((n) => isNpcNameVisible(n, buildings, isDm)),
+    [npcs, buildings, isDm]
+  )
   const npcsById = useMemo(() => Object.fromEntries(npcs.map((n) => [n.id, n])), [npcs])
   const sortedFamilies = useMemo(
     () => [...families].sort((a, b) => a.id.localeCompare(b.id)),
@@ -334,13 +352,22 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     // using their default (never manually dragged) position, and only to
     // the right, so a wide expanded family doesn't overlap the next one.
     // Manually-placed families are never moved by this pass.
+    //
+    // A family's tree never extends left of its own header — every member
+    // offset is shifted so the leftmost card sits at x=0 relative to the
+    // anchor (see the `anchorX` comment below) — so the tree's right edge
+    // is header.x + 70 + layout.width, and its left edge is header.x + 70,
+    // not header.x ± width/2. Treating it as centered (width/2 on each
+    // side) under-counts how far an expanded family actually reaches and
+    // lets the next family's header — and everything hanging off it —
+    // overlap the current family's own cards.
     const byX = [...perFamily].sort((a, b) => a.headerPos.x - b.headerPos.x)
     for (let i = 1; i < byX.length; i++) {
       const prev = byX[i - 1]
       const cur = byX[i]
       if (cur.hasManualHeader) continue
-      const prevRight = prev.headerPos.x + prev.layout.width / 2 + 70
-      const curLeft = cur.headerPos.x - cur.layout.width / 2 + 70
+      const prevRight = prev.headerPos.x + 70 + prev.layout.width
+      const curLeft = cur.headerPos.x + 70
       const overlap = prevRight + FAMILY_GAP - curLeft
       if (overlap > 0) cur.headerPos = { ...cur.headerPos, x: cur.headerPos.x + overlap }
     }
@@ -387,25 +414,34 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             x: layout.positions[npc.id] - layout.minX,
             y: 90 + layout.gen[npc.id] * GEN_ROW_HEIGHT,
           }
-          const offset = genOverrides[npc.id] != null ? autoOffset : sanitizeOffset(override[npc.id]) || autoOffset
+          const offset =
+            genOverrides[npc.id] != null
+              ? autoOffset
+              : sanitizeOffset(override[npc.id], autoOffset) || autoOffset
           const pos = { x: anchorX + offset.x, y: anchorY + offset.y }
           familyIdByNpc[npc.id] = fam.id
+          const fullyVisible = isNpcFullyVisible(npc, isDm)
           nodes.push({
             id: npc.id,
             type: 'npc',
             position: pos,
             data: {
               label: npc.name,
-              job: npc.job,
-              age: npc.age,
+              job: fullyVisible ? npc.job : '',
+              age: fullyVisible ? npc.age : '',
               familyId: fam.id,
-              onClick: () => setSelectedNpcId(npc.id),
+              fullyVisible,
+              onClick: fullyVisible ? () => setSelectedNpcId(npc.id) : undefined,
             },
           })
         })
 
         members
-          .filter((m) => layout.gen[m.id] === 0 && !sanitizeOffset(override[m.id]))
+          .filter((m) => {
+            if (layout.gen[m.id] !== 0) return false
+            const auto = { x: layout.positions[m.id] - layout.minX, y: 90 }
+            return !sanitizeOffset(override[m.id], auto)
+          })
           .forEach((m) => {
             edges.push({
               id: `e-root-${m.id}`,
@@ -423,7 +459,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             x: layout.positions[id] - layout.minX,
             y: 90 + layout.gen[id] * GEN_ROW_HEIGHT,
           }
-          const offset = genOverrides[id] != null ? auto : sanitizeOffset(override[id]) || auto
+          const offset = genOverrides[id] != null ? auto : sanitizeOffset(override[id], auto) || auto
           return { x: anchorX + offset.x, y: anchorY + offset.y }
         }
 
@@ -453,7 +489,8 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
           const posB = memberPos(parentBId)
           const jx = (posA.x + posB.x) / 2
           const jy = posA.y + GEN_ROW_HEIGHT * 0.55
-          const jOffset = sanitizeOffset(override[junctionId])
+          const jAuto = { x: jx - anchorX, y: jy - anchorY }
+          const jOffset = sanitizeOffset(override[junctionId], jAuto)
           const jPos = jOffset ? { x: anchorX + jOffset.x, y: anchorY + jOffset.y } : { x: jx, y: jy }
 
           familyIdByNpc[junctionId] = fam.id
@@ -625,7 +662,8 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
             const positions = sorted.map((id) => memberPos(id))
             const jx = positions.reduce((s, p) => s + p.x, 0) / positions.length
             const jy = positions[0].y
-            const jOffset = sanitizeOffset(override[groupJunctionId])
+            const jAuto = { x: jx - anchorX, y: jy - anchorY }
+            const jOffset = sanitizeOffset(override[groupJunctionId], jAuto)
             const jPos = jOffset
               ? { x: anchorX + jOffset.x, y: anchorY + jOffset.y }
               : { x: jx, y: jy }
@@ -854,7 +892,10 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     [families, isDm, saveFamily, nodes]
   )
 
-  const selectedNpc = selectedNpcId ? npcsById[selectedNpcId] : null
+  const selectedNpc =
+    selectedNpcId && isNpcFullyVisible(npcsById[selectedNpcId] || {}, isDm)
+      ? npcsById[selectedNpcId]
+      : null
 
   return (
     <div className="relative h-full w-full flex">

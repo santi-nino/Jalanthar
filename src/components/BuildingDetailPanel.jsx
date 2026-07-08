@@ -2,16 +2,17 @@ import { useMemo, useState } from 'react'
 import { useData } from '../contexts/DataContext'
 import { useAuth } from '../contexts/AuthContext'
 import { formatPrice, effectivePrice } from '../utils/price'
+import { isNpcNameVisible, isNpcFullyVisible } from '../utils/visibility'
 
 export default function BuildingDetailPanel({ building, onEdit, onSelectResident }) {
   const [revealed, setRevealed] = useState(false)
-  const { npcs, saveBuilding } = useData()
+  const { npcs, buildings, saveBuilding } = useData()
   const { isDm } = useAuth()
 
   const residents = (building.residents || [])
     .map((id) => npcs.find((n) => n.id === id))
     .filter(Boolean)
-    .filter((n) => isDm || n.visible)
+    .filter((n) => isNpcNameVisible(n, buildings, isDm))
 
   const multiplier = building.priceMultiplier ?? 1.5
 
@@ -73,16 +74,25 @@ export default function BuildingDetailPanel({ building, onEdit, onSelectResident
                 Residents
               </h4>
               <ul className="space-y-1">
-                {residents.map((r) => (
-                  <li key={r.id}>
-                    <button
-                      onClick={() => onSelectResident?.(r.id)}
-                      className="underline decoration-dotted hover:text-wax text-left"
-                    >
-                      {r.name}
-                    </button>
-                  </li>
-                ))}
+                {residents.map((r) => {
+                  const fullyVisible = isNpcFullyVisible(r, isDm)
+                  return (
+                    <li key={r.id}>
+                      {fullyVisible ? (
+                        <button
+                          onClick={() => onSelectResident?.(r.id)}
+                          className="underline decoration-dotted hover:text-wax text-left"
+                        >
+                          {r.name}
+                        </button>
+                      ) : (
+                        <span className="text-ink-soft/70 italic" title="Not yet met — no detail page available">
+                          {r.name}
+                        </span>
+                      )}
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           )}

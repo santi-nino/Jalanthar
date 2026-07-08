@@ -1,13 +1,14 @@
 import { useData } from '../contexts/DataContext'
 import { useAuth } from '../contexts/AuthContext'
 import NpcDetailPanel from './NpcDetailPanel'
+import { isNpcFullyVisible } from '../utils/visibility'
 
 export default function NpcDetailModal({ npcId, onNavigate, onClose, onEditNpc }) {
   const { npcs } = useData()
   const { isDm } = useAuth()
   const npcsById = Object.fromEntries(npcs.map((n) => [n.id, n]))
   const npc = npcsById[npcId]
-  if (!npc) return null
+  if (!npc || !isNpcFullyVisible(npc, isDm)) return null
 
   return (
     <div

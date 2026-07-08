@@ -340,6 +340,7 @@ export default function DmEditBuildingForm({ building, onClose }) {
       interiorLayoutImage: '',
       description: '',
       residents: [],
+      revealed: false,
       priceMultiplier: 1.5,
       wares: [],
       menu: [],
@@ -577,6 +578,26 @@ export default function DmEditBuildingForm({ building, onClose }) {
             className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
           />
         </label>
+
+        <div>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={!!form.revealed}
+              onChange={(e) => set('revealed', e.target.checked)}
+            />
+            <span className="text-sm font-display uppercase text-ink-soft">
+              Revealed to players
+            </span>
+          </label>
+          <p className="text-xs text-ink-soft/60 italic mt-1">
+            The moment this is checked, every resident listed below has their NAME surfaced on
+            the relationship tree — even ones you haven't individually marked visible. Their
+            detail page stays hidden until you flip that resident's own "Visible to players"
+            checkbox. Since a resident can be added to more than one building, they only need
+            ONE of their buildings revealed for their name to show.
+          </p>
+        </div>
 
         <div>
           <span className="text-sm font-display uppercase text-ink-soft block mb-1">Residents</span>

@@ -187,6 +187,11 @@ export default function DmEditNpcForm({ npc, onClose }) {
             Visible to players (introduced in game)
           </span>
         </label>
+        <p className="text-xs text-ink-soft/60 italic -mt-2">
+          This unlocks their full detail page. Their NAME can still surface earlier than this,
+          on its own, if you mark a building they're a resident of as "Revealed to players" — see
+          that building's edit form.
+        </p>
 
         <label className="block">
           <span className="text-sm font-display uppercase text-ink-soft">Home Building</span>

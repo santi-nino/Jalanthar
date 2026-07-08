@@ -30,6 +30,7 @@ service cloud.firestore {
         request.resource.data.get('description', null) == resource.data.get('description', null) &&
         request.resource.data.get('interiorLayoutImage', null) == resource.data.get('interiorLayoutImage', null) &&
         request.resource.data.get('residents', null) == resource.data.get('residents', null) &&
+        request.resource.data.get('revealed', null) == resource.data.get('revealed', null) &&
         request.resource.data.get('priceMultiplier', null) == resource.data.get('priceMultiplier', null)
       );
     }
@@ -46,8 +47,20 @@ service cloud.firestore {
     // just hidden in the UI) — a player opening devtools can't read an NPC
     // document until you've flipped it to visible. The DM (authenticated)
     // can always read everything, revealed or not.
+    //
+    // `revealedViaBuilding` is a second, narrower door: it's true only when
+    // some building listing this NPC as a resident has itself been marked
+    // `revealed` (see the buildings rule above — players can never set that
+    // field themselves). It exists because a security rule can't reach
+    // backward from this NPC document into the buildings collection to ask
+    // "does any revealed building list me?" — so the app denormalizes that
+    // answer onto the NPC doc itself whenever a building's `revealed` flag
+    // or `residents` list changes (see DataContext.jsx). A player reading a
+    // document that's only readable this way still only ever gets the name
+    // rendered client-side — the UI never opens the full detail page for an
+    // NPC whose own `visible` field is still false.
     match /npcs/{npcId} {
-      allow read: if resource.data.visible == true || request.auth != null;
+      allow read: if resource.data.visible == true || resource.data.get('revealedViaBuilding', false) == true || request.auth != null;
       allow write: if request.auth != null;
     }
   }
