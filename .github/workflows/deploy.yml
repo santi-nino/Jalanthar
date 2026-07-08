@@ -54,6 +54,25 @@ jobs:
           VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
           VITE_ANTHROPIC_API_KEY: ${{ secrets.VITE_ANTHROPIC_API_KEY }}
 
+      - name: Debug - verify key made it into dist, and check sourceAi.js exists (TEMPORARY, remove after)
+        run: |
+          echo "--- Does src/utils/sourceAi.js exist in this checkout? ---"
+          if [ -f src/utils/sourceAi.js ]; then
+            echo "YES - file exists"
+            echo "First read of the key line:"
+            grep -n "VITE_GEMINI_API_KEY" src/utils/sourceAi.js || echo "  (line not found in file!)"
+          else
+            echo "NO - src/utils/sourceAi.js IS MISSING FROM THIS CHECKOUT"
+          fi
+          echo "--- Does the built dist bundle contain the key value? ---"
+          if grep -rq -- "$VITE_GEMINI_API_KEY" dist/assets/*.js 2>/dev/null; then
+            echo "FOUND — the key IS embedded in the built JS"
+          else
+            echo "NOT FOUND — the key did NOT make it into the built JS"
+          fi
+        env:
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
