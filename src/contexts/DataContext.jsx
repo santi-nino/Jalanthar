@@ -18,6 +18,7 @@ const LS_KEYS = {
   buildings: 'jalanthar-demo-buildings',
   npcs: 'jalanthar-demo-npcs',
   families: 'jalanthar-demo-families',
+  sources: 'jalanthar-demo-sources',
 }
 
 function loadDemo(key, fallback) {
@@ -52,6 +53,7 @@ export function DataProvider({ children }) {
   const [buildings, setBuildings] = useState([])
   const [npcs, setNpcs] = useState([])
   const [families, setFamilies] = useState([])
+  const [sources, setSources] = useState([])
   const [loading, setLoading] = useState(true)
 
   // Kept in sync every render so callbacks below can read the latest
@@ -79,6 +81,9 @@ export function DataProvider({ children }) {
         onSnapshot(collection(db, 'families'), (snap) =>
           setFamilies(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
         ),
+        onSnapshot(collection(db, 'sources'), (snap) =>
+          setSources(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+        ),
       ]
       setLoading(false)
       return () => unsubs.forEach((u) => u())
@@ -86,6 +91,7 @@ export function DataProvider({ children }) {
       setBuildings(loadDemo(LS_KEYS.buildings, mockBuildings))
       setNpcs(loadDemo(LS_KEYS.npcs, mockNpcs))
       setFamilies(loadDemo(LS_KEYS.families, mockFamilies))
+      setSources(loadDemo(LS_KEYS.sources, []))
       setLoading(false)
     }
   }, [])
@@ -317,12 +323,51 @@ export function DataProvider({ children }) {
     }
   }, [])
 
+  // ---- Sources ----
+  // DM-only reference material (scanned menus, price lists, sourcebook
+  // pages) — never shown to players, unlike buildings/npcs/families. See
+  // the `sources` Firestore rule: read AND write both require auth, not
+  // just write.
+  const saveSource = useCallback(async (source) => {
+    if (isFirebaseConfigured) {
+      const ref = source.id
+        ? doc(db, 'sources', source.id)
+        : doc(collection(db, 'sources'))
+      const { id: _discard, ...rest } = source
+      await setDoc(ref, rest, { merge: true })
+      return ref.id
+    } else {
+      const id = source.id || `src-${Date.now()}`
+      setSources((prev) => {
+        const next = source.id
+          ? prev.map((s) => (s.id === id ? { ...s, ...source } : s))
+          : [...prev, { ...source, id }]
+        saveDemo(LS_KEYS.sources, next)
+        return next
+      })
+      return id
+    }
+  }, [])
+
+  const removeSource = useCallback(async (id) => {
+    if (isFirebaseConfigured) {
+      await deleteDoc(doc(db, 'sources', id))
+    } else {
+      setSources((prev) => {
+        const next = prev.filter((s) => s.id !== id)
+        saveDemo(LS_KEYS.sources, next)
+        return next
+      })
+    }
+  }, [])
+
   return (
     <DataContext.Provider
       value={{
         buildings,
         npcs,
         families,
+        sources,
         loading,
         saveBuilding,
         removeBuilding,
@@ -332,6 +377,8 @@ export function DataProvider({ children }) {
         removeNpc,
         saveFamily,
         removeFamily,
+        saveSource,
+        removeSource,
       }}
     >
       {children}

@@ -48,6 +48,39 @@ comfortably covers a table of players.
 6. **Local `.env.local`.** Copy `.env.example` to `.env.local` and paste in the six values from step 2's `firebaseConfig`. Run `npm run dev` again — the demo-mode banner should disappear, and DM Login will now ask for the email/password you created in step 5.
 7. **(Optional) Seed starter content.** Firebase Console -> Project Settings -> Service Accounts -> Generate new private key -> save the file as `scripts/serviceAccountKey.json` -> run `npm run seed`. This pushes the example buildings/NPCs into Firestore so you're not starting from a blank database. Skip this if you'd rather add everything fresh through the DM edit panel.
 
+## Upload Source (AI-scanned price lists and menus)
+
+DM-only, in the sidebar between **Export Data** and **End DM Session**.
+Upload a PDF or image of a price list, menu, or equipment sheet and it gets
+scanned into a named, categorized set of wares/menu/services — nothing is
+attached to a building automatically; the parsed items just become available
+in the "browse by category" dropdown on every building's edit form
+afterward, grouped under `Source: <name> (<category>)`, alongside the
+built-in SRD catalog.
+
+This needs an AI backend, since neither GitHub Pages nor Firebase's free
+Spark plan gives this static site a real server to hide an API key behind —
+whichever key you configure gets called **directly from the browser**, which
+means it's visible to anyone who inspects network traffic on the deployed
+site. Two backends are supported, tried in this order:
+
+1. **Gemini (free).** Get a key at
+   [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) —
+   no credit card required. Set it as `VITE_GEMINI_API_KEY`. It's
+   rate-limited, not billed, so the worst case if it leaked is someone else
+   eating your daily quota, never a bill.
+2. **Claude (fallback, real billing).** Only used if Gemini isn't configured
+   or fails. Set `VITE_ANTHROPIC_API_KEY` if you want this fallback — but
+   this is a genuine financial exposure given it's called from client-side
+   code, so if you do enable it, create a dedicated key with a low spend
+   limit in the Anthropic Console rather than reusing a general-purpose one.
+
+Leave both unset and the Upload Source button still works — it'll just
+explain how to configure one instead of scanning. Add whichever key(s) you
+choose to both your local `.env.local` and, for the deployed site, as
+**Settings > Secrets and variables > Actions > Repository secrets** (see
+`.env.example` and `.github/workflows/deploy.yml`).
+
 ## Deploying to GitHub Pages
 
 This repo includes a GitHub Actions workflow (`.github/workflows/deploy.yml`)

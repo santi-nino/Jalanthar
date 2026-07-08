@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useData } from '../contexts/DataContext'
 import { SELECTABLE_TYPES, getRelationshipType, getLabel } from '../data/relationshipTypes'
+import { NPC_CLASSES } from '../data/npcClasses'
 
 export default function DmEditNpcForm({ npc, onClose }) {
   const {
@@ -258,21 +259,18 @@ export default function DmEditNpcForm({ npc, onClose }) {
           </label>
           <label>
             <span className="text-sm font-display uppercase text-ink-soft">Class</span>
-            <input
-              list="class-suggestions"
+            <select
               value={form.dndClass || ''}
               onChange={(e) => set('dndClass', e.target.value)}
-              placeholder="e.g. Commoner"
               className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
-            />
-            <datalist id="class-suggestions">
-              {[
-                'Commoner', 'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter',
-                'Monk', 'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard',
-              ].map((c) => (
-                <option key={c} value={c} />
+            >
+              <option value="">— none —</option>
+              {NPC_CLASSES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
-            </datalist>
+            </select>
           </label>
         </div>
         <p className="text-xs text-ink-soft/60 italic -mt-2">

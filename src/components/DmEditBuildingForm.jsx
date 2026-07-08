@@ -54,7 +54,7 @@ function QuantityEditor({ value, onChange }) {
   )
 }
 
-function CatalogList({ label, pool, rows, multiplier, onChange }) {
+function CatalogList({ label, pool, rows, multiplier, onChange, sources }) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [pendingId, setPendingId] = useState('')
@@ -62,7 +62,28 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
   const [creating, setCreating] = useState(false)
   const [customForm, setCustomForm] = useState({ name: '', priceGp: '', description: '' })
 
-  const poolItems = useMemo(() => DND5E_ITEMS.filter((i) => i.pool === pool), [pool])
+  // Uploaded sources (see UploadSourceModal) are just another item catalog
+  // alongside the built-in SRD one — normalized to the same {id, name,
+  // priceGp, description, category} shape so every bit of browsing/search/
+  // "add whole category" logic below works over both without a special
+  // case. Their category is prefixed "Source:" so they group into their
+  // own optgroups rather than colliding with SRD category names.
+  const sourceItems = useMemo(() => {
+    return (sources || []).flatMap((s) =>
+      (s[pool] || []).map((item) => ({
+        id: `source-${s.id}-${item.rowId}`,
+        name: item.name,
+        priceGp: item.basePrice,
+        description: item.description,
+        category: `Source: ${s.name}${s.category ? ` (${s.category})` : ''}`,
+      }))
+    )
+  }, [sources, pool])
+
+  const poolItems = useMemo(
+    () => [...DND5E_ITEMS.filter((i) => i.pool === pool), ...sourceItems],
+    [pool, sourceItems]
+  )
   const grouped = useMemo(() => {
     const map = {}
     poolItems.forEach((i) => {
@@ -76,9 +97,26 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
     if (!query) return []
     const q = query.toLowerCase()
     return poolItems
+      .filter((i) => !existingNames.has(i.name.trim().toLowerCase()))
       .filter((i) => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q))
       .slice(0, 20)
-  }, [poolItems, query])
+  }, [poolItems, query, existingNames])
+
+  // A DM adding an item manually, then later "Add All"-ing a category that
+  // happens to contain that same item, should never end up with it twice.
+  // Everything below funnels through `isDuplicate`/`addNewOnly`, keyed on a
+  // trimmed, case-insensitive name match — the natural identity of a
+  // catalog row from the DM's point of view, regardless of which source
+  // (SRD, a different source category, manual entry) it came from.
+  const existingNames = useMemo(
+    () => new Set(rows.map((r) => r.name.trim().toLowerCase())),
+    [rows]
+  )
+  const [notice, setNotice] = useState('')
+
+  function isDuplicate(name) {
+    return existingNames.has(name.trim().toLowerCase())
+  }
 
   function makeRow(item) {
     return {
@@ -92,6 +130,11 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
   }
 
   function addItem(item) {
+    if (isDuplicate(item.name)) {
+      setNotice(`"${item.name}" is already in this list.`)
+      return
+    }
+    setNotice('')
     onChange([...rows, makeRow(item)])
     setQuery('')
     setOpen(false)
@@ -106,17 +149,34 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
   function addWholeCategory() {
     if (!pendingCategory) return
     const items = grouped[pendingCategory] || []
-    onChange([...rows, ...items.map(makeRow)])
+    const newItems = items.filter((i) => !isDuplicate(i.name))
+    const skipped = items.length - newItems.length
+    onChange([...rows, ...newItems.map(makeRow)])
+    if (newItems.length === 0) {
+      setNotice(`Every item in "${pendingCategory}" is already in this list.`)
+    } else if (skipped > 0) {
+      setNotice(
+        `Added ${newItems.length} new item${newItems.length === 1 ? '' : 's'} (${skipped} already in this list, skipped).`
+      )
+    } else {
+      setNotice('')
+    }
     setPendingCategory('')
   }
 
   function addCustom() {
-    if (!customForm.name.trim()) return
+    const name = customForm.name.trim()
+    if (!name) return
+    if (isDuplicate(name)) {
+      setNotice(`"${name}" is already in this list.`)
+      return
+    }
+    setNotice('')
     onChange([
       ...rows,
       {
         rowId: `row-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        name: customForm.name.trim(),
+        name,
         basePrice: Number(customForm.priceGp) || 0,
         description: customForm.description.trim(),
         priceOverride: '',
@@ -147,6 +207,12 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
           {creating ? 'Cancel' : `+ Create ${label.replace(/s$/, '')}`}
         </button>
       </div>
+
+      {notice && (
+        <p className="text-xs text-wax-dark bg-wax/10 border border-wax/30 rounded-sm px-2 py-1 mb-2">
+          {notice}
+        </p>
+      )}
 
       {creating && (
         <div className="border border-moss/50 rounded-sm p-3 mb-2 space-y-2 bg-moss/5">
@@ -187,7 +253,10 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
       <div className="flex gap-2 mb-2">
         <select
           value={pendingId}
-          onChange={(e) => setPendingId(e.target.value)}
+          onChange={(e) => {
+            setPendingId(e.target.value)
+            setNotice('')
+          }}
           className="flex-1 rounded-sm border border-leather bg-white/60 px-2 py-2 text-sm"
         >
           <option value="">— browse by category —</option>
@@ -214,7 +283,10 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
       <div className="flex gap-2 mb-2">
         <select
           value={pendingCategory}
-          onChange={(e) => setPendingCategory(e.target.value)}
+          onChange={(e) => {
+            setPendingCategory(e.target.value)
+            setNotice('')
+          }}
           className="flex-1 rounded-sm border border-leather bg-white/60 px-2 py-2 text-sm"
         >
           <option value="">— add a whole category at once —</option>
@@ -327,7 +399,7 @@ function CatalogList({ label, pool, rows, multiplier, onChange }) {
 }
 
 export default function DmEditBuildingForm({ building, onClose }) {
-  const { saveBuilding, removeBuilding, npcs, buildings } = useData()
+  const { saveBuilding, removeBuilding, npcs, buildings, sources } = useData()
   const fileInputRef = useRef(null)
   const [form, setForm] = useState(
     building || {
@@ -638,6 +710,7 @@ export default function DmEditBuildingForm({ building, onClose }) {
           rows={form.wares}
           multiplier={form.priceMultiplier}
           onChange={(v) => set('wares', v)}
+          sources={sources}
         />
         <CatalogList
           label="Menu"
@@ -645,6 +718,7 @@ export default function DmEditBuildingForm({ building, onClose }) {
           rows={form.menu}
           multiplier={form.priceMultiplier}
           onChange={(v) => set('menu', v)}
+          sources={sources}
         />
         <CatalogList
           label="Services"
@@ -652,6 +726,7 @@ export default function DmEditBuildingForm({ building, onClose }) {
           rows={form.services}
           multiplier={form.priceMultiplier}
           onChange={(v) => set('services', v)}
+          sources={sources}
         />
 
         <div className="flex justify-between pt-2">

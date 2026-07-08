@@ -63,5 +63,15 @@ service cloud.firestore {
       allow read: if resource.data.visible == true || resource.data.get('revealedViaBuilding', false) == true || request.auth != null;
       allow write: if request.auth != null;
     }
+
+    // Sources are scanned reference documents (price lists, menus) the DM
+    // uploads to seed a building's wares/menu/services from. They're a
+    // DM-only authoring tool, never shown to players directly — a player
+    // only ever sees the items after the DM has pulled them into an actual
+    // building — so unlike buildings/npcs there's no player-facing read
+    // case to carve out here at all.
+    match /sources/{sourceId} {
+      allow read, write: if request.auth != null;
+    }
   }
 }

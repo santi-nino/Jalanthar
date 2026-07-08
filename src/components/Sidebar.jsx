@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { IconMap, IconBuildings, IconResidents, IconRoster, IconKey, IconExit } from './icons'
 import ExportDataModal from './ExportDataModal'
+import UploadSourceModal from './UploadSourceModal'
 
 const TABS = [
   { id: 'map', label: 'Map', Icon: IconMap },
@@ -13,6 +14,7 @@ const TABS = [
 export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, onCloseMobile }) {
   const [collapsed, setCollapsed] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
+  const [uploadOpen, setUploadOpen] = useState(false)
   const { isDm, logout } = useAuth()
 
   function selectTab(id) {
@@ -98,6 +100,16 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
               <span className={collapsed ? 'md:hidden' : ''}>Export Data</span>
             </button>
           )}
+          {isDm && (
+            <button
+              onClick={() => setUploadOpen(true)}
+              className="w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide text-parchment/70 hover:text-gold-light transition-colors py-2"
+              title={collapsed ? 'Upload a source document to scan for items' : undefined}
+            >
+              <span className="w-4 h-4 shrink-0 flex items-center justify-center text-sm">⇧</span>
+              <span className={collapsed ? 'md:hidden' : ''}>Upload Source</span>
+            </button>
+          )}
           {isDm ? (
             <button
               onClick={logout}
@@ -120,6 +132,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
         </div>
       </aside>
       {exportOpen && <ExportDataModal onClose={() => setExportOpen(false)} />}
+      {uploadOpen && <UploadSourceModal onClose={() => setUploadOpen(false)} />}
     </>
   )
 }

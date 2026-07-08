@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { useData } from '../contexts/DataContext'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function ExportDataModal({ onClose }) {
   const { buildings, families, npcs } = useData()
+  const { isDm } = useAuth()
   const [copied, setCopied] = useState(false)
+
+  if (!isDm) return null
 
   const json = JSON.stringify({ exportedAt: new Date().toISOString(), buildings, families, npcs }, null, 2)
 
