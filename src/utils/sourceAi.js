@@ -55,7 +55,7 @@ function normalizeResult(raw) {
 // deliberately tried first for exactly that reason. Requires
 // VITE_GEMINI_API_KEY to be set; see .env.example.
 async function parseWithGemini(file) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+  const apiKey = (import.meta.env.VITE_GEMINI_API_KEY || '').trim()
   if (!apiKey) return null
 
   const base64 = await fileToBase64(file)
@@ -96,7 +96,7 @@ async function parseWithGemini(file) {
 // has deliberately opted in by setting VITE_ANTHROPIC_API_KEY. See
 // .env.example and the README before turning this on.
 async function parseWithClaude(file) {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+  const apiKey = (import.meta.env.VITE_ANTHROPIC_API_KEY || '').trim()
   if (!apiKey) return null
 
   const base64 = await fileToBase64(file)

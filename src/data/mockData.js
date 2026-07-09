@@ -211,6 +211,64 @@ export const mockBuildings = [
     priceMultiplier: 1.5,
     wares: [], menu: [], services: [],
   },
+
+  // ---- Thistlebrook residence ----
+  // Coords are a placeholder (50,50) — needs real map placement via the
+  // MiniMapPicker in the building edit form before this is player-facing.
+  // Three adult Thistlebrooks live on their own: Pell (see his
+  // homeBuildingId, Outrider's Scraps and Scabbards), Roric, and Fen (see
+  // their own residences below). Only Doran, Cobb, Oswin, and the
+  // still-apprenticing Tobin live at the Warren itself.
+  {
+    id: 'bld-thistlebrook-warren',
+    name: 'Thistlebrook Warren',
+    subheader: 'Four Under One Roof',
+    type: 'Residence',
+    coords: { x: 50, y: 50 },
+    quadrant: 'inhabited',
+    interiorLayoutImage: '',
+    description:
+      'A halfling-scaled burrow-home built into a converted larger foundation — low doorways and close, warm rooms carved out of a building meant for a much taller household. Permanently smells of leather, woodsmoke, and drying herbs.',
+    residents: [
+      'npc-doran-thistlebrook',
+      'npc-cobb-thistlebrook',
+      'npc-oswin-thistlebrook',
+      'npc-tobin-thistlebrook',
+    ],
+    revealed: false,
+    priceMultiplier: 1.5,
+    wares: [], menu: [], services: [],
+  },
+  {
+    id: 'bld-rorics-trophy-room',
+    name: "Roric's Trophy Room",
+    subheader: 'Every Kill, On Display',
+    type: 'Residence',
+    coords: { x: 50, y: 50 },
+    quadrant: 'inhabited',
+    interiorLayoutImage: '',
+    description:
+      "A small, single-room home almost entirely given over to mounted trophies — hides, claws, and one very large set of antlers he won't stop talking about.",
+    residents: ['npc-roric-thistlebrook'],
+    revealed: false,
+    priceMultiplier: 1.5,
+    wares: [], menu: [], services: [],
+  },
+  {
+    id: 'bld-fens-cabin',
+    name: "Fen's Cabin",
+    subheader: 'Quiet, By Design',
+    type: 'Residence',
+    coords: { x: 50, y: 50 },
+    quadrant: 'inhabited',
+    interiorLayoutImage: '',
+    description:
+      'A plain, well-maintained one-room cabin at the edge of town, chosen for its distance from neighbors as much as anything else. Snares and trap components are cleaned and organized along one wall.',
+    residents: ['npc-fen-thistlebrook'],
+    revealed: false,
+    priceMultiplier: 1.5,
+    wares: [], menu: [], services: [],
+  },
 ]
 
 export const mockFamilies = [
@@ -233,6 +291,18 @@ export const mockFamilies = [
     name: 'The Rihlos',
     description:
       'An elven patriarch, roughly 800 years old, on his third known family line of half-elf descendants in Jalanthar.',
+  },
+  {
+    id: 'fam-thistlebrook',
+    name: 'The Thistlebrooks',
+    description:
+      'A seven-person halfling hunting household built around an unusual three-husband marriage — Doran and Cobb hunt as an inseparable, nearly wordless pair, while Oswin ranges independently as an herbalist supplying the apothecary. Their four children split across hunting, trapping, herbalism, and guild administration.',
+  },
+  {
+    id: 'fam-fenner',
+    name: 'The Fenners',
+    description:
+      "A human couple running Wares for the Clever Northman, with a daughter the town can't agree on — some swear she's an awakened dog, others are just as sure she used to be a little girl. Wendel and Marta have never confirmed either story.",
   },
 ]
 
@@ -596,6 +666,207 @@ export const mockNpcs = [
       { targetId: 'npc-olma-rihlo', type: 'parent' },
       { targetId: 'npc-tana-pasho', type: 'sibling' },
       { targetId: 'npc-maya-pasho', type: 'sibling' },
+    ],
+  },
+
+  // ---- Thistlebrooks ----
+  // Three-husband marriage (Doran/Cobb/Oswin) parenting four children
+  // together. Every relationship below is written on both ends by hand,
+  // per the rule established for raw seed data — the DM edit UI auto-syncs
+  // this, but mockData.js does not.
+  {
+    id: 'npc-doran-thistlebrook', name: 'Doran Thistlebrook', familyName: 'The Thistlebrooks', homeBuildingId: 'bld-thistlebrook-warren', visible: false, age: 58,
+    job: 'Hunter',
+    species: 'Halfling', gender: 'Man', dndClass: 'Hunter',
+    famousQuote: 'Cobb and I stopped needing to talk to each other around here.',
+    eyeColor: 'Grey', hairColor: 'Sandy brown, greying at the temples', height: "3'2\"", weight: '42 lb',
+    distinguishingFeatures: 'A row of small tattooed dashes along his right forearm — one per confirmed kill, a tally he started keeping decades ago.',
+    appearance: 'Compact and wiry, permanently sun-weathered from decades in the field.',
+    personality: "Steady and unshowy. Doesn't brag because he doesn't need to — everyone in town already knows what he and Cobb can do.",
+    clothing: 'Practical leathers, patched more than replaced.',
+    history: 'Has hunted alongside Cobb for over two decades; their partnership is considered close to uncanny by the rest of the guild.',
+    relationships: [
+      { targetId: 'npc-cobb-thistlebrook', type: 'spouse' },
+      { targetId: 'npc-oswin-thistlebrook', type: 'spouse' },
+      { targetId: 'npc-pell-thistlebrook', type: 'child' },
+      { targetId: 'npc-roric-thistlebrook', type: 'child' },
+      { targetId: 'npc-fen-thistlebrook', type: 'child' },
+      { targetId: 'npc-tobin-thistlebrook', type: 'child' },
+    ],
+  },
+  {
+    id: 'npc-cobb-thistlebrook', name: 'Cobb Thistlebrook', familyName: 'The Thistlebrooks', homeBuildingId: 'bld-thistlebrook-warren', visible: false, age: 54,
+    job: 'Hunter',
+    species: 'Halfling', gender: 'Man', dndClass: 'Hunter',
+    famousQuote: "I don't watch his hands. I already know what they're doing.",
+    eyeColor: 'Brown', hairColor: 'Dark brown, kept short', height: "3'1\"", weight: '39 lb',
+    distinguishingFeatures: "The matching tally-mark tattoo, on his left forearm — his and Doran's counts are only ever compared side by side.",
+    appearance: 'Broader through the shoulders than most halflings, built for hauling a kill home.',
+    personality: 'Quiet in a way that reads as confidence, not shyness. Lets Doran do the talking in town; in the field, they barely need words at all.',
+    clothing: 'Same practical leathers as Doran, deliberately outfitted to match.',
+    history: "Paired with Doran early in both their careers; the two have hunted as a single unit ever since, to the point the guild stopped assigning them separate routes.",
+    relationships: [
+      { targetId: 'npc-doran-thistlebrook', type: 'spouse' },
+      { targetId: 'npc-oswin-thistlebrook', type: 'spouse' },
+      { targetId: 'npc-pell-thistlebrook', type: 'child' },
+      { targetId: 'npc-roric-thistlebrook', type: 'child' },
+      { targetId: 'npc-fen-thistlebrook', type: 'child' },
+      { targetId: 'npc-tobin-thistlebrook', type: 'child' },
+    ],
+  },
+  {
+    id: 'npc-oswin-thistlebrook', name: 'Oswin Thistlebrook', familyName: 'The Thistlebrooks', homeBuildingId: 'bld-thistlebrook-warren', visible: false, age: 50,
+    job: 'Herbalist — supplies Lavender and Dragon Thistle Apothecary',
+    species: 'Halfling', gender: 'Man', dndClass: 'Craftsman',
+    famousQuote: "Everyone assumes I'm the one who stays home. I'm out longer than either of them, usually.",
+    eyeColor: 'Hazel', hairColor: 'Light brown, curly', height: "2'11\"", weight: '35 lb',
+    distinguishingFeatures: 'Always has a sprig of dried herb tucked behind one ear, out of habit more than purpose at this point.',
+    appearance: 'Soft-spoken and soft-bodied compared to his husbands — spends more time crouched over roots than chasing game.',
+    personality: 'Patient and a little distracted, most at ease elbow-deep in a hedgerow. Genuinely happy in a marriage most of the town still gossips about.',
+    clothing: 'A canvas gathering vest with dozens of small pouches sewn in.',
+    history: "Ranges the wilds around Jalanthar independently of Doran and Cobb's hunts, gathering herbs and roots to sell directly to the apothecary.",
+    relationships: [
+      { targetId: 'npc-doran-thistlebrook', type: 'spouse' },
+      { targetId: 'npc-cobb-thistlebrook', type: 'spouse' },
+      { targetId: 'npc-pell-thistlebrook', type: 'child' },
+      { targetId: 'npc-roric-thistlebrook', type: 'child' },
+      { targetId: 'npc-fen-thistlebrook', type: 'child' },
+      { targetId: 'npc-tobin-thistlebrook', type: 'child' },
+    ],
+  },
+  {
+    id: 'npc-pell-thistlebrook', name: 'Pell Thistlebrook', familyName: 'The Thistlebrooks', homeBuildingId: 'KM5xfMaXQiPBESP3ZeXt', visible: false, age: 30,
+    job: "Runs the desk at Outrider's Scraps and Scabbards (the hunters' guild)",
+    species: 'Halfling', gender: 'Man', dndClass: 'Misc',
+    famousQuote: "I don't hunt anything. I make sure the people who do get paid.",
+    eyeColor: 'Grey', hairColor: 'Sandy brown, neatly kept', height: "3'0\"", weight: '38 lb',
+    distinguishingFeatures: 'Keeps a short, precisely trimmed beard — a running joke in the family that he\'s "the professional one."',
+    appearance: 'The least weathered of the brothers by far — indoor hands, an unusually tidy, trimmed beard next to his shaggier siblings.',
+    personality: "Organized to a fault, mildly exasperated by his brothers' chaos, secretly proud of all of them.",
+    clothing: 'Clean workwear, an ink-smudged ledger apron.',
+    history: 'Took to the ledgers early and never left them — the guild would reportedly fall apart without him.',
+    relationships: [
+      { targetId: 'npc-doran-thistlebrook', type: 'parent' },
+      { targetId: 'npc-cobb-thistlebrook', type: 'parent' },
+      { targetId: 'npc-oswin-thistlebrook', type: 'parent' },
+      { targetId: 'npc-roric-thistlebrook', type: 'sibling' },
+      { targetId: 'npc-fen-thistlebrook', type: 'sibling' },
+      { targetId: 'npc-tobin-thistlebrook', type: 'sibling' },
+    ],
+  },
+  {
+    id: 'npc-roric-thistlebrook', name: 'Roric Thistlebrook', familyName: 'The Thistlebrooks', homeBuildingId: 'bld-rorics-trophy-room', visible: false, age: 27,
+    job: 'Trophy/bounty hunter',
+    species: 'Halfling', gender: 'Man', dndClass: 'Hunter',
+    famousQuote: 'Small game feeds a house. Big game feeds a legend.',
+    eyeColor: 'Brown', hairColor: 'Dark brown, worn long and loose', height: "3'2\"", weight: '41 lb',
+    distinguishingFeatures: 'A jagged scar along his jawline, from the kill that made his name. He tells the story often and well.',
+    appearance: 'Broad and confident, moves like he knows people are watching — because in Jalanthar, they usually are.',
+    personality: 'Charismatic, competitive, genuinely brave — not all bluster, unlike a certain other hunting family in town.',
+    clothing: 'Trophy-trimmed hunting gear — a few too many pelts and claws worked into it for practicality.',
+    history: "Takes on the town's largest and most dangerous bounties; considered one of Jalanthar's local heroes.",
+    relationships: [
+      { targetId: 'npc-doran-thistlebrook', type: 'parent' },
+      { targetId: 'npc-cobb-thistlebrook', type: 'parent' },
+      { targetId: 'npc-oswin-thistlebrook', type: 'parent' },
+      { targetId: 'npc-pell-thistlebrook', type: 'sibling' },
+      { targetId: 'npc-fen-thistlebrook', type: 'sibling' },
+      { targetId: 'npc-tobin-thistlebrook', type: 'sibling' },
+    ],
+  },
+  {
+    id: 'npc-fen-thistlebrook', name: 'Fenwick "Fen" Thistlebrook', familyName: 'The Thistlebrooks', homeBuildingId: 'bld-fens-cabin', visible: false, age: 24,
+    job: 'Trapper',
+    species: 'Halfling', gender: 'Man', dndClass: 'Hunter',
+    famousQuote: "You don't hear me bragging. The traps do the bragging.",
+    eyeColor: 'Green', hairColor: 'Dark brown, cropped close', height: "2'11\"", weight: '37 lb',
+    distinguishingFeatures: 'Missing the tip of his left pinky, caught in one of his own snares as an apprentice — a mistake he\'s never repeated.',
+    appearance: 'Lean and still — Fen can sit motionless longer than anyone in town has the patience to watch.',
+    personality: 'Meticulous, solitary, more comfortable resetting a trapline than making conversation.',
+    clothing: 'Muted, scent-neutral cloth deliberately chosen not to spook game.',
+    history: "Runs and maintains trap lines across the surrounding woods almost entirely alone; personally responsible for roughly 60% of the town's small game.",
+    relationships: [
+      { targetId: 'npc-doran-thistlebrook', type: 'parent' },
+      { targetId: 'npc-cobb-thistlebrook', type: 'parent' },
+      { targetId: 'npc-oswin-thistlebrook', type: 'parent' },
+      { targetId: 'npc-pell-thistlebrook', type: 'sibling' },
+      { targetId: 'npc-roric-thistlebrook', type: 'sibling' },
+      { targetId: 'npc-tobin-thistlebrook', type: 'sibling' },
+    ],
+  },
+  {
+    id: 'npc-tobin-thistlebrook', name: 'Tobin Thistlebrook', familyName: 'The Thistlebrooks', homeBuildingId: 'bld-thistlebrook-warren', visible: false, age: 17,
+    job: 'Apprentice herbalist',
+    species: 'Halfling', gender: 'Man', dndClass: 'Craftsman',
+    famousQuote: "Dad says the ones that itch are usually the interesting ones.",
+    eyeColor: 'Hazel', hairColor: "Light brown, curly like Oswin's", height: "2'9\"", weight: '32 lb',
+    distinguishingFeatures: 'A faint rash scar on one hand from an early lesson in identifying poisonous plants the hard way.',
+    appearance: 'Still growing into his frame, perpetually smudged green and brown at the fingertips.',
+    personality: 'Curious and eager, trailing Oswin everywhere, occasionally testing plants he shouldn\'t.',
+    clothing: "A smaller version of Oswin's gathering vest.",
+    history: 'Apprenticing directly under Oswin, learning to identify and gather what the apothecary needs.',
+    relationships: [
+      { targetId: 'npc-doran-thistlebrook', type: 'parent' },
+      { targetId: 'npc-cobb-thistlebrook', type: 'parent' },
+      { targetId: 'npc-oswin-thistlebrook', type: 'parent' },
+      { targetId: 'npc-pell-thistlebrook', type: 'sibling' },
+      { targetId: 'npc-roric-thistlebrook', type: 'sibling' },
+      { targetId: 'npc-fen-thistlebrook', type: 'sibling' },
+    ],
+  },
+
+  // ---- Fenners ----
+  // Poppy's true nature is deliberately left unresolved here, not just to
+  // players — "people are split" was the brief, so her entry sticks to
+  // observable, ambiguous detail rather than picking a secret DM-only
+  // answer. Resolve it (or don't) whenever it actually matters at the
+  // table; nothing else here depends on which reading is true.
+  {
+    id: 'npc-wendel-fenner', name: 'Wendel Fenner', familyName: 'The Fenners', homeBuildingId: '' /* set to Wares for the Clever Northman's real id when adding */, visible: false, age: 44,
+    job: 'Proprietor, Wares for the Clever Northman',
+    species: 'Human', gender: 'Man', dndClass: 'Merchant',
+    famousQuote: "She's the family dog. That's all there is to it.",
+    eyeColor: 'Brown', hairColor: 'Dark brown, thinning', height: "5'10\"", weight: '180 lb',
+    distinguishingFeatures: 'Ink-stained fingers from constant inventory-keeping.',
+    appearance: 'Solidly built, perpetually mid-task — sleeves rolled, apron never quite clean.',
+    personality: 'Practical and a little gruff with customers, but visibly tenses and shuts the conversation down fast if anyone asks too many questions about Poppy.',
+    clothing: 'A heavy canvas shop apron over plain clothes.',
+    history: 'Runs the store his family has kept for two generations; adamant, whenever asked, that Poppy has "always just been the dog."',
+    relationships: [
+      { targetId: 'npc-marta-fenner', type: 'spouse' },
+      { targetId: 'npc-poppy-fenner', type: 'child' },
+    ],
+  },
+  {
+    id: 'npc-marta-fenner', name: 'Marta Fenner', familyName: 'The Fenners', homeBuildingId: '' /* set to Wares for the Clever Northman's real id when adding */, visible: false, age: 41,
+    job: 'Co-runs Wares for the Clever Northman — orders and bookkeeping',
+    species: 'Human', gender: 'Woman', dndClass: 'Merchant',
+    famousQuote: "People will believe whatever's more interesting than the truth. Doesn't make it true.",
+    eyeColor: 'Green', hairColor: 'Auburn, usually braided back', height: "5'6\"", weight: '140 lb',
+    distinguishingFeatures: 'A habit of absently reaching down to rest a hand on Poppy\'s head mid-conversation, without seeming to notice she\'s doing it.',
+    appearance: 'Warmer and more approachable than Wendel at first, quick to smile with customers.',
+    personality: 'Friendlier and more talkative than her husband, but just as immovable the moment the conversation turns to their daughter.',
+    clothing: 'Practical dress with a coin-pouch apron, ledger always close at hand.',
+    history: 'Handles the ordering and the books; the more visible, more approachable half of the shop.',
+    relationships: [
+      { targetId: 'npc-wendel-fenner', type: 'spouse' },
+      { targetId: 'npc-poppy-fenner', type: 'child' },
+    ],
+  },
+  {
+    id: 'npc-poppy-fenner', name: 'Poppy Fenner', familyName: 'The Fenners', homeBuildingId: '' /* set to Wares for the Clever Northman's real id when adding */, visible: false, age: 8,
+    job: 'Fixture of Wares for the Clever Northman',
+    species: 'Dog — or a girl. Disputed.', gender: 'Girl', dndClass: 'Misc',
+    famousQuote: '(She has never spoken in front of a customer. Everyone has a cousin who swears they heard her, once.)',
+    eyeColor: 'Amber', hairColor: 'Scruffy brown-and-white coat', height: '~2\' at the shoulder', weight: '~45 lb',
+    distinguishingFeatures: "Wears a small, worn charm bracelet as a collar — plainly child-sized, never explained, never removed.",
+    appearance: 'A scruffy, alert medium-sized mixed-breed dog. Sits at the counter like she\'s waiting for something, rather than lying down like a dog usually would.',
+    personality: 'Attentive in a way that unsettles some customers — seems to follow entire conversations, fetches specific named items off the shelves on request, and has been seen "counting" coins with one paw.',
+    clothing: 'The charm bracelet/collar; nothing else.',
+    history: "Has been at the store as long as anyone in town can clearly remember, which is itself part of the debate — either she's a very well-trained, unusually long-lived shop dog, or she hasn't aged because whatever happened to her stopped her from aging like a dog normally would. Wendel and Marta redirect every version of this question.",
+    relationships: [
+      { targetId: 'npc-wendel-fenner', type: 'parent' },
+      { targetId: 'npc-marta-fenner', type: 'parent' },
     ],
   },
 ]

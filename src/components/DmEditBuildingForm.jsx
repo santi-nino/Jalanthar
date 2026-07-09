@@ -93,15 +93,6 @@ function CatalogList({ label, pool, rows, multiplier, onChange, sources }) {
     return map
   }, [poolItems])
 
-  const suggestions = useMemo(() => {
-    if (!query) return []
-    const q = query.toLowerCase()
-    return poolItems
-      .filter((i) => !existingNames.has(i.name.trim().toLowerCase()))
-      .filter((i) => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q))
-      .slice(0, 20)
-  }, [poolItems, query, existingNames])
-
   // A DM adding an item manually, then later "Add All"-ing a category that
   // happens to contain that same item, should never end up with it twice.
   // Everything below funnels through `isDuplicate`/`addNewOnly`, keyed on a
@@ -117,6 +108,15 @@ function CatalogList({ label, pool, rows, multiplier, onChange, sources }) {
   function isDuplicate(name) {
     return existingNames.has(name.trim().toLowerCase())
   }
+
+  const suggestions = useMemo(() => {
+    if (!query) return []
+    const q = query.toLowerCase()
+    return poolItems
+      .filter((i) => !existingNames.has(i.name.trim().toLowerCase()))
+      .filter((i) => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q))
+      .slice(0, 20)
+  }, [poolItems, query, existingNames])
 
   function makeRow(item) {
     return {

@@ -46,14 +46,24 @@ function pickLateralHandles(posA, posB) {
 
 const NPC_SLOT = 170
 const GEN_ROW_HEIGHT = 140
-const FAMILY_HEADER_Y = 0
 const FAMILY_GAP = 100
-// Each family's default horizontal slot is a fixed distance from the last,
-// based purely on its sorted position among all families — NOT on the
-// rendered width of whichever families happen to be expanded right now.
-// That's what stops collapsing/expanding one family from displacing every
-// family after it.
-const FAMILY_DEFAULT_SPACING = 900
+// Families no longer sit in one long horizontal line — that made the tree
+// sprawl further sideways with every family added, and put the vast
+// majority of families far from wherever the viewport happened to be
+// centered. Instead they're laid out in a loose grid (wrapping every
+// FAMILY_GRID_COLS families to a new row) with a small deterministic
+// per-family jitter, so it reads as organically scattered rather than a
+// rigid grid — "deterministic" specifically so reloading the page doesn't
+// reshuffle anyone (a real Math.random() would do exactly that, since this
+// runs fresh on every render).
+const FAMILY_GRID_COLS = 3
+const FAMILY_COL_SPACING = 640
+const FAMILY_ROW_SPACING = 520
+
+function scatterJitter(seed) {
+  const x = Math.sin(seed * 12.9898) * 43758.5453
+  return x - Math.floor(x) // deterministic pseudo-random in [0, 1)
+}
 
 // A DM decluttering a tangled tree by hand nudges a card a modest distance
 // from where the graph would otherwise put it — not several family-widths
@@ -343,33 +353,64 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       // starting point but can still nudge things for their own screen.
       const treeLayout = { ...(fam.treeLayout || {}), ...(sessionOverrides[fam.id] || {}) }
       const hasManualHeader = treeLayout.__self__ != null
-      const defaultHeaderX = index * FAMILY_DEFAULT_SPACING
-      const headerPos = treeLayout.__self__ || { x: defaultHeaderX, y: FAMILY_HEADER_Y }
+      const col = index % FAMILY_GRID_COLS
+      const row = Math.floor(index / FAMILY_GRID_COLS)
+      const defaultHeaderX =
+        col * FAMILY_COL_SPACING + (scatterJitter(index * 2 + 1) - 0.5) * 220
+      const defaultHeaderY =
+        row * FAMILY_ROW_SPACING + (scatterJitter(index * 2 + 2) - 0.5) * 160
+      const headerPos = treeLayout.__self__ || { x: defaultHeaderX, y: defaultHeaderY }
       return { fam, collapsed, members, layout, treeLayout, hasManualHeader, headerPos }
     })
 
-    // --- Pass 2: collision avoidance. Only nudge families that are still
-    // using their default (never manually dragged) position, and only to
-    // the right, so a wide expanded family doesn't overlap the next one.
-    // Manually-placed families are never moved by this pass.
+    // --- Pass 2: collision avoidance, generalized to the scattered 2D
+    // layout above (this used to just be a left-to-right sweep, which only
+    // worked because every family sat on a single row). Any two families
+    // whose bounding boxes — header card plus, if expanded, its full
+    // subtree — would overlap get separated by nudging the later one
+    // (by default position) further right, with a few passes so chained
+    // overlaps settle. Manually-placed families are never moved, same
+    // contract as before; a non-manual family can still get pushed away
+    // from a manual one.
     //
-    // A family's tree never extends left of its own header — every member
-    // offset is shifted so the leftmost card sits at x=0 relative to the
-    // anchor (see the `anchorX` comment below) — so the tree's right edge
-    // is header.x + 70 + layout.width, and its left edge is header.x + 70,
-    // not header.x ± width/2. Treating it as centered (width/2 on each
-    // side) under-counts how far an expanded family actually reaches and
-    // lets the next family's header — and everything hanging off it —
-    // overlap the current family's own cards.
-    const byX = [...perFamily].sort((a, b) => a.headerPos.x - b.headerPos.x)
-    for (let i = 1; i < byX.length; i++) {
-      const prev = byX[i - 1]
-      const cur = byX[i]
-      if (cur.hasManualHeader) continue
-      const prevRight = prev.headerPos.x + 70 + prev.layout.width
-      const curLeft = cur.headerPos.x + 70
-      const overlap = prevRight + FAMILY_GAP - curLeft
-      if (overlap > 0) cur.headerPos = { ...cur.headerPos, x: cur.headerPos.x + overlap }
+    // Collapsing a family shrinks its bounds straight back down to its
+    // small default footprint, and headerPos for every non-manual family
+    // is recomputed from scratch each render (nothing here accumulates) —
+    // so removing the thing that caused a push removes the push itself,
+    // automatically, without any explicit "restore" step needed.
+    function familyBounds(f) {
+      const headerHalfWidth = 100
+      const treeRight = f.collapsed ? 0 : f.layout.width
+      const treeBottom = f.collapsed ? 0 : 90 + ((f.layout.maxGen || 0) + 1) * GEN_ROW_HEIGHT
+      return {
+        left: f.headerPos.x - headerHalfWidth,
+        right: f.headerPos.x + 70 + Math.max(treeRight, headerHalfWidth),
+        top: f.headerPos.y - 30,
+        bottom: f.headerPos.y + Math.max(treeBottom, 60),
+      }
+    }
+    for (let pass = 0; pass < 4; pass++) {
+      for (const anchor of perFamily) {
+        for (const mover of perFamily) {
+          if (mover === anchor || mover.hasManualHeader) continue
+          // An expanded family is the fixed point others get pushed away
+          // from — it should never itself get shoved aside just because a
+          // small collapsed card happens to be sitting nearby. Two
+          // expanded families that overlap each other are the one case
+          // still allowed to push one another, since neither has a claim
+          // to priority over the other.
+          if (!mover.collapsed && anchor.collapsed) continue
+          if (mover.headerPos.x < anchor.headerPos.x) continue
+          const ab = familyBounds(anchor)
+          const mb = familyBounds(mover)
+          const overlapsX = ab.left < mb.right + FAMILY_GAP && ab.right + FAMILY_GAP > mb.left
+          const overlapsY = ab.top < mb.bottom + FAMILY_GAP && ab.bottom + FAMILY_GAP > mb.top
+          if (overlapsX && overlapsY) {
+            const push = ab.right + FAMILY_GAP - mb.left
+            if (push > 0.5) mover.headerPos = { ...mover.headerPos, x: mover.headerPos.x + push }
+          }
+        }
+      }
     }
 
     const nodes = []
