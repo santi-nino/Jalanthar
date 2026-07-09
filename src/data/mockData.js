@@ -378,7 +378,8 @@ export const mockBuildings = [
       "89lzexuOe7eJMOFcNBJJ",
       "npc-bertrand-halden",
       "npc-dashel-halden",
-      "npc-wystan-halden"
+      "npc-wystan-halden",
+      "npc-bren-harlen"
     ],
     "interiorLayoutImage": "",
     "subheader": "Town Guard Barracks and Offices",
@@ -1364,6 +1365,54 @@ export const mockBuildings = [
     "wares": [],
     "menu": [],
     "services": []
+  },
+  {
+    "id": "bld-rusken-house",
+    "name": "Rusken House",
+    "subheader": "Hides, Smoke, and Bowstrings",
+    "type": "Residence",
+    "coords": {
+      "x": 50,
+      "y": 50
+    },
+    "quadrant": "inhabited",
+    "interiorLayoutImage": "",
+    "description": "A weathered hunting household thick with the smell of smoke, leather, and tanning salts — cured hides stretched along one wall, snares and knives never far from reach.",
+    "residents": [
+      "npc-mara-rusken",
+      "npc-osric-rusken",
+      "npc-dain-rusken",
+      "npc-corren-rusken"
+    ],
+    "revealed": false,
+    "priceMultiplier": 1.5,
+    "wares": [],
+    "menu": [],
+    "services": []
+  },
+  {
+    "id": "bld-harlen-farmstead",
+    "name": "Harlen Farmstead",
+    "subheader": "Turned Fields and Goat Pens",
+    "type": "Residence",
+    "coords": {
+      "x": 50,
+      "y": 50
+    },
+    "quadrant": "inhabited",
+    "interiorLayoutImage": "",
+    "description": "A working farmhouse clawed back from a decade of weeds and bad seasons — fenced goat pens, a well-worn plow, and a household that runs on discipline more than comfort.",
+    "residents": [
+      "npc-bera-harlen",
+      "npc-joric-harlen",
+      "npc-tellen-harlen",
+      "npc-pip-harlen"
+    ],
+    "revealed": false,
+    "priceMultiplier": 1.5,
+    "wares": [],
+    "menu": [],
+    "services": []
   }
 ]
 
@@ -1643,6 +1692,16 @@ export const mockFamilies = [
     "id": "fam-colby",
     "name": "The Colbys",
     "description": "An old, deeply settled married couple who have run Banks of Rauvin Livery for longer than most of the town has been alive."
+  },
+  {
+    "id": "fam-rusken",
+    "name": "The Ruskens",
+    "description": "A hunting household that kept Jalanthar fed through its leanest years. Mara and Osric are steady, unshowy trackers; their sons Dain and Corren are capable in the field but spend too many evenings — and too much coin — at the Thrice Crowned Cockatrice."
+  },
+  {
+    "id": "fam-harlen",
+    "name": "The Harlens",
+    "description": "A farming family that stayed after Jalanthar's abandonment rather than lose the only land they'd ever owned. Bera and Joric have spent a decade dragging the farm back from ruin; their eldest son Bren left for the town guard, leaving the heavier work to Tellen and youngest Pip."
   }
 ]
 
@@ -3876,6 +3935,368 @@ export const mockNpcs = [
       {
         "targetId": "npc-osric-colby",
         "type": "spouse"
+      }
+    ]
+  },
+  {
+    "id": "npc-mara-rusken",
+    "name": "Mara Rusken",
+    "familyName": "The Ruskens",
+    "homeBuildingIds": [
+      "bld-rusken-house"
+    ],
+    "visible": false,
+    "age": 48,
+    "job": "Hunter, trapper, hide-curer",
+    "species": "Human",
+    "gender": "Woman",
+    "dndClass": "Hunter",
+    "famousQuote": "If the woods wanted you dead, you wouldn't have heard a thing.",
+    "eyeColor": "",
+    "hairColor": "Close-cropped brown-gray",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "A missing left pinky from an old snare accident; keeps a strip of cured foxhide tied around the haft of her skinning knife.",
+    "appearance": "Broad-shouldered and weather-darkened, with a square jaw and heavy forearms. Her hands are nicked and callused from years of bowstrings, knives, and winter work.",
+    "personality": "Practical, blunt, and allergic to boasting. She respects competence more than rank and has little patience for anyone who romanticizes hunting, the wilds, or frontier hardship.",
+    "clothing": "A patched hide coat, wool trousers tucked into mud-stiff boots, and a belt hung with small knives, cord, and bone toggles. Smells faintly of smoke, leather, and bitter tanning salts.",
+    "history": "Kept the Rusken household fed during Jalanthar's leanest years, when the town was too empty to rely on steady trade. Knows the nearby game trails, winter dens, and dangerous gullies better than almost anyone, but refuses to call herself a ranger.",
+    "relationships": [
+      {
+        "targetId": "npc-osric-rusken",
+        "type": "spouse"
+      },
+      {
+        "targetId": "npc-dain-rusken",
+        "type": "child"
+      },
+      {
+        "targetId": "npc-corren-rusken",
+        "type": "child"
+      }
+    ]
+  },
+  {
+    "id": "npc-osric-rusken",
+    "name": "Osric Rusken",
+    "familyName": "The Ruskens",
+    "homeBuildingIds": [
+      "bld-rusken-house"
+    ],
+    "visible": false,
+    "age": 52,
+    "job": "Hunter, tracker, trap-line keeper",
+    "species": "Human",
+    "gender": "Man",
+    "dndClass": "Hunter",
+    "famousQuote": "Tracks don't lie. People do.",
+    "eyeColor": "Narrow-eyed",
+    "hairColor": "Graying beard, trimmed close",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "A bent nose from an elk kick; always carries a little brass whistle used to call hunting dogs that no longer exist.",
+    "appearance": "Lean and long-limbed, with a permanent squint from watching distant tree lines. Moves quietly even on tavern floorboards.",
+    "personality": "Quiet, exacting, and hard to impress. Notices small details before large ones and tends to answer questions only after deciding whether the person deserves the truth.",
+    "clothing": "Layered wool under a faded green hunting cloak, patched gloves, and a soft leather cap darkened by rain and smoke. Plain but obsessively repaired.",
+    "history": "Married into the Rusken name and became one of the town's more reliable hunters through patience rather than bravado. Has killed dangerous things outside the walls, but unlike the Vods, rarely tells the stories unless the lesson matters.",
+    "relationships": [
+      {
+        "targetId": "npc-mara-rusken",
+        "type": "spouse"
+      },
+      {
+        "targetId": "npc-dain-rusken",
+        "type": "child"
+      },
+      {
+        "targetId": "npc-corren-rusken",
+        "type": "child"
+      }
+    ]
+  },
+  {
+    "id": "npc-dain-rusken",
+    "name": "Dain Rusken",
+    "familyName": "The Ruskens",
+    "homeBuildingIds": [
+      "bld-rusken-house"
+    ],
+    "visible": false,
+    "age": 25,
+    "job": "Hunter, occasional tavern guide, drinker",
+    "species": "Human",
+    "gender": "Man",
+    "dndClass": "Hunter",
+    "famousQuote": "First round's mine. Second round's somebody richer.",
+    "eyeColor": "",
+    "hairColor": "",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "A wolf-tooth cord tied around his wrist; his cheeks flush red quickly from cold, embarrassment, or ale.",
+    "appearance": "Thick-necked and sturdy, with a round face and a grin that shows up before good judgment does. Built for hauling carcasses and firewood but does not always sleep enough.",
+    "personality": "Funny, warm, loud, and too eager to turn discomfort into a joke. Helpful and generous sober; sentimental, overfamiliar, and loose with information drunk.",
+    "clothing": "A fur-lined vest over a homespun shirt, scuffed boots, and a belt with too many pouches. His cloak is better than his coin purse should allow.",
+    "history": "A capable hunter who spends too many evenings at the Thrice Crowned Cockatrice, buying rounds he cannot afford. Drinks because the tavern makes Jalanthar feel full again, louder than it is, and less haunted by all the empty buildings.",
+    "relationships": [
+      {
+        "targetId": "npc-mara-rusken",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-osric-rusken",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-corren-rusken",
+        "type": "sibling"
+      }
+    ]
+  },
+  {
+    "id": "npc-corren-rusken",
+    "name": "Corren Rusken",
+    "familyName": "The Ruskens",
+    "homeBuildingIds": [
+      "bld-rusken-house"
+    ],
+    "visible": false,
+    "age": 21,
+    "job": "Trapper, snare-maker, drinker",
+    "species": "Human",
+    "gender": "Man",
+    "dndClass": "Hunter",
+    "famousQuote": "I could hit it with a bow. I just don't need to.",
+    "eyeColor": "",
+    "hairColor": "",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "One missing front tooth from a fall outside the Cockatrice; keeps a lucky copper coin tucked into his right boot.",
+    "appearance": "Wiry and restless, with quick hands and a sharp, defensive stare. Looks younger than he wants to and tries to compensate by taking up too much space.",
+    "personality": "Competitive, easily slighted, and desperate not to be treated as the little brother. Likes drinking because it makes him feel older, louder, and harder to ignore.",
+    "clothing": "A badly mended leather coat, fingerless gloves, and trousers stained with mud from setting snares. Boots always damp at the seams.",
+    "history": "Better with snares than with a bow, though he hates when anyone says so. Follows Dain to the Cockatrice most nights and usually escalates whatever Dain starts, especially if outsiders are watching.",
+    "relationships": [
+      {
+        "targetId": "npc-mara-rusken",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-osric-rusken",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-dain-rusken",
+        "type": "sibling"
+      }
+    ]
+  },
+  {
+    "id": "npc-bera-harlen",
+    "name": "Bera Harlen",
+    "familyName": "The Harlens",
+    "homeBuildingIds": [
+      "bld-harlen-farmstead"
+    ],
+    "visible": false,
+    "age": 47,
+    "job": "Farmer, household matriarch, goat-keeper",
+    "species": "Human",
+    "gender": "Woman",
+    "dndClass": "Laborer",
+    "famousQuote": "You can complain after the field is turned.",
+    "eyeColor": "",
+    "hairColor": "Thick black hair, braided tight",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "A deep sun-line across her brow from years of squinting over the fields; wears a small iron key on a cord around her neck.",
+    "appearance": "Sturdy and compact, with sun-browned arms and a face that looks gentler when she forgets to be tired.",
+    "personality": "Warm in public, iron-willed at home. Believes kindness is a duty, but so is discipline, and has little patience for self-pity when there is work waiting.",
+    "clothing": "A heavy work dress under a patched apron, wool stockings, and boots with repaired heels. Adds a brown shawl pinned with a plain wooden brooch in colder weather.",
+    "history": "Stayed after Jalanthar's abandonment because leaving meant losing the only land the family had ever owned. Has spent the last decade dragging the farm back from weeds, rot, deer, and bad seasons.",
+    "relationships": [
+      {
+        "targetId": "npc-joric-harlen",
+        "type": "spouse"
+      },
+      {
+        "targetId": "npc-bren-harlen",
+        "type": "child"
+      },
+      {
+        "targetId": "npc-tellen-harlen",
+        "type": "child"
+      },
+      {
+        "targetId": "npc-pip-harlen",
+        "type": "child"
+      }
+    ]
+  },
+  {
+    "id": "npc-joric-harlen",
+    "name": "Joric Harlen",
+    "familyName": "The Harlens",
+    "homeBuildingIds": [
+      "bld-harlen-farmstead"
+    ],
+    "visible": false,
+    "age": 53,
+    "job": "Farmer, plowman, seed-keeper",
+    "species": "Human",
+    "gender": "Man",
+    "dndClass": "Laborer",
+    "famousQuote": "A field remembers every lazy hand.",
+    "eyeColor": "Tired eyes",
+    "hairColor": "Graying beard",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "Uneven shoulders from an old plow injury; carries a carved measuring stick for spacing rows and checking fence gaps.",
+    "appearance": "Tall, stooped, and narrow through the chest, with large hands that have begun to stiffen with age. Moves carefully, especially in cold weather.",
+    "personality": "Patient, dry-humored, and quietly stubborn. Rarely raises his voice, but when he stops speaking entirely, everyone in the family knows they have gone too far.",
+    "clothing": "Plain linen shirts, patched brown trousers, a faded work coat, and a wide-brimmed hat with a split in the brim. Clean at dawn, dirty by noon.",
+    "history": "Used to carry the heaviest share of farm labor, but injury and age have shifted more work onto his sons. Proud that Bren joined the guard, though privately resents losing a strong pair of hands.",
+    "relationships": [
+      {
+        "targetId": "npc-bera-harlen",
+        "type": "spouse"
+      },
+      {
+        "targetId": "npc-bren-harlen",
+        "type": "child"
+      },
+      {
+        "targetId": "npc-tellen-harlen",
+        "type": "child"
+      },
+      {
+        "targetId": "npc-pip-harlen",
+        "type": "child"
+      }
+    ]
+  },
+  {
+    "id": "npc-bren-harlen",
+    "name": "Bren Harlen",
+    "familyName": "The Harlens",
+    "homeBuildingIds": [
+      "bld-garrison-quarters"
+    ],
+    "visible": false,
+    "age": 26,
+    "job": "Town guard, former farmhand, drinker",
+    "species": "Human",
+    "gender": "Man",
+    "dndClass": "Fighter",
+    "famousQuote": "I'm not hiding behind a plow while others bleed.",
+    "eyeColor": "Tired eyes",
+    "hairColor": "",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "Bruised knuckles from training-yard drills and tavern arguments; keeps his guard badge polished even when the rest of him is a mess.",
+    "appearance": "Broad-backed and clean-shaven, with strong farmer's shoulders and a jaw he clenches whenever someone calls him \"Joric's boy.\" Looks steadier than he feels.",
+    "personality": "Dutiful in daylight and reckless after drinking. Wants to be brave, respected, and necessary, but is deeply afraid he is only pretending at all three.",
+    "clothing": "Guard-issue mail over a padded coat, though his boots and belt still look like farm gear. Keeps the uniform cloak on longer than necessary off duty.",
+    "history": "Joined the town guard when the raiding pattern changed. Tells people it was duty, and that is partly true — he also wanted distance from the farm and from the feeling that his life had already been decided. At the Cockatrice, ale makes him feel like the man he hopes the town thinks he is.",
+    "relationships": [
+      {
+        "targetId": "npc-bera-harlen",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-joric-harlen",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-tellen-harlen",
+        "type": "sibling"
+      },
+      {
+        "targetId": "npc-pip-harlen",
+        "type": "sibling"
+      }
+    ]
+  },
+  {
+    "id": "npc-tellen-harlen",
+    "name": "Tellen Harlen",
+    "familyName": "The Harlens",
+    "homeBuildingIds": [
+      "bld-harlen-farmstead"
+    ],
+    "visible": false,
+    "age": 19,
+    "job": "Farmhand, field worker, fence-mender",
+    "species": "Human",
+    "gender": "Man",
+    "dndClass": "Laborer",
+    "famousQuote": "Somebody still has to feed the brave men.",
+    "eyeColor": "",
+    "hairColor": "Straw-colored, cut unevenly",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "A pale birthmark shaped like a thumbprint under his right eye; always has dirt under his nails no matter how often he scrubs.",
+    "appearance": "Long-limbed, rawboned, and still growing into himself. Stands with the slouched caution of someone used to swallowing complaints.",
+    "personality": "Responsible, resentful, and more perceptive than people give him credit for. Thinks Bren abandoned the family, but is ashamed of how much he still admires him.",
+    "clothing": "Rolled sleeves, patched trousers, a roughspun vest, and rope-tied boots. Shirt cuffs usually stained with soil, goat milk, or fence tar.",
+    "history": "Now does much of the heavy work Bren used to do. Becoming genuinely good at running the farm, which scares him because it may mean everyone else was right about where he belongs.",
+    "relationships": [
+      {
+        "targetId": "npc-bera-harlen",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-joric-harlen",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-bren-harlen",
+        "type": "sibling"
+      },
+      {
+        "targetId": "npc-pip-harlen",
+        "type": "sibling"
+      }
+    ]
+  },
+  {
+    "id": "npc-pip-harlen",
+    "name": "Pip Harlen",
+    "familyName": "The Harlens",
+    "homeBuildingIds": [
+      "bld-harlen-farmstead"
+    ],
+    "visible": false,
+    "age": 15,
+    "job": "Farmhand, goat-tender, errand boy",
+    "species": "Human",
+    "gender": "Boy",
+    "dndClass": "Laborer",
+    "famousQuote": "I didn't spy. I was already there.",
+    "eyeColor": "Sharp-eyed",
+    "hairColor": "",
+    "height": "",
+    "weight": "",
+    "distinguishingFeatures": "A chipped left ear from a goat bite; keeps bits of string, buttons, and stolen-looking nails in his pockets.",
+    "appearance": "Small for his age, sharp-eyed, and quick-footed, with a narrow face and a habit of looking at exits before adults notice he entered. All elbows, knees, and nervous curiosity.",
+    "personality": "Curious, quick, and much less innocent than adults assume. Listens from haylofts, under tavern windows, and behind half-closed doors because adults say the interesting things only when they think children are gone.",
+    "clothing": "Oversized hand-me-down shirts, a patched green scarf, short boots, and trousers held up with a cord. Often goes without a coat until Bera catches him.",
+    "history": "Still handles the smaller farm work: goats, chickens, water, errands, and whatever Tellen tells him to do twice. Idolizes Bren's guard status, but has also seen him drunk enough to be frightened by it.",
+    "relationships": [
+      {
+        "targetId": "npc-bera-harlen",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-joric-harlen",
+        "type": "parent"
+      },
+      {
+        "targetId": "npc-bren-harlen",
+        "type": "sibling"
+      },
+      {
+        "targetId": "npc-tellen-harlen",
+        "type": "sibling"
       }
     ]
   }
