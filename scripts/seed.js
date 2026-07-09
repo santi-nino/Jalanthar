@@ -10,6 +10,18 @@
 // changed to match — see --force below if you genuinely want the old
 // behavior back for a specific one-off reason.
 //
+// ONE exception to "skip if it already exists": a building's `residents`
+// array. When a new family gets added whose members work at an existing
+// building (the guild, a shop, a temple...), that building's document
+// already exists — so a plain skip would silently drop those new
+// residents forever, which already happened more than once in practice.
+// The fix is a separate, narrow pass that only ever UNIONS mockData.js's
+// residents into an existing building's residents — it adds IDs, never
+// removes one, and never touches any other field (coordinates,
+// description, wares, anything). New buildings still go through the
+// normal create-if-missing path above; this only covers buildings that
+// already existed before this run.
+//
 // Setup:
 //   1. Firebase Console > Project Settings > Service Accounts >
 //      "Generate new private key". Save the downloaded file as
@@ -76,6 +88,30 @@ async function seedCollection(name, docs) {
     `"${name}": created ${created} new document(s)` +
       (skipped ? `, skipped ${skipped} that already existed` : '')
   )
+  return existingIds
+}
+
+async function mergeExistingBuildingResidents(docs, existingIds) {
+  if (FORCE) return // --force already fully overwrote these, nothing to merge
+  const batch = db.batch()
+  let updated = 0
+  for (const b of docs) {
+    if (!existingIds.has(b.id)) continue // handled by the create pass above
+    const snap = await db.collection('buildings').doc(b.id).get()
+    const liveResidents = snap.data()?.residents || []
+    const merged = [...new Set([...liveResidents, ...(b.residents || [])])]
+    if (merged.length !== liveResidents.length) {
+      batch.update(db.collection('buildings').doc(b.id), { residents: merged })
+      updated++
+    }
+  }
+  if (updated > 0) {
+    await batch.commit()
+  }
+  console.log(
+    `"buildings": merged new residents into ${updated} existing building(s)` +
+      (updated === 0 ? ' (nothing new to add)' : '')
+  )
 }
 
 if (FORCE) {
@@ -87,7 +123,8 @@ if (FORCE) {
   await new Promise((resolve) => setTimeout(resolve, 5000))
 }
 
-await seedCollection('buildings', mockBuildings)
+const existingBuildingIds = await seedCollection('buildings', mockBuildings)
+await mergeExistingBuildingResidents(mockBuildings, existingBuildingIds)
 await seedCollection('npcs', mockNpcs)
 await seedCollection('families', mockFamilies)
 
