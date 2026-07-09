@@ -15,11 +15,10 @@ export default function DmEditNpcForm({ npc, onClose }) {
     removeResidentFromBuilding,
   } = useData()
   const [newFamilyName, setNewFamilyName] = useState('')
-  const [form, setForm] = useState(
-    npc || {
+  const [form, setForm] = useState(() => {
+    const base = npc || {
       name: '',
       familyName: families[0]?.name || '',
-      homeBuildingId: '',
       visible: false,
       job: '',
       species: '',
@@ -38,7 +37,14 @@ export default function DmEditNpcForm({ npc, onClose }) {
       history: '',
       relationships: [],
     }
-  )
+    // A resident can be found at more than one building (someone might work
+    // the tavern counter but be listed at the magistrate's office too) —
+    // homeBuildingIds is the current field for that. Older NPCs only have
+    // the single homeBuildingId this form used to write; wrap it into the
+    // array so editing one of them "just works" without a data migration.
+    const homeBuildingIds = base.homeBuildingIds || (base.homeBuildingId ? [base.homeBuildingId] : [])
+    return { ...base, homeBuildingIds }
+  })
 
   function set(key, value) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -74,14 +80,16 @@ export default function DmEditNpcForm({ npc, onClose }) {
       const savedId = await saveNpc(form)
       const resolvedId = savedId || npc?.id
 
-      const oldBuildingId = npc?.homeBuildingId || ''
-      const newBuildingId = form.homeBuildingId || ''
-      if (resolvedId && oldBuildingId !== newBuildingId) {
-        if (oldBuildingId) {
-          await removeResidentFromBuilding(oldBuildingId, resolvedId)
+      const oldBuildingIds = npc?.homeBuildingIds || (npc?.homeBuildingId ? [npc.homeBuildingId] : [])
+      const newBuildingIds = form.homeBuildingIds || []
+      if (resolvedId) {
+        const removedIds = oldBuildingIds.filter((id) => !newBuildingIds.includes(id))
+        const addedIds = newBuildingIds.filter((id) => !oldBuildingIds.includes(id))
+        for (const id of removedIds) {
+          await removeResidentFromBuilding(id, resolvedId)
         }
-        if (newBuildingId) {
-          await addResidentToBuilding(newBuildingId, resolvedId)
+        for (const id of addedIds) {
+          await addResidentToBuilding(id, resolvedId)
         }
       }
 
@@ -197,21 +205,62 @@ export default function DmEditNpcForm({ npc, onClose }) {
           that building's edit form.
         </p>
 
-        <label className="block">
-          <span className="text-sm font-display uppercase text-ink-soft">Home Building</span>
+        <div>
+          <span className="text-sm font-display uppercase text-ink-soft block mb-1">
+            Home Building(s)
+          </span>
+          <p className="text-xs text-ink-soft/60 italic mb-1.5">
+            Everywhere this resident can be found — someone can be listed at more than one
+            building (e.g. found at both the tavern and the magistrate's office).
+          </p>
+          {form.homeBuildingIds?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-1.5">
+              {form.homeBuildingIds.map((id) => {
+                const b = buildings.find((bb) => bb.id === id)
+                return (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-1.5 bg-parchment border border-leather rounded-sm pl-2 pr-1 py-0.5 text-xs"
+                  >
+                    {b ? b.name : id}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        set(
+                          'homeBuildingIds',
+                          form.homeBuildingIds.filter((x) => x !== id)
+                        )
+                      }
+                      aria-label={`Remove ${b ? b.name : id}`}
+                      className="text-wax-dark hover:text-wax font-bold leading-none px-0.5"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )
+              })}
+            </div>
+          )}
           <select
-            value={form.homeBuildingId || ''}
-            onChange={(e) => set('homeBuildingId', e.target.value)}
-            className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+            value=""
+            onChange={(e) => {
+              const id = e.target.value
+              if (id && !form.homeBuildingIds.includes(id)) {
+                set('homeBuildingIds', [...form.homeBuildingIds, id])
+              }
+            }}
+            className="w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
           >
-            <option value="">— none —</option>
-            {buildings.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
+            <option value="">— add a building —</option>
+            {buildings
+              .filter((b) => !form.homeBuildingIds.includes(b.id))
+              .map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
           </select>
-        </label>
+        </div>
 
         <label className="block">
           <span className="text-sm font-display uppercase text-ink-soft">Job / Role</span>

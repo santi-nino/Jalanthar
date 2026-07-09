@@ -292,7 +292,7 @@ function layoutFamily(members, npcsById, genOverrides = {}) {
 }
 
 export default function RelationshipTab({ onEditNpc, onEditFamily }) {
-  const { families, npcs, buildings, saveFamily } = useData()
+  const { families, npcs, buildings, saveFamily, saveNpc } = useData()
   const { isDm } = useAuth()
   const [selectedNpcId, setSelectedNpcId] = useState(null)
   const [selectedEdgeId, setSelectedEdgeId] = useState(null)
@@ -335,6 +335,16 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     () => [...families].sort((a, b) => a.id.localeCompare(b.id)),
     [families]
   )
+  // Anyone whose familyName is blank, or doesn't match any family that
+  // actually exists, still belongs on the tree — just without a family
+  // banner grouping them. They render as standalone cards, scattered into
+  // the same layout as everyone else rather than off in a separate area.
+  const unattachedNpcs = useMemo(() => {
+    const familyNames = new Set(sortedFamilies.map((f) => f.name))
+    return visibleNpcs
+      .filter((n) => !familyNames.has(n.familyName))
+      .sort((a, b) => a.id.localeCompare(b.id))
+  }, [visibleNpcs, sortedFamilies])
 
   const computed = useMemo(() => {
     // --- Pass 1: each family's own internal layout + its default anchor,
@@ -363,6 +373,36 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       return { fam, collapsed, members, layout, treeLayout, hasManualHeader, headerPos }
     })
 
+    // Unattached NPCs are treated as one-person "units" that plug into the
+    // exact same scatter grid and collision system as families — they just
+    // never render a header banner and can't be expanded/collapsed. Index
+    // continues on from the last family so they interleave into the same
+    // visual scatter rather than clustering separately.
+    const perLoose = unattachedNpcs.map((npc, looseIndex) => {
+      const index = sortedFamilies.length + looseIndex
+      const unitId = `unattached-${npc.id}`
+      const merged = {
+        ...(npc.treePos ? { __self__: npc.treePos } : {}),
+        ...(sessionOverrides[unitId] || {}),
+      }
+      const hasManualHeader = merged.__self__ != null
+      const col = index % FAMILY_GRID_COLS
+      const row = Math.floor(index / FAMILY_GRID_COLS)
+      const defaultHeaderX =
+        col * FAMILY_COL_SPACING + (scatterJitter(index * 2 + 1) - 0.5) * 220
+      const defaultHeaderY =
+        row * FAMILY_ROW_SPACING + (scatterJitter(index * 2 + 2) - 0.5) * 160
+      const headerPos = merged.__self__ || { x: defaultHeaderX, y: defaultHeaderY }
+      return {
+        unitId,
+        npc,
+        collapsed: true,
+        layout: { width: NPC_SLOT * 1.2, maxGen: 0 },
+        hasManualHeader,
+        headerPos,
+      }
+    })
+
     // --- Pass 2: collision avoidance, generalized to the scattered 2D
     // layout above (this used to just be a left-to-right sweep, which only
     // worked because every family sat on a single row). Any two families
@@ -389,9 +429,10 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         bottom: f.headerPos.y + Math.max(treeBottom, 60),
       }
     }
+    const allUnits = [...perFamily, ...perLoose]
     for (let pass = 0; pass < 4; pass++) {
-      for (const anchor of perFamily) {
-        for (const mover of perFamily) {
+      for (const anchor of allUnits) {
+        for (const mover of allUnits) {
           if (mover === anchor || mover.hasManualHeader) continue
           // An expanded family is the fixed point others get pushed away
           // from — it should never itself get shoved aside just because a
@@ -753,6 +794,28 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       }
     })
 
+    // Floating cards for anyone without a (real) family — same +70 offset
+    // convention as a family anchor, purely so familyBounds' collision math
+    // (which assumes that offset) lines up with where these actually render.
+    perLoose.forEach(({ unitId, npc, headerPos }) => {
+      const pos = { x: headerPos.x + 70, y: headerPos.y }
+      familyIdByNpc[npc.id] = unitId
+      const fullyVisible = isNpcFullyVisible(npc, isDm)
+      nodes.push({
+        id: npc.id,
+        type: 'npc',
+        position: pos,
+        data: {
+          label: npc.name,
+          job: fullyVisible ? npc.job : '',
+          age: fullyVisible ? npc.age : '',
+          familyId: unitId,
+          fullyVisible,
+          onClick: fullyVisible ? () => setSelectedNpcId(npc.id) : undefined,
+        },
+      })
+    })
+
     const renderedNpcIds = new Set(nodes.filter((n) => n.type === 'npc').map((n) => n.id))
     const seenCross = new Set()
     visibleNpcs.forEach((npc) => {
@@ -806,7 +869,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
       .map((e) => (allEdgeOverrides[e.id]?.type ? { ...e, type: allEdgeOverrides[e.id].type } : e))
 
     return { nodes, edges: finalEdges, familyIdByNpc }
-  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily, selectedNpcId, families, sessionOverrides])
+  }, [sortedFamilies, visibleNpcs, npcsById, isDm, onEditFamily, expandedFamilyIds, saveFamily, selectedNpcId, families, sessionOverrides, unattachedNpcs])
 
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
@@ -896,6 +959,30 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
     (_event, node) => {
       dragState.current = null
       const familyId = node.data.familyId
+
+      // Unattached NPC cards aren't part of any family document — their
+      // dragged position has nowhere on a family to live, so it's saved
+      // directly on the NPC itself instead (a small, merge-only write that
+      // never touches anything else on that NPC).
+      if (familyId?.startsWith('unattached-')) {
+        if (isDm) {
+          saveNpc({ id: node.id, treePos: node.position })
+        } else {
+          setSessionOverrides((prev) => {
+            const next = { ...prev, [familyId]: { __self__: node.position } }
+            try {
+              sessionStorage.setItem('jalanthar-tree-session-overrides', JSON.stringify(next))
+            } catch {
+              // Storage can fail quietly (private browsing, quota) — the
+              // drag still looks fine for the rest of this render, it just
+              // won't survive a reload in that case.
+            }
+            return next
+          })
+        }
+        return
+      }
+
       const fam = families.find((f) => f.id === familyId)
       if (!fam) return
 
@@ -930,7 +1017,7 @@ export default function RelationshipTab({ onEditNpc, onEditFamily }) {
         })
       }
     },
-    [families, isDm, saveFamily, nodes]
+    [families, isDm, saveFamily, saveNpc, nodes]
   )
 
   const selectedNpc =

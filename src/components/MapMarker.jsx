@@ -1,5 +1,29 @@
 import { BuildingMarkerIcon } from './buildingIcons'
 
+// The popover is a fixed 208px wide (w-52) card anchored off a marker whose
+// position is a percentage of the map's width/height — a marker near an
+// edge would otherwise center (or drop below) the popover straight off the
+// visible map. Flipping the anchor direction based on which edge a marker
+// is close to is a simple, effective fix without needing to measure the
+// map container's actual rendered size (ResizeObservers, refs, etc.) for
+// what's a fairly coarse, good-enough-in-practice adjustment.
+const EDGE_MARGIN = 20 // percent
+
+function popoverPositionClasses(coords) {
+  const nearRight = coords.x > 100 - EDGE_MARGIN
+  const nearLeft = coords.x < EDGE_MARGIN
+  const nearBottom = coords.y > 100 - EDGE_MARGIN
+
+  const horizontal = nearRight
+    ? 'right-0'
+    : nearLeft
+      ? 'left-0'
+      : 'left-1/2 -translate-x-1/2'
+  const vertical = nearBottom ? 'bottom-full mb-2' : 'top-full mt-2'
+
+  return `${horizontal} ${vertical}`
+}
+
 export default function MapMarker({ building, expanded, onToggle, onSeeMore }) {
   return (
     <div
@@ -24,7 +48,7 @@ export default function MapMarker({ building, expanded, onToggle, onSeeMore }) {
       {expanded && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-52 bg-parchment paper-texture border-2 border-gold rounded-sm shadow-xl p-3 z-10"
+          className={`absolute w-52 bg-parchment paper-texture border-2 border-gold rounded-sm shadow-xl p-3 z-10 ${popoverPositionClasses(building.coords)}`}
         >
           <p className="font-display text-base text-leather-dark leading-tight">{building.name}</p>
           {building.subheader && (
