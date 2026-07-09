@@ -8,7 +8,10 @@ import {
   deleteDoc,
   arrayUnion,
   arrayRemove,
+  query,
+  where,
 } from 'firebase/firestore'
+import { onAuthStateChanged } from 'firebase/auth'
 import { db, auth, isFirebaseConfigured } from '../firebase'
 import { mockBuildings, mockNpcs, mockFamilies } from '../data/mockData'
 
@@ -71,22 +74,91 @@ export function DataProvider({ children }) {
 
   useEffect(() => {
     if (isFirebaseConfigured) {
-      const unsubs = [
-        onSnapshot(collection(db, 'buildings'), (snap) =>
-          setBuildings(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-        ),
-        onSnapshot(collection(db, 'npcs'), (snap) =>
-          setNpcs(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-        ),
-        onSnapshot(collection(db, 'families'), (snap) =>
-          setFamilies(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-        ),
-        onSnapshot(collection(db, 'sources'), (snap) =>
-          setSources(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-        ),
-      ]
+      const unsubBuildings = onSnapshot(collection(db, 'buildings'), (snap) =>
+        setBuildings(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      )
+      const unsubFamilies = onSnapshot(collection(db, 'families'), (snap) =>
+        setFamilies(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      )
+
+      // The npcs rule is `visible == true || revealedViaBuilding == true ||
+      // auth != null` — a per-document condition. Firestore's real behavior
+      // for list/collection queries is "all or nothing": it checks whether
+      // every document a query COULD possibly return is provably allowed
+      // by the rule, and if not, it rejects the ENTIRE query outright — it
+      // does NOT silently filter out just the disallowed documents. (This
+      // is documented Firestore behavior, not a bug on our end — Firebase's
+      // own docs use this exact "public cities" example:
+      // https://firebase.google.com/docs/firestore/security/rules-query.)
+      // A plain unconstrained onSnapshot(collection(db,'npcs')) therefore
+      // returned PERMISSION_DENIED — and an empty list — for every non-DM
+      // visitor, regardless of how many NPCs actually had visible:true.
+      // Nothing revealed was ever reaching a player's browser.
+      //
+      // The fix: query with an explicit where() matching one branch of the
+      // rule's OR exactly. Firestore CAN statically prove a query like
+      // `.where('visible','==',true)` only ever returns documents where
+      // that field is true, satisfying the rule's first branch for every
+      // possible result — so that query is allowed. Same logic for the
+      // second branch. Two queries, merged client-side by id, cover the
+      // full "visible OR revealedViaBuilding" set a player should see.
+      // The DM doesn't need any of this: once authenticated, `auth != null`
+      // alone makes the OR unconditionally true for every document
+      // regardless of its data, so the plain unconstrained query is
+      // provably fine in that case — same as it always was.
+      let unsubNpcs = () => {}
+      let unsubSources = () => {}
+      const unsubAuth = onAuthStateChanged(auth, (user) => {
+        unsubNpcs()
+        unsubSources()
+        if (user) {
+          unsubNpcs = onSnapshot(collection(db, 'npcs'), (snap) =>
+            setNpcs(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+          )
+          unsubSources = onSnapshot(collection(db, 'sources'), (snap) =>
+            setSources(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+          )
+        } else {
+          let visibleDocs = {}
+          let revealedDocs = {}
+          const emit = () => setNpcs(Object.values({ ...visibleDocs, ...revealedDocs }))
+          const unsubVisible = onSnapshot(
+            query(collection(db, 'npcs'), where('visible', '==', true)),
+            (snap) => {
+              visibleDocs = Object.fromEntries(
+                snap.docs.map((d) => [d.id, { id: d.id, ...d.data() }])
+              )
+              emit()
+            }
+          )
+          const unsubRevealed = onSnapshot(
+            query(collection(db, 'npcs'), where('revealedViaBuilding', '==', true)),
+            (snap) => {
+              revealedDocs = Object.fromEntries(
+                snap.docs.map((d) => [d.id, { id: d.id, ...d.data() }])
+              )
+              emit()
+            }
+          )
+          unsubNpcs = () => {
+            unsubVisible()
+            unsubRevealed()
+          }
+          // Sources are DM-only (`allow read: if request.auth != null`) —
+          // nothing to subscribe to as a player, and no point trying.
+          setSources([])
+          unsubSources = () => {}
+        }
+      })
+
       setLoading(false)
-      return () => unsubs.forEach((u) => u())
+      return () => {
+        unsubBuildings()
+        unsubFamilies()
+        unsubAuth()
+        unsubNpcs()
+        unsubSources()
+      }
     } else {
       setBuildings(loadDemo(LS_KEYS.buildings, mockBuildings))
       setNpcs(loadDemo(LS_KEYS.npcs, mockNpcs))
