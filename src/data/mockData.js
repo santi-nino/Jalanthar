@@ -4301,3 +4301,736 @@ export const mockNpcs = [
     ]
   }
 ]
+
+
+export const mockSources = [
+  {
+    "id": "src-hunters-trapper-guide",
+    "name": "Hunter's & Trapper's Price Guide",
+    "wares": [
+      {
+        "rowId": "row-trapper-1",
+        "name": "Mounted Antlers",
+        "basePrice": 15,
+        "description": "A proud rack of antlers, cleaned and mounted. The kind of thing a hunter hangs over a hearth.",
+        "category": "Trophy",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-2",
+        "name": "Boar Tusks, Mounted",
+        "basePrice": 8,
+        "description": "A pair of yellowed tusks, still faintly stained.",
+        "category": "Trophy",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-3",
+        "name": "Owlbear Skull",
+        "basePrice": 80,
+        "description": "Bleached and enormous, unmistakably not from anything natural.",
+        "category": "Trophy",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-4",
+        "name": "Manticore Spike Cluster",
+        "basePrice": 60,
+        "description": "A cluster of barbed tail spikes, bound together with wire.",
+        "category": "Trophy",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-5",
+        "name": "Basilisk Skull (Eyes Removed)",
+        "basePrice": 55,
+        "description": "Mounted with the eye sockets deliberately, carefully emptied.",
+        "category": "Trophy",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-6",
+        "name": "Wolf Pelt",
+        "basePrice": 5,
+        "description": "Thick, grey, good winter lining.",
+        "category": "Pelt",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-7",
+        "name": "Bear Pelt",
+        "basePrice": 20,
+        "description": "Heavy and warm, worth more to a furrier than a fighter.",
+        "category": "Pelt",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-8",
+        "name": "Panther Pelt",
+        "basePrice": 25,
+        "description": "Sleek black fur, prized by tailors in the city.",
+        "category": "Pelt",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-9",
+        "name": "Lizard Pelt",
+        "basePrice": 6,
+        "description": "Scaled and surprisingly supple once tanned.",
+        "category": "Pelt",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-10",
+        "name": "Owlbear Hide",
+        "basePrice": 45,
+        "description": "Thick, matted fur over skin tougher than boiled leather.",
+        "category": "Pelt",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-11",
+        "name": "Ram Horn",
+        "basePrice": 3,
+        "description": "Spiraled and dense, good for carving.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-12",
+        "name": "Goat Horn",
+        "basePrice": 2,
+        "description": "Small and unremarkable, but always sellable.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-13",
+        "name": "Chimera Horn",
+        "basePrice": 40,
+        "description": "Taken from the goat-headed portion \u2014 still smells faintly of brimstone.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-14",
+        "name": "Black Dragon Horn",
+        "basePrice": 170,
+        "description": "Pitted and etched by the acid that once ran down it.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-15",
+        "name": "Blue Dragon Horn",
+        "basePrice": 180,
+        "description": "Crackles faintly with residual static when touched.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-16",
+        "name": "Green Dragon Horn",
+        "basePrice": 170,
+        "description": "Faintly slick, and best handled with gloves.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-17",
+        "name": "Red Dragon Horn",
+        "basePrice": 190,
+        "description": "Warm to the touch no matter the season.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-18",
+        "name": "White Dragon Horn",
+        "basePrice": 160,
+        "description": "Cold enough to numb bare skin on contact.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-19",
+        "name": "Brass Dragon Horn",
+        "basePrice": 175,
+        "description": "Sun-warmed and gritty with desert sand.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-20",
+        "name": "Bronze Dragon Horn",
+        "basePrice": 190,
+        "description": "Carries a faint ozone smell, like the air after a storm.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-21",
+        "name": "Copper Dragon Horn",
+        "basePrice": 180,
+        "description": "Etched with what might be the dragon's own claw-marks.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-22",
+        "name": "Gold Dragon Horn",
+        "basePrice": 220,
+        "description": "Gleams like polished metal, untarnished by time.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-23",
+        "name": "Silver Dragon Horn",
+        "basePrice": 200,
+        "description": "Cool and smooth, prized by jewelers.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-24",
+        "name": "Giant Bat Wing",
+        "basePrice": 4,
+        "description": "Leathery and surprisingly light.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-25",
+        "name": "Griffon Wing Feather",
+        "basePrice": 35,
+        "description": "A single primary feather, longer than a man's arm.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-26",
+        "name": "Black Dragon Wing (Membrane)",
+        "basePrice": 190,
+        "description": "Pockmarked with old acid scarring.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-27",
+        "name": "Blue Dragon Wing (Membrane)",
+        "basePrice": 200,
+        "description": "Thin enough to see light through, but tougher than steel plate.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-28",
+        "name": "Green Dragon Wing (Membrane)",
+        "basePrice": 190,
+        "description": "Faintly mottled, and best not breathed in too closely.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-29",
+        "name": "Red Dragon Wing (Membrane)",
+        "basePrice": 210,
+        "description": "Leathery, near-indestructible, and still smells faintly of smoke.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-30",
+        "name": "White Dragon Wing (Membrane)",
+        "basePrice": 180,
+        "description": "Stiff with a permanent frost that never quite melts.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-31",
+        "name": "Brass Dragon Wing (Membrane)",
+        "basePrice": 195,
+        "description": "Dry and papery, like old parchment.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-32",
+        "name": "Bronze Dragon Wing (Membrane)",
+        "basePrice": 210,
+        "description": "Crackles faintly with stored static.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-33",
+        "name": "Copper Dragon Wing (Membrane)",
+        "basePrice": 200,
+        "description": "Surprisingly ticklish, or so the legends claim.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-34",
+        "name": "Gold Dragon Wing (Membrane)",
+        "basePrice": 240,
+        "description": "Edged with what looks like actual gold leaf.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-35",
+        "name": "Silver Dragon Wing (Membrane)",
+        "basePrice": 220,
+        "description": "Cool, pale, and untouched by time.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-36",
+        "name": "Owlbear Heart",
+        "basePrice": 90,
+        "description": "Larger than a man's head, and still faintly warm when fresh.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-37",
+        "name": "Black Dragon Heart",
+        "basePrice": 300,
+        "description": "Still faintly warm, and said to hold the last ember of the dragon's fury.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-38",
+        "name": "Blue Dragon Heart",
+        "basePrice": 310,
+        "description": "Crackles faintly if you listen closely.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-39",
+        "name": "Green Dragon Heart",
+        "basePrice": 300,
+        "description": "Best handled with gloves and a very good reason.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-40",
+        "name": "Red Dragon Heart",
+        "basePrice": 320,
+        "description": "Radiates heat long after the rest of the body has gone cold.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-41",
+        "name": "White Dragon Heart",
+        "basePrice": 290,
+        "description": "Cold as the day the dragon died.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-42",
+        "name": "Brass Dragon Heart",
+        "basePrice": 300,
+        "description": "Radiates a dry, desert heat.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-43",
+        "name": "Bronze Dragon Heart",
+        "basePrice": 330,
+        "description": "Hums faintly, like distant thunder.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-44",
+        "name": "Copper Dragon Heart",
+        "basePrice": 310,
+        "description": "Surprisingly light for its size.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-45",
+        "name": "Gold Dragon Heart",
+        "basePrice": 380,
+        "description": "Said to never stop glowing faintly, even removed.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-46",
+        "name": "Silver Dragon Heart",
+        "basePrice": 360,
+        "description": "Untouched by decay, centuries after the kill.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-47",
+        "name": "Lizard Fang",
+        "basePrice": 4,
+        "description": "This lizard fang is sharp enough to function like a dagger in a pinch.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-48",
+        "name": "Wolf Fang",
+        "basePrice": 3,
+        "description": "Sharp, curved, and small enough to set into a ring or a hilt.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-49",
+        "name": "Basilisk Fang",
+        "basePrice": 45,
+        "description": "Still faintly discolored. Handle with thick gloves.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-50",
+        "name": "Chimera Fang",
+        "basePrice": 45,
+        "description": "Taken from the lion's head \u2014 long, curved, wickedly sharp.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-51",
+        "name": "Black Dragon Fang",
+        "basePrice": 135,
+        "description": "Long enough to be re-hafted into a genuine dagger, and sharp enough to matter.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-52",
+        "name": "Red Dragon Fang",
+        "basePrice": 140,
+        "description": "Long enough to be re-hafted into a genuine dagger, and sharp enough to matter.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-53",
+        "name": "Bear Claw",
+        "basePrice": 6,
+        "description": "Long and wickedly curved \u2014 could pass for a crude blade.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-54",
+        "name": "Panther Claw",
+        "basePrice": 5,
+        "description": "Small, sharp, and easy to conceal.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-55",
+        "name": "Manticore Claw",
+        "basePrice": 40,
+        "description": "Long enough to function like a dagger, if you don't mind the shape.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-56",
+        "name": "Griffon Talon",
+        "basePrice": 42,
+        "description": "Curved and razor-edged. Could serve as an improvised dagger.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-57",
+        "name": "Black Dragon Claw",
+        "basePrice": 130,
+        "description": "Etched with old acid scarring; still holds an edge.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-58",
+        "name": "Lizard Scale (bundle)",
+        "basePrice": 2,
+        "description": "A handful of scales, useful for fletching or fine crafting.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-59",
+        "name": "Basilisk Scale",
+        "basePrice": 30,
+        "description": "Stony and cold, even freshly shed.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-60",
+        "name": "Chimera Scale",
+        "basePrice": 35,
+        "description": "Oddly warm, taken from the dragon-tailed portion.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-61",
+        "name": "Black Dragon Scale",
+        "basePrice": 90,
+        "description": "Pitted with old acid scarring, tougher than plate armor.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-62",
+        "name": "Blue Dragon Scale",
+        "basePrice": 95,
+        "description": "A single scale, still crackling faintly with static.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-63",
+        "name": "Green Dragon Scale",
+        "basePrice": 90,
+        "description": "Faintly slick to the touch.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-64",
+        "name": "Red Dragon Scale",
+        "basePrice": 100,
+        "description": "Warm to the touch, prized by armorers.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-65",
+        "name": "White Dragon Scale",
+        "basePrice": 85,
+        "description": "Cold enough to frost over in a warm room.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-66",
+        "name": "Brass Dragon Scale",
+        "basePrice": 92,
+        "description": "Warm and gritty, like sun-baked sand.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-67",
+        "name": "Bronze Dragon Scale",
+        "basePrice": 100,
+        "description": "Smells faintly of ozone.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-68",
+        "name": "Copper Dragon Scale",
+        "basePrice": 95,
+        "description": "Etched with faint claw-mark patterns.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-69",
+        "name": "Gold Dragon Scale",
+        "basePrice": 130,
+        "description": "Gleams like real gold, and is worth nearly as much.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-70",
+        "name": "Silver Dragon Scale",
+        "basePrice": 115,
+        "description": "Cool and untarnished, prized by silversmiths.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-71",
+        "name": "Rations, Preserved Game Meat",
+        "basePrice": 1,
+        "description": "Salted and dried from a fresh kill. A few days' worth, if rationed carefully.",
+        "category": "Ration",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-72",
+        "name": "Rations, Smoked Meat",
+        "basePrice": 1.5,
+        "description": "Smoked over an open fire, keeps well.",
+        "category": "Ration",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-73",
+        "name": "Warped Gearwork",
+        "basePrice": 8,
+        "description": "A tangle of bent brass gears, still worth something to a tinker.",
+        "category": "Salvage",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-74",
+        "name": "Animated Plating (Scrap)",
+        "basePrice": 25,
+        "description": "A sheet of enchanted armor plating, the magic long faded.",
+        "category": "Salvage",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-75",
+        "name": "Construct Core Fragment",
+        "basePrice": 60,
+        "description": "A cracked shard of whatever powered the thing. Still faintly warm.",
+        "category": "Salvage",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-76",
+        "name": "Cracked Rune Stone",
+        "basePrice": 45,
+        "description": "Etched with a sigil no one currently living can read.",
+        "category": "Salvage",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-77",
+        "name": "Salvaged Joint Mechanism",
+        "basePrice": 15,
+        "description": "A ball-and-socket joint, oddly well-preserved.",
+        "category": "Salvage",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-78",
+        "name": "Animated Armor Fragment",
+        "basePrice": 12,
+        "description": "A dented piece of what used to move on its own.",
+        "category": "Salvage",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-79",
+        "name": "Golem Clay (Sample)",
+        "basePrice": 30,
+        "description": "A lump of enchanted clay, inert now but still faintly warm.",
+        "category": "Salvage",
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-trapper-80",
+        "name": "Construct Wiring (Arcane)",
+        "basePrice": 20,
+        "description": "Thin filaments of something between wire and sinew.",
+        "category": "Salvage",
+        "priceOverride": "",
+        "quantity": 1
+      }
+    ],
+    "menu": [],
+    "services": [],
+    "createdAt": 1753300000000
+  }
+]

@@ -62,7 +62,7 @@ try {
 initializeApp({ credential: cert(serviceAccount) })
 const db = getFirestore()
 
-const { mockBuildings, mockNpcs, mockFamilies } = await import(
+const { mockBuildings, mockNpcs, mockFamilies, mockSources } = await import(
   '../src/data/mockData.js'
 )
 
@@ -127,6 +127,7 @@ const existingBuildingIds = await seedCollection('buildings', mockBuildings)
 await mergeExistingBuildingResidents(mockBuildings, existingBuildingIds)
 await seedCollection('npcs', mockNpcs)
 await seedCollection('families', mockFamilies)
+await seedCollection('sources', mockSources)
 
 console.log('\nDone.')
 process.exit(0)
