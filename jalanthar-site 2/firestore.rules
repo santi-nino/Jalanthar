@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Buildings and families have no spoiler concerns — anyone can read them.
+    // The DM (authenticated) can always write. Unauthenticated players can
+    // also write, but ONLY if every field except wares/menu/services stays
+    // byte-for-byte identical — in practice this means players can adjust
+    // item quantities (the site's UI only ever offers a "take one" control,
+    // never a way to raise stock) but can't touch the name, description,
+    // residents, map position, or anything else about the building.
+    //
+    // Worth knowing: Firestore rules can restrict *which fields* change, but
+    // can't practically enforce "only decreases, never increases" on values
+    // nested inside an array. That specific restriction is enforced by the
+    // app's own UI (players only ever see a minus button), not by the
+    // database itself — a technically determined player could still send a
+    // raw API write that raises a quantity. For a private, invite-only
+    // campaign site that's an acceptable trade-off; it would not be for a
+    // public product.
+    match /buildings/{buildingId} {
+      allow read: if true;
+      allow write: if request.auth != null || (
+        request.resource.data.name == resource.data.name &&
+        request.resource.data.get('subheader', null) == resource.data.get('subheader', null) &&
+        request.resource.data.get('type', null) == resource.data.get('type', null) &&
+        request.resource.data.get('icon', null) == resource.data.get('icon', null) &&
+        request.resource.data.get('coords', null) == resource.data.get('coords', null) &&
+        request.resource.data.get('quadrant', null) == resource.data.get('quadrant', null) &&
+        request.resource.data.get('description', null) == resource.data.get('description', null) &&
+        request.resource.data.get('interiorLayoutImage', null) == resource.data.get('interiorLayoutImage', null) &&
+        request.resource.data.get('residents', null) == resource.data.get('residents', null) &&
+        request.resource.data.get('revealed', null) == resource.data.get('revealed', null) &&
+        request.resource.data.get('priceMultiplier', null) == resource.data.get('priceMultiplier', null)
+      );
+    }
+    // Anyone can reposition cards on the relationship tree while they're on
+    // the page (handled client-side, session-only — see the app code), but
+    // only the DM's rearrangements are actually saved to the database.
+    match /families/{familyId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // NPCs are spoiler-sensitive: an unrevealed NPC's `visible` field is
+    // false, and the rule below enforces that at the database level (not
+    // just hidden in the UI) — a player opening devtools can't read an NPC
+    // document until you've flipped it to visible. The DM (authenticated)
+    // can always read everything, revealed or not.
+    //
+    // `revealedViaBuilding` is a second, narrower door: it's true only when
+    // some building listing this NPC as a resident has itself been marked
+    // `revealed` (see the buildings rule above — players can never set that
+    // field themselves). It exists because a security rule can't reach
+    // backward from this NPC document into the buildings collection to ask
+    // "does any revealed building list me?" — so the app denormalizes that
+    // answer onto the NPC doc itself whenever a building's `revealed` flag
+    // or `residents` list changes (see DataContext.jsx). A player reading a
+    // document that's only readable this way still only ever gets the name
+    // rendered client-side — the UI never opens the full detail page for an
+    // NPC whose own `visible` field is still false.
+    match /npcs/{npcId} {
+      allow read: if resource.data.visible == true || resource.data.get('revealedViaBuilding', false) == true || request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // Sources are scanned reference documents (price lists, menus) the DM
+    // uploads to seed a building's wares/menu/services from. They're a
+    // DM-only authoring tool, never shown to players directly — a player
+    // only ever sees the items after the DM has pulled them into an actual
+    // building — so unlike buildings/npcs there's no player-facing read
+    // case to carve out here at all.
+    match /sources/{sourceId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // The Loot tab's own independent category taxonomy (wealth levels,
+    // classes, monster types, settings, location subtypes) — a single
+    // settings document, DM-only same as sources, and likewise never
+    // exposed to players (the Loot tab itself is DM-only in the UI).
+    match /lootConfig/{docId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- A hardened frontier watchtower behind a shield, scored by a claw mark —
+       Jalanthar: built to withstand, marked by what keeps testing it. -->
+  <path d="M16 2 L29 8 V17 C29 24 23 29 16 30 C9 29 3 24 3 17 V8 Z"
+        fill="#DCD3B4" stroke="#14120D" stroke-width="1.4"/>
+  <path d="M16 2 L29 8 V17 C29 24 23 29 16 30 C9 29 3 24 3 17 V8 Z"
+        fill="none" stroke="#7C8C4A" stroke-width="0.7" opacity="0.7" transform="scale(0.94)" transform-origin="16 16"/>
+  <!-- watchtower -->
+  <rect x="12.5" y="12" width="7" height="13" fill="#33352B"/>
+  <path d="M11.5 12 L16 7 L20.5 12 Z" fill="#33352B"/>
+  <rect x="10.5" y="24" width="11" height="2.4" fill="#33352B"/>
+  <rect x="14.2" y="16" width="1.6" height="2.6" fill="#DCD3B4"/>
+  <rect x="16.9" y="16" width="1.6" height="2.6" fill="#DCD3B4"/>
+  <rect x="14.2" y="20" width="1.6" height="2.6" fill="#DCD3B4"/>
+  <rect x="16.9" y="20" width="1.6" height="2.6" fill="#DCD3B4"/>
+  <!-- claw mark -->
+  <path d="M6 9 L15 26" stroke="#6B1F1A" stroke-width="1.3" stroke-linecap="round" opacity="0.85"/>
+  <path d="M8.5 8 L17.5 25" stroke="#6B1F1A" stroke-width="1.3" stroke-linecap="round" opacity="0.85"/>
+  <path d="M11 7.2 L20 24.2" stroke="#6B1F1A" stroke-width="1.3" stroke-linecap="round" opacity="0.85"/>
+</svg>
