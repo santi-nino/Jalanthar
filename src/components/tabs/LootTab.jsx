@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useData } from '../../contexts/DataContext'
 import { buildItemPool } from '../../utils/itemPool'
 import { formatPrice } from '../../utils/price'
-import { LOCATION_TYPES } from '../../data/defaultLootTaxonomy'
+import { LOCATION_TYPES, VEHICLE_CATEGORIES } from '../../data/defaultLootTaxonomy'
 
 const POOL_OPTIONS = [
   { id: 'wares', label: 'Wares' },
@@ -10,9 +10,6 @@ const POOL_OPTIONS = [
   { id: 'services', label: 'Services' },
 ]
 
-// Sensible default pool selection per top-level choice, so a DM generating
-// a tavern's loot isn't stuck unchecking "Wares" and checking "Menu" every
-// single time — still fully overridable via the checkboxes underneath.
 const DEFAULT_POOLS = {
   encounter: ['wares', 'services'],
   shop: ['wares'],
@@ -30,8 +27,29 @@ function shuffled(arr) {
   return a
 }
 
-function drawLoot({ pools, sources, categories, priceMin, priceMax, count, allowDuplicates }) {
-  const pool = pools.flatMap((p) => buildItemPool(p, sources).map((item) => ({ ...item, pool: p })))
+function randomInt(min, max) {
+  const lo = Math.min(min, max)
+  const hi = Math.max(min, max)
+  return Math.round(lo + Math.random() * (hi - lo))
+}
+
+// Every place that needs "the available categories for these pools" goes
+// through here so the vehicles/mounts default-exclusion is applied
+// consistently rather than re-implemented per call site. This deliberately
+// does NOT live in utils/itemPool.js -- the building catalog editor uses
+// that same buildItemPool() and SHOULD always show Mount/Vehicle normally
+// (stocking a livery is a completely different use case from rolling loot).
+function categoriesForPools(pools, sources, includeVehicles) {
+  const combined = pools.flatMap((p) => buildItemPool(p, sources))
+  const filtered = includeVehicles
+    ? combined
+    : combined.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
+  return [...new Set(filtered.map((i) => i.category))].sort((a, b) => a.localeCompare(b))
+}
+
+function drawLoot({ pools, sources, categories, priceMin, priceMax, count, allowDuplicates, includeVehicles }) {
+  let pool = pools.flatMap((p) => buildItemPool(p, sources).map((item) => ({ ...item, pool: p })))
+  if (!includeVehicles) pool = pool.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
   const filtered = pool.filter((i) => {
     if (categories.length > 0 && !categories.includes(i.category)) return false
     if (priceMin != null && i.priceGp < priceMin) return false
@@ -48,8 +66,11 @@ function drawLoot({ pools, sources, categories, priceMin, priceMax, count, allow
 
 // --- Small reusable pieces ---------------------------------------------
 
-function EditableList({ label, items, onChange, placeholder }) {
+function EditableList({ label, items, onChange, onRename, placeholder }) {
   const [input, setInput] = useState('')
+  const [editing, setEditing] = useState(null)
+  const [editValue, setEditValue] = useState('')
+
   function add() {
     const v = input.trim()
     if (v && !items.includes(v)) onChange([...items, v])
@@ -58,26 +79,65 @@ function EditableList({ label, items, onChange, placeholder }) {
   function remove(v) {
     onChange(items.filter((x) => x !== v))
   }
+  function startEdit(v) {
+    setEditing(v)
+    setEditValue(v)
+  }
+  function commitEdit() {
+    const newVal = editValue.trim()
+    if (!newVal || newVal === editing) {
+      setEditing(null)
+      return
+    }
+    if (items.includes(newVal)) {
+      setEditing(null)
+      return
+    }
+    onChange(items.map((x) => (x === editing ? newVal : x)))
+    onRename?.(editing, newVal)
+    setEditing(null)
+  }
+
   return (
     <div>
       <span className="text-xs font-display uppercase text-ink-soft block mb-1">{label}</span>
       <div className="flex flex-wrap gap-1.5 mb-1.5">
-        {items.map((v) => (
-          <span
-            key={v}
-            className="inline-flex items-center gap-1 bg-white/60 border border-leather/40 rounded-sm pl-2 pr-1 py-0.5 text-xs"
-          >
-            {v}
-            <button
-              type="button"
-              onClick={() => remove(v)}
-              aria-label={`Remove ${v}`}
-              className="text-wax-dark hover:text-wax font-bold leading-none px-0.5"
+        {items.map((v) =>
+          editing === v ? (
+            <input
+              key={v}
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={commitEdit}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  commitEdit()
+                }
+                if (e.key === 'Escape') setEditing(null)
+              }}
+              className="rounded-sm border border-leather bg-white px-2 py-0.5 text-xs w-28"
+            />
+          ) : (
+            <span
+              key={v}
+              className="inline-flex items-center gap-1 bg-white/60 border border-leather/40 rounded-sm pl-2 pr-1 py-0.5 text-xs"
             >
-              ×
-            </button>
-          </span>
-        ))}
+              <button type="button" onClick={() => startEdit(v)} title="Click to rename" className="hover:underline">
+                {v}
+              </button>
+              <button
+                type="button"
+                onClick={() => remove(v)}
+                aria-label={`Remove ${v}`}
+                className="text-wax-dark hover:text-wax font-bold leading-none px-0.5"
+              >
+                ×
+              </button>
+            </span>
+          )
+        )}
         {items.length === 0 && <span className="text-xs text-ink-soft/50 italic">None yet</span>}
       </div>
       <div className="flex gap-1.5">
@@ -107,53 +167,107 @@ function EditableList({ label, items, onChange, placeholder }) {
 }
 
 function EditableWealthList({ items, onChange }) {
-  const [form, setForm] = useState({ label: '', min: '', max: '' })
+  const [form, setForm] = useState({ label: '', min: '', max: '', minItems: '', maxItems: '' })
+  const [editingId, setEditingId] = useState(null)
+  const [editLabel, setEditLabel] = useState('')
+
   function add() {
     const label = form.label.trim()
     if (!label) return
     onChange([
       ...items,
-      { id: `wealth-${Date.now()}`, label, min: Number(form.min) || 0, max: Number(form.max) || 0 },
+      {
+        id: `wealth-${Date.now()}`,
+        label,
+        min: Number(form.min) || 0,
+        max: Number(form.max) || 0,
+        minItems: Number(form.minItems) || 0,
+        maxItems: Number(form.maxItems) || 0,
+      },
     ])
-    setForm({ label: '', min: '', max: '' })
+    setForm({ label: '', min: '', max: '', minItems: '', maxItems: '' })
   }
   function remove(id) {
     onChange(items.filter((w) => w.id !== id))
   }
-  function updateRange(id, key, value) {
+  function updateField(id, key, value) {
     onChange(items.map((w) => (w.id === id ? { ...w, [key]: Number(value) || 0 } : w)))
   }
+  function commitLabel(id) {
+    const v = editLabel.trim()
+    if (v) onChange(items.map((w) => (w.id === id ? { ...w, label: v } : w)))
+    setEditingId(null)
+  }
+
   return (
     <div>
       <span className="text-xs font-display uppercase text-ink-soft block mb-1">
         Wealth Levels{' '}
         <span className="text-ink-soft/50 normal-case">
-          (sets the gp price range pulled from your catalog)
+          — sets both the gp price range AND how many items get rolled (no separate item-count
+          option; it's always driven by wealth)
         </span>
       </span>
-      <ul className="space-y-1 mb-1.5">
+      <div className="space-y-1 mb-1.5">
         {items.map((w) => (
-          <li
+          <div
             key={w.id}
-            className="flex items-center gap-2 bg-white/60 border border-leather/40 rounded-sm px-2 py-1 text-xs"
+            className="flex flex-wrap items-center gap-2 bg-white/60 border border-leather/40 rounded-sm px-2 py-1 text-xs"
           >
-            <span className="flex-1">{w.label}</span>
+            {editingId === w.id ? (
+              <input
+                autoFocus
+                value={editLabel}
+                onChange={(e) => setEditLabel(e.target.value)}
+                onBlur={() => commitLabel(w.id)}
+                onKeyDown={(e) => e.key === 'Enter' && commitLabel(w.id)}
+                className="w-24 rounded-sm border border-leather bg-white px-1 py-0.5"
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingId(w.id)
+                  setEditLabel(w.label)
+                }}
+                title="Click to rename"
+                className="flex-1 text-left hover:underline min-w-[5rem]"
+              >
+                {w.label}
+              </button>
+            )}
+            <span className="text-ink-soft/50">gp</span>
             <input
               type="number"
               min="0"
               value={w.min}
-              onChange={(e) => updateRange(w.id, 'min', e.target.value)}
-              className="w-16 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5"
+              onChange={(e) => updateField(w.id, 'min', e.target.value)}
+              className="w-14 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5"
             />
             <span>–</span>
             <input
               type="number"
               min="0"
               value={w.max}
-              onChange={(e) => updateRange(w.id, 'max', e.target.value)}
-              className="w-16 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5"
+              onChange={(e) => updateField(w.id, 'max', e.target.value)}
+              className="w-14 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5"
             />
-            <span className="text-ink-soft/50">gp</span>
+            <span className="text-ink-soft/50 ml-2"># items</span>
+            <input
+              type="number"
+              min="0"
+              value={w.minItems}
+              onChange={(e) => updateField(w.id, 'minItems', e.target.value)}
+              className="w-12 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5"
+            />
+            <span>–</span>
+            <input
+              type="number"
+              min="0"
+              value={w.maxItems}
+              onChange={(e) => updateField(w.id, 'maxItems', e.target.value)}
+              className="w-12 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5"
+            />
             <button
               type="button"
               onClick={() => remove(w.id)}
@@ -162,22 +276,22 @@ function EditableWealthList({ items, onChange }) {
             >
               ×
             </button>
-          </li>
+          </div>
         ))}
-      </ul>
-      <div className="flex gap-1.5">
+      </div>
+      <div className="flex flex-wrap gap-1.5">
         <input
           value={form.label}
           onChange={(e) => setForm({ ...form, label: e.target.value })}
           placeholder="Label"
-          className="flex-1 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs"
+          className="rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs w-24"
         />
         <input
           type="number"
           min="0"
           value={form.min}
           onChange={(e) => setForm({ ...form, min: e.target.value })}
-          placeholder="Min"
+          placeholder="Min gp"
           className="w-16 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs"
         />
         <input
@@ -185,8 +299,24 @@ function EditableWealthList({ items, onChange }) {
           min="0"
           value={form.max}
           onChange={(e) => setForm({ ...form, max: e.target.value })}
-          placeholder="Max"
+          placeholder="Max gp"
           className="w-16 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs"
+        />
+        <input
+          type="number"
+          min="0"
+          value={form.minItems}
+          onChange={(e) => setForm({ ...form, minItems: e.target.value })}
+          placeholder="Min #"
+          className="w-14 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs"
+        />
+        <input
+          type="number"
+          min="0"
+          value={form.maxItems}
+          onChange={(e) => setForm({ ...form, maxItems: e.target.value })}
+          placeholder="Max #"
+          className="w-14 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs"
         />
         <button
           type="button"
@@ -201,54 +331,104 @@ function EditableWealthList({ items, onChange }) {
   )
 }
 
-function TaxonomyManager({ taxonomy, onSave }) {
+function MonsterTypeCategoryMapper({ monsterTypes, mapping, allCategories, onChange }) {
+  const [selectedType, setSelectedType] = useState(monsterTypes[0] || '')
+  const current = mapping[selectedType] || []
+
+  function toggle(cat) {
+    const next = current.includes(cat) ? current.filter((c) => c !== cat) : [...current, cat]
+    onChange({ ...mapping, [selectedType]: next })
+  }
+
+  if (monsterTypes.length === 0) {
+    return <p className="text-xs text-ink-soft/50 italic">Add a monster type above first.</p>
+  }
+
+  return (
+    <div>
+      <span className="text-xs font-display uppercase text-ink-soft block mb-1">
+        Monster Type → Categories{' '}
+        <span className="text-ink-soft/50 normal-case">
+          (which item categories are eligible for each monster type — leave a type untouched to
+          allow everything)
+        </span>
+      </span>
+      <select
+        value={selectedType}
+        onChange={(e) => setSelectedType(e.target.value)}
+        className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-xs mb-1.5"
+      >
+        {monsterTypes.map((t) => (
+          <option key={t} value={t}>
+            {t} {mapping[t]?.length ? `(${mapping[t].length} allowed)` : '(all allowed)'}
+          </option>
+        ))}
+      </select>
+      <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
+        {allCategories.map((cat) => (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => toggle(cat)}
+            className={`text-xs rounded-sm px-2 py-1 border ${
+              current.includes(cat)
+                ? 'bg-moss-dark text-parchment border-moss-dark'
+                : 'bg-white/50 border-leather/40 text-ink-soft hover:border-leather'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+        {allCategories.length === 0 && (
+          <span className="text-xs text-ink-soft/50 italic">
+            No categories available yet — upload a source or check the SRD catalog.
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function TaxonomyManager({ taxonomy, onSave, sources }) {
+  const allCategories = useMemo(
+    () => categoriesForPools(['wares', 'menu', 'services'], sources, true),
+    [sources]
+  )
+
+  function renameMonsterType(oldName, newName) {
+    if (!taxonomy.monsterTypeCategories?.[oldName]) return
+    const next = { ...taxonomy.monsterTypeCategories }
+    next[newName] = next[oldName]
+    delete next[oldName]
+    onSave({ monsterTypeCategories: next })
+  }
+
   return (
     <div className="border border-leather/50 rounded-sm bg-parchment/60 p-4 space-y-4">
       <p className="text-xs text-ink-soft/60 italic">
         These lists are the Loot tab's own — kept completely separate from any NPC species, job,
-        or class list elsewhere on the site. Edit freely; changes save immediately.
+        or class list elsewhere on the site. Click any entry to rename it; changes save
+        immediately.
       </p>
-      <EditableWealthList
-        items={taxonomy.wealthLevels}
-        onChange={(v) => onSave({ wealthLevels: v })}
-      />
+      <EditableWealthList items={taxonomy.wealthLevels} onChange={(v) => onSave({ wealthLevels: v })} />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <EditableList
-          label="Classes"
-          items={taxonomy.classes}
-          onChange={(v) => onSave({ classes: v })}
-          placeholder="e.g. Warlock"
-        />
+        <EditableList label="Classes" items={taxonomy.classes} onChange={(v) => onSave({ classes: v })} placeholder="e.g. Warlock" />
         <EditableList
           label="Monster Types"
           items={taxonomy.monsterTypes}
           onChange={(v) => onSave({ monsterTypes: v })}
+          onRename={renameMonsterType}
           placeholder="e.g. Celestial"
         />
-        <EditableList
-          label="Settings"
-          items={taxonomy.settings}
-          onChange={(v) => onSave({ settings: v })}
-          placeholder="e.g. Volcanic"
-        />
-        <EditableList
-          label="Shop Types"
-          items={taxonomy.shopTypes}
-          onChange={(v) => onSave({ shopTypes: v })}
-          placeholder="e.g. Alchemist"
-        />
+        <EditableList label="Settings" items={taxonomy.settings} onChange={(v) => onSave({ settings: v })} placeholder="e.g. Volcanic" />
+        <EditableList label="Shop Types" items={taxonomy.shopTypes} onChange={(v) => onSave({ shopTypes: v })} placeholder="e.g. Alchemist" />
         <EditableList
           label="Restaurant Types"
           items={taxonomy.restaurantTypes}
           onChange={(v) => onSave({ restaurantTypes: v })}
           placeholder="e.g. Noble Feast Hall"
         />
-        <EditableList
-          label="Tavern Types"
-          items={taxonomy.tavernTypes}
-          onChange={(v) => onSave({ tavernTypes: v })}
-          placeholder="e.g. Sailor's Dive"
-        />
+        <EditableList label="Tavern Types" items={taxonomy.tavernTypes} onChange={(v) => onSave({ tavernTypes: v })} placeholder="e.g. Sailor's Dive" />
         <EditableList
           label="Exploration Types"
           items={taxonomy.explorationTypes}
@@ -256,6 +436,12 @@ function TaxonomyManager({ taxonomy, onSave }) {
           placeholder="e.g. Sunken Temple"
         />
       </div>
+      <MonsterTypeCategoryMapper
+        monsterTypes={taxonomy.monsterTypes}
+        mapping={taxonomy.monsterTypeCategories || {}}
+        allCategories={allCategories}
+        onChange={(v) => onSave({ monsterTypeCategories: v })}
+      />
     </div>
   )
 }
@@ -266,26 +452,34 @@ function PoolAndCategoryPicker({
   categories,
   onCategoriesChange,
   availableCategories,
+  includeVehicles,
+  onIncludeVehiclesChange,
 }) {
   return (
     <div className="space-y-2">
       <div>
         <span className="text-xs font-display uppercase text-ink-soft block mb-1">Draw From</span>
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-3 flex-wrap items-center">
           {POOL_OPTIONS.map((p) => (
             <label key={p.id} className="flex items-center gap-1.5 text-sm">
               <input
                 type="checkbox"
                 checked={pools.includes(p.id)}
                 onChange={() =>
-                  onPoolsChange(
-                    pools.includes(p.id) ? pools.filter((x) => x !== p.id) : [...pools, p.id]
-                  )
+                  onPoolsChange(pools.includes(p.id) ? pools.filter((x) => x !== p.id) : [...pools, p.id])
                 }
               />
               {p.label}
             </label>
           ))}
+          <label className="flex items-center gap-1.5 text-sm ml-2 pl-2 border-l border-leather/30">
+            <input
+              type="checkbox"
+              checked={includeVehicles}
+              onChange={(e) => onIncludeVehiclesChange(e.target.checked)}
+            />
+            Include vehicles &amp; mounts
+          </label>
         </div>
       </div>
       {availableCategories.length > 0 && (
@@ -300,9 +494,7 @@ function PoolAndCategoryPicker({
                 type="button"
                 onClick={() =>
                   onCategoriesChange(
-                    categories.includes(cat)
-                      ? categories.filter((c) => c !== cat)
-                      : [...categories, cat]
+                    categories.includes(cat) ? categories.filter((c) => c !== cat) : [...categories, cat]
                   )
                 }
                 className={`text-xs rounded-sm px-2 py-1 border ${
@@ -341,9 +533,7 @@ function ResultsPanel({ groups, onCopy, copied }) {
               {g.label}
             </h4>
           )}
-          {g.gold != null && (
-            <p className="text-sm font-display text-leather-dark mb-1">{g.gold} gp in coin</p>
-          )}
+          {g.gold != null && <p className="text-sm font-display text-leather-dark mb-1">{g.gold} gp in coin</p>}
           {g.items.length === 0 ? (
             <p className="text-xs text-ink-soft italic">Nothing — widen the filters.</p>
           ) : (
@@ -353,9 +543,7 @@ function ResultsPanel({ groups, onCopy, copied }) {
                   <div>
                     <span className="font-display text-leather-dark">{item.name}</span>
                     <span className="ml-2 text-xs text-ink-soft/60 italic">{item.category}</span>
-                    {item.description && (
-                      <p className="text-xs text-ink-soft/70 italic">{item.description}</p>
-                    )}
+                    {item.description && <p className="text-xs text-ink-soft/70 italic">{item.description}</p>}
                   </div>
                   <span className="text-xs text-ink-soft shrink-0">{formatPrice(item.priceGp)}</span>
                 </li>
@@ -381,12 +569,22 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const [notes, setNotes] = useState('')
   const [pools, setPools] = useState(DEFAULT_POOLS.encounter)
   const [categories, setCategories] = useState([])
-  const [itemCount, setItemCount] = useState(2)
+  const [includeVehicles, setIncludeVehicles] = useState(false)
 
   const availableCategories = useMemo(() => {
-    const combined = pools.flatMap((p) => buildItemPool(p, sources))
-    return [...new Set(combined.map((i) => i.category))].sort((a, b) => a.localeCompare(b))
-  }, [pools, sources])
+    const base = categoriesForPools(pools, sources, includeVehicles)
+    const restriction = taxonomy.monsterTypeCategories?.[monsterType]
+    if (!restriction || restriction.length === 0) return base
+    return base.filter((c) => restriction.includes(c))
+  }, [pools, sources, includeVehicles, taxonomy.monsterTypeCategories, monsterType])
+
+  function handleMonsterTypeChange(value) {
+    setMonsterType(value)
+    const restriction = taxonomy.monsterTypeCategories?.[value]
+    if (restriction && restriction.length > 0) {
+      setCategories((prev) => prev.filter((c) => restriction.includes(c)))
+    }
+  }
 
   function handleAdd() {
     onAdd({
@@ -398,7 +596,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
       notes,
       pools,
       categories,
-      itemCount,
+      includeVehicles,
     })
     setNotes('')
   }
@@ -410,7 +608,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
           <span className="text-xs font-display uppercase text-ink-soft">Monster Type</span>
           <select
             value={monsterType}
-            onChange={(e) => setMonsterType(e.target.value)}
+            onChange={(e) => handleMonsterTypeChange(e.target.value)}
             className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm"
           >
             <option value="">—</option>
@@ -468,9 +666,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
       </div>
 
       <label className="block">
-        <span className="text-xs font-display uppercase text-ink-soft">
-          Notes (optional — anything not covered above)
-        </span>
+        <span className="text-xs font-display uppercase text-ink-soft">Notes (optional — anything not covered above)</span>
         <input
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -485,18 +681,9 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
         categories={categories}
         onCategoriesChange={setCategories}
         availableCategories={availableCategories}
+        includeVehicles={includeVehicles}
+        onIncludeVehiclesChange={setIncludeVehicles}
       />
-
-      <label className="block w-32">
-        <span className="text-xs font-display uppercase text-ink-soft"># Items</span>
-        <input
-          type="number"
-          min="0"
-          value={itemCount}
-          onChange={(e) => setItemCount(e.target.value)}
-          className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm"
-        />
-      </label>
 
       <button
         type="button"
@@ -515,27 +702,25 @@ export default function LootTab() {
   const { sources, lootTaxonomy, saveLootTaxonomy } = useData()
   const [showTaxonomy, setShowTaxonomy] = useState(false)
 
-  const [generationType, setGenerationType] = useState(null) // 'location' | 'encounter'
+  const [generationType, setGenerationType] = useState(null)
 
-  // Encounter state
   const [entities, setEntities] = useState([])
 
-  // Location state
   const [locationType, setLocationType] = useState(null)
   const [subtype, setSubtype] = useState('')
   const [locWealthId, setLocWealthId] = useState(lootTaxonomy.wealthLevels[0]?.id || '')
   const [locPools, setLocPools] = useState(DEFAULT_POOLS.shop)
   const [locCategories, setLocCategories] = useState([])
-  const [locItemCount, setLocItemCount] = useState(5)
   const [locAllowDuplicates, setLocAllowDuplicates] = useState(false)
+  const [locIncludeVehicles, setLocIncludeVehicles] = useState(false)
 
-  const [results, setResults] = useState(null) // array of {label, items, gold}
+  const [results, setResults] = useState(null)
   const [copied, setCopied] = useState(false)
 
-  const locAvailableCategories = useMemo(() => {
-    const combined = locPools.flatMap((p) => buildItemPool(p, sources))
-    return [...new Set(combined.map((i) => i.category))].sort((a, b) => a.localeCompare(b))
-  }, [locPools, sources])
+  const locAvailableCategories = useMemo(
+    () => categoriesForPools(locPools, sources, locIncludeVehicles),
+    [locPools, sources, locIncludeVehicles]
+  )
 
   function pickLocationType(type) {
     setLocationType(type)
@@ -548,25 +733,25 @@ export default function LootTab() {
     setEntities(entities.filter((e) => e.id !== id))
   }
 
-  function wealthRange(wealthId) {
-    const w = lootTaxonomy.wealthLevels.find((x) => x.id === wealthId)
-    return w ? { min: w.min, max: w.max } : { min: null, max: null }
+  function wealthLevel(wealthId) {
+    return lootTaxonomy.wealthLevels.find((x) => x.id === wealthId)
   }
 
   function generateEncounter() {
     const groups = entities.map((e) => {
-      const { min, max } = wealthRange(e.wealthId)
+      const w = wealthLevel(e.wealthId)
+      const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
       const items = drawLoot({
         pools: e.pools,
         sources,
         categories: e.categories,
-        priceMin: min,
-        priceMax: max,
-        count: e.itemCount,
+        priceMin: w?.min ?? null,
+        priceMax: w?.max ?? null,
+        count,
         allowDuplicates: false,
+        includeVehicles: e.includeVehicles,
       })
-      const wealthLabel = lootTaxonomy.wealthLevels.find((w) => w.id === e.wealthId)?.label || ''
-      const tags = [e.monsterType, e.class, wealthLabel, e.setting, e.notes].filter(Boolean)
+      const tags = [e.monsterType, e.class, w?.label, e.setting, e.notes].filter(Boolean)
       return { label: tags.join(' · ') || 'Entity', items, gold: null }
     })
     setResults(groups)
@@ -574,16 +759,17 @@ export default function LootTab() {
   }
 
   function generateLocation() {
-    const { min, max } = wealthRange(locWealthId)
-    const count = Math.max(0, Math.round(Number(locItemCount) || 0))
+    const w = wealthLevel(locWealthId)
+    const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
     const items = drawLoot({
       pools: locPools,
       sources,
       categories: locCategories,
-      priceMin: min,
-      priceMax: max,
+      priceMin: w?.min ?? null,
+      priceMax: w?.max ?? null,
       count,
       allowDuplicates: locAllowDuplicates,
+      includeVehicles: locIncludeVehicles,
     })
     setResults([{ label: '', items, gold: null }])
     setCopied(false)
@@ -615,6 +801,7 @@ export default function LootTab() {
           <h2 className="font-display text-2xl sm:text-3xl text-leather-dark">Loot Generator</h2>
           <p className="text-xs text-ink-soft/60 italic mt-1">
             DM-only. Pulls from the same SRD catalog and uploaded sources used across the site.
+            Vehicles &amp; mounts are excluded unless you say otherwise.
           </p>
         </div>
         <button
@@ -626,7 +813,7 @@ export default function LootTab() {
         </button>
       </div>
 
-      {showTaxonomy && <TaxonomyManager taxonomy={lootTaxonomy} onSave={saveLootTaxonomy} />}
+      {showTaxonomy && <TaxonomyManager taxonomy={lootTaxonomy} onSave={saveLootTaxonomy} sources={sources} />}
 
       <div className="border border-leather/50 rounded-sm bg-parchment paper-texture p-4 space-y-4">
         <div>
@@ -656,11 +843,7 @@ export default function LootTab() {
 
         {generationType === 'encounter' && (
           <div className="space-y-4">
-            <EntityBuilder
-              taxonomy={lootTaxonomy}
-              sources={sources}
-              onAdd={(e) => setEntities([...entities, e])}
-            />
+            <EntityBuilder taxonomy={lootTaxonomy} sources={sources} onAdd={(e) => setEntities([...entities, e])} />
 
             {entities.length > 0 && (
               <div>
@@ -669,12 +852,8 @@ export default function LootTab() {
                 </span>
                 <ul className="space-y-1">
                   {entities.map((e) => {
-                    const wealthLabel = lootTaxonomy.wealthLevels.find(
-                      (w) => w.id === e.wealthId
-                    )?.label
-                    const tags = [e.monsterType, e.class, wealthLabel, e.setting, e.notes].filter(
-                      Boolean
-                    )
+                    const wealthLabel = lootTaxonomy.wealthLevels.find((w) => w.id === e.wealthId)?.label
+                    const tags = [e.monsterType, e.class, wealthLabel, e.setting, e.notes].filter(Boolean)
                     return (
                       <li
                         key={e.id}
@@ -710,9 +889,7 @@ export default function LootTab() {
         {generationType === 'location' && (
           <div className="space-y-4">
             <div>
-              <span className="text-xs font-display uppercase text-ink-soft block mb-1.5">
-                What kind of location?
-              </span>
+              <span className="text-xs font-display uppercase text-ink-soft block mb-1.5">What kind of location?</span>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {LOCATION_TYPES.map((t) => (
                   <button
@@ -735,9 +912,7 @@ export default function LootTab() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <label className="block">
-                    <span className="text-xs font-display uppercase text-ink-soft">
-                      {currentLocationType.label} Type
-                    </span>
+                    <span className="text-xs font-display uppercase text-ink-soft">{currentLocationType.label} Type</span>
                     <select
                       value={subtype}
                       onChange={(e) => setSubtype(e.target.value)}
@@ -773,28 +948,18 @@ export default function LootTab() {
                   categories={locCategories}
                   onCategoriesChange={setLocCategories}
                   availableCategories={locAvailableCategories}
+                  includeVehicles={locIncludeVehicles}
+                  onIncludeVehiclesChange={setLocIncludeVehicles}
                 />
 
-                <div className="flex items-end gap-3">
-                  <label className="block w-32">
-                    <span className="text-xs font-display uppercase text-ink-soft"># Items</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={locItemCount}
-                      onChange={(e) => setLocItemCount(e.target.value)}
-                      className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-2 py-1.5 text-sm"
-                    />
-                  </label>
-                  <label className="flex items-center gap-1.5 text-xs pb-2">
-                    <input
-                      type="checkbox"
-                      checked={locAllowDuplicates}
-                      onChange={(e) => setLocAllowDuplicates(e.target.checked)}
-                    />
-                    Allow duplicates
-                  </label>
-                </div>
+                <label className="flex items-center gap-1.5 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={locAllowDuplicates}
+                    onChange={(e) => setLocAllowDuplicates(e.target.checked)}
+                  />
+                  Allow duplicates
+                </label>
 
                 <button
                   type="button"

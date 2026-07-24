@@ -5,28 +5,33 @@
 // lives in Firestore (collection `lootConfig`, single doc `taxonomy`) once
 // the DM starts editing it.
 //
-// wealthLevels carries a min/max gp range per level — that's the actual
-// mechanical lever that picks a price band out of the real item catalog
-// (SRD + uploaded sources). Everything else (classes, monsterTypes,
-// settings, and the four location subtype lists) are organizing/flavor
-// tags — the underlying item catalog has no monster-type or setting
-// metadata to filter against, so these drive the UI and get attached to
-// results for the DM's own reference rather than mechanically filtering
-// which items can appear.
+// wealthLevels carries both a gp price range AND an item-count range per
+// level — wealth is the one thing that determines both what things cost
+// and how many of them there are, so item count is never its own free
+// input; it's rolled from whichever wealth level was picked.
+//
+// monsterTypeCategories maps a monster type name to the specific item
+// categories that make sense for it (e.g. "Undead" might only ever carry
+// Curiosities and Jewelry, never Tools) — populated by the DM through the
+// taxonomy manager, since the underlying item catalog has no such tagging
+// on its own. An empty/missing entry means "no restriction, show
+// everything available" so this is purely additive and never blocks
+// anything until the DM actually configures it.
 export const DEFAULT_LOOT_TAXONOMY = {
   wealthLevels: [
-    { id: 'destitute', label: 'Destitute', min: 0, max: 2 },
-    { id: 'poor', label: 'Poor', min: 0, max: 8 },
-    { id: 'modest', label: 'Modest', min: 0, max: 30 },
-    { id: 'comfortable', label: 'Comfortable', min: 10, max: 80 },
-    { id: 'wealthy', label: 'Wealthy', min: 50, max: 300 },
-    { id: 'aristocratic', label: 'Aristocratic', min: 200, max: 2000 },
+    { id: 'destitute', label: 'Destitute', min: 0, max: 2, minItems: 0, maxItems: 1 },
+    { id: 'poor', label: 'Poor', min: 0, max: 8, minItems: 1, maxItems: 2 },
+    { id: 'modest', label: 'Modest', min: 0, max: 30, minItems: 1, maxItems: 3 },
+    { id: 'comfortable', label: 'Comfortable', min: 10, max: 80, minItems: 2, maxItems: 4 },
+    { id: 'wealthy', label: 'Wealthy', min: 50, max: 300, minItems: 3, maxItems: 6 },
+    { id: 'aristocratic', label: 'Aristocratic', min: 200, max: 2000, minItems: 5, maxItems: 10 },
   ],
   classes: ['Commoner', 'Fighter', 'Caster', 'Rogue', 'Cleric', 'Ranger', 'Barbarian', 'Bard'],
   monsterTypes: [
     'Humanoid', 'Beast', 'Undead', 'Fiend', 'Dragon', 'Construct', 'Aberration',
     'Elemental', 'Fey', 'Giant', 'Monstrosity', 'Ooze', 'Plant',
   ],
+  monsterTypeCategories: {},
   settings: [
     'Jungle', 'Mountain', 'Town', 'City', 'Forest', 'Swamp', 'Coast', 'Desert',
     'Underdark', 'Ruins', 'Road', 'Riverside',
@@ -45,3 +50,10 @@ export const LOCATION_TYPES = [
   { id: 'tavern', label: 'Tavern', taxonomyKey: 'tavernTypes', commerce: true },
   { id: 'exploration', label: 'Exploration', taxonomyKey: 'explorationTypes', commerce: false },
 ]
+
+// Exact SRD category names (see src/data/dnd5eItems.js) for mounts and
+// vehicles. Loot generation excludes these by default — per-generation,
+// there's an explicit "Include vehicles & mounts" opt-in checkbox rather
+// than a global setting, since whether a horse makes sense as loot is a
+// per-roll judgment call, not a permanent site setting.
+export const VEHICLE_CATEGORIES = ['Mount', 'Vehicle']
