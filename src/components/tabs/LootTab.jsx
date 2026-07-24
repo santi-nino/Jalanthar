@@ -12,9 +12,9 @@ const POOL_OPTIONS = [
 
 const DEFAULT_POOLS = {
   encounter: ['wares', 'services'],
-  shop: ['wares'],
-  restaurant: ['menu'],
-  tavern: ['menu', 'wares'],
+  // Broadened to cover restaurants and taverns too, now that those are
+  // Shop Types rather than their own top-level location category.
+  shop: ['wares', 'menu'],
   exploration: ['wares', 'services'],
 }
 
@@ -448,6 +448,72 @@ function TypeGuaranteedItemsManager({ label, types, typeLabels, itemsByType, onC
   )
 }
 
+// Which monster types even show a Wealth field. "Wealth" (economic
+// status) doesn't apply to a wild beast or an ooze -- only types
+// explicitly toggled on here get the field at all.
+function WealthApplicabilityEditor({ monsterTypes, usesWealth, onChange }) {
+  function toggle(type) {
+    onChange({ ...usesWealth, [type]: !usesWealth[type] })
+  }
+  return (
+    <div>
+      <span className="text-xs font-display uppercase text-ink-soft block mb-1">
+        Wealth Applies To <span className="text-ink-soft/50 normal-case">(only these types show a Wealth field at all)</span>
+      </span>
+      <div className="flex flex-wrap gap-1.5">
+        {monsterTypes.map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => toggle(t)}
+            className={`text-xs rounded-sm px-2 py-1 border ${usesWealth[t] ? 'bg-moss-dark text-parchment border-moss-dark' : 'bg-white/50 border-leather/40 text-ink-soft hover:border-leather'}`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Same excluded/guaranteed item-name mechanism as attribute options,
+// applied to the shared Setting field -- otherwise Setting is purely
+// cosmetic (shows in the label, never actually touches what gets drawn).
+function SettingRulesEditor({ settings, rules, onChange }) {
+  const [selected, setSelected] = useState(settings[0] || '')
+  const current = rules[selected] || { excludedItemPatterns: [], guaranteedItems: [] }
+
+  function updateExcluded(patterns) {
+    onChange({ ...rules, [selected]: { ...current, excludedItemPatterns: patterns } })
+  }
+  function updateGuaranteed(patterns) {
+    onChange({ ...rules, [selected]: { ...current, guaranteedItems: patterns } })
+  }
+
+  if (settings.length === 0) return <p className="text-xs text-ink-soft/50 italic">Add a setting above first.</p>
+
+  return (
+    <div>
+      <span className="text-xs font-display uppercase text-ink-soft block mb-1">
+        Setting Rules <span className="text-ink-soft/50 normal-case">(makes Setting actually affect the draw, not just the label)</span>
+      </span>
+      <select value={selected} onChange={(e) => setSelected(e.target.value)} className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm mb-2">
+        {settings.map((s) => <option key={s} value={s}>{s}</option>)}
+      </select>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <span className="text-xs font-display uppercase text-ink-soft block mb-1">Never carries here</span>
+          <EditableList items={current.excludedItemPatterns || []} onChange={updateExcluded} placeholder="e.g. Heavy Armor" />
+        </div>
+        <div>
+          <span className="text-xs font-display uppercase text-ink-soft block mb-1">Always carries here</span>
+          <EditableList items={current.guaranteedItems || []} onChange={updateGuaranteed} placeholder="e.g. Waterskin" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function TaxonomyManager({ taxonomy, onSave, sources }) {
   const allCategories = useMemo(() => categoriesForPools(['wares', 'menu', 'services'], sources, true), [sources])
   const locationTypeIds = LOCATION_TYPES.map((t) => t.id)
@@ -487,11 +553,22 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <EditableList label="Monster Types" items={taxonomy.monsterTypes} onChange={(v) => onSave({ monsterTypes: v })} onRename={renameMonsterType} placeholder="e.g. Custom Type" />
         <EditableList label="Settings" items={taxonomy.settings} onChange={(v) => onSave({ settings: v })} placeholder="e.g. Volcanic" />
-        <EditableList label="Shop Types" items={taxonomy.shopTypes} onChange={(v) => onSave({ shopTypes: v })} placeholder="e.g. Alchemist" />
-        <EditableList label="Restaurant Types" items={taxonomy.restaurantTypes} onChange={(v) => onSave({ restaurantTypes: v })} placeholder="e.g. Noble Feast Hall" />
-        <EditableList label="Tavern Types" items={taxonomy.tavernTypes} onChange={(v) => onSave({ tavernTypes: v })} placeholder="e.g. Sailor's Dive" />
+        <EditableList
+          label="Shop Types (covers general shops, restaurants, and taverns)"
+          items={taxonomy.shopTypes}
+          onChange={(v) => onSave({ shopTypes: v })}
+          placeholder="e.g. Alchemist, or Dive Bar"
+        />
         <EditableList label="Exploration Types" items={taxonomy.explorationTypes} onChange={(v) => onSave({ explorationTypes: v })} placeholder="e.g. Sunken Temple" />
       </div>
+
+      <WealthApplicabilityEditor
+        monsterTypes={taxonomy.monsterTypes}
+        usesWealth={taxonomy.monsterTypeUsesWealth || {}}
+        onChange={(v) => onSave({ monsterTypeUsesWealth: v })}
+      />
+
+      <SettingRulesEditor settings={taxonomy.settings} rules={taxonomy.settingRules || {}} onChange={(v) => onSave({ settingRules: v })} />
 
       <MonsterTypeCategoryMapper monsterTypes={taxonomy.monsterTypes} mapping={taxonomy.monsterTypeCategories || {}} allCategories={allCategories} onChange={(v) => onSave({ monsterTypeCategories: v })} />
 
@@ -518,7 +595,7 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
       />
 
       <TypeAttributeManager
-        label="Location Type Fields (extra options per Shop/Restaurant/Tavern/Exploration)"
+        label="Location Type Fields (extra options per Shop/Exploration)"
         types={locationTypeIds}
         typeLabels={locationTypeLabels}
         attributesByType={taxonomy.locationTypeAttributes || {}}
@@ -626,20 +703,30 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const [monsterType, setMonsterType] = useState('')
   const [monsterName, setMonsterName] = useState('')
   const [attributeValues, setAttributeValues] = useState({})
-  const [wealthId, setWealthId] = useState(taxonomy.wealthLevels[0]?.id || '')
+  const [wealthId, setWealthId] = useState('')
   const [setting, setSetting] = useState('')
   const [notes, setNotes] = useState('')
   const [pools, setPools] = useState(DEFAULT_POOLS.encounter)
   const [categories, setCategories] = useState([])
   const [includeVehicles, setIncludeVehicles] = useState(false)
 
+  const usesWealth = taxonomy.monsterTypeUsesWealth?.[monsterType] === true
+
   const typeAttributes = useMemo(() => taxonomy.monsterTypeAttributes?.[monsterType] || [], [taxonomy.monsterTypeAttributes, monsterType])
-  const excludedPatterns = useMemo(() => patternsFor(typeAttributes, attributeValues, 'excludedItemPatterns'), [typeAttributes, attributeValues])
+  const settingRule = taxonomy.settingRules?.[setting]
+
+  const excludedPatterns = useMemo(() => {
+    const fromAttrs = patternsFor(typeAttributes, attributeValues, 'excludedItemPatterns')
+    const fromSetting = settingRule?.excludedItemPatterns || []
+    return [...new Set([...fromAttrs, ...fromSetting])]
+  }, [typeAttributes, attributeValues, settingRule])
+
   const guaranteedPatterns = useMemo(() => {
     const typeLevel = taxonomy.monsterTypeGuaranteedItems?.[monsterType] || []
     const optionLevel = patternsFor(typeAttributes, attributeValues, 'guaranteedItems')
-    return [...new Set([...typeLevel, ...optionLevel])]
-  }, [taxonomy.monsterTypeGuaranteedItems, monsterType, typeAttributes, attributeValues])
+    const fromSetting = settingRule?.guaranteedItems || []
+    return [...new Set([...typeLevel, ...optionLevel, ...fromSetting])]
+  }, [taxonomy.monsterTypeGuaranteedItems, monsterType, typeAttributes, attributeValues, settingRule])
 
   const availableCategories = useMemo(() => {
     let base = categoriesForPools(pools, sources, includeVehicles)
@@ -661,6 +748,11 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
     if (restriction !== undefined) {
       setCategories((prev) => prev.filter((c) => restriction.includes(c)))
     }
+    // Wealth only shows for types where it's toggled on -- reset it
+    // cleanly on type change rather than carrying over a stale pick from
+    // a wealth-using type onto one that doesn't use it at all.
+    const newUsesWealth = taxonomy.monsterTypeUsesWealth?.[value] === true
+    setWealthId(newUsesWealth ? taxonomy.wealthLevels[0]?.id || '' : '')
   }
 
   function handleMonsterNameChange(value) {
@@ -669,8 +761,25 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
     // catalog entry -- lets a specific pick like "Bandit" drive the
     // right type-specific fields automatically.
     const match = (taxonomy.monsterCatalog || []).find((m) => m.name.toLowerCase() === value.toLowerCase())
+    let effectiveType = monsterType
     if (match && taxonomy.monsterTypes.includes(match.type) && match.type !== monsterType) {
       handleMonsterTypeChange(match.type)
+      effectiveType = match.type
+    }
+    // Role hint: if the search text contains a known keyword (e.g.
+    // "bandit"), auto-suggest the matching Role on whichever attribute
+    // actually offers that option, without clobbering a Role the DM
+    // already picked. This is what makes "Specific Monster" actually
+    // steer loot rather than just relabeling a generic Humanoid.
+    const lower = value.toLowerCase()
+    const hint = Object.entries(taxonomy.monsterNameRoleHints || {}).find(([kw]) => lower.includes(kw))
+    if (hint) {
+      const [, roleValue] = hint
+      const attrsForType = taxonomy.monsterTypeAttributes?.[effectiveType] || []
+      const roleAttr = attrsForType.find((a) => a.options.includes(roleValue))
+      if (roleAttr) {
+        setAttributeValues((prev) => (prev[roleAttr.id] ? prev : { ...prev, [roleAttr.id]: roleValue }))
+      }
     }
   }
 
@@ -715,12 +824,22 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
             {(taxonomy.monsterCatalog || []).map((m) => <option key={m.name} value={m.name}>{m.type} · CR varies</option>)}
           </datalist>
         </label>
-        <label className="block">
-          <span className="text-xs font-display uppercase text-ink-soft">Wealth</span>
-          <select value={wealthId} onChange={(e) => setWealthId(e.target.value)} className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm">
-            {taxonomy.wealthLevels.map((w) => <option key={w.id} value={w.id}>{w.label}</option>)}
-          </select>
-        </label>
+        {usesWealth ? (
+          <label className="block">
+            <span className="text-xs font-display uppercase text-ink-soft">Wealth</span>
+            <select value={wealthId} onChange={(e) => setWealthId(e.target.value)} className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm">
+              {taxonomy.wealthLevels.map((w) => <option key={w.id} value={w.id}>{w.label}</option>)}
+            </select>
+          </label>
+        ) : (
+          monsterType && (
+            <div className="flex items-end pb-1.5">
+              <p className="text-xs text-ink-soft/50 italic">
+                {monsterType} doesn't use Wealth — no coin, only whatever's guaranteed below.
+              </p>
+            </div>
+          )
+        )}
       </div>
 
       <DynamicAttributeFields attributes={typeAttributes} values={attributeValues} onChange={(attrId, val) => setAttributeValues((prev) => ({ ...prev, [attrId]: val }))} />
