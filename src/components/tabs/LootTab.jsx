@@ -37,38 +37,39 @@ function randomInt(min, max) {
 // through here so the vehicles/mounts default-exclusion is applied
 // consistently. Deliberately NOT in utils/itemPool.js -- the building
 // catalog editor uses that same buildItemPool() and SHOULD always show
-// Mount/Vehicle normally (stocking a livery is a different use case from
-// rolling loot).
+// Mount/Vehicle normally.
 function categoriesForPools(pools, sources, includeVehicles) {
   const combined = pools.flatMap((p) => buildItemPool(p, sources))
-  const filtered = includeVehicles
-    ? combined
-    : combined.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
+  const filtered = includeVehicles ? combined : combined.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
   return [...new Set(filtered.map((i) => i.category))].sort((a, b) => a.localeCompare(b))
 }
 
-// Union of every excluded category across whichever attribute values are
-// currently selected -- this is the "mage wouldn't have a weapon"
-// mechanism: each attribute option can carry its own excludedCategories
-// list, and any of them being selected removes that category from what
-// can be drawn for this entity/location.
-function excludedCategoriesFor(attributes, values) {
-  const excluded = new Set()
+// Collects every pattern from a given per-option field ('excludedItemPatterns'
+// or 'guaranteedItems') across whichever attribute values are currently
+// selected. Item-NAME-level, not category-level -- "a mage wouldn't have
+// a sword" excludes Longsword/Shortsword/Greatsword by substring match,
+// not the entire Weapon category (a dagger or component pouch stays fine).
+function patternsFor(attributes, values, field) {
+  const result = new Set()
   ;(attributes || []).forEach((attr) => {
     const selected = values[attr.id]
-    const cats = selected && attr.excludedCategories?.[selected]
-    if (cats) cats.forEach((c) => excluded.add(c))
+    const patterns = selected && attr[field]?.[selected]
+    if (patterns) patterns.forEach((p) => result.add(p))
   })
-  return excluded
+  return [...result]
 }
 
-function drawLoot({
-  pools, sources, categories, priceMin, priceMax, count, allowDuplicates, includeVehicles, hardExcludedCategories,
-}) {
+function matchesAnyPattern(itemName, patterns) {
+  if (!patterns || patterns.length === 0) return false
+  const lower = itemName.toLowerCase()
+  return patterns.some((p) => lower.includes(p.toLowerCase()))
+}
+
+function drawLoot({ pools, sources, categories, priceMin, priceMax, count, allowDuplicates, includeVehicles, excludedPatterns }) {
   let pool = pools.flatMap((p) => buildItemPool(p, sources).map((item) => ({ ...item, pool: p })))
   if (!includeVehicles) pool = pool.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
-  if (hardExcludedCategories && hardExcludedCategories.size > 0) {
-    pool = pool.filter((i) => !hardExcludedCategories.has(i.category))
+  if (excludedPatterns && excludedPatterns.length > 0) {
+    pool = pool.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
   }
   const filtered = pool.filter((i) => {
     if (categories.length > 0 && !categories.includes(i.category)) return false
@@ -82,6 +83,31 @@ function drawLoot({
     return Array.from({ length: n }, () => filtered[Math.floor(Math.random() * filtered.length)])
   }
   return shuffled(filtered).slice(0, n)
+}
+
+// The other half of "make good guesses": baseline items that appear
+// REGARDLESS of the random draw ("most people would have shoes"),
+// resolved separately from the item-count roll rather than competing
+// with it for one of its slots. Tries to find a real catalog match for
+// each pattern (so it carries a real price); falls back to a bare,
+// price-less placeholder line if nothing in the current catalog matches,
+// so the guarantee still shows up honestly rather than silently vanishing.
+function resolveGuaranteedItems(patterns, pools, sources, includeVehicles) {
+  if (!patterns || patterns.length === 0) return []
+  const pool = pools.flatMap((p) => buildItemPool(p, sources))
+  const usable = includeVehicles ? pool : pool.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
+  return patterns.map((pattern) => {
+    const match = usable.find((i) => i.name.toLowerCase().includes(pattern.toLowerCase()))
+    if (match) return { ...match, id: `${match.id}-guaranteed`, guaranteed: true }
+    return {
+      id: `guaranteed-${pattern}`,
+      name: pattern,
+      priceGp: null,
+      description: '(guaranteed — no exact match in your current catalog)',
+      category: 'Guaranteed',
+      guaranteed: true,
+    }
+  })
 }
 
 // --- Small reusable pieces ---------------------------------------------
@@ -140,14 +166,7 @@ function EditableList({ label, items, onChange, onRename, placeholder }) {
               <button type="button" onClick={() => startEdit(v)} title="Click to rename" className="hover:underline">
                 {v}
               </button>
-              <button
-                type="button"
-                onClick={() => remove(v)}
-                aria-label={`Remove ${v}`}
-                className="text-wax-dark hover:text-wax font-bold leading-none px-0.5"
-              >
-                ×
-              </button>
+              <button type="button" onClick={() => remove(v)} aria-label={`Remove ${v}`} className="text-wax-dark hover:text-wax font-bold leading-none px-0.5">×</button>
             </span>
           )
         )}
@@ -166,14 +185,7 @@ function EditableList({ label, items, onChange, onRename, placeholder }) {
           placeholder={placeholder}
           className="flex-1 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs"
         />
-        <button
-          type="button"
-          onClick={add}
-          disabled={!input.trim()}
-          className="px-2 py-1 text-xs font-display uppercase bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40"
-        >
-          Add
-        </button>
+        <button type="button" onClick={add} disabled={!input.trim()} className="px-2 py-1 text-xs font-display uppercase bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40">Add</button>
       </div>
     </div>
   )
@@ -187,17 +199,7 @@ function EditableWealthList({ items, onChange }) {
   function add() {
     const label = form.label.trim()
     if (!label) return
-    onChange([
-      ...items,
-      {
-        id: `wealth-${Date.now()}`,
-        label,
-        min: Number(form.min) || 0,
-        max: Number(form.max) || 0,
-        minItems: Number(form.minItems) || 0,
-        maxItems: Number(form.maxItems) || 0,
-      },
-    ])
+    onChange([...items, { id: `wealth-${Date.now()}`, label, min: Number(form.min) || 0, max: Number(form.max) || 0, minItems: Number(form.minItems) || 0, maxItems: Number(form.maxItems) || 0 }])
     setForm({ label: '', min: '', max: '', minItems: '', maxItems: '' })
   }
   function remove(id) {
@@ -215,36 +217,15 @@ function EditableWealthList({ items, onChange }) {
   return (
     <div>
       <span className="text-xs font-display uppercase text-ink-soft block mb-1">
-        Wealth Levels{' '}
-        <span className="text-ink-soft/50 normal-case">
-          — sets both the gp price range AND how many items get rolled (no separate item-count
-          option; it's always driven by wealth)
-        </span>
+        Wealth Levels <span className="text-ink-soft/50 normal-case">— sets both the gp price range AND item count rolled</span>
       </span>
       <div className="space-y-1 mb-1.5">
         {items.map((w) => (
           <div key={w.id} className="flex flex-wrap items-center gap-2 bg-white/60 border border-leather/40 rounded-sm px-2 py-1 text-xs">
             {editingId === w.id ? (
-              <input
-                autoFocus
-                value={editLabel}
-                onChange={(e) => setEditLabel(e.target.value)}
-                onBlur={() => commitLabel(w.id)}
-                onKeyDown={(e) => e.key === 'Enter' && commitLabel(w.id)}
-                className="w-24 rounded-sm border border-leather bg-white px-1 py-0.5"
-              />
+              <input autoFocus value={editLabel} onChange={(e) => setEditLabel(e.target.value)} onBlur={() => commitLabel(w.id)} onKeyDown={(e) => e.key === 'Enter' && commitLabel(w.id)} className="w-24 rounded-sm border border-leather bg-white px-1 py-0.5" />
             ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingId(w.id)
-                  setEditLabel(w.label)
-                }}
-                title="Click to rename"
-                className="flex-1 text-left hover:underline min-w-[5rem]"
-              >
-                {w.label}
-              </button>
+              <button type="button" onClick={() => { setEditingId(w.id); setEditLabel(w.label) }} title="Click to rename" className="flex-1 text-left hover:underline min-w-[5rem]">{w.label}</button>
             )}
             <span className="text-ink-soft/50">gp</span>
             <input type="number" min="0" value={w.min} onChange={(e) => updateField(w.id, 'min', e.target.value)} className="w-14 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5" />
@@ -273,37 +254,22 @@ function EditableWealthList({ items, onChange }) {
 function MonsterTypeCategoryMapper({ monsterTypes, mapping, allCategories, onChange }) {
   const [selectedType, setSelectedType] = useState(monsterTypes[0] || '')
   const current = mapping[selectedType] || []
-
   function toggle(cat) {
     const next = current.includes(cat) ? current.filter((c) => c !== cat) : [...current, cat]
     onChange({ ...mapping, [selectedType]: next })
   }
-
-  if (monsterTypes.length === 0) {
-    return <p className="text-xs text-ink-soft/50 italic">Add a monster type above first.</p>
-  }
-
+  if (monsterTypes.length === 0) return <p className="text-xs text-ink-soft/50 italic">Add a monster type above first.</p>
   return (
     <div>
       <span className="text-xs font-display uppercase text-ink-soft block mb-1">
-        Monster Type → Categories{' '}
-        <span className="text-ink-soft/50 normal-case">(coarse filter: which item categories are eligible at all for a type -- leave untouched to allow everything)</span>
+        Monster Type → Categories <span className="text-ink-soft/50 normal-case">(coarse pass -- which item categories are eligible at all)</span>
       </span>
       <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-xs mb-1.5">
-        {monsterTypes.map((t) => (
-          <option key={t} value={t}>{t} {mapping[t]?.length ? `(${mapping[t].length} allowed)` : '(all allowed)'}</option>
-        ))}
+        {monsterTypes.map((t) => <option key={t} value={t}>{t} {mapping[t]?.length ? `(${mapping[t].length} allowed)` : '(all allowed)'}</option>)}
       </select>
       <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
         {allCategories.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => toggle(cat)}
-            className={`text-xs rounded-sm px-2 py-1 border ${current.includes(cat) ? 'bg-moss-dark text-parchment border-moss-dark' : 'bg-white/50 border-leather/40 text-ink-soft hover:border-leather'}`}
-          >
-            {cat}
-          </button>
+          <button key={cat} type="button" onClick={() => toggle(cat)} className={`text-xs rounded-sm px-2 py-1 border ${current.includes(cat) ? 'bg-moss-dark text-parchment border-moss-dark' : 'bg-white/50 border-leather/40 text-ink-soft hover:border-leather'}`}>{cat}</button>
         ))}
         {allCategories.length === 0 && <span className="text-xs text-ink-soft/50 italic">No categories available yet.</span>}
       </div>
@@ -311,13 +277,14 @@ function MonsterTypeCategoryMapper({ monsterTypes, mapping, allCategories, onCha
   )
 }
 
-// Editor for ONE attribute (e.g. Beast's "Diet"): rename the attribute
-// itself, manage its option list, and manage which categories each
-// individual option excludes.
-function AttributeEditor({ attribute, allCategories, onChange, onDelete }) {
+// Editor for ONE attribute (e.g. Beast's "Diet"): rename it, manage its
+// options, and manage per-option excluded/guaranteed item NAME patterns
+// (free text, substring-matched -- "Sword" excludes Longsword etc.
+// without touching the whole Weapon category).
+function AttributeEditor({ attribute, onChange, onDelete }) {
   const [editingName, setEditingName] = useState(false)
   const [nameValue, setNameValue] = useState(attribute.name)
-  const [exclusionOption, setExclusionOption] = useState(attribute.options[0] || '')
+  const [patternOption, setPatternOption] = useState(attribute.options[0] || '')
 
   function commitName() {
     const v = nameValue.trim()
@@ -325,77 +292,62 @@ function AttributeEditor({ attribute, allCategories, onChange, onDelete }) {
     setEditingName(false)
   }
   function setOptions(newOptions) {
-    // Dropping an option should also drop its exclusion entry so it
-    // doesn't linger invisibly.
-    const nextExcluded = { ...attribute.excludedCategories }
-    Object.keys(nextExcluded).forEach((k) => {
-      if (!newOptions.includes(k)) delete nextExcluded[k]
-    })
-    onChange({ ...attribute, options: newOptions, excludedCategories: nextExcluded })
-    if (!newOptions.includes(exclusionOption)) setExclusionOption(newOptions[0] || '')
+    const nextExcluded = { ...attribute.excludedItemPatterns }
+    const nextGuaranteed = { ...attribute.guaranteedItems }
+    Object.keys(nextExcluded).forEach((k) => { if (!newOptions.includes(k)) delete nextExcluded[k] })
+    Object.keys(nextGuaranteed).forEach((k) => { if (!newOptions.includes(k)) delete nextGuaranteed[k] })
+    onChange({ ...attribute, options: newOptions, excludedItemPatterns: nextExcluded, guaranteedItems: nextGuaranteed })
+    if (!newOptions.includes(patternOption)) setPatternOption(newOptions[0] || '')
   }
   function renameOption(oldName, newName) {
-    const nextExcluded = { ...attribute.excludedCategories }
-    if (nextExcluded[oldName]) {
-      nextExcluded[newName] = nextExcluded[oldName]
-      delete nextExcluded[oldName]
-    }
-    onChange({ ...attribute, excludedCategories: nextExcluded })
-    if (exclusionOption === oldName) setExclusionOption(newName)
+    const nextExcluded = { ...attribute.excludedItemPatterns }
+    const nextGuaranteed = { ...attribute.guaranteedItems }
+    if (nextExcluded[oldName]) { nextExcluded[newName] = nextExcluded[oldName]; delete nextExcluded[oldName] }
+    if (nextGuaranteed[oldName]) { nextGuaranteed[newName] = nextGuaranteed[oldName]; delete nextGuaranteed[oldName] }
+    onChange({ ...attribute, excludedItemPatterns: nextExcluded, guaranteedItems: nextGuaranteed })
+    if (patternOption === oldName) setPatternOption(newName)
   }
-  function toggleExclusion(cat) {
-    const current = attribute.excludedCategories?.[exclusionOption] || []
-    const next = current.includes(cat) ? current.filter((c) => c !== cat) : [...current, cat]
-    onChange({ ...attribute, excludedCategories: { ...attribute.excludedCategories, [exclusionOption]: next } })
+  function setExcludedPatterns(patterns) {
+    onChange({ ...attribute, excludedItemPatterns: { ...attribute.excludedItemPatterns, [patternOption]: patterns } })
   }
-
-  const currentExclusions = attribute.excludedCategories?.[exclusionOption] || []
+  function setGuaranteedPatterns(patterns) {
+    onChange({ ...attribute, guaranteedItems: { ...attribute.guaranteedItems, [patternOption]: patterns } })
+  }
 
   return (
     <div className="border border-leather/30 rounded-sm bg-white/50 p-2.5 space-y-2">
       <div className="flex items-center gap-2">
         {editingName ? (
-          <input
-            autoFocus
-            value={nameValue}
-            onChange={(e) => setNameValue(e.target.value)}
-            onBlur={commitName}
-            onKeyDown={(e) => e.key === 'Enter' && commitName()}
-            className="flex-1 rounded-sm border border-leather bg-white px-2 py-1 text-sm font-display"
-          />
+          <input autoFocus value={nameValue} onChange={(e) => setNameValue(e.target.value)} onBlur={commitName} onKeyDown={(e) => e.key === 'Enter' && commitName()} className="flex-1 rounded-sm border border-leather bg-white px-2 py-1 text-sm font-display" />
         ) : (
-          <button type="button" onClick={() => setEditingName(true)} title="Click to rename" className="flex-1 text-left font-display text-sm text-leather-dark hover:underline">
-            {attribute.name}
-          </button>
+          <button type="button" onClick={() => setEditingName(true)} title="Click to rename" className="flex-1 text-left font-display text-sm text-leather-dark hover:underline">{attribute.name}</button>
         )}
-        <button type="button" onClick={onDelete} className="text-xs text-wax-dark hover:text-wax underline shrink-0">
-          Delete attribute
-        </button>
+        <button type="button" onClick={onDelete} className="text-xs text-wax-dark hover:text-wax underline shrink-0">Delete field</button>
       </div>
       <EditableList label="Options" items={attribute.options} onChange={setOptions} onRename={renameOption} placeholder="e.g. Herbivore" />
-      {attribute.options.length > 0 && allCategories.length > 0 && (
-        <div>
-          <span className="text-xs font-display uppercase text-ink-soft block mb-1">
-            Excluded categories per option <span className="text-ink-soft/50 normal-case">(this option never pulls these)</span>
-          </span>
-          <select value={exclusionOption} onChange={(e) => setExclusionOption(e.target.value)} className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1 text-xs mb-1">
-            {attribute.options.map((o) => (
-              <option key={o} value={o}>
-                {o} {attribute.excludedCategories?.[o]?.length ? `(${attribute.excludedCategories[o].length} excluded)` : ''}
-              </option>
-            ))}
-          </select>
-          <div className="flex flex-wrap gap-1.5">
-            {allCategories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => toggleExclusion(cat)}
-                className={`text-xs rounded-sm px-2 py-1 border ${currentExclusions.includes(cat) ? 'bg-wax text-parchment border-wax' : 'bg-white/50 border-leather/40 text-ink-soft hover:border-leather'}`}
-              >
-                {cat}
-              </button>
-            ))}
+      {attribute.options.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-leather/20">
+          <div>
+            <span className="text-xs font-display uppercase text-ink-soft block mb-1">
+              Per-option: never carries <span className="text-ink-soft/50 normal-case">(name text, e.g. "Sword")</span>
+            </span>
+            <select value={patternOption} onChange={(e) => setPatternOption(e.target.value)} className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1 text-xs mb-1">
+              {attribute.options.map((o) => (
+                <option key={o} value={o}>{o} {attribute.excludedItemPatterns?.[o]?.length ? `(${attribute.excludedItemPatterns[o].length})` : ''}</option>
+              ))}
+            </select>
+            <EditableList items={attribute.excludedItemPatterns?.[patternOption] || []} onChange={setExcludedPatterns} placeholder="e.g. Sword" />
+          </div>
+          <div>
+            <span className="text-xs font-display uppercase text-ink-soft block mb-1">
+              Per-option: always carries <span className="text-ink-soft/50 normal-case">(baseline, bypasses the roll)</span>
+            </span>
+            <select value={patternOption} onChange={(e) => setPatternOption(e.target.value)} className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1 text-xs mb-1">
+              {attribute.options.map((o) => (
+                <option key={o} value={o}>{o} {attribute.guaranteedItems?.[o]?.length ? `(${attribute.guaranteedItems[o].length})` : ''}</option>
+              ))}
+            </select>
+            <EditableList items={attribute.guaranteedItems?.[patternOption] || []} onChange={setGuaranteedPatterns} placeholder="e.g. Boots" />
           </div>
         </div>
       )}
@@ -403,15 +355,12 @@ function AttributeEditor({ attribute, allCategories, onChange, onDelete }) {
   )
 }
 
-// Full attribute SET editor for one type (e.g. all of Beast's attributes:
-// Diet, Size, Animal Kingdom).
-function AttributeSetEditor({ attributes, allCategories, onChange }) {
+function AttributeSetEditor({ attributes, onChange }) {
   const [newName, setNewName] = useState('')
-
   function addAttribute() {
     const name = newName.trim()
     if (!name) return
-    onChange([...attributes, { id: `attr-${Date.now()}`, name, options: [], excludedCategories: {} }])
+    onChange([...attributes, { id: `attr-${Date.now()}`, name, options: [], excludedItemPatterns: {}, guaranteedItems: {} }])
     setNewName('')
   }
   function updateAttribute(id, updated) {
@@ -420,53 +369,47 @@ function AttributeSetEditor({ attributes, allCategories, onChange }) {
   function deleteAttribute(id) {
     onChange(attributes.filter((a) => a.id !== id))
   }
-
   return (
     <div className="space-y-2">
       {attributes.map((attr) => (
-        <AttributeEditor
-          key={attr.id}
-          attribute={attr}
-          allCategories={allCategories}
-          onChange={(updated) => updateAttribute(attr.id, updated)}
-          onDelete={() => deleteAttribute(attr.id)}
-        />
+        <AttributeEditor key={attr.id} attribute={attr} onChange={(updated) => updateAttribute(attr.id, updated)} onDelete={() => deleteAttribute(attr.id)} />
       ))}
       {attributes.length === 0 && <p className="text-xs text-ink-soft/50 italic">No custom fields yet for this type.</p>}
       <div className="flex gap-1.5">
-        <input
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && addAttribute()}
-          placeholder="New field name, e.g. Diet"
-          className="flex-1 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs"
-        />
-        <button type="button" onClick={addAttribute} disabled={!newName.trim()} className="px-2 py-1 text-xs font-display uppercase bg-moss-dark text-parchment rounded-sm hover:opacity-90 disabled:opacity-40">
-          + Add Field
-        </button>
+        <input value={newName} onChange={(e) => setNewName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addAttribute()} placeholder="New field name, e.g. Diet" className="flex-1 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
+        <button type="button" onClick={addAttribute} disabled={!newName.trim()} className="px-2 py-1 text-xs font-display uppercase bg-moss-dark text-parchment rounded-sm hover:opacity-90 disabled:opacity-40">+ Add Field</button>
       </div>
     </div>
   )
 }
 
-// Generic wrapper: pick which type (monster type OR location type) to
-// configure, then edit that type's attribute set. Used for both.
-function TypeAttributeManager({ label, types, typeLabels, attributesByType, allCategories, onChange }) {
+function TypeAttributeManager({ label, types, typeLabels, attributesByType, onChange }) {
   const [selectedType, setSelectedType] = useState(types[0] || '')
   if (types.length === 0) return null
   return (
     <div>
       <span className="text-xs font-display uppercase text-ink-soft block mb-1.5">{label}</span>
       <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm mb-2">
-        {types.map((t) => (
-          <option key={t} value={t}>{typeLabels ? typeLabels[t] : t}</option>
-        ))}
+        {types.map((t) => <option key={t} value={t}>{typeLabels ? typeLabels[t] : t}</option>)}
       </select>
-      <AttributeSetEditor
-        attributes={attributesByType[selectedType] || []}
-        allCategories={allCategories}
-        onChange={(v) => onChange({ ...attributesByType, [selectedType]: v })}
-      />
+      <AttributeSetEditor attributes={attributesByType[selectedType] || []} onChange={(v) => onChange({ ...attributesByType, [selectedType]: v })} />
+    </div>
+  )
+}
+
+// Type-level baseline items (e.g. every Humanoid guarantees Boots/Clothes
+// regardless of Role) -- simpler than the per-option version, just one
+// list per type.
+function TypeGuaranteedItemsManager({ label, types, typeLabels, itemsByType, onChange }) {
+  const [selectedType, setSelectedType] = useState(types[0] || '')
+  if (types.length === 0) return null
+  return (
+    <div>
+      <span className="text-xs font-display uppercase text-ink-soft block mb-1.5">{label}</span>
+      <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm mb-2">
+        {types.map((t) => <option key={t} value={t}>{typeLabels ? typeLabels[t] : t}</option>)}
+      </select>
+      <EditableList items={itemsByType[selectedType] || []} onChange={(v) => onChange({ ...itemsByType, [selectedType]: v })} placeholder="e.g. Boots" />
     </div>
   )
 }
@@ -489,6 +432,12 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
       delete next[oldName]
       onSave({ monsterTypeAttributes: next })
     }
+    if (taxonomy.monsterTypeGuaranteedItems?.[oldName]) {
+      const next = { ...taxonomy.monsterTypeGuaranteedItems }
+      next[newName] = next[oldName]
+      delete next[oldName]
+      onSave({ monsterTypeGuaranteedItems: next })
+    }
   }
 
   return (
@@ -496,39 +445,42 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
       <p className="text-xs text-ink-soft/60 italic">
         These lists are the Loot tab's own — kept completely separate from any NPC species, job,
         or class list elsewhere on the site. Click any entry to rename it; changes save
-        immediately.
+        immediately. The monster catalog is seeded from the official SRD 5.2.1 (CC-BY-4.0) —
+        add homebrew entries the same way.
       </p>
       <EditableWealthList items={taxonomy.wealthLevels} onChange={(v) => onSave({ wealthLevels: v })} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <EditableList
-          label="Monster Types"
-          items={taxonomy.monsterTypes}
-          onChange={(v) => onSave({ monsterTypes: v })}
-          onRename={renameMonsterType}
-          placeholder="e.g. Celestial"
-        />
+        <EditableList label="Monster Types" items={taxonomy.monsterTypes} onChange={(v) => onSave({ monsterTypes: v })} onRename={renameMonsterType} placeholder="e.g. Custom Type" />
         <EditableList label="Settings" items={taxonomy.settings} onChange={(v) => onSave({ settings: v })} placeholder="e.g. Volcanic" />
-        <EditableList label="Monster Catalog (searchable)" items={taxonomy.monsterCatalog || []} onChange={(v) => onSave({ monsterCatalog: v })} placeholder="e.g. Owlbear" />
         <EditableList label="Shop Types" items={taxonomy.shopTypes} onChange={(v) => onSave({ shopTypes: v })} placeholder="e.g. Alchemist" />
         <EditableList label="Restaurant Types" items={taxonomy.restaurantTypes} onChange={(v) => onSave({ restaurantTypes: v })} placeholder="e.g. Noble Feast Hall" />
         <EditableList label="Tavern Types" items={taxonomy.tavernTypes} onChange={(v) => onSave({ tavernTypes: v })} placeholder="e.g. Sailor's Dive" />
         <EditableList label="Exploration Types" items={taxonomy.explorationTypes} onChange={(v) => onSave({ explorationTypes: v })} placeholder="e.g. Sunken Temple" />
       </div>
 
-      <MonsterTypeCategoryMapper
-        monsterTypes={taxonomy.monsterTypes}
-        mapping={taxonomy.monsterTypeCategories || {}}
-        allCategories={allCategories}
-        onChange={(v) => onSave({ monsterTypeCategories: v })}
+      <MonsterTypeCategoryMapper monsterTypes={taxonomy.monsterTypes} mapping={taxonomy.monsterTypeCategories || {}} allCategories={allCategories} onChange={(v) => onSave({ monsterTypeCategories: v })} />
+
+      <TypeGuaranteedItemsManager
+        label="Monster Type → Always Carries (baseline, e.g. Humanoid → Boots)"
+        types={taxonomy.monsterTypes}
+        itemsByType={taxonomy.monsterTypeGuaranteedItems || {}}
+        onChange={(v) => onSave({ monsterTypeGuaranteedItems: v })}
       />
 
       <TypeAttributeManager
-        label="Monster Type Fields (this is what changes per monster type -- e.g. Beast gets Diet/Size instead of a generic Class)"
+        label="Monster Type Fields (what changes per monster type -- e.g. Beast gets Diet/Size instead of a generic Class)"
         types={taxonomy.monsterTypes}
         attributesByType={taxonomy.monsterTypeAttributes || {}}
-        allCategories={allCategories}
         onChange={(v) => onSave({ monsterTypeAttributes: v })}
+      />
+
+      <TypeGuaranteedItemsManager
+        label="Location Type → Always Carries"
+        types={locationTypeIds}
+        typeLabels={locationTypeLabels}
+        itemsByType={taxonomy.locationTypeGuaranteedItems || {}}
+        onChange={(v) => onSave({ locationTypeGuaranteedItems: v })}
       />
 
       <TypeAttributeManager
@@ -536,7 +488,6 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
         types={locationTypeIds}
         typeLabels={locationTypeLabels}
         attributesByType={taxonomy.locationTypeAttributes || {}}
-        allCategories={allCategories}
         onChange={(v) => onSave({ locationTypeAttributes: v })}
       />
     </div>
@@ -582,9 +533,6 @@ function PoolAndCategoryPicker({ pools, onPoolsChange, categories, onCategoriesC
   )
 }
 
-// Renders one <select> per configured attribute for the current type --
-// this is what actually swaps in "Diet / Size / Animal Kingdom" when
-// Beast is picked instead of a fixed Class field.
 function DynamicAttributeFields({ attributes, values, onChange }) {
   if (!attributes || attributes.length === 0) return null
   return (
@@ -592,15 +540,9 @@ function DynamicAttributeFields({ attributes, values, onChange }) {
       {attributes.map((attr) => (
         <label key={attr.id} className="block">
           <span className="text-xs font-display uppercase text-ink-soft">{attr.name}</span>
-          <select
-            value={values[attr.id] || ''}
-            onChange={(e) => onChange(attr.id, e.target.value)}
-            className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm"
-          >
+          <select value={values[attr.id] || ''} onChange={(e) => onChange(attr.id, e.target.value)} className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm">
             <option value="">—</option>
-            {attr.options.map((o) => (
-              <option key={o} value={o}>{o}</option>
-            ))}
+            {attr.options.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
         </label>
       ))}
@@ -628,10 +570,11 @@ function ResultsPanel({ groups, onCopy, copied }) {
                 <li key={`${item.id}-${i}`} className="flex items-start justify-between gap-3 text-sm">
                   <div>
                     <span className="font-display text-leather-dark">{item.name}</span>
+                    {item.guaranteed && <span className="ml-1.5 text-xs text-moss-dark italic">(always carries)</span>}
                     <span className="ml-2 text-xs text-ink-soft/60 italic">{item.category}</span>
                     {item.description && <p className="text-xs text-ink-soft/70 italic">{item.description}</p>}
                   </div>
-                  <span className="text-xs text-ink-soft shrink-0">{formatPrice(item.priceGp)}</span>
+                  <span className="text-xs text-ink-soft shrink-0">{item.priceGp == null ? '—' : formatPrice(item.priceGp)}</span>
                 </li>
               ))}
             </ul>
@@ -656,18 +599,20 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const [categories, setCategories] = useState([])
   const [includeVehicles, setIncludeVehicles] = useState(false)
 
-  const typeAttributes = useMemo(
-    () => taxonomy.monsterTypeAttributes?.[monsterType] || [],
-    [taxonomy.monsterTypeAttributes, monsterType]
-  )
-  const hardExcluded = useMemo(() => excludedCategoriesFor(typeAttributes, attributeValues), [typeAttributes, attributeValues])
+  const typeAttributes = useMemo(() => taxonomy.monsterTypeAttributes?.[monsterType] || [], [taxonomy.monsterTypeAttributes, monsterType])
+  const excludedPatterns = useMemo(() => patternsFor(typeAttributes, attributeValues, 'excludedItemPatterns'), [typeAttributes, attributeValues])
+  const guaranteedPatterns = useMemo(() => {
+    const typeLevel = taxonomy.monsterTypeGuaranteedItems?.[monsterType] || []
+    const optionLevel = patternsFor(typeAttributes, attributeValues, 'guaranteedItems')
+    return [...new Set([...typeLevel, ...optionLevel])]
+  }, [taxonomy.monsterTypeGuaranteedItems, monsterType, typeAttributes, attributeValues])
 
   const availableCategories = useMemo(() => {
     let base = categoriesForPools(pools, sources, includeVehicles)
     const restriction = taxonomy.monsterTypeCategories?.[monsterType]
     if (restriction && restriction.length > 0) base = base.filter((c) => restriction.includes(c))
-    return base.filter((c) => !hardExcluded.has(c))
-  }, [pools, sources, includeVehicles, taxonomy.monsterTypeCategories, monsterType, hardExcluded])
+    return base
+  }, [pools, sources, includeVehicles, taxonomy.monsterTypeCategories, monsterType])
 
   function handleMonsterTypeChange(value) {
     setMonsterType(value)
@@ -675,6 +620,17 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
     const restriction = taxonomy.monsterTypeCategories?.[value]
     if (restriction && restriction.length > 0) {
       setCategories((prev) => prev.filter((c) => restriction.includes(c)))
+    }
+  }
+
+  function handleMonsterNameChange(value) {
+    setMonsterName(value)
+    // Auto-fill Monster Type when the typed value exactly matches a
+    // catalog entry -- lets a specific pick like "Bandit" drive the
+    // right type-specific fields automatically.
+    const match = (taxonomy.monsterCatalog || []).find((m) => m.name.toLowerCase() === value.toLowerCase())
+    if (match && taxonomy.monsterTypes.includes(match.type) && match.type !== monsterType) {
+      handleMonsterTypeChange(match.type)
     }
   }
 
@@ -690,7 +646,8 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
       pools,
       categories,
       includeVehicles,
-      hardExcludedList: [...hardExcluded],
+      excludedPatterns,
+      guaranteedPatterns,
     })
     setNotes('')
   }
@@ -706,16 +663,16 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
           </select>
         </label>
         <label className="block sm:col-span-2">
-          <span className="text-xs font-display uppercase text-ink-soft">Specific Monster (5e/5.5e, optional)</span>
+          <span className="text-xs font-display uppercase text-ink-soft">Specific Monster (SRD 5.2.1, optional)</span>
           <input
             list="loot-monster-catalog"
             value={monsterName}
-            onChange={(e) => setMonsterName(e.target.value)}
+            onChange={(e) => handleMonsterNameChange(e.target.value)}
             placeholder="Search or type, e.g. Bandit"
             className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm"
           />
           <datalist id="loot-monster-catalog">
-            {(taxonomy.monsterCatalog || []).map((m) => <option key={m} value={m} />)}
+            {(taxonomy.monsterCatalog || []).map((m) => <option key={m.name} value={m.name}>{m.type} · CR varies</option>)}
           </datalist>
         </label>
         <label className="block">
@@ -726,11 +683,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
         </label>
       </div>
 
-      <DynamicAttributeFields
-        attributes={typeAttributes}
-        values={attributeValues}
-        onChange={(attrId, val) => setAttributeValues((prev) => ({ ...prev, [attrId]: val }))}
-      />
+      <DynamicAttributeFields attributes={typeAttributes} values={attributeValues} onChange={(attrId, val) => setAttributeValues((prev) => ({ ...prev, [attrId]: val }))} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <label className="block">
@@ -746,10 +699,11 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
         </label>
       </div>
 
-      {hardExcluded.size > 0 && (
-        <p className="text-xs text-ink-soft/60 italic">
-          Auto-excluded for this entity: {[...hardExcluded].join(', ')}
-        </p>
+      {(excludedPatterns.length > 0 || guaranteedPatterns.length > 0) && (
+        <div className="text-xs text-ink-soft/60 italic space-y-0.5">
+          {excludedPatterns.length > 0 && <p>Never carries: {excludedPatterns.join(', ')}</p>}
+          {guaranteedPatterns.length > 0 && <p>Always carries: {guaranteedPatterns.join(', ')}</p>}
+        </div>
       )}
 
       <PoolAndCategoryPicker
@@ -762,9 +716,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
         onIncludeVehiclesChange={setIncludeVehicles}
       />
 
-      <button type="button" onClick={handleAdd} className="w-full py-2 text-sm font-display uppercase tracking-wide bg-moss-dark text-parchment rounded-sm hover:opacity-90">
-        + Add Entity
-      </button>
+      <button type="button" onClick={handleAdd} className="w-full py-2 text-sm font-display uppercase tracking-wide bg-moss-dark text-parchment rounded-sm hover:opacity-90">+ Add Entity</button>
     </div>
   )
 }
@@ -792,16 +744,15 @@ export default function LootTab() {
   const [copied, setCopied] = useState(false)
 
   const currentLocationType = LOCATION_TYPES.find((t) => t.id === locationType)
-  const locTypeAttributes = useMemo(
-    () => lootTaxonomy.locationTypeAttributes?.[locationType] || [],
-    [lootTaxonomy.locationTypeAttributes, locationType]
-  )
-  const locHardExcluded = useMemo(() => excludedCategoriesFor(locTypeAttributes, locAttributeValues), [locTypeAttributes, locAttributeValues])
+  const locTypeAttributes = useMemo(() => lootTaxonomy.locationTypeAttributes?.[locationType] || [], [lootTaxonomy.locationTypeAttributes, locationType])
+  const locExcludedPatterns = useMemo(() => patternsFor(locTypeAttributes, locAttributeValues, 'excludedItemPatterns'), [locTypeAttributes, locAttributeValues])
+  const locGuaranteedPatterns = useMemo(() => {
+    const typeLevel = lootTaxonomy.locationTypeGuaranteedItems?.[locationType] || []
+    const optionLevel = patternsFor(locTypeAttributes, locAttributeValues, 'guaranteedItems')
+    return [...new Set([...typeLevel, ...optionLevel])]
+  }, [lootTaxonomy.locationTypeGuaranteedItems, locationType, locTypeAttributes, locAttributeValues])
 
-  const locAvailableCategories = useMemo(() => {
-    const base = categoriesForPools(locPools, sources, locIncludeVehicles)
-    return base.filter((c) => !locHardExcluded.has(c))
-  }, [locPools, sources, locIncludeVehicles, locHardExcluded])
+  const locAvailableCategories = useMemo(() => categoriesForPools(locPools, sources, locIncludeVehicles), [locPools, sources, locIncludeVehicles])
 
   function pickLocationType(type) {
     setLocationType(type)
@@ -823,7 +774,8 @@ export default function LootTab() {
     const groups = entities.map((e) => {
       const w = wealthLevel(e.wealthId)
       const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
-      const items = drawLoot({
+      const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
+      const rolled = drawLoot({
         pools: e.pools,
         sources,
         categories: e.categories,
@@ -832,11 +784,11 @@ export default function LootTab() {
         count,
         allowDuplicates: false,
         includeVehicles: e.includeVehicles,
-        hardExcludedCategories: new Set(e.hardExcludedList || []),
+        excludedPatterns: e.excludedPatterns,
       })
       const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
       const tags = [e.monsterName || e.monsterType, ...attrTags, w?.label, e.setting, e.notes].filter(Boolean)
-      return { label: tags.join(' · ') || 'Entity', items, gold: null }
+      return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold: null }
     })
     setResults(groups)
     setCopied(false)
@@ -845,7 +797,8 @@ export default function LootTab() {
   function generateLocation() {
     const w = wealthLevel(locWealthId)
     const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
-    const items = drawLoot({
+    const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
+    const rolled = drawLoot({
       pools: locPools,
       sources,
       categories: locCategories,
@@ -854,9 +807,9 @@ export default function LootTab() {
       count,
       allowDuplicates: locAllowDuplicates,
       includeVehicles: locIncludeVehicles,
-      hardExcludedCategories: locHardExcluded,
+      excludedPatterns: locExcludedPatterns,
     })
-    setResults([{ label: '', items, gold: null }])
+    setResults([{ label: '', items: [...guaranteed, ...rolled], gold: null }])
     setCopied(false)
   }
 
@@ -866,7 +819,7 @@ export default function LootTab() {
     results.forEach((g) => {
       if (g.label) lines.push(`— ${g.label} —`)
       if (g.gold != null) lines.push(`${g.gold} gp`)
-      g.items.forEach((i) => lines.push(`${i.name} (${formatPrice(i.priceGp)})`))
+      g.items.forEach((i) => lines.push(`${i.name}${i.guaranteed ? ' (always carries)' : ''} (${i.priceGp == null ? '—' : formatPrice(i.priceGp)})`))
     })
     navigator.clipboard?.writeText(lines.join('\n')).then(() => {
       setCopied(true)
@@ -884,9 +837,7 @@ export default function LootTab() {
             Vehicles &amp; mounts are excluded unless you say otherwise.
           </p>
         </div>
-        <button type="button" onClick={() => setShowTaxonomy((s) => !s)} className="text-xs text-moss-dark underline shrink-0 whitespace-nowrap">
-          {showTaxonomy ? 'Hide categories' : 'Edit categories'}
-        </button>
+        <button type="button" onClick={() => setShowTaxonomy((s) => !s)} className="text-xs text-moss-dark underline shrink-0 whitespace-nowrap">{showTaxonomy ? 'Hide categories' : 'Edit categories'}</button>
       </div>
 
       {showTaxonomy && <TaxonomyManager taxonomy={lootTaxonomy} onSave={saveLootTaxonomy} sources={sources} />}
@@ -931,12 +882,7 @@ export default function LootTab() {
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={generateEncounter}
-              disabled={entities.length === 0}
-              className="w-full py-2.5 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40"
-            >
+            <button type="button" onClick={generateEncounter} disabled={entities.length === 0} className="w-full py-2.5 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40">
               {results ? 'Reroll' : 'Generate Loot'}
             </button>
           </div>
@@ -978,14 +924,13 @@ export default function LootTab() {
                   </label>
                 </div>
 
-                <DynamicAttributeFields
-                  attributes={locTypeAttributes}
-                  values={locAttributeValues}
-                  onChange={(attrId, val) => setLocAttributeValues((prev) => ({ ...prev, [attrId]: val }))}
-                />
+                <DynamicAttributeFields attributes={locTypeAttributes} values={locAttributeValues} onChange={(attrId, val) => setLocAttributeValues((prev) => ({ ...prev, [attrId]: val }))} />
 
-                {locHardExcluded.size > 0 && (
-                  <p className="text-xs text-ink-soft/60 italic">Auto-excluded: {[...locHardExcluded].join(', ')}</p>
+                {(locExcludedPatterns.length > 0 || locGuaranteedPatterns.length > 0) && (
+                  <div className="text-xs text-ink-soft/60 italic space-y-0.5">
+                    {locExcludedPatterns.length > 0 && <p>Never carries: {locExcludedPatterns.join(', ')}</p>}
+                    {locGuaranteedPatterns.length > 0 && <p>Always carries: {locGuaranteedPatterns.join(', ')}</p>}
+                  </div>
                 )}
 
                 <PoolAndCategoryPicker

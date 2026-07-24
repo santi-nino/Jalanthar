@@ -1,28 +1,34 @@
+import { SRD_MONSTERS } from './srdMonsters'
+
 // Default values for the Loot tab's own independent category system. This
 // is deliberately NOT shared with any NPC taxonomy (species, dndClass,
-// etc.) -- the DM asked for these to be a fully separate, freely-editable
-// set of lists just for loot generation. Seeded here the first time, then
-// lives in Firestore (collection `lootConfig`, single doc `taxonomy`) once
-// the DM starts editing it.
+// etc.) -- kept fully separate per the DM's request. Seeded here the
+// first time, then lives in Firestore (collection `lootConfig`, single
+// doc `taxonomy`) once the DM starts editing it.
 //
 // wealthLevels carries both a gp price range AND an item-count range per
-// level -- wealth is the one thing that determines both what things cost
-// and how many of them there are, so item count is never its own free
-// input; it's rolled from whichever wealth level was picked.
+// level -- item count is always rolled from wealth, never its own input.
 //
-// Per-type ATTRIBUTES (monsterTypeAttributes / locationTypeAttributes) are
-// the core of "different options for different types": instead of one
-// fixed set of fields for every entity/location, each type defines its
-// own list of {id, name, options}. Picking "Beast" as a monster type
-// swaps in Beast's own attributes (Diet, Size, Animal Kingdom) instead of
-// a generic "Class" dropdown that never made sense for a wolf. Each
-// option value can also carry its own `excludedCategories` -- this is
-// the mechanism for "a mage wouldn't have a weapon": picking "Mage" for
-// Humanoid's Role attribute can mark the Weapon category as excluded for
-// that specific entity, layered on top of the coarser
-// monsterTypeCategories restriction. Both layers are DM-editable and
-// start empty/unconfigured for anything not seeded below -- they only
-// ever narrow things down once actually set, never block by surprise.
+// Per-type ATTRIBUTES (monsterTypeAttributes / locationTypeAttributes)
+// are the core of "different options for different types": each type
+// defines its own list of {id, name, options, excludedItemPatterns,
+// guaranteedItems}. Picking "Beast" swaps in Beast's own fields (Diet,
+// Size, Animal Kingdom) instead of a generic Class dropdown.
+//
+// excludedItemPatterns is intentionally ITEM-NAME-LEVEL, not
+// category-level: excluding the whole "Weapon" category for a mage
+// would also block daggers and staves that are perfectly reasonable.
+// Instead, an option can list specific name substrings (e.g. "Sword")
+// that get excluded case-insensitively -- "a mage wouldn't have a
+// sword," not "a mage wouldn't have anything tagged Weapon."
+// monsterTypeCategories (below) is a separate, coarser layer that still
+// operates at the category level for a broad first pass; the two stack.
+//
+// guaranteedItems (per option, plus monsterTypeGuaranteedItems /
+// locationTypeGuaranteedItems at the type level) is the OPPOSITE of
+// exclusion -- these are baseline items that always appear regardless of
+// the random draw ("most people would have shoes"), resolved separately
+// from the item-count roll rather than competing with it for a slot.
 export const DEFAULT_LOOT_TAXONOMY = {
   wealthLevels: [
     { id: 'destitute', label: 'Destitute', min: 0, max: 2, minItems: 0, maxItems: 1 },
@@ -33,93 +39,113 @@ export const DEFAULT_LOOT_TAXONOMY = {
     { id: 'aristocratic', label: 'Aristocratic', min: 200, max: 2000, minItems: 5, maxItems: 10 },
   ],
 
+  // The 14 official 5e/5.5e creature types -- matches SRD_MONSTERS'
+  // `type` field exactly, so a specific monster pick can auto-select
+  // the right type here.
   monsterTypes: [
-    'Humanoid', 'Beast', 'Undead', 'Fiend', 'Dragon', 'Construct', 'Aberration',
-    'Elemental', 'Fey', 'Giant', 'Monstrosity', 'Ooze', 'Plant',
+    'Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental',
+    'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead',
   ],
 
-  // Coarse type-level category restriction (unchanged from before) --
-  // still useful as a first, broad pass before the finer per-attribute
-  // exclusions below narrow things further.
+  // Coarse type-level category restriction -- a broad first pass before
+  // the finer per-option item-pattern exclusions narrow things further.
   monsterTypeCategories: {},
 
-  // Fine per-type attribute sets. Seeded with real examples for the most
-  // commonly-used types; every other type starts with none configured
-  // (falls back to no extra fields beyond Wealth/Setting/Monster search
-  // until the DM adds some through the taxonomy manager).
+  // Type-level guaranteed baseline items -- always included for every
+  // entity of this type, regardless of which options are picked.
+  monsterTypeGuaranteedItems: {
+    Humanoid: ['Boots', 'Clothes'],
+  },
+
   monsterTypeAttributes: {
+    Aberration: [
+      { id: 'aberration-origin', name: 'Origin', options: ['Far Realm', 'Aquatic Deep', 'Subterranean', 'Mutated'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'aberration-communication', name: 'Communication', options: ['Telepathic', 'Vocal', 'None'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
     Beast: [
-      {
-        id: 'beast-diet', name: 'Diet',
-        options: ['Herbivore', 'Carnivore', 'Omnivore', 'Insectivore'],
-        excludedCategories: {},
-      },
-      {
-        id: 'beast-size', name: 'Size',
-        options: ['Tiny', 'Small', 'Medium', 'Large', 'Huge'],
-        excludedCategories: {},
-      },
-      {
-        id: 'beast-kingdom', name: 'Animal Kingdom',
-        options: ['Mammal', 'Reptile', 'Bird', 'Fish', 'Insect', 'Amphibian'],
-        excludedCategories: {},
-      },
+      { id: 'beast-diet', name: 'Diet', options: ['Herbivore', 'Carnivore', 'Omnivore', 'Insectivore'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'beast-size', name: 'Size', options: ['Tiny', 'Small', 'Medium', 'Large', 'Huge'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'beast-kingdom', name: 'Animal Kingdom', options: ['Mammal', 'Reptile', 'Bird', 'Fish', 'Insect', 'Amphibian'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Celestial: [
+      { id: 'celestial-origin', name: 'Origin', options: ['Upper Planes', 'Divine Servant', 'Guardian Spirit'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'celestial-rank', name: 'Rank', options: ['Messenger', 'Guardian', 'Named/Unique'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Construct: [
+      { id: 'construct-material', name: 'Material', options: ['Stone', 'Metal', 'Wood', 'Clay', 'Flesh (Reanimated)'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'construct-purpose', name: 'Purpose', options: ['Guardian', 'Laborer', 'Weapon', 'Servant'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Dragon: [
+      { id: 'dragon-age', name: 'Age Category', options: ['Wyrmling', 'Young', 'Adult', 'Ancient'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'dragon-lineage', name: 'Lineage', options: ['Chromatic', 'Metallic', 'Gem', 'Other'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Elemental: [
+      { id: 'elemental-element', name: 'Element', options: ['Fire', 'Water', 'Air', 'Earth'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'elemental-origin', name: 'Origin', options: ['Elemental Plane', 'Summoned', 'Genie-kin'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Fey: [
+      { id: 'fey-court', name: 'Court', options: ['Seelie/Summer', 'Unseelie/Winter', 'Wild/Unaligned'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'fey-temperament', name: 'Temperament', options: ['Mischievous', 'Benevolent', 'Malicious'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Fiend: [
+      { id: 'fiend-origin', name: 'Origin', options: ['Devil (Lawful)', 'Demon (Chaotic)', 'Yugoloth (Neutral)', 'Other'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'fiend-rank', name: 'Rank', options: ['Lesser', 'Greater', 'Named/Unique'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Giant: [
+      { id: 'giant-kind', name: 'Giant Kind', options: ['Hill', 'Stone', 'Frost', 'Fire', 'Cloud', 'Storm'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'giant-temperament', name: 'Temperament', options: ['Brutish', 'Cunning', 'Noble'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     Humanoid: [
       {
         id: 'humanoid-role', name: 'Role',
         // Deliberately NOT the standard D&D classes -- this is how NPCs
-        // and humanoid monsters get sorted for loot purposes, which is a
+        // and humanoid monsters get sorted for loot purposes, a
         // different axis entirely (a Commoner and a Noble both might be
         // "no class" mechanically but carry very different loot).
         options: [
           'Commoner', 'Laborer', 'Merchant', 'Guard/Soldier', 'Bandit/Criminal',
           'Noble', 'Scholar', 'Mage/Caster', 'Cleric/Devout', 'Traveler',
         ],
-        excludedCategories: {
-          // The concrete example from the request: a mage's loot
-          // shouldn't default to including a weapon.
-          'Mage/Caster': ['Weapon'],
+        excludedItemPatterns: {
+          // The concrete example from the request: a mage specifically
+          // wouldn't carry a SWORD -- not "nothing tagged Weapon" (a
+          // dagger or a component pouch is still perfectly fine).
+          'Mage/Caster': ['Sword'],
+        },
+        guaranteedItems: {
+          'Mage/Caster': ['Component Pouch'],
+          'Guard/Soldier': ['Shield'],
         },
       },
+    ],
+    Monstrosity: [
+      { id: 'monstrosity-origin', name: 'Origin', options: ['Natural Mutation', 'Magical Creation', 'Ancient Beast'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'monstrosity-threat', name: 'Threat Level', options: ['Predator', 'Territorial', 'Aggressive'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Ooze: [
+      { id: 'ooze-composition', name: 'Composition', options: ['Acidic', 'Corrosive', 'Adhesive', 'Caustic'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'ooze-origin', name: 'Origin', options: ['Natural', 'Alchemical Accident', 'Cursed'], excludedItemPatterns: {}, guaranteedItems: {} },
+    ],
+    Plant: [
+      { id: 'plant-growth', name: 'Growth Type', options: ['Rooted', 'Mobile', 'Parasitic', 'Fungal'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'plant-origin', name: 'Origin', options: ['Awakened', 'Natural', 'Cursed/Blighted'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     Undead: [
       {
         id: 'undead-origin', name: 'Origin',
         options: ['Freshly Risen', 'Ancient', 'Skeletal', 'Spectral', 'Ghoulish'],
-        excludedCategories: {
-          Spectral: ['Weapon', 'Armor', 'Tool'],
-        },
+        excludedItemPatterns: { Spectral: ['Sword', 'Shield', 'Armor'] },
+        guaranteedItems: {},
       },
+      { id: 'undead-sentience', name: 'Sentience', options: ['Mindless', 'Malevolent Intelligence', 'Tragic Remnant'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
   },
 
-  // Searchable catalog of known monster names (5e/5.5e SRD-style,
-  // generic creature names -- no copyrighted stat-block text, just
-  // names) -- available as an optional pick regardless of which
-  // Monster Type is selected, per the request. Editable like every
-  // other list here, so homebrew monsters can be added freely.
-  monsterCatalog: [
-    'Bandit', 'Bandit Captain', 'Cultist', 'Cult Fanatic', 'Guard', 'Knight', 'Noble',
-    'Spy', 'Thug', 'Tribal Warrior', 'Acolyte', 'Commoner', 'Veteran', 'Assassin',
-    'Berserker', 'Druid', 'Mage', 'Priest', 'Scout', 'Apprentice',
-    'Wolf', 'Dire Wolf', 'Black Bear', 'Brown Bear', 'Giant Rat', 'Giant Spider',
-    'Giant Eagle', 'Boar', 'Panther', 'Crocodile', 'Hawk', 'Mastiff',
-    'Riding Horse', 'Draft Horse',
-    'Skeleton', 'Zombie', 'Ghoul', 'Ghast', 'Wight', 'Wraith', 'Specter',
-    'Mummy', 'Vampire Spawn',
-    'Imp', 'Quasit', 'Dretch', 'Manes', 'Hell Hound',
-    'Pseudodragon', 'Young Dragon (Wyrmling)',
-    'Animated Armor', 'Flying Sword', 'Homunculus', 'Clay Golem', 'Stone Golem',
-    'Gibbering Mouther', 'Grell', 'Otyugh',
-    'Fire Elemental', 'Water Elemental', 'Earth Elemental', 'Air Elemental',
-    'Magmin', 'Steam Mephit',
-    'Pixie', 'Sprite', 'Satyr', 'Dryad', 'Blink Dog',
-    'Hill Giant', 'Stone Giant', 'Frost Giant', 'Ogre', 'Fire Giant',
-    'Owlbear', 'Manticore', 'Displacer Beast', 'Chimera', 'Basilisk', 'Griffon',
-    'Gelatinous Cube', 'Black Pudding', 'Ochre Jelly',
-    'Shambling Mound', 'Awakened Shrub', 'Awakened Tree', 'Vine Blight', 'Twig Blight',
-  ],
+  // Searchable catalog of real monster names, sizes, types, and
+  // alignments, extracted directly from the official SRD 5.2.1 -- see
+  // src/data/srdMonsters.js for the full list and required attribution.
+  // Picking one of these auto-fills Monster Type from its real type.
+  monsterCatalog: SRD_MONSTERS,
 
   settings: [
     'Jungle', 'Mountain', 'Town', 'City', 'Forest', 'Swamp', 'Coast', 'Desert',
@@ -131,63 +157,28 @@ export const DEFAULT_LOOT_TAXONOMY = {
   tavernTypes: ['Dive Bar', 'Working Tavern', 'Upscale Inn'],
   explorationTypes: ['Dungeon', 'Ruins', 'Cave', 'Battlefield', 'Shipwreck', 'Tomb', 'Abandoned Camp'],
 
+  locationTypeGuaranteedItems: {},
+
   // Same attribute-set mechanism as monsterTypeAttributes, one set per
-  // location type -- this is what "more options for shop/restaurant/
-  // tavern/exploration" actually is: real, DM-editable fields, not a
-  // fixed extra dropdown or two.
+  // location type -- real, DM-editable fields per Shop/Restaurant/
+  // Tavern/Exploration, not a fixed extra dropdown or two.
   locationTypeAttributes: {
     shop: [
-      {
-        id: 'shop-specialty', name: 'Specialty',
-        options: ['General Goods', 'Weapons Focus', 'Armor Focus', 'Alchemy Focus', 'Luxury Goods', 'Tools & Trade'],
-        excludedCategories: {},
-      },
-      {
-        id: 'shop-scale', name: 'Scale',
-        options: ['Market Stall', 'Modest Shop', 'Large Emporium'],
-        excludedCategories: {},
-      },
-      {
-        id: 'shop-reputation', name: 'Reputation',
-        options: ['Shady', 'Modest', 'Reputable', 'Prestigious'],
-        excludedCategories: {},
-      },
+      { id: 'shop-specialty', name: 'Specialty', options: ['General Goods', 'Weapons Focus', 'Armor Focus', 'Alchemy Focus', 'Luxury Goods', 'Tools & Trade'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'shop-scale', name: 'Scale', options: ['Market Stall', 'Modest Shop', 'Large Emporium'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'shop-reputation', name: 'Reputation', options: ['Shady', 'Modest', 'Reputable', 'Prestigious'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     restaurant: [
-      {
-        id: 'restaurant-cuisine', name: 'Cuisine Style',
-        options: ['Home-style', 'Regional Specialty', 'Exotic/Imported', 'Street Food'],
-        excludedCategories: {},
-      },
-      {
-        id: 'restaurant-reputation', name: 'Reputation',
-        options: ['Rough', 'Modest', 'Reputable', 'Prestigious'],
-        excludedCategories: {},
-      },
+      { id: 'restaurant-cuisine', name: 'Cuisine Style', options: ['Home-style', 'Regional Specialty', 'Exotic/Imported', 'Street Food'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'restaurant-reputation', name: 'Reputation', options: ['Rough', 'Modest', 'Reputable', 'Prestigious'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     tavern: [
-      {
-        id: 'tavern-clientele', name: 'Clientele',
-        options: ['Locals', 'Travelers', 'Rough Crowd', 'High Society'],
-        excludedCategories: {},
-      },
-      {
-        id: 'tavern-atmosphere', name: 'Atmosphere',
-        options: ['Rowdy', 'Quiet', 'Festive', 'Seedy'],
-        excludedCategories: {},
-      },
+      { id: 'tavern-clientele', name: 'Clientele', options: ['Locals', 'Travelers', 'Rough Crowd', 'High Society'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'tavern-atmosphere', name: 'Atmosphere', options: ['Rowdy', 'Quiet', 'Festive', 'Seedy'], excludedItemPatterns: {}, guaranteedItems: { Rowdy: ['Ale'] } },
     ],
     exploration: [
-      {
-        id: 'exploration-condition', name: 'Condition',
-        options: ['Pristine', 'Already Looted', 'Ancient/Decayed', 'Trapped'],
-        excludedCategories: {},
-      },
-      {
-        id: 'exploration-occupied', name: 'Occupied By',
-        options: ['Abandoned', 'Guarded', 'Infested', 'Haunted'],
-        excludedCategories: {},
-      },
+      { id: 'exploration-condition', name: 'Condition', options: ['Pristine', 'Already Looted', 'Ancient/Decayed', 'Trapped'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'exploration-occupied', name: 'Occupied By', options: ['Abandoned', 'Guarded', 'Infested', 'Haunted'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
   },
 }
@@ -202,8 +193,6 @@ export const LOCATION_TYPES = [
 ]
 
 // Exact SRD category names (see src/data/dnd5eItems.js) for mounts and
-// vehicles. Loot generation excludes these by default -- per-generation,
-// there's an explicit "Include vehicles & mounts" opt-in checkbox rather
-// than a global setting, since whether a horse makes sense as loot is a
-// per-roll judgment call, not a permanent site setting.
+// vehicles. Loot generation excludes these by default -- an explicit
+// "Include vehicles & mounts" opt-in checkbox exists per-generation.
 export const VEHICLE_CATEGORIES = ['Mount', 'Vehicle']
