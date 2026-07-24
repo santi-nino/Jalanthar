@@ -53,53 +53,28 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // EXPLICIT empty array means "this type carries nothing from the
   // manufactured-goods catalog" -- not "unrestricted." A key that's
   // absent entirely means unrestricted.
-  // Category names prefixed "Source: X (Category)" match a specific
-  // uploaded source's derived category label exactly -- see
-  // utils/itemPool.js. These four reference the DM-editable "Hunter's &
-  // Trapper's Price Guide" source (seeded by default, same editable
-  // shape as any scanned-in source) that supplies exactly the kind of
-  // loot these types SHOULD have: hunting trophies, pelts, horns, wings,
-  // hearts, fangs, claws, scales, rations, and (for Construct) salvaged
-  // parts -- instead of shop goods a wolf or a golem has no business
-  // carrying.
+  // Category names here are SRD category names only (Weapon, Armor,
+  // Tool, Focus, etc) or "Source: X (Y)" for a specific uploaded
+  // source's category. The Hunter's & Trapper's Price Guide items
+  // (trophies, pelts, horns, hearts, etc.) are DELIBERATELY not listed
+  // here at all -- they reach Beast/Monstrosity/Construct/Dragon through
+  // the separate, invisible monsterTypeTag mechanism instead (see
+  // LootTab.jsx), which hard-scopes each item to its actual creature
+  // type regardless of category or price overlap. Listing those
+  // category strings here too was fragile (an exact-string dependency
+  // on the source's name) and unnecessary once the tag exists.
   monsterTypeCategories: {
     Aberration: [],
-    Beast: [
-      "Source: Hunter's & Trapper's Price Guide (Trophy)",
-      "Source: Hunter's & Trapper's Price Guide (Pelt)",
-      "Source: Hunter's & Trapper's Price Guide (Horn)",
-      "Source: Hunter's & Trapper's Price Guide (Wing)",
-      "Source: Hunter's & Trapper's Price Guide (Fang)",
-      "Source: Hunter's & Trapper's Price Guide (Claw)",
-      "Source: Hunter's & Trapper's Price Guide (Scale)",
-      "Source: Hunter's & Trapper's Price Guide (Ration)",
-    ],
+    Beast: [],
     Celestial: ['Focus'],
-    Construct: ["Source: Hunter's & Trapper's Price Guide (Salvage)"],
-    Dragon: [
-      'Focus',
-      "Source: Hunter's & Trapper's Price Guide (Horn)",
-      "Source: Hunter's & Trapper's Price Guide (Wing)",
-      "Source: Hunter's & Trapper's Price Guide (Heart)",
-      "Source: Hunter's & Trapper's Price Guide (Fang)",
-      "Source: Hunter's & Trapper's Price Guide (Claw)",
-      "Source: Hunter's & Trapper's Price Guide (Scale)",
-    ],
+    Construct: [],
+    Dragon: ['Focus'],
     Elemental: [],
     Fey: ['Focus'],
     // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, all
     // sapient-enough or civilized-enough to plausibly carry a
     // shopkeeper's kind of gear.
-    Monstrosity: [
-      "Source: Hunter's & Trapper's Price Guide (Trophy)",
-      "Source: Hunter's & Trapper's Price Guide (Pelt)",
-      "Source: Hunter's & Trapper's Price Guide (Horn)",
-      "Source: Hunter's & Trapper's Price Guide (Wing)",
-      "Source: Hunter's & Trapper's Price Guide (Heart)",
-      "Source: Hunter's & Trapper's Price Guide (Fang)",
-      "Source: Hunter's & Trapper's Price Guide (Claw)",
-      "Source: Hunter's & Trapper's Price Guide (Scale)",
-    ],
+    Monstrosity: [],
     Ooze: [],
     Plant: [],
   },
@@ -109,12 +84,12 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // coin purse, a wild beast or an ooze has neither concept. Any type
   // absent from this map defaults to NOT using wealth (matching the
   // request that this should be an opt-in list, not opt-out).
-  // For Humanoid/Fiend/Giant/Celestial/Undead/Dragon this is literal
-  // economic status. For Beast/Monstrosity/Construct it's the same
-  // mechanism reinterpreted -- not "how rich is this wolf" but "how much
-  // does this kill yield": a Wealthy-tier Beast roll leans toward
-  // pristine, valuable trophies; Destitute leans toward a scrap of pelt
-  // and not much else. Same lever, different in-fiction meaning.
+  // Wealth is literal economic status, and it genuinely doesn't apply to
+  // a wild beast, a monstrosity, or a construct -- none of them have a
+  // "how rich am I" concept, full stop. Those three get their loot from
+  // the tag-scoped Hunter's & Trapper's Price Guide pool instead (see
+  // monsterTypeFixedItemCount below for how their item count works
+  // without a Wealth field at all).
   monsterTypeUsesWealth: {
     Humanoid: true,
     Fiend: true,
@@ -122,9 +97,17 @@ export const DEFAULT_LOOT_TAXONOMY = {
     Celestial: true,
     Undead: true,
     Dragon: true,
-    Beast: true,
-    Monstrosity: true,
-    Construct: true,
+  },
+
+  // For any type NOT using Wealth, item count still has to come from
+  // somewhere other than a free-standing input (same "no separate
+  // option" rule as everywhere else) -- this is that fallback. Missing
+  // a type here just falls back to the default at the bottom.
+  monsterTypeFixedItemCount: {
+    Beast: { minItems: 1, maxItems: 2 },
+    Monstrosity: { minItems: 1, maxItems: 2 },
+    Construct: { minItems: 1, maxItems: 2 },
+    default: { minItems: 1, maxItems: 1 },
   },
 
   // Type-level guaranteed baseline items -- always included for every

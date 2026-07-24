@@ -8,6 +8,13 @@ import { DND5E_ITEMS } from '../data/dnd5eItems'
 // against the DM's suggested category list, or hand-edited afterward —
 // drives its own group, so a single scanned source can split across
 // several categories instead of being lumped under one blanket label.
+//
+// monsterTypeTag is an optional, invisible field (not shown as a visible
+// category, never affects the building catalog editor) that ONLY the
+// loot generator reads — see LootTab.jsx. It's how a "Blue Dragon Heart"
+// item can be hard-scoped to Dragon entities specifically, rather than
+// relying on price ranges or category names to (imperfectly) keep it
+// away from, say, a Beast.
 export function sourceItemsForPool(sources, pool) {
   return (sources || []).flatMap((s) =>
     (s[pool] || []).map((item) => ({
@@ -16,6 +23,7 @@ export function sourceItemsForPool(sources, pool) {
       priceGp: item.basePrice,
       description: item.description,
       category: `Source: ${s.name} (${item.category || 'Misc'})`,
+      monsterTypeTag: item.monsterTypeTag || null,
     }))
   )
 }

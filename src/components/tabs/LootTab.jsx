@@ -65,25 +65,30 @@ function matchesAnyPattern(itemName, patterns) {
   return patterns.some((p) => lower.includes(p.toLowerCase()))
 }
 
-// Resolves what the DM explicitly picked in the category chips against
-// the coarser type-level restriction, and returns whether the draw
-// should be blocked outright. This is the actual enforcement step that
-// was missing before: the type-level restriction previously only
-// affected which chips were offered in the UI, so an entity whose DM
-// never clicked a chip (the common case) fell through to "no
-// restriction at all," regardless of what the type restriction said.
-function resolveEffectiveCategories(explicitCategories, typeRestriction) {
-  if (explicitCategories.length > 0) return { blocked: false, categories: explicitCategories }
-  if (typeRestriction !== undefined) {
-    if (typeRestriction.length === 0) return { blocked: true, categories: [] }
-    return { blocked: false, categories: typeRestriction }
-  }
-  return { blocked: false, categories: [] }
+// Splits the raw pool into items hard-scoped to this exact monster type
+// (via the invisible monsterTypeTag field -- see itemPool.js) and
+// everything else. Tagged items are ALWAYS eligible for their matching
+// type, bypassing the coarser category restriction entirely -- a "Blue
+// Dragon Heart" reaches a Dragon entity regardless of what categories or
+// price range are in play, and NEVER reaches anything else, full stop.
+// Untagged items still go through the normal coarse category
+// restriction, same as before.
+function scopeToMonsterType(pool, monsterType, typeCategoryRestriction) {
+  const tagged = monsterType ? pool.filter((i) => i.monsterTypeTag === monsterType) : []
+  const untagged = pool.filter((i) => !i.monsterTypeTag)
+  const allowedUntagged =
+    typeCategoryRestriction !== undefined
+      ? untagged.filter((i) => typeCategoryRestriction.includes(i.category))
+      : untagged
+  return [...tagged, ...allowedUntagged]
 }
 
-function drawLoot({ pools, sources, categories, priceMin, priceMax, count, allowDuplicates, includeVehicles, excludedPatterns }) {
+function drawLoot({
+  pools, sources, categories, priceMin, priceMax, count, allowDuplicates, includeVehicles, excludedPatterns, monsterType, typeCategoryRestriction,
+}) {
   let pool = pools.flatMap((p) => buildItemPool(p, sources).map((item) => ({ ...item, pool: p })))
   if (!includeVehicles) pool = pool.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
+  pool = scopeToMonsterType(pool, monsterType, typeCategoryRestriction)
   if (excludedPatterns && excludedPatterns.length > 0) {
     pool = pool.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
   }
@@ -729,16 +734,11 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   }, [taxonomy.monsterTypeGuaranteedItems, monsterType, typeAttributes, attributeValues, settingRule])
 
   const availableCategories = useMemo(() => {
-    let base = categoriesForPools(pools, sources, includeVehicles)
+    let base = pools.flatMap((p) => buildItemPool(p, sources))
+    if (!includeVehicles) base = base.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
     const restriction = taxonomy.monsterTypeCategories?.[monsterType]
-    // A restriction key that's PRESENT (even as an empty array) means
-    // "this type carries nothing" -- only an ABSENT key means
-    // unrestricted. `restriction && restriction.length > 0` used to
-    // treat both the same way, which is exactly why an unconfigured
-    // Beast could pull anything: an explicitly-empty restriction was
-    // silently ignored instead of blocking everything.
-    if (restriction !== undefined) base = base.filter((c) => restriction.includes(c))
-    return base
+    const scoped = scopeToMonsterType(base, monsterType, restriction)
+    return [...new Set(scoped.map((i) => i.category))].sort((a, b) => a.localeCompare(b))
   }, [pools, sources, includeVehicles, taxonomy.monsterTypeCategories, monsterType])
 
   function handleMonsterTypeChange(value) {
@@ -932,26 +932,32 @@ export default function LootTab() {
   function generateEncounter() {
     const groups = entities.map((e) => {
       const w = wealthLevel(e.wealthId)
-      const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
-      const gold = w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
+      const usesWealth = lootTaxonomy.monsterTypeUsesWealth?.[e.monsterType] === true
+      const fixedCount =
+        lootTaxonomy.monsterTypeFixedItemCount?.[e.monsterType] ||
+        lootTaxonomy.monsterTypeFixedItemCount?.default || { minItems: 1, maxItems: 1 }
+      const count = usesWealth
+        ? w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
+        : randomInt(fixedCount.minItems, fixedCount.maxItems)
+      const gold = usesWealth && w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
       const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
       const typeRestriction = lootTaxonomy.monsterTypeCategories?.[e.monsterType]
-      const { blocked, categories } = resolveEffectiveCategories(e.categories, typeRestriction)
-      const rolled = blocked
-        ? []
-        : drawLoot({
-            pools: e.pools,
-            sources,
-            categories,
-            priceMin: w?.min ?? null,
-            priceMax: w?.max ?? null,
-            count,
-            allowDuplicates: false,
-            includeVehicles: e.includeVehicles,
-            excludedPatterns: e.excludedPatterns,
-          })
+      const rolled = drawLoot({
+        pools: e.pools,
+        sources,
+        categories: e.categories,
+        priceMin: usesWealth ? w?.min ?? null : null,
+        priceMax: usesWealth ? w?.max ?? null : null,
+        count,
+        allowDuplicates: false,
+        includeVehicles: e.includeVehicles,
+        excludedPatterns: e.excludedPatterns,
+        monsterType: e.monsterType,
+        typeCategoryRestriction: typeRestriction,
+      })
       const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
-      const tags = [e.monsterName || e.monsterType, ...attrTags, w?.label, e.setting, e.notes].filter(Boolean)
+      const wealthLabel = usesWealth ? w?.label : null
+      const tags = [e.monsterName || e.monsterType, ...attrTags, wealthLabel, e.setting, e.notes].filter(Boolean)
       return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold }
     })
     setResults(groups)
