@@ -68,6 +68,17 @@ export function IconRoster({ className }) {
   )
 }
 
+export function IconLoot({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path d="M3.5 10.5h17V19a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-8.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M3.5 10.5 5 5.5a1 1 0 0 1 1-.7h12a1 1 0 0 1 1 .7l1.5 5" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M3.5 10.5h17" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M10.5 10.5v2a1.5 1.5 0 0 0 3 0v-2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function IconKey({ className }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">

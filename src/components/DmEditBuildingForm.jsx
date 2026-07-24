@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useData } from '../contexts/DataContext'
 import MiniMapPicker from './MiniMapPicker'
 import NpcPicker from './NpcPicker'
-import { DND5E_ITEMS } from '../data/dnd5eItems'
+import { buildItemPool, groupByCategory } from '../utils/itemPool'
 import { formatPrice, effectivePrice } from '../utils/price'
 import { ICON_OPTIONS, BuildingMarkerIcon } from './buildingIcons'
 
@@ -63,35 +63,10 @@ function CatalogList({ label, pool, rows, multiplier, onChange, sources }) {
   const [customForm, setCustomForm] = useState({ name: '', priceGp: '', description: '' })
 
   // Uploaded sources (see UploadSourceModal) are just another item catalog
-  // alongside the built-in SRD one — normalized to the same {id, name,
-  // priceGp, description, category} shape so every bit of browsing/search/
-  // "add whole category" logic below works over both without a special
-  // case. Their category is prefixed "Source:" so they group into their
-  // own optgroups rather than colliding with SRD category names.
-  const sourceItems = useMemo(() => {
-    return (sources || []).flatMap((s) =>
-      (s[pool] || []).map((item) => ({
-        id: `source-${s.id}-${item.rowId}`,
-        name: item.name,
-        priceGp: item.basePrice,
-        description: item.description,
-        category: `Source: ${s.name}${s.category ? ` (${s.category})` : ''}`,
-      }))
-    )
-  }, [sources, pool])
-
-  const poolItems = useMemo(
-    () => [...DND5E_ITEMS.filter((i) => i.pool === pool), ...sourceItems],
-    [pool, sourceItems]
-  )
-  const grouped = useMemo(() => {
-    const map = {}
-    poolItems.forEach((i) => {
-      if (!map[i.category]) map[i.category] = []
-      map[i.category].push(i)
-    })
-    return map
-  }, [poolItems])
+  // alongside the built-in SRD one — see utils/itemPool.js for how they're
+  // normalized to the same shape and grouped.
+  const poolItems = useMemo(() => buildItemPool(pool, sources), [pool, sources])
+  const grouped = useMemo(() => groupByCategory(poolItems), [poolItems])
 
   // A DM adding an item manually, then later "Add All"-ing a category that
   // happens to contain that same item, should never end up with it twice.

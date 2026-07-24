@@ -14,6 +14,7 @@ import {
 import { onAuthStateChanged } from 'firebase/auth'
 import { db, auth, isFirebaseConfigured } from '../firebase'
 import { mockBuildings, mockNpcs, mockFamilies } from '../data/mockData'
+import { DEFAULT_LOOT_TAXONOMY } from '../data/defaultLootTaxonomy'
 
 const DataContext = createContext(null)
 
@@ -22,6 +23,7 @@ const LS_KEYS = {
   npcs: 'jalanthar-demo-npcs',
   families: 'jalanthar-demo-families',
   sources: 'jalanthar-demo-sources',
+  lootTaxonomy: 'jalanthar-demo-loot-taxonomy',
 }
 
 function loadDemo(key, fallback) {
@@ -57,6 +59,7 @@ export function DataProvider({ children }) {
   const [npcs, setNpcs] = useState([])
   const [families, setFamilies] = useState([])
   const [sources, setSources] = useState([])
+  const [lootTaxonomy, setLootTaxonomy] = useState(DEFAULT_LOOT_TAXONOMY)
   const [loading, setLoading] = useState(true)
 
   // Kept in sync every render so callbacks below can read the latest
@@ -108,9 +111,11 @@ export function DataProvider({ children }) {
       // provably fine in that case — same as it always was.
       let unsubNpcs = () => {}
       let unsubSources = () => {}
+      let unsubLootConfig = () => {}
       const unsubAuth = onAuthStateChanged(auth, (user) => {
         unsubNpcs()
         unsubSources()
+        unsubLootConfig()
         if (user) {
           unsubNpcs = onSnapshot(collection(db, 'npcs'), (snap) =>
             setNpcs(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
@@ -118,6 +123,9 @@ export function DataProvider({ children }) {
           unsubSources = onSnapshot(collection(db, 'sources'), (snap) =>
             setSources(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
           )
+          unsubLootConfig = onSnapshot(doc(db, 'lootConfig', 'taxonomy'), (snap) => {
+            setLootTaxonomy(snap.exists() ? { ...DEFAULT_LOOT_TAXONOMY, ...snap.data() } : DEFAULT_LOOT_TAXONOMY)
+          })
         } else {
           let visibleDocs = {}
           let revealedDocs = {}
@@ -144,10 +152,14 @@ export function DataProvider({ children }) {
             unsubVisible()
             unsubRevealed()
           }
-          // Sources are DM-only (`allow read: if request.auth != null`) —
-          // nothing to subscribe to as a player, and no point trying.
+          // Sources and the loot taxonomy are both DM-only (`allow read: if
+          // request.auth != null`) — nothing to subscribe to as a player,
+          // and no point trying. The Loot tab itself is also DM-only in
+          // the UI, so lootTaxonomy just stays at its default for a player
+          // session; it's never read from there.
           setSources([])
           unsubSources = () => {}
+          unsubLootConfig = () => {}
         }
       })
 
@@ -158,12 +170,14 @@ export function DataProvider({ children }) {
         unsubAuth()
         unsubNpcs()
         unsubSources()
+        unsubLootConfig()
       }
     } else {
       setBuildings(loadDemo(LS_KEYS.buildings, mockBuildings))
       setNpcs(loadDemo(LS_KEYS.npcs, mockNpcs))
       setFamilies(loadDemo(LS_KEYS.families, mockFamilies))
       setSources(loadDemo(LS_KEYS.sources, []))
+      setLootTaxonomy(loadDemo(LS_KEYS.lootTaxonomy, DEFAULT_LOOT_TAXONOMY))
       setLoading(false)
     }
   }, [])
@@ -433,6 +447,27 @@ export function DataProvider({ children }) {
     }
   }, [])
 
+  // ---- Loot taxonomy ----
+  // A single settings document, not a collection of many — the DM's own,
+  // independently-editable category lists for the Loot tab (wealth
+  // levels, classes, monster types, settings, and the four location
+  // subtype lists). Deliberately never reads from or writes to any
+  // NPC-related taxonomy (species, dndClass, etc.) — this is its own
+  // thing, per the DM's explicit request. `updates` is shallow-merged
+  // over the current taxonomy, so callers only need to pass the one key
+  // they're changing (e.g. { classes: [...] }).
+  const saveLootTaxonomy = useCallback(async (updates) => {
+    if (isFirebaseConfigured) {
+      await setDoc(doc(db, 'lootConfig', 'taxonomy'), updates, { merge: true })
+    } else {
+      setLootTaxonomy((prev) => {
+        const next = { ...prev, ...updates }
+        saveDemo(LS_KEYS.lootTaxonomy, next)
+        return next
+      })
+    }
+  }, [])
+
   return (
     <DataContext.Provider
       value={{
@@ -440,6 +475,7 @@ export function DataProvider({ children }) {
         npcs,
         families,
         sources,
+        lootTaxonomy,
         loading,
         saveBuilding,
         removeBuilding,
@@ -451,6 +487,7 @@ export function DataProvider({ children }) {
         removeFamily,
         saveSource,
         removeSource,
+        saveLootTaxonomy,
       }}
     >
       {children}

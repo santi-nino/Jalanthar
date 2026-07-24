@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { IconMap, IconBuildings, IconResidents, IconRoster, IconKey, IconExit } from './icons'
+import { IconMap, IconBuildings, IconResidents, IconRoster, IconLoot, IconKey, IconExit } from './icons'
 import ExportDataModal from './ExportDataModal'
 import UploadSourceModal from './UploadSourceModal'
 
@@ -9,6 +9,7 @@ const TABS = [
   { id: 'buildings', label: 'Buildings', Icon: IconBuildings },
   { id: 'residents', label: 'Family Tree', Icon: IconResidents },
   { id: 'roster', label: 'Roster', Icon: IconRoster },
+  { id: 'loot', label: 'Loot', Icon: IconLoot, dmOnly: true },
 ]
 
 export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, onCloseMobile }) {
@@ -16,6 +17,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
   const [exportOpen, setExportOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
   const { isDm, logout } = useAuth()
+  const visibleTabs = TABS.filter((t) => !t.dmOnly || isDm)
 
   function selectTab(id) {
     onTabChange(id)
@@ -63,7 +65,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
         </div>
 
         <nav className="flex-1 py-4" aria-label="Site sections">
-          {TABS.map((tab) => (
+          {visibleTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => selectTab(tab.id)}

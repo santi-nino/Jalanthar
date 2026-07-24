@@ -12,12 +12,13 @@ function makeRow() {
     name: '',
     basePrice: 0,
     description: '',
+    category: 'Misc',
     priceOverride: '',
     quantity: 1,
   }
 }
 
-function ItemRows({ label, rows, onChange }) {
+function ItemRows({ label, rows, onChange, categoryOptions }) {
   function update(rowId, key, value) {
     onChange(rows.map((r) => (r.rowId === rowId ? { ...r, [key]: value } : r)))
   }
@@ -48,6 +49,13 @@ function ItemRows({ label, rows, onChange }) {
                 onChange={(e) => update(row.rowId, 'name', e.target.value)}
                 placeholder="Item name"
                 className="flex-1 rounded-sm border border-leather bg-white/70 px-2 py-1 text-sm font-semibold"
+              />
+              <input
+                value={row.category || ''}
+                onChange={(e) => update(row.rowId, 'category', e.target.value)}
+                placeholder="Category"
+                list={categoryOptions?.length ? 'upload-source-categories' : undefined}
+                className="w-32 shrink-0 rounded-sm border border-leather bg-white/70 px-2 py-1 text-xs"
               />
               <button
                 type="button"
@@ -103,9 +111,20 @@ export default function UploadSourceModal({ onClose }) {
   const [file, setFile] = useState(null)
   const [status, setStatus] = useState('idle') // idle | scanning | review | saving | error
   const [error, setError] = useState('')
-  const [result, setResult] = useState(null) // { sourceName, category, wares, menu, services }
+  const [result, setResult] = useState(null) // { sourceName, wares, menu, services }
+  const [categories, setCategories] = useState([]) // suggested categories, set up before scanning
+  const [categoryInput, setCategoryInput] = useState('')
 
   if (!isDm) return null
+
+  function addCategory() {
+    const name = categoryInput.trim()
+    if (name && !categories.includes(name)) setCategories([...categories, name])
+    setCategoryInput('')
+  }
+  function removeCategory(name) {
+    setCategories(categories.filter((c) => c !== name))
+  }
 
   async function handleFileChange(e) {
     const f = e.target.files?.[0]
@@ -114,7 +133,7 @@ export default function UploadSourceModal({ onClose }) {
     setStatus('scanning')
     setError('')
     try {
-      const parsed = await parseSourceDocument(f)
+      const parsed = await parseSourceDocument(f, categories)
       setResult(parsed)
       setStatus('review')
     } catch (err) {
@@ -138,7 +157,6 @@ export default function UploadSourceModal({ onClose }) {
     try {
       await saveSource({
         name: result.sourceName,
-        category: result.category,
         wares: result.wares,
         menu: result.menu,
         services: result.services,
@@ -150,6 +168,17 @@ export default function UploadSourceModal({ onClose }) {
       setError(err.message || 'Failed to save this source.')
     }
   }
+
+  // Every distinct category currently in play — the DM's own suggested
+  // list plus whatever's actually on the extracted rows (the AI can add
+  // "Other" or, with no suggestions at all, invent its own) — offered as
+  // datalist suggestions so re-typing one on an item row is a one-click
+  // autocomplete instead of retyping it clean each time.
+  const allCategoryOptions = result
+    ? [...new Set([...categories, ...result.wares, ...result.menu, ...result.services].map((c) =>
+        typeof c === 'string' ? c : c.category
+      ).filter(Boolean))]
+    : categories
 
   return (
     <div
@@ -167,15 +196,79 @@ export default function UploadSourceModal({ onClose }) {
         </h2>
         <p className="text-xs text-ink-soft/70 italic -mt-2">
           Upload a price list, menu, or equipment sheet (PDF or image). It gets scanned into a
-          named, categorized set of wares/menu/services you can pull into any building's edit
-          form afterward — nothing is attached to a building automatically.
+          named set of wares/menu/services, each sorted into its own category, that you can pull
+          into any building's edit form afterward — nothing is attached to a building
+          automatically.
         </p>
 
+        {allCategoryOptions.length > 0 && (
+          <datalist id="upload-source-categories">
+            {allCategoryOptions.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+        )}
+
         {status === 'idle' && (
-          <label className="block w-full py-8 border-2 border-dashed border-leather/50 rounded-sm text-center text-ink-soft/70 text-sm hover:bg-leather/5 cursor-pointer">
-            Click to choose a PDF or image
-            <input type="file" accept={ACCEPTED} onChange={handleFileChange} className="hidden" />
-          </label>
+          <div className="space-y-4">
+            <div>
+              <span className="text-sm font-display uppercase text-ink-soft block mb-1">
+                Suggested Categories (optional)
+              </span>
+              <p className="text-xs text-ink-soft/60 italic mb-1.5">
+                Give the scanner a few categories to sort items into before you upload — e.g.
+                "Weapons, Potions, Armor, Trinkets" for a mixed loot sheet. Leave this empty and
+                it'll pick reasonable categories on its own.
+              </p>
+              {categories.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-1.5">
+                  {categories.map((c) => (
+                    <span
+                      key={c}
+                      className="inline-flex items-center gap-1.5 bg-parchment border border-leather rounded-sm pl-2 pr-1 py-0.5 text-xs"
+                    >
+                      {c}
+                      <button
+                        type="button"
+                        onClick={() => removeCategory(c)}
+                        aria-label={`Remove ${c}`}
+                        className="text-wax-dark hover:text-wax font-bold leading-none px-0.5"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2">
+                <input
+                  value={categoryInput}
+                  onChange={(e) => setCategoryInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addCategory()
+                    }
+                  }}
+                  placeholder="e.g. Weapons"
+                  className="flex-1 rounded-sm border border-leather bg-white/60 px-3 py-2 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={addCategory}
+                  disabled={!categoryInput.trim()}
+                  className="px-3 py-2 text-sm font-display uppercase bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+
+            <label className="block w-full py-8 border-2 border-dashed border-leather/50 rounded-sm text-center text-ink-soft/70 text-sm hover:bg-leather/5 cursor-pointer">
+              Click to choose a PDF or image
+              <input type="file" accept={ACCEPTED} onChange={handleFileChange} className="hidden" />
+            </label>
+          </div>
         )}
 
         {status === 'scanning' && (
@@ -198,32 +291,32 @@ export default function UploadSourceModal({ onClose }) {
 
         {(status === 'review' || status === 'saving') && result && (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="block">
-                <span className="text-sm font-display uppercase text-ink-soft">Source Name</span>
-                <input
-                  value={result.sourceName}
-                  onChange={(e) => updateField('sourceName', e.target.value)}
-                  className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-display uppercase text-ink-soft">Category</span>
-                <input
-                  value={result.category}
-                  onChange={(e) => updateField('category', e.target.value)}
-                  placeholder="e.g. Outfitter, Tavern Menu, Blacksmith"
-                  className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
-                />
-              </label>
-            </div>
+            <label className="block">
+              <span className="text-sm font-display uppercase text-ink-soft">Source Name</span>
+              <input
+                value={result.sourceName}
+                onChange={(e) => updateField('sourceName', e.target.value)}
+                className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-3 py-2"
+              />
+            </label>
 
-            <ItemRows label="Wares" rows={result.wares} onChange={(v) => updateField('wares', v)} />
-            <ItemRows label="Menu" rows={result.menu} onChange={(v) => updateField('menu', v)} />
+            <ItemRows
+              label="Wares"
+              rows={result.wares}
+              onChange={(v) => updateField('wares', v)}
+              categoryOptions={allCategoryOptions}
+            />
+            <ItemRows
+              label="Menu"
+              rows={result.menu}
+              onChange={(v) => updateField('menu', v)}
+              categoryOptions={allCategoryOptions}
+            />
             <ItemRows
               label="Services"
               rows={result.services}
               onChange={(v) => updateField('services', v)}
+              categoryOptions={allCategoryOptions}
             />
 
             {error && (
