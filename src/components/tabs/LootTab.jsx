@@ -65,6 +65,22 @@ function matchesAnyPattern(itemName, patterns) {
   return patterns.some((p) => lower.includes(p.toLowerCase()))
 }
 
+// Resolves what the DM explicitly picked in the category chips against
+// the coarser type-level restriction, and returns whether the draw
+// should be blocked outright. This is the actual enforcement step that
+// was missing before: the type-level restriction previously only
+// affected which chips were offered in the UI, so an entity whose DM
+// never clicked a chip (the common case) fell through to "no
+// restriction at all," regardless of what the type restriction said.
+function resolveEffectiveCategories(explicitCategories, typeRestriction) {
+  if (explicitCategories.length > 0) return { blocked: false, categories: explicitCategories }
+  if (typeRestriction !== undefined) {
+    if (typeRestriction.length === 0) return { blocked: true, categories: [] }
+    return { blocked: false, categories: typeRestriction }
+  }
+  return { blocked: false, categories: [] }
+}
+
 function drawLoot({ pools, sources, categories, priceMin, priceMax, count, allowDuplicates, includeVehicles, excludedPatterns }) {
   let pool = pools.flatMap((p) => buildItemPool(p, sources).map((item) => ({ ...item, pool: p })))
   if (!includeVehicles) pool = pool.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
@@ -192,15 +208,27 @@ function EditableList({ label, items, onChange, onRename, placeholder }) {
 }
 
 function EditableWealthList({ items, onChange }) {
-  const [form, setForm] = useState({ label: '', min: '', max: '', minItems: '', maxItems: '' })
+  const [form, setForm] = useState({ label: '', min: '', max: '', minItems: '', maxItems: '', goldMin: '', goldMax: '' })
   const [editingId, setEditingId] = useState(null)
   const [editLabel, setEditLabel] = useState('')
 
   function add() {
     const label = form.label.trim()
     if (!label) return
-    onChange([...items, { id: `wealth-${Date.now()}`, label, min: Number(form.min) || 0, max: Number(form.max) || 0, minItems: Number(form.minItems) || 0, maxItems: Number(form.maxItems) || 0 }])
-    setForm({ label: '', min: '', max: '', minItems: '', maxItems: '' })
+    onChange([
+      ...items,
+      {
+        id: `wealth-${Date.now()}`,
+        label,
+        min: Number(form.min) || 0,
+        max: Number(form.max) || 0,
+        minItems: Number(form.minItems) || 0,
+        maxItems: Number(form.maxItems) || 0,
+        goldMin: Number(form.goldMin) || 0,
+        goldMax: Number(form.goldMax) || 0,
+      },
+    ])
+    setForm({ label: '', min: '', max: '', minItems: '', maxItems: '', goldMin: '', goldMax: '' })
   }
   function remove(id) {
     onChange(items.filter((w) => w.id !== id))
@@ -217,7 +245,7 @@ function EditableWealthList({ items, onChange }) {
   return (
     <div>
       <span className="text-xs font-display uppercase text-ink-soft block mb-1">
-        Wealth Levels <span className="text-ink-soft/50 normal-case">— sets both the gp price range AND item count rolled</span>
+        Wealth Levels <span className="text-ink-soft/50 normal-case">— sets the gp price range, item count, AND coin rolled, all from one pick</span>
       </span>
       <div className="space-y-1 mb-1.5">
         {items.map((w) => (
@@ -227,7 +255,7 @@ function EditableWealthList({ items, onChange }) {
             ) : (
               <button type="button" onClick={() => { setEditingId(w.id); setEditLabel(w.label) }} title="Click to rename" className="flex-1 text-left hover:underline min-w-[5rem]">{w.label}</button>
             )}
-            <span className="text-ink-soft/50">gp</span>
+            <span className="text-ink-soft/50">item gp</span>
             <input type="number" min="0" value={w.min} onChange={(e) => updateField(w.id, 'min', e.target.value)} className="w-14 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5" />
             <span>–</span>
             <input type="number" min="0" value={w.max} onChange={(e) => updateField(w.id, 'max', e.target.value)} className="w-14 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5" />
@@ -235,16 +263,22 @@ function EditableWealthList({ items, onChange }) {
             <input type="number" min="0" value={w.minItems} onChange={(e) => updateField(w.id, 'minItems', e.target.value)} className="w-12 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5" />
             <span>–</span>
             <input type="number" min="0" value={w.maxItems} onChange={(e) => updateField(w.id, 'maxItems', e.target.value)} className="w-12 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5" />
+            <span className="text-ink-soft/50 ml-2">coin gp</span>
+            <input type="number" min="0" value={w.goldMin ?? 0} onChange={(e) => updateField(w.id, 'goldMin', e.target.value)} className="w-14 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5" />
+            <span>–</span>
+            <input type="number" min="0" value={w.goldMax ?? 0} onChange={(e) => updateField(w.id, 'goldMax', e.target.value)} className="w-14 rounded-sm border border-leather/60 bg-white/80 px-1 py-0.5" />
             <button type="button" onClick={() => remove(w.id)} aria-label={`Remove ${w.label}`} className="text-wax-dark hover:text-wax font-bold leading-none px-1">×</button>
           </div>
         ))}
       </div>
       <div className="flex flex-wrap gap-1.5">
         <input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="Label" className="rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs w-24" />
-        <input type="number" min="0" value={form.min} onChange={(e) => setForm({ ...form, min: e.target.value })} placeholder="Min gp" className="w-16 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
-        <input type="number" min="0" value={form.max} onChange={(e) => setForm({ ...form, max: e.target.value })} placeholder="Max gp" className="w-16 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
+        <input type="number" min="0" value={form.min} onChange={(e) => setForm({ ...form, min: e.target.value })} placeholder="Min item gp" className="w-20 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
+        <input type="number" min="0" value={form.max} onChange={(e) => setForm({ ...form, max: e.target.value })} placeholder="Max item gp" className="w-20 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
         <input type="number" min="0" value={form.minItems} onChange={(e) => setForm({ ...form, minItems: e.target.value })} placeholder="Min #" className="w-14 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
         <input type="number" min="0" value={form.maxItems} onChange={(e) => setForm({ ...form, maxItems: e.target.value })} placeholder="Max #" className="w-14 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
+        <input type="number" min="0" value={form.goldMin} onChange={(e) => setForm({ ...form, goldMin: e.target.value })} placeholder="Min coin gp" className="w-20 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
+        <input type="number" min="0" value={form.goldMax} onChange={(e) => setForm({ ...form, goldMax: e.target.value })} placeholder="Max coin gp" className="w-20 rounded-sm border border-leather/60 bg-white/70 px-2 py-1 text-xs" />
         <button type="button" onClick={add} disabled={!form.label.trim()} className="px-2 py-1 text-xs font-display uppercase bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40">Add</button>
       </div>
     </div>
@@ -610,7 +644,13 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const availableCategories = useMemo(() => {
     let base = categoriesForPools(pools, sources, includeVehicles)
     const restriction = taxonomy.monsterTypeCategories?.[monsterType]
-    if (restriction && restriction.length > 0) base = base.filter((c) => restriction.includes(c))
+    // A restriction key that's PRESENT (even as an empty array) means
+    // "this type carries nothing" -- only an ABSENT key means
+    // unrestricted. `restriction && restriction.length > 0` used to
+    // treat both the same way, which is exactly why an unconfigured
+    // Beast could pull anything: an explicitly-empty restriction was
+    // silently ignored instead of blocking everything.
+    if (restriction !== undefined) base = base.filter((c) => restriction.includes(c))
     return base
   }, [pools, sources, includeVehicles, taxonomy.monsterTypeCategories, monsterType])
 
@@ -618,7 +658,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
     setMonsterType(value)
     setAttributeValues({})
     const restriction = taxonomy.monsterTypeCategories?.[value]
-    if (restriction && restriction.length > 0) {
+    if (restriction !== undefined) {
       setCategories((prev) => prev.filter((c) => restriction.includes(c)))
     }
   }
@@ -774,21 +814,26 @@ export default function LootTab() {
     const groups = entities.map((e) => {
       const w = wealthLevel(e.wealthId)
       const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
+      const gold = w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
       const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
-      const rolled = drawLoot({
-        pools: e.pools,
-        sources,
-        categories: e.categories,
-        priceMin: w?.min ?? null,
-        priceMax: w?.max ?? null,
-        count,
-        allowDuplicates: false,
-        includeVehicles: e.includeVehicles,
-        excludedPatterns: e.excludedPatterns,
-      })
+      const typeRestriction = lootTaxonomy.monsterTypeCategories?.[e.monsterType]
+      const { blocked, categories } = resolveEffectiveCategories(e.categories, typeRestriction)
+      const rolled = blocked
+        ? []
+        : drawLoot({
+            pools: e.pools,
+            sources,
+            categories,
+            priceMin: w?.min ?? null,
+            priceMax: w?.max ?? null,
+            count,
+            allowDuplicates: false,
+            includeVehicles: e.includeVehicles,
+            excludedPatterns: e.excludedPatterns,
+          })
       const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
       const tags = [e.monsterName || e.monsterType, ...attrTags, w?.label, e.setting, e.notes].filter(Boolean)
-      return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold: null }
+      return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold }
     })
     setResults(groups)
     setCopied(false)
@@ -797,6 +842,7 @@ export default function LootTab() {
   function generateLocation() {
     const w = wealthLevel(locWealthId)
     const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
+    const gold = w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
     const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
     const rolled = drawLoot({
       pools: locPools,
@@ -809,7 +855,7 @@ export default function LootTab() {
       includeVehicles: locIncludeVehicles,
       excludedPatterns: locExcludedPatterns,
     })
-    setResults([{ label: '', items: [...guaranteed, ...rolled], gold: null }])
+    setResults([{ label: '', items: [...guaranteed, ...rolled], gold }])
     setCopied(false)
   }
 

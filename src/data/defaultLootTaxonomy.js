@@ -30,13 +30,18 @@ import { SRD_MONSTERS } from './srdMonsters'
 // the random draw ("most people would have shoes"), resolved separately
 // from the item-count roll rather than competing with it for a slot.
 export const DEFAULT_LOOT_TAXONOMY = {
+  // goldMin/goldMax follow the same "wealth determines everything, no
+  // separate free input" rule as item count -- coin gets rolled from the
+  // same wealth pick, not a standalone gold field. Destitute's minItems
+  // is 1, not 0: even the most destitute bandit has at least one
+  // pathetic possession, rather than sometimes generating nothing at all.
   wealthLevels: [
-    { id: 'destitute', label: 'Destitute', min: 0, max: 2, minItems: 0, maxItems: 1 },
-    { id: 'poor', label: 'Poor', min: 0, max: 8, minItems: 1, maxItems: 2 },
-    { id: 'modest', label: 'Modest', min: 0, max: 30, minItems: 1, maxItems: 3 },
-    { id: 'comfortable', label: 'Comfortable', min: 10, max: 80, minItems: 2, maxItems: 4 },
-    { id: 'wealthy', label: 'Wealthy', min: 50, max: 300, minItems: 3, maxItems: 6 },
-    { id: 'aristocratic', label: 'Aristocratic', min: 200, max: 2000, minItems: 5, maxItems: 10 },
+    { id: 'destitute', label: 'Destitute', min: 0, max: 2, minItems: 1, maxItems: 2, goldMin: 0, goldMax: 3 },
+    { id: 'poor', label: 'Poor', min: 0, max: 8, minItems: 1, maxItems: 3, goldMin: 1, goldMax: 10 },
+    { id: 'modest', label: 'Modest', min: 0, max: 30, minItems: 2, maxItems: 4, goldMin: 5, goldMax: 30 },
+    { id: 'comfortable', label: 'Comfortable', min: 10, max: 80, minItems: 3, maxItems: 5, goldMin: 15, goldMax: 75 },
+    { id: 'wealthy', label: 'Wealthy', min: 50, max: 300, minItems: 3, maxItems: 6, goldMin: 50, goldMax: 250 },
+    { id: 'aristocratic', label: 'Aristocratic', min: 200, max: 2000, minItems: 5, maxItems: 10, goldMin: 200, goldMax: 1500 },
   ],
 
   // The 14 official 5e/5.5e creature types -- matches SRD_MONSTERS'
@@ -49,7 +54,31 @@ export const DEFAULT_LOOT_TAXONOMY = {
 
   // Coarse type-level category restriction -- a broad first pass before
   // the finer per-option item-pattern exclusions narrow things further.
-  monsterTypeCategories: {},
+  // Coarse type-level category restriction -- a broad first pass before
+  // the finer per-option item-pattern exclusions narrow things further.
+  // An EXPLICIT empty array here means "this type carries nothing from
+  // the manufactured-goods catalog" -- not "unrestricted." Most creature
+  // types genuinely shouldn't be pulling from a shopkeeper's item
+  // catalog at all (a wolf doesn't carry a crowbar); only the
+  // people-like/civilized types get real access by default. A key
+  // that's absent entirely (rather than present-as-empty) means
+  // unrestricted -- that distinction matters and is preserved through
+  // the generation logic, not just this list.
+  monsterTypeCategories: {
+    Aberration: [],
+    Beast: [],
+    Celestial: ['Focus'],
+    Construct: [],
+    Dragon: ['Focus'],
+    Elemental: [],
+    Fey: ['Focus'],
+    // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, these are
+    // all sapient-enough or civilized-enough to plausibly carry a
+    // shopkeeper's kind of gear.
+    Monstrosity: [],
+    Ooze: [],
+    Plant: [],
+  },
 
   // Type-level guaranteed baseline items -- always included for every
   // entity of this type, regardless of which options are picked.
@@ -115,6 +144,11 @@ export const DEFAULT_LOOT_TAXONOMY = {
         guaranteedItems: {
           'Mage/Caster': ['Component Pouch'],
           'Guard/Soldier': ['Shield'],
+          'Bandit/Criminal': ['Dagger'],
+          'Noble': ['Signet'],
+          'Merchant': ['Ledger'],
+          'Scholar': ['Ink'],
+          'Cleric/Devout': ['Holy Symbol'],
         },
       },
     ],
