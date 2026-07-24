@@ -4309,284 +4309,19 @@ export const mockSources = [
     "name": "Hunter's & Trapper's Price Guide",
     "wares": [
       {
-        "rowId": "row-trapper-1",
-        "name": "Mounted Antlers",
-        "basePrice": 15,
-        "description": "A proud rack of antlers, cleaned and mounted. The kind of thing a hunter hangs over a hearth.",
-        "category": "Trophy",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-2",
-        "name": "Boar Tusks, Mounted",
-        "basePrice": 8,
-        "description": "A pair of yellowed tusks, still faintly stained.",
-        "category": "Trophy",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-3",
-        "name": "Mounted Fish Head",
-        "basePrice": 6,
-        "description": "A truly enormous catch, or so the angler swears.",
-        "category": "Trophy",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-4",
-        "name": "Wolf Pelt",
-        "basePrice": 5,
-        "description": "Thick, grey, good winter lining.",
-        "category": "Pelt",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-5",
-        "name": "Bear Pelt",
-        "basePrice": 20,
-        "description": "Heavy and warm, worth more to a furrier than a fighter.",
-        "category": "Pelt",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-6",
-        "name": "Panther Pelt",
-        "basePrice": 25,
-        "description": "Sleek black fur, prized by tailors in the city.",
-        "category": "Pelt",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-7",
-        "name": "Lizard Pelt",
-        "basePrice": 6,
-        "description": "Scaled and surprisingly supple once tanned.",
-        "category": "Pelt",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-8",
-        "name": "Fox Pelt",
-        "basePrice": 7,
-        "description": "Rust-red and glossy, a favorite of Jalanthar's tailors.",
-        "category": "Pelt",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-9",
-        "name": "Rabbit Pelt",
-        "basePrice": 1,
-        "description": "Soft, small, and common \u2014 barely worth the skinning knife.",
-        "category": "Pelt",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-10",
-        "name": "Deer Hide",
-        "basePrice": 4,
-        "description": "Tanned properly, it makes good work gloves.",
-        "category": "Pelt",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-11",
-        "name": "Ram Horn",
-        "basePrice": 3,
-        "description": "Spiraled and dense, good for carving.",
-        "category": "Horn",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-12",
-        "name": "Goat Horn",
-        "basePrice": 2,
-        "description": "Small and unremarkable, but always sellable.",
-        "category": "Horn",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-13",
-        "name": "Elk Antler (single)",
-        "basePrice": 5,
-        "description": "Broken from the rack, still solid enough to carve.",
-        "category": "Horn",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-14",
-        "name": "Giant Bat Wing",
-        "basePrice": 4,
-        "description": "Leathery and surprisingly light.",
-        "category": "Wing",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-15",
-        "name": "Hawk Feather (bundle)",
-        "basePrice": 2,
-        "description": "A handful of flight feathers, good for fletching.",
-        "category": "Wing",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-16",
-        "name": "Owl Wing",
-        "basePrice": 3,
-        "description": "Silent even now \u2014 the feather edges never quite stop muffling sound.",
-        "category": "Wing",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-17",
-        "name": "Lizard Fang",
-        "basePrice": 4,
-        "description": "This lizard fang is sharp enough to function like a dagger in a pinch.",
-        "category": "Fang",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-18",
-        "name": "Wolf Fang",
-        "basePrice": 3,
-        "description": "Sharp, curved, and small enough to set into a ring or a hilt.",
-        "category": "Fang",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-19",
-        "name": "Boar Tusk (loose)",
-        "basePrice": 3,
-        "description": "Yellowed and curved, sharp enough to nick a careless hand.",
-        "category": "Fang",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-20",
-        "name": "Bear Claw",
-        "basePrice": 6,
-        "description": "Long and wickedly curved \u2014 could pass for a crude blade.",
-        "category": "Claw",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-21",
-        "name": "Panther Claw",
-        "basePrice": 5,
-        "description": "Small, sharp, and easy to conceal.",
-        "category": "Claw",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-22",
-        "name": "Hawk Talon",
-        "basePrice": 4,
-        "description": "Small, hooked, and needle-sharp.",
-        "category": "Claw",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-23",
-        "name": "Lizard Scale (bundle)",
-        "basePrice": 2,
-        "description": "A handful of scales, useful for fletching or fine crafting.",
-        "category": "Scale",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-24",
-        "name": "Fish Scale (bundle)",
-        "basePrice": 1,
-        "description": "Iridescent when caught in the light. Mostly decorative.",
-        "category": "Scale",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-25",
-        "name": "Rations, Preserved Game Meat",
-        "basePrice": 1,
-        "description": "Salted and dried from a fresh kill. A few days' worth, if rationed carefully.",
-        "category": "Ration",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-26",
-        "name": "Rations, Smoked Meat",
-        "basePrice": 1.5,
-        "description": "Smoked over an open fire, keeps well.",
-        "category": "Ration",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-trapper-27",
-        "name": "Rendered Fat (jar)",
-        "basePrice": 0.5,
-        "description": "Useful for cooking, or for greasing a squeaky hinge.",
-        "category": "Ration",
-        "monsterTypeTag": "Beast",
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
         "rowId": "row-trapper-28",
         "name": "Owlbear Skull",
         "basePrice": 80,
         "description": "Bleached and enormous, unmistakably not from anything natural.",
         "category": "Trophy",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "display"
+        ]
       },
       {
         "rowId": "row-trapper-29",
@@ -4594,9 +4329,14 @@ export const mockSources = [
         "basePrice": 60,
         "description": "A cluster of barbed tail spikes, bound together with wire.",
         "category": "Trophy",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "display"
+        ]
       },
       {
         "rowId": "row-trapper-30",
@@ -4604,9 +4344,14 @@ export const mockSources = [
         "basePrice": 55,
         "description": "Mounted with the eye sockets deliberately, carefully emptied.",
         "category": "Trophy",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "display"
+        ]
       },
       {
         "rowId": "row-trapper-31",
@@ -4614,9 +4359,14 @@ export const mockSources = [
         "basePrice": 70,
         "description": "The fur seems to shift slightly out of place even now, mounted and still.",
         "category": "Trophy",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "display"
+        ]
       },
       {
         "rowId": "row-trapper-32",
@@ -4624,9 +4374,14 @@ export const mockSources = [
         "basePrice": 45,
         "description": "Thick, matted fur over skin tougher than boiled leather.",
         "category": "Pelt",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-33",
@@ -4634,9 +4389,14 @@ export const mockSources = [
         "basePrice": 40,
         "description": "Taken from the goat-headed portion \u2014 still smells faintly of brimstone.",
         "category": "Horn",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-34",
@@ -4644,9 +4404,14 @@ export const mockSources = [
         "basePrice": 35,
         "description": "A single primary feather, longer than a man's arm.",
         "category": "Wing",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-35",
@@ -4654,9 +4419,14 @@ export const mockSources = [
         "basePrice": 90,
         "description": "Larger than a man's head, and still faintly warm when fresh.",
         "category": "Heart",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-36",
@@ -4664,9 +4434,14 @@ export const mockSources = [
         "basePrice": 45,
         "description": "Still faintly discolored. Handle with thick gloves.",
         "category": "Fang",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-37",
@@ -4674,9 +4449,14 @@ export const mockSources = [
         "basePrice": 45,
         "description": "Taken from the lion's head \u2014 long, curved, wickedly sharp.",
         "category": "Fang",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-38",
@@ -4684,9 +4464,15 @@ export const mockSources = [
         "basePrice": 40,
         "description": "Long enough to function like a dagger, if you don't mind the shape.",
         "category": "Claw",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-39",
@@ -4694,9 +4480,15 @@ export const mockSources = [
         "basePrice": 42,
         "description": "Curved and razor-edged. Could serve as an improvised dagger.",
         "category": "Claw",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-40",
@@ -4704,9 +4496,14 @@ export const mockSources = [
         "basePrice": 30,
         "description": "Stony and cold, even freshly shed.",
         "category": "Scale",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-41",
@@ -4714,9 +4511,14 @@ export const mockSources = [
         "basePrice": 35,
         "description": "Oddly warm, taken from the dragon-tailed portion.",
         "category": "Scale",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-42",
@@ -4724,9 +4526,14 @@ export const mockSources = [
         "basePrice": 38,
         "description": "Faintly stiff, as though the bird half-forgot how to be alive.",
         "category": "Wing",
-        "monsterTypeTag": "Monstrosity",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Monstrosity"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-43",
@@ -4734,9 +4541,14 @@ export const mockSources = [
         "basePrice": 8,
         "description": "A tangle of bent brass gears, still worth something to a tinker.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-44",
@@ -4744,9 +4556,14 @@ export const mockSources = [
         "basePrice": 25,
         "description": "A sheet of enchanted armor plating, the magic long faded.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-45",
@@ -4754,9 +4571,15 @@ export const mockSources = [
         "basePrice": 60,
         "description": "A cracked shard of whatever powered the thing. Still faintly warm.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ]
       },
       {
         "rowId": "row-trapper-46",
@@ -4764,9 +4587,15 @@ export const mockSources = [
         "basePrice": 45,
         "description": "Etched with a sigil no one currently living can read.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ]
       },
       {
         "rowId": "row-trapper-47",
@@ -4774,9 +4603,14 @@ export const mockSources = [
         "basePrice": 15,
         "description": "A ball-and-socket joint, oddly well-preserved.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-48",
@@ -4784,9 +4618,14 @@ export const mockSources = [
         "basePrice": 12,
         "description": "A dented piece of what used to move on its own.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-49",
@@ -4794,9 +4633,15 @@ export const mockSources = [
         "basePrice": 30,
         "description": "A lump of enchanted clay, inert now but still faintly warm.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ]
       },
       {
         "rowId": "row-trapper-50",
@@ -4804,9 +4649,15 @@ export const mockSources = [
         "basePrice": 20,
         "description": "Thin filaments of something between wire and sinew.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ]
       },
       {
         "rowId": "row-trapper-51",
@@ -4814,9 +4665,15 @@ export const mockSources = [
         "basePrice": 22,
         "description": "A broken length of blade, still humming faintly if you hold it just right.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ]
       },
       {
         "rowId": "row-trapper-52",
@@ -4824,9 +4681,14 @@ export const mockSources = [
         "basePrice": 18,
         "description": "A chipped fragment, heavier than stone this size should be.",
         "category": "Salvage",
-        "monsterTypeTag": "Construct",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-53",
@@ -4834,9 +4696,14 @@ export const mockSources = [
         "basePrice": 170,
         "description": "Pitted and etched by the acid that once ran down it.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-54",
@@ -4844,9 +4711,14 @@ export const mockSources = [
         "basePrice": 180,
         "description": "Crackles faintly with residual static when touched.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-55",
@@ -4854,9 +4726,14 @@ export const mockSources = [
         "basePrice": 170,
         "description": "Faintly slick, and best handled with gloves.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-56",
@@ -4864,9 +4741,14 @@ export const mockSources = [
         "basePrice": 190,
         "description": "Warm to the touch no matter the season.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-57",
@@ -4874,9 +4756,14 @@ export const mockSources = [
         "basePrice": 160,
         "description": "Cold enough to numb bare skin on contact.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-58",
@@ -4884,9 +4771,14 @@ export const mockSources = [
         "basePrice": 175,
         "description": "Sun-warmed and gritty with desert sand.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-59",
@@ -4894,9 +4786,14 @@ export const mockSources = [
         "basePrice": 190,
         "description": "Carries a faint ozone smell, like the air after a storm.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-60",
@@ -4904,9 +4801,14 @@ export const mockSources = [
         "basePrice": 180,
         "description": "Etched with what might be the dragon's own claw-marks.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-61",
@@ -4914,9 +4816,14 @@ export const mockSources = [
         "basePrice": 220,
         "description": "Gleams like polished metal, untarnished by time.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-62",
@@ -4924,9 +4831,14 @@ export const mockSources = [
         "basePrice": 200,
         "description": "Cool and smooth, prized by jewelers.",
         "category": "Horn",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-63",
@@ -4934,9 +4846,14 @@ export const mockSources = [
         "basePrice": 190,
         "description": "Pockmarked with old acid scarring.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-64",
@@ -4944,9 +4861,14 @@ export const mockSources = [
         "basePrice": 200,
         "description": "Thin enough to see light through, but tougher than steel plate.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-65",
@@ -4954,9 +4876,14 @@ export const mockSources = [
         "basePrice": 190,
         "description": "Faintly mottled, and best not breathed in too closely.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-66",
@@ -4964,9 +4891,14 @@ export const mockSources = [
         "basePrice": 210,
         "description": "Leathery, near-indestructible, and still smells faintly of smoke.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-67",
@@ -4974,9 +4906,14 @@ export const mockSources = [
         "basePrice": 180,
         "description": "Stiff with a permanent frost that never quite melts.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-68",
@@ -4984,9 +4921,14 @@ export const mockSources = [
         "basePrice": 195,
         "description": "Dry and papery, like old parchment.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-69",
@@ -4994,9 +4936,14 @@ export const mockSources = [
         "basePrice": 210,
         "description": "Crackles faintly with stored static.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-70",
@@ -5004,9 +4951,14 @@ export const mockSources = [
         "basePrice": 200,
         "description": "Surprisingly ticklish, or so the legends claim.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-71",
@@ -5014,9 +4966,14 @@ export const mockSources = [
         "basePrice": 240,
         "description": "Edged with what looks like actual gold leaf.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-72",
@@ -5024,9 +4981,14 @@ export const mockSources = [
         "basePrice": 220,
         "description": "Cool, pale, and untouched by time.",
         "category": "Wing",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-73",
@@ -5034,9 +4996,14 @@ export const mockSources = [
         "basePrice": 300,
         "description": "Still faintly warm, and said to hold the last ember of the dragon's fury.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-74",
@@ -5044,9 +5011,14 @@ export const mockSources = [
         "basePrice": 310,
         "description": "Crackles faintly if you listen closely.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-75",
@@ -5054,9 +5026,14 @@ export const mockSources = [
         "basePrice": 300,
         "description": "Best handled with gloves and a very good reason.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-76",
@@ -5064,9 +5041,14 @@ export const mockSources = [
         "basePrice": 320,
         "description": "Radiates heat long after the rest of the body has gone cold.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-77",
@@ -5074,9 +5056,14 @@ export const mockSources = [
         "basePrice": 290,
         "description": "Cold as the day the dragon died.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-78",
@@ -5084,9 +5071,14 @@ export const mockSources = [
         "basePrice": 300,
         "description": "Radiates a dry, desert heat.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-79",
@@ -5094,9 +5086,14 @@ export const mockSources = [
         "basePrice": 330,
         "description": "Hums faintly, like distant thunder.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-80",
@@ -5104,9 +5101,14 @@ export const mockSources = [
         "basePrice": 310,
         "description": "Surprisingly light for its size.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-81",
@@ -5114,9 +5116,14 @@ export const mockSources = [
         "basePrice": 380,
         "description": "Said to never stop glowing faintly, even removed.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-82",
@@ -5124,9 +5131,14 @@ export const mockSources = [
         "basePrice": 360,
         "description": "Untouched by decay, centuries after the kill.",
         "category": "Heart",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ]
       },
       {
         "rowId": "row-trapper-83",
@@ -5134,9 +5146,15 @@ export const mockSources = [
         "basePrice": 135,
         "description": "Long enough to be re-hafted into a genuine dagger, and sharp enough to matter.",
         "category": "Fang",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-84",
@@ -5144,9 +5162,15 @@ export const mockSources = [
         "basePrice": 140,
         "description": "Long enough to be re-hafted into a genuine dagger, and sharp enough to matter.",
         "category": "Fang",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-85",
@@ -5154,9 +5178,15 @@ export const mockSources = [
         "basePrice": 138,
         "description": "Faintly warm and crackling, even long after the kill.",
         "category": "Fang",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-86",
@@ -5164,9 +5194,15 @@ export const mockSources = [
         "basePrice": 175,
         "description": "Gleaming and near-untarnished, worth a small fortune to the right buyer.",
         "category": "Fang",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-87",
@@ -5174,9 +5210,15 @@ export const mockSources = [
         "basePrice": 130,
         "description": "Etched with old acid scarring; still holds an edge.",
         "category": "Claw",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-88",
@@ -5184,9 +5226,15 @@ export const mockSources = [
         "basePrice": 135,
         "description": "Warm to the touch, sharp enough to serve as a wicked dagger.",
         "category": "Claw",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-89",
@@ -5194,9 +5242,15 @@ export const mockSources = [
         "basePrice": 145,
         "description": "Cool and pale, prized by silversmiths for the metal it's set into.",
         "category": "Claw",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ]
       },
       {
         "rowId": "row-trapper-90",
@@ -5204,9 +5258,14 @@ export const mockSources = [
         "basePrice": 90,
         "description": "Pitted with old acid scarring, tougher than plate armor.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-91",
@@ -5214,9 +5273,14 @@ export const mockSources = [
         "basePrice": 95,
         "description": "A single scale, still crackling faintly with static.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-92",
@@ -5224,9 +5288,14 @@ export const mockSources = [
         "basePrice": 90,
         "description": "Faintly slick to the touch.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-93",
@@ -5234,9 +5303,14 @@ export const mockSources = [
         "basePrice": 100,
         "description": "Warm to the touch, prized by armorers.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-94",
@@ -5244,9 +5318,14 @@ export const mockSources = [
         "basePrice": 85,
         "description": "Cold enough to frost over in a warm room.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-95",
@@ -5254,9 +5333,14 @@ export const mockSources = [
         "basePrice": 92,
         "description": "Warm and gritty, like sun-baked sand.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-96",
@@ -5264,9 +5348,14 @@ export const mockSources = [
         "basePrice": 100,
         "description": "Smells faintly of ozone.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-97",
@@ -5274,9 +5363,14 @@ export const mockSources = [
         "basePrice": 95,
         "description": "Etched with faint claw-mark patterns.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-98",
@@ -5284,9 +5378,14 @@ export const mockSources = [
         "basePrice": 130,
         "description": "Gleams like real gold, and is worth nearly as much.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
         "priceOverride": "",
-        "quantity": 1
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
       },
       {
         "rowId": "row-trapper-99",
@@ -5294,7 +5393,1179 @@ export const mockSources = [
         "basePrice": 115,
         "description": "Cool and untarnished, prized by silversmiths.",
         "category": "Scale",
-        "monsterTypeTag": "Dragon",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-beast-1",
+        "name": "Weathered Skull Fragment",
+        "basePrice": 6,
+        "description": "Bleached by sun and time; impossible to say now what it once topped.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-2",
+        "name": "Braided Sinew Trophy Cord",
+        "basePrice": 4,
+        "description": "Tough as rope, twice as valuable to the right buyer.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-3",
+        "name": "Thick-Furred Skull Mount",
+        "basePrice": 8,
+        "description": "Still carries a faint musk no amount of cleaning fully lifts.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "kingdom": [
+            "Mammal"
+          ]
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-4",
+        "name": "Sun-Cured Reptile Skull",
+        "basePrice": 9,
+        "description": "The jaw still hinges smoothly; the teeth never dulled.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "kingdom": [
+            "Reptile"
+          ]
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-5",
+        "name": "Preserved Talon-and-Beak Mount",
+        "basePrice": 10,
+        "description": "Wired together into a single, unsettling display piece.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "kingdom": [
+            "Bird"
+          ],
+          "requiresFeature": "Beak"
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-6",
+        "name": "Mounted Prize Catch",
+        "basePrice": 7,
+        "description": "Every angler swears theirs was bigger before the taxidermist got to it.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "kingdom": [
+            "Fish"
+          ]
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-7",
+        "name": "Preserved Carapace Display",
+        "basePrice": 6,
+        "description": "The chitin holds its shine remarkably well once cleaned and lacquered.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "kingdom": [
+            "Insect"
+          ]
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-8",
+        "name": "Jarred Amphibian Specimen",
+        "basePrice": 5,
+        "description": "Preserved in cloudy brine, label long since faded.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "kingdom": [
+            "Amphibian"
+          ]
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-9",
+        "name": "Fang-Studded Trophy Mount",
+        "basePrice": 12,
+        "description": "A full set of teeth, wired into a deliberately unsettling arrangement.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "diet": [
+            "Carnivore"
+          ]
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-10",
+        "name": "Full Antler Rack Mount",
+        "basePrice": 14,
+        "description": "Impressive enough that its owner will absolutely tell you the story behind it.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "kingdom": [
+            "Mammal"
+          ],
+          "diet": [
+            "Herbivore"
+          ],
+          "requiresFeature": "Horns"
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-11",
+        "name": "Tusked Skull Trophy",
+        "basePrice": 16,
+        "description": "The tusks alone are worth more than the rest of the mount combined.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "requiresFeature": "Tusks"
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-12",
+        "name": "Venom-Gland Display Case",
+        "basePrice": 20,
+        "description": "Sealed behind glass for good reason \u2014 the residue is still active.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "requiresFeature": "Venom"
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-13",
+        "name": "Segmented Shell Trophy",
+        "basePrice": 11,
+        "description": "A full shell, polished and mounted whole.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "requiresFeature": "Shell"
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-14",
+        "name": "Foraged-Diet Skull, Worn Teeth",
+        "basePrice": 5,
+        "description": "The flat, ground-down molars tell you exactly what this one ate.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "diet": [
+            "Herbivore"
+          ]
+        },
+        "tags": [
+          "display"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-15",
+        "name": "Sturdy Long Bone",
+        "basePrice": 2,
+        "description": "Solid enough to carve into a tool handle, if the buyer's not particular.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-16",
+        "name": "Bundle of Small Bones",
+        "basePrice": 1,
+        "description": "Rattles pleasantly. Fletchers and charm-makers both want these.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-17",
+        "name": "Mammal Long Bone",
+        "basePrice": 3,
+        "description": "Dense and heavy for its size, good stock for carving.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "kingdom": [
+            "Mammal"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-18",
+        "name": "Reptile Vertebra String",
+        "basePrice": 3,
+        "description": "Strung on a cord, the segments still articulate smoothly.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "kingdom": [
+            "Reptile"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-19",
+        "name": "Hollow Avian Bone",
+        "basePrice": 2,
+        "description": "Surprisingly light \u2014 fletchers prize these for delicate work.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "kingdom": [
+            "Bird"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-20",
+        "name": "Fine Fish Bone Cluster",
+        "basePrice": 1,
+        "description": "Needle-thin and brittle, but useful in careful hands.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "kingdom": [
+            "Fish"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-21",
+        "name": "Chitinous Limb Segment",
+        "basePrice": 2,
+        "description": "Light, rigid, and surprisingly strong for its size.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "kingdom": [
+            "Insect"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-22",
+        "name": "Feathered Wing (Preserved)",
+        "basePrice": 9,
+        "description": "The flight feathers are still perfectly aligned.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "kingdom": [
+            "Bird"
+          ],
+          "requiresFeature": "Wings"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-23",
+        "name": "Membranous Wing (Preserved)",
+        "basePrice": 8,
+        "description": "Thin, veined, and surprisingly tough once dried.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "kingdom": [
+            "Insect"
+          ],
+          "requiresFeature": "Wings"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-24",
+        "name": "Iridescent Scale Bundle",
+        "basePrice": 4,
+        "description": "Catches the light strangely from certain angles.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "kingdom": [
+            "Reptile",
+            "Fish"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-25",
+        "name": "Curved Predator Fang",
+        "basePrice": 5,
+        "description": "This fang is sharp enough to function like a dagger in a pinch.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "diet": [
+            "Carnivore"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-26",
+        "name": "Grinding Molar, Worn Flat",
+        "basePrice": 2,
+        "description": "Ground down from a lifetime of tough forage \u2014 not much use as a weapon, but a curious keepsake.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "diet": [
+            "Herbivore"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-27",
+        "name": "Chitin-Piercing Mandible",
+        "basePrice": 6,
+        "description": "Sharp enough to function like a dagger, if an unusual-looking one.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "diet": [
+            "Insectivore"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-28",
+        "name": "Curved Predator Claw",
+        "basePrice": 5,
+        "description": "Long and wickedly hooked \u2014 could pass for a crude blade.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "diet": [
+            "Carnivore"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-29",
+        "name": "Digging Claw, Blunt",
+        "basePrice": 3,
+        "description": "Worn down from years of digging rather than fighting.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "diet": [
+            "Herbivore"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-30",
+        "name": "Paired Tusks",
+        "basePrice": 18,
+        "description": "Heavy, curved, and worth a great deal to the right ivory carver.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "requiresFeature": "Tusks"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-31",
+        "name": "Set of Horns",
+        "basePrice": 12,
+        "description": "Solid at the base, hollow toward the tips.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "requiresFeature": "Horns"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-32",
+        "name": "Venom Sac (Drained)",
+        "basePrice": 25,
+        "description": "Handled carefully, this sac can be used like a vial of basic poison.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "requiresFeature": "Venom"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-33",
+        "name": "Shell Fragment, Sharp-Edged",
+        "basePrice": 5,
+        "description": "The broken edge is sharp enough to serve as an improvised knife.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "requiresFeature": "Shell"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-34",
+        "name": "Sharp-Edged Beak Fragment",
+        "basePrice": 4,
+        "description": "Surprisingly good for prying, in a pinch.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "requiresFeature": "Beak"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-35",
+        "name": "Coarse Mammal Hide",
+        "basePrice": 6,
+        "description": "Thick and warm, good winter lining once properly cured.",
+        "category": "Pelt",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Pelt",
+          "kingdom": [
+            "Mammal"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-36",
+        "name": "Supple Reptile Hide",
+        "basePrice": 7,
+        "description": "Scaled and surprisingly supple once tanned.",
+        "category": "Pelt",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Pelt",
+          "kingdom": [
+            "Reptile"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-37",
+        "name": "Downy Feather Bundle",
+        "basePrice": 4,
+        "description": "Soft enough for bedding or fine trim, once cleaned.",
+        "category": "Pelt",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Pelt",
+          "kingdom": [
+            "Bird"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-38",
+        "name": "Oiled Fish Skin",
+        "basePrice": 3,
+        "description": "Never quite dries out, no matter how long it sits.",
+        "category": "Pelt",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Pelt",
+          "kingdom": [
+            "Fish"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-39",
+        "name": "Segmented Exoskeleton Plate",
+        "basePrice": 5,
+        "description": "Jointed and surprisingly light for how tough it is.",
+        "category": "Pelt",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Pelt",
+          "kingdom": [
+            "Insect"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-40",
+        "name": "Slick Amphibian Skin",
+        "basePrice": 4,
+        "description": "Stays faintly damp no matter the weather.",
+        "category": "Pelt",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Pelt",
+          "kingdom": [
+            "Amphibian"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-41",
+        "name": "Lean Predator Pelt",
+        "basePrice": 9,
+        "description": "Sleek and close-furred, built for stalking rather than warmth.",
+        "category": "Pelt",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Pelt",
+          "kingdom": [
+            "Mammal"
+          ],
+          "diet": [
+            "Carnivore"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-42",
+        "name": "Thick Grazer's Hide",
+        "basePrice": 8,
+        "description": "Tougher and shaggier than a predator's coat -- built to shrug off brush and thorns.",
+        "category": "Pelt",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Pelt",
+          "kingdom": [
+            "Mammal"
+          ],
+          "diet": [
+            "Herbivore"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-43",
+        "name": "Rations, Preserved Kill",
+        "basePrice": 1,
+        "description": "Salted and dried from a fresh kill. A few days' worth, if rationed carefully.",
+        "category": "Ration",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Ration",
+          "diet": [
+            "Carnivore",
+            "Omnivore"
+          ]
+        },
+        "tags": [
+          "consumable",
+          "ration"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-44",
+        "name": "Rations, Foraged Cache",
+        "basePrice": 0.7,
+        "description": "Nuts, roots, and dried greens, gathered and stored before the kill.",
+        "category": "Ration",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Ration",
+          "diet": [
+            "Herbivore",
+            "Omnivore"
+          ]
+        },
+        "tags": [
+          "consumable",
+          "ration"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-45",
+        "name": "Rendered Fat (jar)",
+        "basePrice": 0.5,
+        "description": "Useful for cooking, or for greasing a squeaky hinge.",
+        "category": "Ration",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Ration"
+        },
+        "tags": [
+          "consumable",
+          "ration"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-46",
+        "name": "Rations, Insect Cache",
+        "basePrice": 0.5,
+        "description": "Dried and packed tight. More nutritious than it looks, apparently.",
+        "category": "Ration",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Ration",
+          "diet": [
+            "Insectivore"
+          ]
+        },
+        "tags": [
+          "consumable",
+          "ration"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-47",
+        "name": "Jungle-Vine Snare Remnant",
+        "basePrice": 2,
+        "description": "Someone else's failed trap, long since grown through with vine.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Jungle"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-48",
+        "name": "Sun-Bleached Mountain Stone",
+        "basePrice": 1,
+        "description": "Polished smooth by wind and altitude alone.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Mountain"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-49",
+        "name": "Town Refuse, Half-Buried",
+        "basePrice": 1,
+        "description": "Ordinary rubbish, notable only for where it was found.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Town"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-50",
+        "name": "City Gutter Trinket",
+        "basePrice": 2,
+        "description": "Lost by someone, found by something else first.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "City"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-51",
+        "name": "Forest Moss Sample, Unusual Color",
+        "basePrice": 1,
+        "description": "A local herbalist might pay for a good specimen.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Forest"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-52",
+        "name": "Swamp Root, Gnarled",
+        "basePrice": 1,
+        "description": "Twisted into a shape that's almost, but not quite, a face.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Swamp"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-53",
+        "name": "Tide-Worn Shell Fragment",
+        "basePrice": 1,
+        "description": "Smoothed by the coast long before anything found it.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Coast"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-54",
+        "name": "Sand-Polished Bone Shard",
+        "basePrice": 1,
+        "description": "Scoured featureless by wind-driven sand.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Desert"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-55",
+        "name": "Cave-Pale Mineral Cluster",
+        "basePrice": 3,
+        "description": "Never having seen sunlight has left it strangely colorless.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Underdark"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-56",
+        "name": "Ruin-Worn Carved Fragment",
+        "basePrice": 4,
+        "description": "Part of something built long before anyone currently living.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Ruins"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-57",
+        "name": "Roadside Traveler's Lost Coin",
+        "basePrice": 1,
+        "description": "Dropped, kicked aside, and eventually forgotten.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Road"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-58",
+        "name": "River-Smoothed Pebble Cluster",
+        "basePrice": 1,
+        "description": "Nothing special, except that something bothered to swallow them.",
+        "category": "Setting",
+        "monsterTypeTags": [
+          "Beast"
+        ],
+        "lootTags": {
+          "kind": "Setting",
+          "setting": [
+            "Riverside"
+          ]
+        },
+        "tags": [],
         "priceOverride": "",
         "quantity": 1
       }
@@ -5302,5 +6573,840 @@ export const mockSources = [
     "menu": [],
     "services": [],
     "createdAt": 1753300000000
+  },
+  {
+    "id": "src-xenobiological-ledger",
+    "name": "Xenobiological Specimen Ledger",
+    "wares": [
+      {
+        "rowId": "row-trapper-100",
+        "name": "Warped Carapace Fragment",
+        "basePrice": 8,
+        "description": "A chunk of chitin that seems to shift color when you're not looking directly at it.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-101",
+        "name": "Writhing Tendril (Preserved)",
+        "basePrice": 6,
+        "description": "Even pickled in brine, it twitches occasionally.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-102",
+        "name": "Fractal Eye Cluster",
+        "basePrice": 12,
+        "description": "Too many pupils, all pointed in different directions, none of them blinking.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-103",
+        "name": "Star-Flecked Hide Swatch",
+        "basePrice": 20,
+        "description": "The patterning resembles a night sky that doesn't match any known constellation.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "origin": [
+            "Far Realm"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-104",
+        "name": "Barnacle-Crusted Growth",
+        "basePrice": 10,
+        "description": "Something else was living on this before the creature died.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "origin": [
+            "Aquatic Deep"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-105",
+        "name": "Cave-Pale Husk Shell",
+        "basePrice": 9,
+        "description": "Bleached white from a life that never saw the sun.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "origin": [
+            "Subterranean"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-106",
+        "name": "Fused Bone Cluster",
+        "basePrice": 11,
+        "description": "Several bones grown together in ways no anatomy chart explains.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "origin": [
+            "Mutated"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-107",
+        "name": "Psionic Residue Crystal",
+        "basePrice": 25,
+        "description": "Hums faintly against your skull if you hold it too long.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "origin": [
+            "Illithid-Touched"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-108",
+        "name": "Reality-Fraying Shard",
+        "basePrice": 30,
+        "description": "The edges of this fragment don't quite agree on where they end.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "origin": [
+            "Void-Touched"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-109",
+        "name": "Twinned Growth Node",
+        "basePrice": 15,
+        "description": "Two small, identical nubs, grown fused at the base.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "origin": [
+            "Symbiotic"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-110",
+        "name": "Membranous Photophore Wing",
+        "basePrice": 16,
+        "description": "Glows faintly along the veins, even hours after death.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "xenotype": [
+            "Squid",
+            "Octopus",
+            "Insectoid"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-111",
+        "name": "Chitinous Flight-Frond",
+        "basePrice": 14,
+        "description": "A brittle, fan-like structure that clearly once caught air.",
+        "category": "Trophy",
+        "lootTags": {
+          "kind": "Trophy",
+          "xenotype": [
+            "Insectoid"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "display"
+        ]
+      },
+      {
+        "rowId": "row-trapper-112",
+        "name": "Pulsing Ichor Sac",
+        "basePrice": 15,
+        "description": "Still slightly warm. Best not to squeeze it.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ"
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical"
+        ]
+      },
+      {
+        "rowId": "row-trapper-113",
+        "name": "Mucous-Secreting Organ",
+        "basePrice": 60,
+        "description": "This organ can be used like a Potion of Water Breathing if consumed fresh.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "origin": [
+            "Aquatic Deep"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical",
+          "consumable"
+        ]
+      },
+      {
+        "rowId": "row-trapper-114",
+        "name": "Echoing Resonance Bladder",
+        "basePrice": 18,
+        "description": "Empty air trapped inside makes a low hum when tapped, the same pitch as deep cave water.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "origin": [
+            "Subterranean"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical"
+        ]
+      },
+      {
+        "rowId": "row-trapper-115",
+        "name": "Warped Secondary Heart",
+        "basePrice": 22,
+        "description": "Beats out of sync with wherever the first one is.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "origin": [
+            "Mutated"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical"
+        ]
+      },
+      {
+        "rowId": "row-trapper-116",
+        "name": "Thought-Filament Cluster",
+        "basePrice": 70,
+        "description": "This cluster can be used like a Potion of Comprehend Languages if consumed within an hour of harvesting.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "origin": [
+            "Illithid-Touched"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical",
+          "consumable"
+        ]
+      },
+      {
+        "rowId": "row-trapper-117",
+        "name": "Null-Space Bladder",
+        "basePrice": 28,
+        "description": "Feels heavier than it looks, then lighter, then heavier again.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "origin": [
+            "Void-Touched"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical"
+        ]
+      },
+      {
+        "rowId": "row-trapper-118",
+        "name": "Bonded Twin-Organ",
+        "basePrice": 20,
+        "description": "Two smaller organs, still trying to function as one.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "origin": [
+            "Symbiotic"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical"
+        ]
+      },
+      {
+        "rowId": "row-trapper-119",
+        "name": "Adaptive Gland",
+        "basePrice": 24,
+        "description": "The tissue seems to still be deciding what it wants to be.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "origin": [
+            "Far Realm"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical"
+        ]
+      },
+      {
+        "rowId": "row-trapper-120",
+        "name": "Ink-Sac (Concentrated)",
+        "basePrice": 19,
+        "description": "This sac can be used like a Potion of Invisibility for a single, brief moment if burst directly on skin.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "xenotype": [
+            "Squid",
+            "Octopus"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical",
+          "consumable"
+        ]
+      },
+      {
+        "rowId": "row-trapper-121",
+        "name": "Chemical Bladder (Caustic)",
+        "basePrice": 26,
+        "description": "Handle with tongs. This bladder can be thrown like a flask of acid.",
+        "category": "Organ",
+        "lootTags": {
+          "kind": "Organ",
+          "xenotype": [
+            "Insectoid",
+            "Worm"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "alchemical",
+          "consumable"
+        ]
+      },
+      {
+        "rowId": "row-trapper-122",
+        "name": "Iridescent Membrane Swatch",
+        "basePrice": 10,
+        "description": "Shimmers faintly no matter the light.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt"
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-123",
+        "name": "Barbed Hide Strip",
+        "basePrice": 7,
+        "description": "Better to handle with gloves.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt"
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-124",
+        "name": "Kelp-Slick Skin Swatch",
+        "basePrice": 12,
+        "description": "Never quite dries out, no matter how long it sits.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt",
+          "origin": [
+            "Aquatic Deep"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-125",
+        "name": "Lightless Hide Patch",
+        "basePrice": 14,
+        "description": "Absorbs light rather than reflecting it \u2014 unsettling to look at directly.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt",
+          "origin": [
+            "Subterranean"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-126",
+        "name": "Chitin-Flesh Hybrid Plate",
+        "basePrice": 13,
+        "description": "Half shell, half skin, seamed together imperfectly.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt",
+          "origin": [
+            "Mutated"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-127",
+        "name": "Star-Static Membrane",
+        "basePrice": 18,
+        "description": "Faint crackling if you rub it the wrong way.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt",
+          "origin": [
+            "Far Realm"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-128",
+        "name": "Fused Symbiote Skin",
+        "basePrice": 15,
+        "description": "Two distinct textures, grown into one.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt",
+          "origin": [
+            "Symbiotic"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-129",
+        "name": "Segmented Exoskeleton Plate",
+        "basePrice": 11,
+        "description": "Jointed and surprisingly light for how tough it is.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt",
+          "xenotype": [
+            "Insectoid",
+            "Crustacean"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-130",
+        "name": "Translucent Gel-Skin",
+        "basePrice": 9,
+        "description": "Nearly see-through. Doesn't hold its shape once removed.",
+        "category": "Pelt",
+        "lootTags": {
+          "kind": "Pelt",
+          "xenotype": [
+            "Jellyfish",
+            "Amorphous"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "craft-material"
+        ]
+      },
+      {
+        "rowId": "row-trapper-131",
+        "name": "Swallowed Coin Purse (Partially Digested)",
+        "basePrice": 5,
+        "description": "Whatever was in this creature's territory eventually ended up in here.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach"
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      },
+      {
+        "rowId": "row-trapper-132",
+        "name": "Undigested Trinket",
+        "basePrice": 8,
+        "description": "A small, unidentifiable bauble, worn smooth.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach"
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      },
+      {
+        "rowId": "row-trapper-133",
+        "name": "Half-Dissolved Ship Fragment",
+        "basePrice": 15,
+        "description": "Wood, somehow, still holding its shape after all this time inside.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach",
+          "origin": [
+            "Aquatic Deep"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      },
+      {
+        "rowId": "row-trapper-134",
+        "name": "Miner's Pickaxe Head (Corroded)",
+        "basePrice": 6,
+        "description": "All that's left of somebody's bad day.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach",
+          "origin": [
+            "Subterranean"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      },
+      {
+        "rowId": "row-trapper-135",
+        "name": "Fused Adventuring Gear",
+        "basePrice": 20,
+        "description": "Melted together into something no longer recognizable as any one thing.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach",
+          "origin": [
+            "Mutated"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      },
+      {
+        "rowId": "row-trapper-136",
+        "name": "Impossible Geometry Fragment",
+        "basePrice": 40,
+        "description": "This object should not fit inside anything, and yet.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach",
+          "origin": [
+            "Void-Touched"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      },
+      {
+        "rowId": "row-trapper-137",
+        "name": "Bonded Pair of Rings",
+        "basePrice": 25,
+        "description": "Two rings, fused at the band, from two different hands.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach",
+          "origin": [
+            "Symbiotic"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      },
+      {
+        "rowId": "row-trapper-138",
+        "name": "Still-Warm Psionic Focus",
+        "basePrice": 55,
+        "description": "Whatever it belonged to, it was still using it recently.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach",
+          "origin": [
+            "Illithid-Touched"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      },
+      {
+        "rowId": "row-trapper-139",
+        "name": "Star-Metal Sliver",
+        "basePrice": 45,
+        "description": "Doesn't match any ore known to any smith in Jalanthar.",
+        "category": "Stomach",
+        "lootTags": {
+          "kind": "Stomach",
+          "origin": [
+            "Far Realm"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Aberration"
+        ],
+        "tags": [
+          "junk"
+        ]
+      }
+    ],
+    "menu": [],
+    "services": [],
+    "createdAt": 1753400000000
   }
 ]

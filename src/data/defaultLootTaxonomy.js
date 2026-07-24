@@ -120,7 +120,39 @@ export const DEFAULT_LOOT_TAXONOMY = {
 
   monsterTypeAttributes: {
     Aberration: [
-      { id: 'aberration-origin', name: 'Origin', options: ['Far Realm', 'Aquatic Deep', 'Subterranean', 'Mutated'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        id: 'aberration-origin', name: 'Origin',
+        // Each origin is its own "container" — items tagged to an
+        // origin (see the seeded Aberration loot below) only ever
+        // appear for entities with that origin selected; untagged items
+        // are generic and overlap across every origin's container.
+        options: [
+          'Far Realm', 'Aquatic Deep', 'Subterranean', 'Mutated',
+          'Illithid-Touched', 'Void-Touched', 'Symbiotic',
+        ],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'aberration-size', name: 'Size',
+        // Drives both WHAT kind of loot appears and HOW MUCH of each
+        // kind — see sizeLootTable below, keyed by these exact option
+        // strings. Large and above also unlock the Stomach kind.
+        options: ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'aberration-xenotype', name: 'Xenotype',
+        // Body-plan archetype. Items tagged to specific xenotypes (e.g.
+        // wing-bearing trophies tagged to Squid/Octopus/Insectoid) never
+        // appear for a xenotype that isn't in that list — pick Slug and
+        // every wing item is automatically excluded, with no manual
+        // exclusion rule needed.
+        options: [
+          'Slug', 'Squid', 'Octopus', 'Crustacean', 'Worm', 'Jellyfish',
+          'Insectoid', 'Amorphous', 'Eye-Cluster', 'Humanoid-Adjacent',
+        ],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
       { id: 'aberration-communication', name: 'Communication', options: ['Telepathic', 'Vocal', 'None'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     Beast: [
@@ -231,6 +263,48 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // alignments, extracted directly from the official SRD 5.2.1 -- see
   // src/data/srdMonsters.js for the full list and required attribution.
   // Picking one of these auto-fills Monster Type from its real type.
+  // Presence of a type here is what switches that type's loot
+  // generation over to the kind-bucketed system (see LootTab.jsx's
+  // generateKindBucketedLoot): instead of one flat random draw, each
+  // "kind" gets its own count rolled independently from the picked
+  // Size, then filled from whichever catalog items are compatible with
+  // the entity's other dimensions (Origin/Xenotype for Aberration,
+  // Kingdom/Diet for Beast). A size rolling 0-0 for a given kind is what
+  // actually enforces "this size doesn't yield that kind of loot" -- not
+  // a manual exclusion, the count is just zero. Types absent from this
+  // map keep using the older single-pool random draw (Monstrosity,
+  // Construct, Dragon, and everything else, pending their own overhaul
+  // pass).
+  sizeLootTable: {
+    Aberration: {
+      Tiny: { Trophy: [1, 2], Organ: [0, 0], Pelt: [0, 0], Stomach: [0, 0] },
+      Small: { Trophy: [1, 2], Organ: [0, 1], Pelt: [0, 1], Stomach: [0, 0] },
+      Medium: { Trophy: [1, 2], Organ: [1, 1], Pelt: [1, 1], Stomach: [0, 0] },
+      Large: { Trophy: [2, 3], Organ: [1, 2], Pelt: [1, 1], Stomach: [1, 1] },
+      Huge: { Trophy: [2, 3], Organ: [2, 2], Pelt: [1, 2], Stomach: [1, 2] },
+      Gargantuan: { Trophy: [3, 4], Organ: [2, 3], Pelt: [2, 2], Stomach: [2, 3] },
+    },
+    Beast: {
+      Tiny: { Trophy: [1, 1], Parts: [0, 1], Pelt: [0, 0], Ration: [0, 0] },
+      Small: { Trophy: [1, 2], Parts: [1, 1], Pelt: [0, 1], Ration: [0, 1] },
+      Medium: { Trophy: [1, 2], Parts: [1, 2], Pelt: [1, 1], Ration: [1, 1] },
+      Large: { Trophy: [2, 2], Parts: [2, 3], Pelt: [1, 2], Ration: [1, 2] },
+      Huge: { Trophy: [2, 3], Parts: [3, 4], Pelt: [2, 2], Ration: [1, 2] },
+    },
+  },
+
+  // Optional per-entity checkboxes for anatomical features that don't
+  // apply to every creature of a type even within the same Kingdom/Diet
+  // container -- not every mammal has tusks, not every reptile has a
+  // shell. Items can require one of these (see the seeded Beast items'
+  // lootTags.requiresFeature); unchecked = those items are excluded for
+  // this entity, no matter what else matches. Every checkbox starts
+  // unchecked, since assuming a feature is present by default risks
+  // handing out tusks to something that shouldn't have any.
+  monsterTypeFeatures: {
+    Beast: ['Tusks', 'Horns', 'Wings', 'Venom', 'Shell', 'Beak'],
+  },
+
   monsterCatalog: SRD_MONSTERS,
 
   // Keyword -> Role suggestion for the Specific Monster search field.

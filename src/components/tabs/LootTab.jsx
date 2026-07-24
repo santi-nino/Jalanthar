@@ -66,21 +66,27 @@ function matchesAnyPattern(itemName, patterns) {
 }
 
 // Splits the raw pool into items hard-scoped to this exact monster type
-// (via the invisible monsterTypeTag field -- see itemPool.js) and
-// everything else. Tagged items are ALWAYS eligible for their matching
-// type, bypassing the coarser category restriction entirely -- a "Blue
-// Dragon Heart" reaches a Dragon entity regardless of what categories or
-// price range are in play, and NEVER reaches anything else, full stop.
-// Untagged items still go through the normal coarse category
-// restriction, same as before.
+// (via the invisible monsterTypeTags field -- see itemPool.js; an item
+// can carry MULTIPLE type tags, since a generic torch or coin purse
+// legitimately belongs in a soldier's pocket, a beast's den, AND an
+// aberration's stomach at once) and everything else. Tagged-and-matching
+// items are ALWAYS eligible, bypassing the coarser category restriction
+// entirely -- a "Blue Dragon Heart" reaches a Dragon entity regardless
+// of what categories or price range are in play, and never reaches
+// anything untagged for Dragon, full stop. Everything else -- including
+// fully generic items AND items tagged for a DIFFERENT type (a Torch
+// tagged for Aberration's stomach loot is still just an ordinary shop
+// item to everyone else) -- still goes through the normal coarse
+// category restriction, same as before.
 function scopeToMonsterType(pool, monsterType, typeCategoryRestriction) {
-  const tagged = monsterType ? pool.filter((i) => i.monsterTypeTag === monsterType) : []
-  const untagged = pool.filter((i) => !i.monsterTypeTag)
-  const allowedUntagged =
+  const tagged = monsterType ? pool.filter((i) => i.monsterTypeTags?.includes(monsterType)) : []
+  const taggedSet = new Set(tagged)
+  const rest = pool.filter((i) => !taggedSet.has(i))
+  const allowedRest =
     typeCategoryRestriction !== undefined
-      ? untagged.filter((i) => typeCategoryRestriction.includes(i.category))
-      : untagged
-  return [...tagged, ...allowedUntagged]
+      ? rest.filter((i) => typeCategoryRestriction.includes(i.category))
+      : rest
+  return [...tagged, ...allowedRest]
 }
 
 function drawLoot({
@@ -104,6 +110,105 @@ function drawLoot({
     return Array.from({ length: n }, () => filtered[Math.floor(Math.random() * filtered.length)])
   }
   return shuffled(filtered).slice(0, n)
+}
+
+// Maps each kind-bucketed type to its Size attribute id and whichever
+// OTHER dimensions its items get filtered by (Aberration: origin/
+// xenotype; Beast: kingdom/diet). `key` must match the corresponding key
+// used in that item's lootTags (e.g. lootTags.kingdom); `attr` is the
+// dynamic attribute id supplying the entity's actual value for it. Add
+// an entry here whenever another monster type gets this same overhaul
+// treatment -- the engine itself doesn't need to change.
+const KIND_BUCKET_CONFIG = {
+  Aberration: {
+    sizeAttr: 'aberration-size',
+    dimensions: [
+      { key: 'origin', attr: 'aberration-origin' },
+      { key: 'xenotype', attr: 'aberration-xenotype' },
+    ],
+  },
+  Beast: {
+    sizeAttr: 'beast-size',
+    dimensions: [
+      { key: 'kingdom', attr: 'beast-kingdom' },
+      { key: 'diet', attr: 'beast-diet' },
+    ],
+  },
+}
+
+// The kind-bucketed generation engine: instead of one flat random count
+// across the whole pool, each "kind" (per sizeLootTable) gets its own
+// count rolled independently from the entity's Size, then filled from
+// whichever catalog items are compatible with the entity's OTHER
+// dimensions (however many are configured above). An item tagged for a
+// dimension only shows up when the entity's value matches; an item with
+// no tag for that dimension is compatible regardless -- that's the
+// "overlap" mechanism (a generic Parts item shows up for every Kingdom;
+// something tagged Reptile shows up for a Reptile of any Diet; a
+// Reptile+Insectivore entity draws from the union of both). A size
+// rolling 0-0 for a given kind is what actually enforces "this size
+// doesn't yield that kind of loot" -- the count is zero, not a manual
+// block.
+//
+// features (optional): a {featureName: boolean} map for this entity --
+// any item requiring a feature (lootTags.requiresFeature) that isn't
+// checked true gets excluded outright, regardless of anything else
+// matching. Lets "not every mammal has tusks" hold even within an
+// otherwise-eligible Kingdom+Diet container.
+//
+// setting (optional): after the main kind buckets, a SEPARATE 0-2 item
+// bonus draw from whichever items are tagged kind:'Setting' and (if
+// tagged) compatible with this setting specifically -- pure flavor, not
+// counted against the Trophy/Parts/Pelt/etc totals at all.
+function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeValues, excludedPatterns, features, setting }) {
+  const sizeTable = taxonomy.sizeLootTable?.[monsterType]
+  const config = KIND_BUCKET_CONFIG[monsterType]
+  if (!sizeTable || !config) return { items: [], flavorItems: [] }
+
+  const size = attributeValues[config.sizeAttr]
+  const dimValues = {}
+  config.dimensions.forEach((d) => {
+    dimValues[d.key] = attributeValues[d.attr]
+  })
+  const countsForSize = sizeTable[size]
+  if (!countsForSize) return { items: [], flavorItems: [] }
+
+  const rawPool = buildItemPool('wares', sources).filter((i) => i.monsterTypeTags?.includes(monsterType))
+
+  function isCompatible(item) {
+    for (const d of config.dimensions) {
+      const tagVals = item.lootTags?.[d.key]
+      if (tagVals && !tagVals.includes(dimValues[d.key])) return false
+    }
+    const required = item.lootTags?.requiresFeature
+    if (required && !(features && features[required])) return false
+    return true
+  }
+
+  const items = []
+  Object.entries(countsForSize).forEach(([kind, [min, max]]) => {
+    const n = randomInt(min, max)
+    if (n === 0) return
+    let eligible = rawPool.filter((i) => i.lootTags?.kind === kind && isCompatible(i))
+    if (excludedPatterns && excludedPatterns.length > 0) {
+      eligible = eligible.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
+    }
+    if (eligible.length === 0) return
+    items.push(...shuffled(eligible).slice(0, Math.min(n, eligible.length)))
+  })
+
+  let flavorItems = []
+  if (setting) {
+    const settingPool = rawPool.filter(
+      (i) => i.lootTags?.kind === 'Setting' && (!i.lootTags?.setting || i.lootTags.setting.includes(setting))
+    )
+    const flavorCount = randomInt(0, 2)
+    if (flavorCount > 0 && settingPool.length > 0) {
+      flavorItems = shuffled(settingPool).slice(0, Math.min(flavorCount, settingPool.length))
+    }
+  }
+
+  return { items, flavorItems }
 }
 
 // The other half of "make good guesses": baseline items that appear
@@ -584,6 +689,13 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
         onChange={(v) => onSave({ monsterTypeGuaranteedItems: v })}
       />
 
+      <TypeGuaranteedItemsManager
+        label="Monster Type → Optional Features (checkboxes per entity, e.g. Beast → Tusks, Horns, Wings -- items can require one, unchecked = excluded)"
+        types={taxonomy.monsterTypes}
+        itemsByType={taxonomy.monsterTypeFeatures || {}}
+        onChange={(v) => onSave({ monsterTypeFeatures: v })}
+      />
+
       <TypeAttributeManager
         label="Monster Type Fields (what changes per monster type -- e.g. Beast gets Diet/Size instead of a generic Class)"
         types={taxonomy.monsterTypes}
@@ -687,6 +799,7 @@ function ResultsPanel({ groups, onCopy, copied }) {
                   <div>
                     <span className="font-display text-leather-dark">{item.name}</span>
                     {item.guaranteed && <span className="ml-1.5 text-xs text-moss-dark italic">(always carries)</span>}
+                    {item.flavor && <span className="ml-1.5 text-xs text-ink-soft/60 italic">(setting flavor)</span>}
                     <span className="ml-2 text-xs text-ink-soft/60 italic">{item.category}</span>
                     {item.description && <p className="text-xs text-ink-soft/70 italic">{item.description}</p>}
                   </div>
@@ -714,8 +827,11 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const [pools, setPools] = useState(DEFAULT_POOLS.encounter)
   const [categories, setCategories] = useState([])
   const [includeVehicles, setIncludeVehicles] = useState(false)
+  const [features, setFeatures] = useState({})
 
   const usesWealth = taxonomy.monsterTypeUsesWealth?.[monsterType] === true
+  const isKindBucketed = !!taxonomy.sizeLootTable?.[monsterType]
+  const availableFeatures = taxonomy.monsterTypeFeatures?.[monsterType] || []
 
   const typeAttributes = useMemo(() => taxonomy.monsterTypeAttributes?.[monsterType] || [], [taxonomy.monsterTypeAttributes, monsterType])
   const settingRule = taxonomy.settingRules?.[setting]
@@ -744,6 +860,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   function handleMonsterTypeChange(value) {
     setMonsterType(value)
     setAttributeValues({})
+    setFeatures({})
     const restriction = taxonomy.monsterTypeCategories?.[value]
     if (restriction !== undefined) {
       setCategories((prev) => prev.filter((c) => restriction.includes(c)))
@@ -797,6 +914,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
       includeVehicles,
       excludedPatterns,
       guaranteedPatterns,
+      features,
     })
     setNotes('')
   }
@@ -844,6 +962,26 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
 
       <DynamicAttributeFields attributes={typeAttributes} values={attributeValues} onChange={(attrId, val) => setAttributeValues((prev) => ({ ...prev, [attrId]: val }))} />
 
+      {availableFeatures.length > 0 && (
+        <div>
+          <span className="text-xs font-display uppercase text-ink-soft block mb-1">
+            Optional Features <span className="text-ink-soft/50 normal-case">(unchecked = excluded entirely, e.g. no tusks means no tusk loot)</span>
+          </span>
+          <div className="flex flex-wrap gap-3">
+            {availableFeatures.map((f) => (
+              <label key={f} className="flex items-center gap-1.5 text-sm">
+                <input
+                  type="checkbox"
+                  checked={!!features[f]}
+                  onChange={(e) => setFeatures((prev) => ({ ...prev, [f]: e.target.checked }))}
+                />
+                {f}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <label className="block">
           <span className="text-xs font-display uppercase text-ink-soft">Setting</span>
@@ -865,15 +1003,22 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
         </div>
       )}
 
-      <PoolAndCategoryPicker
-        pools={pools}
-        onPoolsChange={setPools}
-        categories={categories}
-        onCategoriesChange={setCategories}
-        availableCategories={availableCategories}
-        includeVehicles={includeVehicles}
-        onIncludeVehiclesChange={setIncludeVehicles}
-      />
+      {isKindBucketed ? (
+        <p className="text-xs text-ink-soft/50 italic">
+          {monsterType} loot is generated from Size + Origin/Xenotype-tagged items directly —
+          no pool or category picker needed here.
+        </p>
+      ) : (
+        <PoolAndCategoryPicker
+          pools={pools}
+          onPoolsChange={setPools}
+          categories={categories}
+          onCategoriesChange={setCategories}
+          availableCategories={availableCategories}
+          includeVehicles={includeVehicles}
+          onIncludeVehiclesChange={setIncludeVehicles}
+        />
+      )}
 
       <button type="button" onClick={handleAdd} className="w-full py-2 text-sm font-display uppercase tracking-wide bg-moss-dark text-parchment rounded-sm hover:opacity-90">+ Add Entity</button>
     </div>
@@ -931,6 +1076,25 @@ export default function LootTab() {
 
   function generateEncounter() {
     const groups = entities.map((e) => {
+      const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType]
+      const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
+      const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
+
+      if (isKindBucketed) {
+        const { items: rolled, flavorItems } = generateKindBucketedLoot({
+          monsterType: e.monsterType,
+          taxonomy: lootTaxonomy,
+          sources,
+          attributeValues: e.attributeValues,
+          excludedPatterns: e.excludedPatterns,
+          features: e.features,
+          setting: e.setting,
+        })
+        const flavorTagged = flavorItems.map((i) => ({ ...i, flavor: true }))
+        const tags = [e.monsterName || e.monsterType, ...attrTags, e.setting, e.notes].filter(Boolean)
+        return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled, ...flavorTagged], gold: 0 }
+      }
+
       const w = wealthLevel(e.wealthId)
       const usesWealth = lootTaxonomy.monsterTypeUsesWealth?.[e.monsterType] === true
       const fixedCount =
@@ -940,7 +1104,6 @@ export default function LootTab() {
         ? w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
         : randomInt(fixedCount.minItems, fixedCount.maxItems)
       const gold = usesWealth && w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
-      const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
       const typeRestriction = lootTaxonomy.monsterTypeCategories?.[e.monsterType]
       const rolled = drawLoot({
         pools: e.pools,
@@ -955,7 +1118,6 @@ export default function LootTab() {
         monsterType: e.monsterType,
         typeCategoryRestriction: typeRestriction,
       })
-      const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
       const wealthLabel = usesWealth ? w?.label : null
       const tags = [e.monsterName || e.monsterType, ...attrTags, wealthLabel, e.setting, e.notes].filter(Boolean)
       return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold }
