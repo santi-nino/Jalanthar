@@ -16,6 +16,42 @@ import { db, auth, isFirebaseConfigured } from '../firebase'
 import { mockBuildings, mockNpcs, mockFamilies } from '../data/mockData'
 import { DEFAULT_LOOT_TAXONOMY } from '../data/defaultLootTaxonomy'
 
+// Every taxonomy field shaped as "dictionary keyed by monster/location type
+// (or setting, or keyword)" -- these need a DEEPER merge than a plain
+// object spread. A plain `{...DEFAULT, ...live}` replaces the WHOLE
+// dictionary the moment Firestore has ANY saved value for it, which
+// silently erases every type's entry that isn't in that saved snapshot --
+// exactly what happened when sizeLootTable.Beast was added to the code
+// after a DM's Firestore doc had already saved sizeLootTable with only
+// Aberration in it: the shallow merge kept the stale Aberration-only
+// version and Beast's rules never existed at generation time, no error,
+// no warning, it just silently fell through to the older gold-only path.
+// Merging one level deeper -- per dictionary key, defaults first, then
+// whatever's actually saved live on top -- means an old saved doc missing
+// a newer type's entry still gets that type's shipped-code defaults,
+// while any type the DM HAS actually edited keeps their edits.
+const TAXONOMY_DICTIONARY_KEYS = [
+  'monsterTypeCategories',
+  'monsterTypeUsesWealth',
+  'monsterTypeFixedItemCount',
+  'monsterTypeGuaranteedItems',
+  'monsterTypeAttributes',
+  'monsterTypeFeatures',
+  'monsterNameRoleHints',
+  'settingRules',
+  'sizeLootTable',
+  'locationTypeGuaranteedItems',
+  'locationTypeAttributes',
+]
+
+function mergeLootTaxonomy(defaults, live) {
+  const merged = { ...defaults, ...live }
+  TAXONOMY_DICTIONARY_KEYS.forEach((key) => {
+    merged[key] = { ...(defaults[key] || {}), ...(live[key] || {}) }
+  })
+  return merged
+}
+
 const DataContext = createContext(null)
 
 const LS_KEYS = {
@@ -124,7 +160,7 @@ export function DataProvider({ children }) {
             setSources(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
           )
           unsubLootConfig = onSnapshot(doc(db, 'lootConfig', 'taxonomy'), (snap) => {
-            setLootTaxonomy(snap.exists() ? { ...DEFAULT_LOOT_TAXONOMY, ...snap.data() } : DEFAULT_LOOT_TAXONOMY)
+            setLootTaxonomy(snap.exists() ? mergeLootTaxonomy(DEFAULT_LOOT_TAXONOMY, snap.data()) : DEFAULT_LOOT_TAXONOMY)
           })
         } else {
           let visibleDocs = {}
@@ -177,7 +213,7 @@ export function DataProvider({ children }) {
       setNpcs(loadDemo(LS_KEYS.npcs, mockNpcs))
       setFamilies(loadDemo(LS_KEYS.families, mockFamilies))
       setSources(loadDemo(LS_KEYS.sources, []))
-      setLootTaxonomy(loadDemo(LS_KEYS.lootTaxonomy, DEFAULT_LOOT_TAXONOMY))
+      setLootTaxonomy(mergeLootTaxonomy(DEFAULT_LOOT_TAXONOMY, loadDemo(LS_KEYS.lootTaxonomy, {})))
       setLoading(false)
     }
   }, [])
