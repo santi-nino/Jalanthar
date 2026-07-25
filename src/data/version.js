@@ -3,4 +3,4 @@
 // the latest code, independent of whether the underlying DATA (buildings,
 // NPCs, sources) has also been reseeded. Code and data are two separate
 // deploy steps; this only speaks to the former.
-export const BUILD_VERSION = '2026-07-24: seed force-updates programmatic sources + DM sidebar version display'
+export const BUILD_VERSION = 'Version 1.3 — Export Data now has an Item Data tab'

@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { IconMap, IconBuildings, IconResidents, IconRoster, IconLoot, IconKey, IconExit } from './icons'
 import ExportDataModal from './ExportDataModal'
 import UploadSourceModal from './UploadSourceModal'
+import ManageSourcesModal from './ManageSourcesModal'
 import { BUILD_VERSION } from '../data/version'
 
 const TABS = [
@@ -17,6 +18,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
   const [collapsed, setCollapsed] = useState(false)
   const [exportOpen, setExportOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
+  const [manageSourcesOpen, setManageSourcesOpen] = useState(false)
   const { isDm, logout } = useAuth()
   const visibleTabs = TABS.filter((t) => !t.dmOnly || isDm)
 
@@ -113,6 +115,16 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
               <span className={collapsed ? 'md:hidden' : ''}>Upload Source</span>
             </button>
           )}
+          {isDm && (
+            <button
+              onClick={() => setManageSourcesOpen(true)}
+              className="w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide text-parchment/70 hover:text-gold-light transition-colors py-2"
+              title={collapsed ? 'View and delete uploaded sources' : undefined}
+            >
+              <span className="w-4 h-4 shrink-0 flex items-center justify-center text-sm">⚙</span>
+              <span className={collapsed ? 'md:hidden' : ''}>Manage Sources</span>
+            </button>
+          )}
           {isDm ? (
             <button
               onClick={logout}
@@ -141,6 +153,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
       </aside>
       {exportOpen && <ExportDataModal onClose={() => setExportOpen(false)} />}
       {uploadOpen && <UploadSourceModal onClose={() => setUploadOpen(false)} />}
+      {manageSourcesOpen && <ManageSourcesModal onClose={() => setManageSourcesOpen(false)} />}
     </>
   )
 }

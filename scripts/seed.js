@@ -97,6 +97,27 @@ async function updateProgrammaticSources(docs) {
   console.log(`"sources": force-updated ${updated} programmatically-authored source(s) with current content`)
 }
 
+// The original (pre-"-v2") Hunter's & Trapper's Price Guide document ID --
+// abandoned several rounds ago when its content needed a fresh ID to
+// escape the skip-if-exists bug, but never actually deleted. If it's
+// still sitting in Firestore, it's a genuine duplicate: a second,
+// long-stale "Hunter's & Trapper's Price Guide" with old, untagged
+// content living alongside the current one. Deleted here so this isn't
+// something that has to be found and cleaned up by hand later.
+const ORPHANED_SOURCE_IDS = ['src-hunters-trapper-guide']
+
+async function deleteOrphanedSources() {
+  let deleted = 0
+  for (const id of ORPHANED_SOURCE_IDS) {
+    const snap = await db.collection('sources').doc(id).get()
+    if (snap.exists) {
+      await db.collection('sources').doc(id).delete()
+      deleted++
+    }
+  }
+  console.log(`"sources": removed ${deleted} orphaned/duplicate document(s)`)
+}
+
 async function seedCollection(name, docs) {
   const existingIds = FORCE
     ? new Set()
@@ -160,6 +181,7 @@ await seedCollection('npcs', mockNpcs)
 await seedCollection('families', mockFamilies)
 await seedCollection('sources', mockSources)
 await updateProgrammaticSources(mockSources)
+await deleteOrphanedSources()
 
 console.log('\nDone.')
 process.exit(0)
