@@ -50,8 +50,8 @@ TASK:
 1. Infer which tier above best fits the named monster and notes (e.g. "Giant Lizard" -> Large-equivalent tier; "Ancient Red Dragon" -> the Ancient tier).
 2. Infer any other relevant tags implied by the name (e.g. "Giant Lizard" implies Reptile-kingdom, "Red Dragon" implies Red lineage) and only select items compatible with those.
 3. SELECT items primarily from the FULL ITEM POOL above, respecting your inferred tier's exact count limits for every kind.
-4. You may invent AT MOST ONE OR TWO brand-new items, and ONLY if the monster/notes describe something genuinely not covered by anything in the pool. Never invent more than 2.
-5. Do not pad the list "to be thorough" -- respect the inferred tier's limits exactly.
+4. You may invent AT MOST ONE OR TWO brand-new items, and ONLY if the monster/notes describe something genuinely not covered by anything in the pool. Never invent more than 2. Never invent an anatomical item the creature plausibly wouldn't have (no horns on a snake, no wings on a legless creature, etc) -- stay grounded in real anatomy for the named creature.
+5. Do not pad the list "to be thorough" -- respect the inferred tier's limits exactly. Never select two different items that both represent the same single body part (e.g. two different skull items, two different sets of horns) -- a creature has exactly one of each.
 
 Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
 { "inferredTier": string, "items": [ { "name": string, "priceGp": number, "description": string, "kind": string, "isNew": boolean } ] }
@@ -81,15 +81,34 @@ ${poolText || '(no items are currently eligible)'}
 TASK:
 1. Read the Specific Monster name and notes carefully. If they describe a creature or context that shifts what makes sense (e.g. "orc priestess" implies religious/humanoid flavor even on a base orc; "Giant Lizard" implies a large reptile from a swamp-like environment), let that inform which eligible items you pick and how you interpret the notes -- but you are still bound by the exact count limits above and by the Monster Type's own established rules.
 2. SELECT items primarily from the ELIGIBLE ITEMS list above. This is your main job.
-3. You may invent AT MOST ONE OR TWO brand-new items, and ONLY if the specific monster/notes describe something genuinely not covered by anything in the eligible list. Never invent more than 2. Any invented item must match the price range and one-sentence narrative style of the surrounding eligible items -- no mechanical claims beyond what a similar eligible item would have.
-4. Stay within the HARD LIMITS for every kind. Do not pad the list with extra items "to be thorough" -- a small creature should get a small amount of loot.
+3. You may invent AT MOST ONE OR TWO brand-new items, and ONLY if the specific monster/notes describe something genuinely not covered by anything in the eligible list. Never invent more than 2. Any invented item must match the price range and one-sentence narrative style of the surrounding eligible items -- no mechanical claims beyond what a similar eligible item would have. Never invent an anatomical item the creature plausibly wouldn't have (no horns on a snake, no wings on a legless creature, etc).
+4. Stay within the HARD LIMITS for every kind. Do not pad the list with extra items "to be thorough" -- a small creature should get a small amount of loot. Never select two different items that both represent the same single body part (e.g. two different skull items, two different sets of horns) -- a creature has exactly one of each.
 
 Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
 { "items": [ { "name": string, "priceGp": number, "description": string, "kind": string, "isNew": boolean } ] }
 `.trim()
 }
 
-function normalizeResult(raw, validKinds) {
+// Hard, code-level safety net around what the model actually returns --
+// the prompt asks nicely for count limits and anatomical plausibility,
+// but prompt compliance alone has repeatedly not been trustworthy enough
+// (this is the same reasoning behind the pre-existing invented-item cap
+// below). Three checks, in order:
+// 1. Exact-name dedup (case-insensitive) -- the model should never return
+//    the literal same catalog item twice, but nothing stopped it before.
+// 2. anatomySlot dedup (see lootTags.anatomySlot in LootTab.jsx) -- catches
+//    the "two DIFFERENT items that are both, anatomically, a skull" case
+//    that exact-name dedup can't, using the same slot data the
+//    deterministic engine enforces. Only applies to items the AI picked
+//    from the pool (slotByName is built from eligibleItems); invented
+//    items have no known slot and aren't touched by this step.
+// 3. Per-kind count cap -- countsByKind/inferredTier's max was always
+//    stated in the prompt as a hard limit, but was never actually
+//    enforced in code. This is what stops "too many items altogether":
+//    the model padding a kind well past its stated max no longer survives
+//    normalization, regardless of whether it respected the instruction.
+// The existing invented-item cap (max 2 isNew items) runs last, unchanged.
+function normalizeResult(raw, validKinds, { maxByKind, slotByName } = {}) {
   const items = Array.isArray(raw.items)
     ? raw.items
         .map((r) => ({
@@ -101,10 +120,32 @@ function normalizeResult(raw, validKinds) {
         }))
         .filter((r) => r.name && validKinds.has(r.kind))
     : []
+
+  const seenNames = new Set()
+  const usedSlots = new Set()
+  const kindCounts = {}
+  const filtered = []
+  for (const r of items) {
+    const nameKey = r.name.toLowerCase()
+    if (seenNames.has(nameKey)) continue
+    // anatomySlot can be a single string or an array (see LootTab.jsx's
+    // slotsOf) -- normalize either way before checking/claiming.
+    const rawSlot = slotByName?.get(nameKey)
+    const slots = rawSlot ? (Array.isArray(rawSlot) ? rawSlot : [rawSlot]) : []
+    if (slots.some((s) => usedSlots.has(s))) continue
+    const max = maxByKind?.[r.kind]
+    const countSoFar = kindCounts[r.kind] || 0
+    if (max != null && countSoFar >= max) continue
+    seenNames.add(nameKey)
+    slots.forEach((s) => usedSlots.add(s))
+    kindCounts[r.kind] = countSoFar + 1
+    filtered.push(r)
+  }
+
   // Hard safety net regardless of what the model claims: never more than
   // 2 invented items, even if it ignored the instruction.
   let newCount = 0
-  return items.filter((r) => {
+  return filtered.filter((r) => {
     if (!r.isNew) return true
     newCount += 1
     return newCount <= 2
@@ -264,17 +305,45 @@ export async function generateAiAssistedLoot({
       )
     : new Set(Object.keys(countsByKind))
 
+  // Same lookup table the deterministic engine's anatomySlot enforcement
+  // uses, built from the exact eligible pool the AI was handed -- keyed
+  // lowercase to match normalizeResult's name-based lookup.
+  const slotByName = new Map(
+    (eligibleItems || [])
+      .filter((i) => i.anatomySlot)
+      .map((i) => [i.name.toLowerCase(), i.anatomySlot])
+  )
+
+  // maxByKind: the per-kind hard ceiling to enforce in code, not just
+  // prompt text. In the normal path it's just countsByKind's own max. In
+  // needsInference mode, the count table isn't known until the model
+  // declares which tier it inferred -- computed fresh per response below,
+  // since two calls (Gemini then Claude fallback) could plausibly infer
+  // different tiers.
+  function resolveMaxByKind(result) {
+    if (!needsInference) {
+      return Object.fromEntries(Object.entries(countsByKind).map(([k, range]) => [k, range[1]]))
+    }
+    const tier = tierOptions?.[result?.inferredTier]
+    if (!tier) return null // unknown/missing tier -- name+slot dedup still applies, just no count cap
+    return Object.fromEntries(
+      Object.entries(tier)
+        .filter(([k]) => k !== 'priceRange' && k !== 'goldRange')
+        .map(([k, range]) => [k, range[1]])
+    )
+  }
+
   let lastError = null
   try {
     const result = await callGemini(prompt)
-    if (result) return normalizeResult(result, validKinds)
+    if (result) return normalizeResult(result, validKinds, { maxByKind: resolveMaxByKind(result), slotByName })
   } catch (err) {
     console.error('Gemini loot assist failed, trying fallback:', err)
     lastError = err
   }
   try {
     const result = await callClaude(prompt)
-    if (result) return normalizeResult(result, validKinds)
+    if (result) return normalizeResult(result, validKinds, { maxByKind: resolveMaxByKind(result), slotByName })
   } catch (err) {
     console.error('Claude loot assist failed:', err)
     lastError = err

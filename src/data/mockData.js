@@ -4545,7 +4545,8 @@ export const mockSources = [
           "Beast"
         ],
         "lootTags": {
-          "kind": "Trophy"
+          "kind": "Trophy",
+          "anatomySlot": "Skull"
         },
         "tags": [
           "display"
@@ -4573,7 +4574,7 @@ export const mockSources = [
       },
       {
         "rowId": "row-beast-3",
-        "name": "Thick-Furred Skull Mount",
+        "name": "Thick-Furred Skull",
         "basePrice": 8,
         "description": "Still carries a faint musk no amount of cleaning fully lifts.",
         "category": "Trophy",
@@ -4584,7 +4585,8 @@ export const mockSources = [
           "kind": "Trophy",
           "kingdom": [
             "Mammal"
-          ]
+          ],
+          "anatomySlot": "Skull"
         },
         "tags": [
           "display"
@@ -4605,7 +4607,8 @@ export const mockSources = [
           "kind": "Trophy",
           "kingdom": [
             "Reptile"
-          ]
+          ],
+          "anatomySlot": "Skull"
         },
         "tags": [
           "display"
@@ -4615,9 +4618,9 @@ export const mockSources = [
       },
       {
         "rowId": "row-beast-5",
-        "name": "Preserved Talon-and-Beak Mount",
+        "name": "Talon-and-Beak Bundle",
         "basePrice": 10,
-        "description": "Wired together into a single, unsettling display piece.",
+        "description": "Bound together with sinew, exactly as they came off the kill.",
         "category": "Trophy",
         "monsterTypeTags": [
           "Beast"
@@ -4627,7 +4630,8 @@ export const mockSources = [
           "kingdom": [
             "Bird"
           ],
-          "requiresFeature": "Beak"
+          "requiresFeature": "Beak",
+          "anatomySlot": "Beak"
         },
         "tags": [
           "display"
@@ -4637,9 +4641,9 @@ export const mockSources = [
       },
       {
         "rowId": "row-beast-6",
-        "name": "Mounted Prize Catch",
+        "name": "Notably Large Catch",
         "basePrice": 7,
-        "description": "Every angler swears theirs was bigger before the taxidermist got to it.",
+        "description": "Every angler swears theirs was bigger \u2014 this one's fresh enough nobody's had the chance to argue yet.",
         "category": "Trophy",
         "monsterTypeTags": [
           "Beast"
@@ -4658,9 +4662,9 @@ export const mockSources = [
       },
       {
         "rowId": "row-beast-7",
-        "name": "Preserved Carapace Display",
+        "name": "Intact Carapace, Uncleaned",
         "basePrice": 6,
-        "description": "The chitin holds its shine remarkably well once cleaned and lacquered.",
+        "description": "The chitin still holds its shine, dirt and all \u2014 cleaning it up is somebody else\u2019s job.",
         "category": "Trophy",
         "monsterTypeTags": [
           "Beast"
@@ -4669,7 +4673,8 @@ export const mockSources = [
           "kind": "Trophy",
           "kingdom": [
             "Insect"
-          ]
+          ],
+          "anatomySlot": "Shell"
         },
         "tags": [
           "display"
@@ -4700,9 +4705,9 @@ export const mockSources = [
       },
       {
         "rowId": "row-beast-9",
-        "name": "Fang-Studded Trophy Mount",
+        "name": "Fang-Studded Jawbone",
         "basePrice": 12,
-        "description": "A full set of teeth, wired into a deliberately unsettling arrangement.",
+        "description": "A full set of teeth, still rooted in the jaw exactly as pulled.",
         "category": "Trophy",
         "monsterTypeTags": [
           "Beast"
@@ -4721,7 +4726,7 @@ export const mockSources = [
       },
       {
         "rowId": "row-beast-10",
-        "name": "Full Antler Rack Mount",
+        "name": "Full Antler Rack",
         "basePrice": 14,
         "description": "Impressive enough that its owner will absolutely tell you the story behind it.",
         "category": "Trophy",
@@ -4736,7 +4741,8 @@ export const mockSources = [
           "diet": [
             "Herbivore"
           ],
-          "requiresFeature": "Horns"
+          "requiresFeature": "Horns",
+          "anatomySlot": "Horns"
         },
         "tags": [
           "display"
@@ -4748,14 +4754,18 @@ export const mockSources = [
         "rowId": "row-beast-11",
         "name": "Tusked Skull Trophy",
         "basePrice": 16,
-        "description": "The tusks alone are worth more than the rest of the mount combined.",
+        "description": "The tusks alone are worth more than the rest of the skull combined.",
         "category": "Trophy",
         "monsterTypeTags": [
           "Beast"
         ],
         "lootTags": {
           "kind": "Trophy",
-          "requiresFeature": "Tusks"
+          "requiresFeature": "Tusks",
+          "anatomySlot": [
+            "Skull",
+            "Tusks"
+          ]
         },
         "tags": [
           "display"
@@ -4765,9 +4775,9 @@ export const mockSources = [
       },
       {
         "rowId": "row-beast-12",
-        "name": "Venom-Gland Display Case",
+        "name": "Intact Venom Gland",
         "basePrice": 20,
-        "description": "Sealed behind glass for good reason \u2014 the residue is still active.",
+        "description": "Wrapped in oilcloth for good reason \u2014 the residue is still active.",
         "category": "Trophy",
         "monsterTypeTags": [
           "Beast"
@@ -4786,14 +4796,15 @@ export const mockSources = [
         "rowId": "row-beast-13",
         "name": "Segmented Shell Trophy",
         "basePrice": 11,
-        "description": "A full shell, polished and mounted whole.",
+        "description": "A full shell, unpolished and still faintly gritty with sand.",
         "category": "Trophy",
         "monsterTypeTags": [
           "Beast"
         ],
         "lootTags": {
           "kind": "Trophy",
-          "requiresFeature": "Shell"
+          "requiresFeature": "Shell",
+          "anatomySlot": "Shell"
         },
         "tags": [
           "display"
@@ -4814,7 +4825,8 @@ export const mockSources = [
           "kind": "Trophy",
           "diet": [
             "Herbivore"
-          ]
+          ],
+          "anatomySlot": "Skull"
         },
         "tags": [
           "display"
@@ -5145,7 +5157,8 @@ export const mockSources = [
         ],
         "lootTags": {
           "kind": "Parts",
-          "requiresFeature": "Tusks"
+          "requiresFeature": "Tusks",
+          "anatomySlot": "Tusks"
         },
         "tags": [
           "craft-material"
@@ -5164,7 +5177,8 @@ export const mockSources = [
         ],
         "lootTags": {
           "kind": "Parts",
-          "requiresFeature": "Horns"
+          "requiresFeature": "Horns",
+          "anatomySlot": "Horns"
         },
         "tags": [
           "craft-material"
@@ -5202,7 +5216,8 @@ export const mockSources = [
         ],
         "lootTags": {
           "kind": "Parts",
-          "requiresFeature": "Shell"
+          "requiresFeature": "Shell",
+          "anatomySlot": "Shell"
         },
         "tags": [
           "craft-material"
@@ -5221,7 +5236,8 @@ export const mockSources = [
         ],
         "lootTags": {
           "kind": "Parts",
-          "requiresFeature": "Beak"
+          "requiresFeature": "Beak",
+          "anatomySlot": "Beak"
         },
         "tags": [
           "craft-material"
@@ -10867,5 +10883,1859 @@ export const mockSources = [
     "menu": [],
     "services": [],
     "createdAt": 1753700000000
+  },
+  {
+    "id": "src-planebound-ledger",
+    "name": "The Planebound Ledger",
+    "wares": [
+      {
+        "rowId": "row-elemental-1",
+        "name": "Cinder-Wreathed Shortsword",
+        "basePrice": 120,
+        "description": "The blade never cools, though it never quite burns the wielder's grip either. Functions like a Shortsword, plus a faint smolder that never fully goes out.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Fire"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-2",
+        "name": "Magma-Forged Warhammer",
+        "basePrice": 250,
+        "description": "Cast in a mold no smith alive could survive standing near. Swings like a Warhammer, leaving scorched footprints in soft ground.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Magma"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-3",
+        "name": "Plasma-Edged Rapier",
+        "basePrice": 300,
+        "description": "Functions like a Rapier, though the edge doesn't glint so much as hum -- a thin white-hot line that makes stealth a bit of a challenge.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Plasma"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-4",
+        "name": "Chunk of Perpetual Ember",
+        "basePrice": 15,
+        "description": "Glows faintly warm no matter how long it sits in a cold cellar.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Cinder"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-5",
+        "name": "Bottled Magma Droplet",
+        "basePrice": 40,
+        "description": "Still liquid, somehow, sealed behind warded glass thick enough to trust.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Magma"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-6",
+        "name": "Sheet of Ashfall Residue",
+        "basePrice": 6,
+        "description": "Fine grey powder that never quite settles, drifting even in still air.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Ash"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-7",
+        "name": "Fragment of Living Flame",
+        "basePrice": 20,
+        "description": "Burns without fuel, without smoke, and without spreading -- a pinch of it makes for a stubborn campfire starter.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Fire"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-8",
+        "name": "Coiled Plasma Filament",
+        "basePrice": 55,
+        "description": "Thin as wire and twice as hot; handling it without gloves is a one-time mistake.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Plasma"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-9",
+        "name": "Rune-Scorched Ember Core",
+        "basePrice": 90,
+        "description": "Etched with a binding sigil that keeps the ember from ever fully dying out -- brewers use embers just like it in a Potion of Fire Resistance.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Fire"
+          ],
+          "anatomySlot": "Core"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-10",
+        "name": "Vial of Bottled Cinderlight",
+        "basePrice": 45,
+        "description": "Shake it and it flares like a struck match, dims again within a minute.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Cinder"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-11",
+        "name": "Ashbound Warding Sigil",
+        "basePrice": 60,
+        "description": "Painted in ash that refuses to smudge, no matter how it's handled.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Ash"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-12",
+        "name": "Sliver of Refined Magma-Glass",
+        "basePrice": 70,
+        "description": "Cooled fast enough to trap light inside it -- jewelers pay well for the effect alone.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Magma"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-13",
+        "name": "Cooled Slag Chunk",
+        "basePrice": 1,
+        "description": "Worthless as material, but it makes a decent paperweight.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Fire"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-14",
+        "name": "Handful of Spent Cinders",
+        "basePrice": 1,
+        "description": "Cold now, and staying that way.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Fire"
+          ],
+          "subelement": [
+            "Cinder"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-15",
+        "name": "Scorched Rag",
+        "basePrice": 1,
+        "description": "Whatever it used to be, fire got there first.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Fire"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-16",
+        "name": "Wisp of Captive Heat",
+        "basePrice": 10,
+        "description": "A small warmth that never fades, even in a snowbank.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Fire"
+          ],
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-17",
+        "name": "Bound Salamander Scale",
+        "basePrice": 80,
+        "description": "Shed, not stolen -- salamanders molt more than most people realize.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Fire"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-18",
+        "name": "Elder Flamewrit Tablet",
+        "basePrice": 200,
+        "description": "Script from a language that predates most mortal tongues, written in soot that won't smear.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Fire"
+          ],
+          "minRank": 2
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-19",
+        "name": "Myrmidon's Cinderblood Vial",
+        "basePrice": 400,
+        "description": "Thick, dark red-orange, and warm to the touch through the glass -- an alchemist once said it smelled exactly like the base ingredient for a Potion of Fire Resistance.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Fire"
+          ],
+          "minRank": 3
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-20",
+        "name": "Tide-Carved Trident",
+        "basePrice": 180,
+        "description": "Carries the weight of a breaking wave in every thrust. Functions like a Trident, and never quite dries.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Wave"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-21",
+        "name": "Frostbitten Longsword",
+        "basePrice": 220,
+        "description": "Functions like a Longsword, its edge perpetually rimed with frost that never melts no matter the season.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Frost"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-22",
+        "name": "Deep-Forged Maul",
+        "basePrice": 260,
+        "description": "Swings like a Maul, heavier than it has any right to be, like it's still fighting the pressure of the trench it came from.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Deep"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-23",
+        "name": "Vial of Unfreezing Water",
+        "basePrice": 12,
+        "description": "Stays liquid at any temperature you throw at it, out of pure stubbornness -- sometimes sold as a cut-rate substitute for a Potion of Water Breathing, minus the actual breathing part.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Water"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-24",
+        "name": "Coil of Brine-Cured Rope",
+        "basePrice": 8,
+        "description": "Salt-stiffened and faintly damp no matter how long it's stored, but it holds a knot the same as fifty feet of ordinary Hempen Rope.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Brine"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-25",
+        "name": "Jar of Captured Steam",
+        "basePrice": 18,
+        "description": "Fogs the glass from the inside, permanently, in slowly shifting patterns.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Steam"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-26",
+        "name": "Frost-Rimed Shard",
+        "basePrice": 22,
+        "description": "Doesn't melt in a warm hand, but it does make the hand very, very cold.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Frost"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-27",
+        "name": "Length of Deep-Pressure Kelp",
+        "basePrice": 14,
+        "description": "Tougher than rope, and it still smells faintly of somewhere sunlight never reaches.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Deep"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-28",
+        "name": "Crystallized Tide Core",
+        "basePrice": 95,
+        "description": "Pulses faintly, like a heartbeat set to the rhythm of a distant shore.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Water"
+          ],
+          "anatomySlot": "Core"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-29",
+        "name": "Bottled Storm-Front Mist",
+        "basePrice": 50,
+        "description": "Swirls on its own inside the bottle, entirely unbothered by gravity.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Steam"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-30",
+        "name": "Etched Brine Ward-Stone",
+        "basePrice": 65,
+        "description": "Carved with symbols that stay legible even after being dropped in an actual barrel of brine.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Brine"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-31",
+        "name": "Sliver of Absolute Zero Ice",
+        "basePrice": 75,
+        "description": "Colder than any natural ice has a right to be, and it never seems to sweat even in a warm room.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Frost"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-32",
+        "name": "Waterlogged Driftwood Chip",
+        "basePrice": 1,
+        "description": "Never quite dries out, no matter how long it sits in the sun.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Water"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-33",
+        "name": "Puddle of Stubborn Slush",
+        "basePrice": 1,
+        "description": "Refuses to either freeze solid or melt away.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Frost"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-34",
+        "name": "Crust of Dried Salt",
+        "basePrice": 1,
+        "description": "Scraped off something that used to be much wetter.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Water"
+          ],
+          "subelement": [
+            "Brine"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-35",
+        "name": "Drop of Bottled Tide",
+        "basePrice": 12,
+        "description": "A single drop that somehow still smells like the whole ocean.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Water"
+          ],
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-36",
+        "name": "Sealed Storm-Glass Orb",
+        "basePrice": 90,
+        "description": "Tiny lightning flickers inside it whenever the weather turns.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Water"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-37",
+        "name": "Elder Abyssal Pearl",
+        "basePrice": 220,
+        "description": "Black as the trench it came from, cold enough to notice through a pocket, and prized by alchemists as a substitute for the pearl an Identify casting consumes.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Water"
+          ],
+          "minRank": 2
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-38",
+        "name": "Myrmidon's Undertow Flask",
+        "basePrice": 420,
+        "description": "The water inside pulls gently toward one corner of the flask, always, regardless of how it's turned.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Water"
+          ],
+          "minRank": 3
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-39",
+        "name": "Stoneheart Greataxe",
+        "basePrice": 200,
+        "description": "Swings like a Greataxe, and leaves a faint crack in whatever it lands on, whether it needed to or not.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Stone"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-40",
+        "name": "Crystal-Edged Shortspear",
+        "basePrice": 190,
+        "description": "Functions like a Shortspear -- the point catches light and throws it back in colors that don't quite match what's around it.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Crystal"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-41",
+        "name": "Ore-Wrought Battleaxe",
+        "basePrice": 230,
+        "description": "Heavier than steel, and somehow still perfectly balanced. Functions like a Battleaxe, forged rather than smelted.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Ore"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-42",
+        "name": "Chunk of Living Stone",
+        "basePrice": 10,
+        "description": "Warm to the touch, like it hasn't quite decided to stop being part of something bigger.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Earth"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-43",
+        "name": "Cluster of Uncut Crystal",
+        "basePrice": 35,
+        "description": "Grows a fraction of an inch every year, whether it's mined or not.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Crystal"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-44",
+        "name": "Sack of Ever-Shifting Sand",
+        "basePrice": 6,
+        "description": "Never sits still in the bag, even when nobody's touched it.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Sand"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-45",
+        "name": "Ball of Self-Molding Mud",
+        "basePrice": 5,
+        "description": "Holds whatever shape it's pressed into, indefinitely, until pressed into something else.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Mud"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-46",
+        "name": "Vein of Raw Ore",
+        "basePrice": 28,
+        "description": "Still faintly warm from wherever it was pulled out of.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Ore"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-47",
+        "name": "Geode-Bound Earthen Core",
+        "basePrice": 100,
+        "description": "Split it open and something inside still hums, faintly, like a held breath.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Earth"
+          ],
+          "anatomySlot": "Core"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-48",
+        "name": "Sliver of Resonant Crystal",
+        "basePrice": 80,
+        "description": "Rings a clear, single note when struck, and keeps ringing far longer than it should.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Crystal"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-49",
+        "name": "Vial of Living Mudstone",
+        "basePrice": 55,
+        "description": "Still soft after weeks sealed in the vial, refusing every attempt to dry it out.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Mud"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-50",
+        "name": "Etched Ore-Iron Talisman",
+        "basePrice": 70,
+        "description": "Never rusts, never tarnishes, and always feels slightly colder than the room around it.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Ore"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-51",
+        "name": "Fistful of Gravel",
+        "basePrice": 1,
+        "description": "Ordinary gravel, except it came from somewhere distinctly less ordinary.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Earth"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-52",
+        "name": "Cracked Stone Fragment",
+        "basePrice": 1,
+        "description": "Broke clean, for no reason anyone present could explain.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Stone"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-53",
+        "name": "Handful of Dry-Caked Mud",
+        "basePrice": 1,
+        "description": "Crumbles at a touch, leaving a faint grit behind.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Earth"
+          ],
+          "subelement": [
+            "Mud"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-54",
+        "name": "Pebble of Bound Earth",
+        "basePrice": 10,
+        "description": "Heavier than a pebble its size should be, and it never seems to erode -- masons keep one in a pocket the same way soldiers keep a spare Potion of Healing, just in case.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Earth"
+          ],
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-55",
+        "name": "Sealed Geode of Captured Tremor",
+        "basePrice": 85,
+        "description": "Give it a shake and you can feel something shift inside, slow and heavy.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Earth"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-56",
+        "name": "Elder Mountain-Root Shard",
+        "basePrice": 210,
+        "description": "Cold, dense, and old enough that its edges have worn smooth despite never being touched.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Earth"
+          ],
+          "minRank": 2
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-57",
+        "name": "Myrmidon's Bedrock Core Fragment",
+        "basePrice": 410,
+        "description": "A piece of something that was, until recently, holding up a great deal more weight than a fragment should -- black-market buyers compare its price to a full case of Potion of Healing.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Earth"
+          ],
+          "minRank": 3
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-58",
+        "name": "Gale-Cut Scimitar",
+        "basePrice": 210,
+        "description": "Functions like a Scimitar, if a notably impatient one -- it whistles faintly with every swing, a fraction of a second before it lands.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Gale"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-59",
+        "name": "Storm-Wrought Halberd",
+        "basePrice": 260,
+        "description": "Functions like a Halberd. A faint charge builds along the haft the longer it's held; letting go of it too suddenly stings.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Storm"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-60",
+        "name": "Vacuum-Bound Shortbow",
+        "basePrice": 240,
+        "description": "Functions like a Shortbow -- loosed arrows seem to leave the string a hair faster than they should, and land a hair harder.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Vacuum"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-61",
+        "name": "Bottled Handful of Wind",
+        "basePrice": 10,
+        "description": "Uncork it carefully; it's still trying to go somewhere.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Air"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-62",
+        "name": "Coil of Compressed Gale",
+        "basePrice": 30,
+        "description": "Straining faintly against whatever's holding it -- best kept somewhere well-sealed.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Gale"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-63",
+        "name": "Jar of Trapped Static",
+        "basePrice": 16,
+        "description": "Every so often it gives a tiny visible spark for no obvious reason.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Static"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-64",
+        "name": "Wisp of Captured Cloud",
+        "basePrice": 14,
+        "description": "Damp and weightless, and it never quite fills the whole jar the same way twice.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Cloud"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-65",
+        "name": "Sliver of Perfect Vacuum",
+        "basePrice": 45,
+        "description": "The container it's sealed in makes a faint, unsettling sound whenever it's moved.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Vacuum"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-66",
+        "name": "Storm-Bound Windward Core",
+        "basePrice": 90,
+        "description": "A held breath given permanent shape, humming faintly against the fingers.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Air"
+          ],
+          "anatomySlot": "Core"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-67",
+        "name": "Charged Static Filament",
+        "basePrice": 55,
+        "description": "Crackles faintly when handled without gloves; nobody's been badly hurt by it yet.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Static"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-68",
+        "name": "Bottled Thundercloud Fragment",
+        "basePrice": 75,
+        "description": "Flickers with tiny, harmless lightning whenever it's shaken, bright enough to read by for a second at a time.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Storm"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-69",
+        "name": "Vial of Vacuum-Sealed Silence",
+        "basePrice": 65,
+        "description": "Open it near an ear and, for just a moment, the whole world goes quiet.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Vacuum"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-70",
+        "name": "Handful of Dead Air",
+        "basePrice": 1,
+        "description": "Perfectly ordinary air. Someone bottled it anyway.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Air"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-71",
+        "name": "Frayed Cloud-Wisp Remnant",
+        "basePrice": 1,
+        "description": "Damp, grey, and about as useful as it looks.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Cloud"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-72",
+        "name": "Spent Static Husk",
+        "basePrice": 1,
+        "description": "Doesn't spark anymore. Hasn't in a while.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Air"
+          ],
+          "subelement": [
+            "Static"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-73",
+        "name": "Breath of Bound Wind",
+        "basePrice": 10,
+        "description": "A single exhale that never seems to fully escape the vial -- corked the same as a Potion of Healing, just windier.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Air"
+          ],
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-74",
+        "name": "Sealed Stormcell Orb",
+        "basePrice": 85,
+        "description": "Faint thunder, audible only if you hold it right up to your ear.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Air"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-75",
+        "name": "Elder Skyfall Shard",
+        "basePrice": 215,
+        "description": "Impossibly light for its size, and it never seems to actually touch the surface it's resting on.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Air"
+          ],
+          "minRank": 2
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-76",
+        "name": "Myrmidon's Void-Wind Core Fragment",
+        "basePrice": 415,
+        "description": "Utterly still at its center, no matter how hard the air moves around it.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "element": [
+            "Air"
+          ],
+          "minRank": 3
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-77",
+        "name": "Planeforged Warpick",
+        "basePrice": 150,
+        "description": "Forged in a working that touched all four elemental planes at once, or so the smith insists. Functions like a Warpick, and it's anyone's guess which plane actually did most of the work.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Weapon"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-78",
+        "name": "Sealed Elemental Specimen Jar",
+        "basePrice": 20,
+        "description": "Whatever's inside hasn't settled once since it was sealed -- the seller swears it's harmless.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Parts"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-79",
+        "name": "Bound Elemental Essence, Uncategorized",
+        "basePrice": 60,
+        "description": "The binder who sold it swore it was elemental. Which element, they wouldn't say.",
+        "category": "MagicParts",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "MagicParts"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-80",
+        "name": "Smear of Unstable Planar Residue",
+        "basePrice": 2,
+        "description": "Faintly warm, faintly cold, faintly damp, and faintly dusty, all at once. Nobody's sure how.",
+        "category": "Junk",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Junk"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-elemental-81",
+        "name": "Unstable Planar Shard",
+        "basePrice": 70,
+        "description": "Flickers between hot, cold, heavy, and weightless depending on the light -- handlers are advised not to overthink it.",
+        "category": "Power",
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Power",
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      }
+    ],
+    "menu": [],
+    "services": [],
+    "createdAt": 1784989027307
   }
 ]

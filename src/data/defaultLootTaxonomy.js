@@ -66,14 +66,13 @@ export const DEFAULT_LOOT_TAXONOMY = {
   monsterTypeCategories: {
     Aberration: [],
     Beast: [],
-    Elemental: [],
     Fey: ['Focus'],
     // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, all
     // sapient-enough or civilized-enough to plausibly carry a
-    // shopkeeper's kind of gear. Celestial, Construct, and Dragon aren't
-    // listed here either -- all three are fully kind-bucketed now (see
-    // sizeLootTable), so this coarse restriction is never even consulted
-    // for them.
+    // shopkeeper's kind of gear. Celestial, Construct, Dragon, and now
+    // Elemental aren't listed here either -- all four are fully
+    // kind-bucketed now (see sizeLootTable), so this coarse restriction
+    // is never even consulted for them.
     Monstrosity: [],
     Ooze: [],
     Plant: [],
@@ -280,9 +279,60 @@ export const DEFAULT_LOOT_TAXONOMY = {
         excludedItemPatterns: {}, guaranteedItems: {},
       },
     ],
+    // Kind-bucketed now (see sizeLootTable.Elemental /
+    // KIND_BUCKET_CONFIG.Elemental in LootTab.jsx). Three fields, same
+    // "each is its own container" overlap rules as every other
+    // kind-bucketed type:
+    // - Element is the broad dimension -- Fire/Water/Earth/Air. An item
+    //   tagged to one element only ever shows for that element; untagged
+    //   items are generic and cross every element.
+    // - Sub-Element is the narrower dimension, and genuinely conditional
+    //   on Element via optionsFor (same mechanism as Dragon's Lineage) --
+    //   Fire's sub-elements (Flame/Magma/Ash/Cinder/Plasma) are things
+    //   that are actually fire-adjacent; something like Steam belongs
+    //   under Water instead (water changing state), not Fire, even
+    //   though a naive "hot vapor" reading might suggest otherwise. An
+    //   item tagged to a specific sub-element only shows there; tagged
+    //   only to the parent Element (no sub-element tag) shows across
+    //   every sub-element of that element; fully untagged crosses
+    //   everything.
+    // - Power Level is the sizeAttr -- drives both amount (via
+    //   sizeLootTable.Elemental's per-kind counts) AND, for the Power
+    //   kind specifically, which items are even eligible (via each
+    //   item's lootTags.minRank against this list's own low-to-high
+    //   order, configured as KIND_BUCKET_CONFIG.Elemental.sizeOrder) --
+    //   same minRank/sizeOrder mechanism Celestial's Rank uses. A Mephit
+    //   still gets a couple of Power-container items (minRank 0), a
+    //   Myrmidon additionally sees everything gated to higher tiers.
     Elemental: [
-      { id: 'elemental-element', name: 'Element', options: ['Fire', 'Water', 'Air', 'Earth'], excludedItemPatterns: {}, guaranteedItems: {} },
-      { id: 'elemental-origin', name: 'Origin', options: ['Elemental Plane', 'Summoned', 'Genie-kin'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        id: 'elemental-element', name: 'Element',
+        options: ['Fire', 'Water', 'Earth', 'Air'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'elemental-subelement', name: 'Sub-Element',
+        showIf: { attr: 'elemental-element', values: ['Fire', 'Water', 'Earth', 'Air'] },
+        optionsFor: {
+          Fire: ['Flame', 'Magma', 'Ash', 'Cinder', 'Plasma'],
+          Water: ['Wave', 'Frost', 'Brine', 'Steam', 'Deep'],
+          Earth: ['Stone', 'Crystal', 'Sand', 'Mud', 'Ore'],
+          Air: ['Gale', 'Storm', 'Cloud', 'Vacuum', 'Static'],
+        },
+        // Fallback only, mirrors Dragon's Lineage pattern -- optionsFor
+        // is what actually renders once an Element is picked.
+        options: [],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'elemental-power', name: 'Power Level',
+        // Low to high -- Mephit is the weakest elemental spirit, a
+        // Myrmidon the strongest, most martial form. See
+        // KIND_BUCKET_CONFIG.Elemental.sizeOrder in LootTab.jsx, which
+        // must match this list exactly.
+        options: ['Mephit', 'Elemental', 'Elder Elemental', 'Myrmidon'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
     ],
     Fey: [
       { id: 'fey-court', name: 'Court', options: ['Seelie/Summer', 'Unseelie/Winter', 'Wild/Unaligned'], excludedItemPatterns: {}, guaranteedItems: {} },
@@ -447,6 +497,22 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Mountain: { Trophy: [1, 2], Parts: [2, 2] },
       Swamp: { Trophy: [1, 1], Parts: [1, 2] },
       Coastal: { Trophy: [1, 1], Parts: [1, 2] },
+    },
+    // Keyed by Power Level, not Size -- same mechanism, different name.
+    // Four buckets carry the entity's own straightforward loot (Weapon/
+    // Parts/MagicParts/Junk, filtered by Element+Sub-Element like any
+    // other dimension pair); Power is a fifth, SUPPLEMENTARY bucket on
+    // top of those, gated by lootTags.minRank against
+    // KIND_BUCKET_CONFIG.Elemental.sizeOrder in LootTab.jsx -- a Mephit
+    // only ever sees minRank 0 Power items (a couple of minor supernatural
+    // odds and ends), a Myrmidon sees those PLUS everything gated to
+    // higher tiers too, same additive-not-exclusive relationship
+    // Celestial's Rank has with its own minRank-tagged items.
+    Elemental: {
+      Mephit: { Weapon: [0, 1], Parts: [1, 2], MagicParts: [0, 1], Junk: [1, 2], Power: [1, 1] },
+      Elemental: { Weapon: [1, 1], Parts: [1, 2], MagicParts: [1, 1], Junk: [1, 2], Power: [1, 2] },
+      'Elder Elemental': { Weapon: [1, 2], Parts: [2, 3], MagicParts: [1, 2], Junk: [1, 2], Power: [1, 2] },
+      Myrmidon: { Weapon: [1, 2], Parts: [2, 3], MagicParts: [2, 2], Junk: [1, 2], Power: [2, 2] },
     },
   },
 

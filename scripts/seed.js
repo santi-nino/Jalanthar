@@ -89,6 +89,7 @@ const PROGRAMMATIC_SOURCE_IDS = new Set([
   'src-empyreal-reliquary',
   'src-animus-salvage-registry',
   'src-dragonslayers-ledger',
+  'src-planebound-ledger',
 ])
 
 async function updateProgrammaticSources(docs) {

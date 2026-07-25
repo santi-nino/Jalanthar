@@ -183,6 +183,23 @@ const KIND_BUCKET_CONFIG = {
       { key: 'purpose', attr: 'construct-purpose' },
     ],
   },
+  // Power Level is the sizeAttr (drives sizeLootTable.Elemental's counts,
+  // including the supplementary Power kind's own count). sizeOrder is
+  // what lets Power-kind items carry a minRank threshold, same mechanism
+  // as Celestial's Rank -- a Mephit (ordinal 0) only sees minRank 0 Power
+  // items, a Myrmidon (ordinal 3) sees those plus everything gated up to
+  // minRank 3. Element and Sub-Element are both dimensions, same overlap
+  // rule as everywhere else -- an item tagged to a specific sub-element
+  // only shows there, tagged only to the parent element shows across all
+  // of that element's sub-elements, untagged crosses everything.
+  Elemental: {
+    sizeAttr: 'elemental-power',
+    sizeOrder: ['Mephit', 'Elemental', 'Elder Elemental', 'Myrmidon'],
+    dimensions: [
+      { key: 'element', attr: 'elemental-element' },
+      { key: 'subelement', attr: 'elemental-subelement' },
+    ],
+  },
 }
 
 // Non-kind keys that can appear alongside the kind buckets in a
@@ -264,6 +281,28 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
 
   const [priceMin, priceMax] = tier.priceRange || [null, null]
 
+  // lootTags.anatomySlot (optional): marks an item as one of a kind on
+  // the actual body -- a creature has exactly one skull, one set of
+  // horns, one beak, etc, even though two DIFFERENT catalog items might
+  // both represent "the skull" (a plain one and a species-specific one
+  // can both be eligible for the same entity via the normal tag-overlap
+  // rules). Without this, a Trophy count of 2 could legitimately draw
+  // BOTH -- correct per kind-count, wrong anatomically. usedSlots is
+  // tracked across the WHOLE entity's draw (every kind bucket shares it),
+  // not per-kind, so a skull claimed by Trophy also blocks a second skull
+  // item from Parts or anywhere else. Items without an anatomySlot tag
+  // are unaffected, same as always. Can be a single string or an array
+  // of strings -- an item that's inherently multiple body parts at once
+  // (e.g. a "Tusked Skull Trophy" that already includes the tusks) can
+  // claim more than one slot, so a separate standalone tusks item never
+  // ALSO gets drawn on top of it.
+  function slotsOf(item) {
+    const raw = item.lootTags?.anatomySlot
+    if (!raw) return []
+    return Array.isArray(raw) ? raw : [raw]
+  }
+
+  const usedSlots = new Set()
   const items = []
   Object.entries(tier).forEach(([kind, range]) => {
     if (SIZE_TABLE_META_KEYS.has(kind)) return
@@ -276,7 +315,15 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
       eligible = eligible.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
     }
     if (eligible.length === 0) return
-    items.push(...shuffled(eligible).slice(0, Math.min(n, eligible.length)))
+    const picked = []
+    for (const candidate of shuffled(eligible)) {
+      if (picked.length >= n) break
+      const slots = slotsOf(candidate)
+      if (slots.some((s) => usedSlots.has(s))) continue
+      picked.push(candidate)
+      slots.forEach((s) => usedSlots.add(s))
+    }
+    items.push(...picked)
   })
 
   let flavorItems = []
@@ -322,6 +369,18 @@ function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeVal
     // (unfiltered by dimension, since we don't know the dimension
     // value yet either) so it has real options to choose from.
     let eligible = rawPool
+    // requiresFeature gating still applies even here -- the tier dropdown
+    // being unset doesn't mean feature checkboxes are unknown, and every
+    // checkbox starts unchecked by convention. Skipping this (as this
+    // branch used to) is exactly how a Specific-Monster-only pick like a
+    // plain snake could still see Horns-gated items in its pool: nothing
+    // ever excluded them, since dimension filtering legitimately can't
+    // run yet (Kingdom/Element/etc aren't known), but feature filtering
+    // always could have.
+    eligible = eligible.filter((i) => {
+      const required = i.lootTags?.requiresFeature
+      return !required || !!(features && features[required])
+    })
     if (excludedPatterns && excludedPatterns.length > 0) {
       eligible = eligible.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
     }
@@ -330,7 +389,7 @@ function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeVal
       tierOptions: sizeTable,
       eligibleItems: eligible.map((i) => ({
         name: i.name, priceGp: i.priceGp, description: i.description,
-        kind: i.lootTags?.kind, tags: i.lootTags,
+        kind: i.lootTags?.kind, tags: i.lootTags, anatomySlot: i.lootTags?.anatomySlot,
       })),
       attributeSummary: 'not yet set by the DM -- infer the right tier and tags from the monster name/notes',
     }
@@ -367,6 +426,7 @@ function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeVal
   }
   const eligibleItems = eligible.map((i) => ({
     name: i.name, priceGp: i.priceGp, description: i.description, kind: i.lootTags.kind,
+    anatomySlot: i.lootTags?.anatomySlot,
   }))
 
   return { countsByKind, eligibleItems, attributeSummary: Object.entries(dimValues).map(([k, v]) => `${k}=${v || '(any)'}`).join(', ') }
