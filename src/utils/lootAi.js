@@ -118,6 +118,78 @@ async function callClaude(prompt) {
 
 export const LOOT_AI_UNCONFIGURED = 'LOOT_AI_UNCONFIGURED'
 
+// --- Horde contents: a DIFFERENT, deliberately looser use of AI than
+// generateAiAssistedLoot above. Regular creature loot is capped at 1-2
+// invented items because the point is respecting a small, precise count
+// limit. A dragon's horde is the opposite problem: it has a big GP
+// TARGET (rolled from taxonomy.hordeGpRanges) that needs padding out
+// with believable content, so invention is expected and encouraged
+// here, not a rare exception. Existing database items are still offered
+// as thematic anchors and can be pulled in directly, but there's no cap
+// on how many new luxury/art/curio items the model invents to reach the
+// target.
+
+function buildHordePrompt({ lineage, setting, notes, targetGp, eligibleItems }) {
+  const poolText = eligibleItems.map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.description}`).join('\n')
+  return `
+You are helping a Dungeon Master assemble the CONTENTS of a dragon's horde, targeting an approximate total gp value.
+
+DRAGON CONTEXT:
+- Lineage: ${lineage || '(unspecified)'}
+- Setting: ${setting || '(unspecified)'}
+- DM's notes: ${notes || '(none)'}
+- Target horde value: approximately ${targetGp} gp (land within roughly 10-20% of this total)
+
+EXISTING DATABASE ITEMS (thematic inspiration -- include some directly where they genuinely fit, but don't force it):
+${poolText || '(none particularly relevant)'}
+
+TASK: Assemble the horde's contents, reasoning about what THIS dragon would realistically have collected given its lineage and setting -- a dragon that loves art hoards differently than one that hoards raw metal or gemstones. Include a mix of:
+1. A single "Coins" line item covering the bulk of the raw currency value.
+2. A handful of gems and/or art objects (invent specific, evocative ones -- "a marble statue of a satyr," "a fistful of uncut sapphires" -- rather than generic placeholders).
+3. A few magic items or curiosities, pulling from the database above where thematically fitting, inventing new ones otherwise.
+Invention is expected and encouraged here -- this is not a "pick from a short list" task, it's "build a believable pile of treasure." The SUM of every item's value should land close to the target.
+
+Return ONLY JSON (no markdown fences, no commentary): { "items": [ { "name": string, "priceGp": number, "description": string } ], "totalGp": number }
+`.trim()
+}
+
+function normalizeHordeResult(raw) {
+  const items = Array.isArray(raw.items)
+    ? raw.items
+        .map((r) => ({
+          name: String(r.name || '').trim(),
+          priceGp: Number(r.priceGp) || 0,
+          description: String(r.description || '').trim(),
+        }))
+        .filter((r) => r.name)
+    : []
+  const totalGp = items.reduce((sum, i) => sum + i.priceGp, 0)
+  return { items, totalGp }
+}
+
+export async function generateAiHordeContents({ lineage, setting, notes, targetGp, eligibleItems }) {
+  const prompt = buildHordePrompt({ lineage, setting, notes, targetGp, eligibleItems })
+
+  let lastError = null
+  try {
+    const result = await callGemini(prompt)
+    if (result) return normalizeHordeResult(result)
+  } catch (err) {
+    console.error('Gemini horde fill failed, trying fallback:', err)
+    lastError = err
+  }
+  try {
+    const result = await callClaude(prompt)
+    if (result) return normalizeHordeResult(result)
+  } catch (err) {
+    console.error('Claude horde fill failed:', err)
+    lastError = err
+  }
+  if (lastError) throw lastError
+  throw new Error(LOOT_AI_UNCONFIGURED)
+}
+
+
 // countsByKind: { [kind]: [min, max] } for this entity's exact tier --
 // the same numbers the deterministic engine would use. eligibleItems:
 // the same pool the deterministic engine would draw from (already

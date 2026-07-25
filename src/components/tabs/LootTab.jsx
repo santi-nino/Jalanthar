@@ -3,7 +3,7 @@ import { useData } from '../../contexts/DataContext'
 import { buildItemPool } from '../../utils/itemPool'
 import { formatPrice } from '../../utils/price'
 import { LOCATION_TYPES, VEHICLE_CATEGORIES } from '../../data/defaultLootTaxonomy'
-import { generateAiAssistedLoot, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
+import { generateAiAssistedLoot, generateAiHordeContents, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
 
 const POOL_OPTIONS = [
   { id: 'wares', label: 'Wares' },
@@ -144,6 +144,29 @@ const KIND_BUCKET_CONFIG = {
     sizeOrder: ['Servant', 'Messenger', 'Guardian', 'Herald', 'Exarch', 'Archon', 'Empyreal'],
     dimensions: [{ key: 'domain', attr: 'celestial-domain' }],
   },
+  // Dragon is the first type where WHICH field drives amount depends on
+  // another field's value: Metallic/Chromatic use Age Category (and get
+  // the full anatomical kind-bucket set); Drake/Draconid use Habitat
+  // instead (a smaller, more mundane set). `resolve` computes the
+  // actual {sizeAttr, sizeOrder, dimensions} to use for THIS entity,
+  // given its current attributeValues -- every consumer below calls
+  // this instead of reading a static config.
+  Dragon: {
+    resolve(attributeValues) {
+      const dragonType = attributeValues['dragon-type']
+      if (dragonType === 'Drake' || dragonType === 'Draconid') {
+        return {
+          sizeAttr: 'dragon-habitat',
+          dimensions: [{ key: 'lineage', attr: 'dragon-lineage' }],
+        }
+      }
+      // Metallic / Chromatic (or unset, defaults to this richer path)
+      return {
+        sizeAttr: 'dragon-age',
+        dimensions: [{ key: 'lineage', attr: 'dragon-lineage' }],
+      }
+    },
+  },
   // Construct only has two fields total, and Purpose does double duty:
   // it's the sizeAttr (drives sizeLootTable.Construct's counts, same as
   // Size/Rank everywhere else) AND it's ALSO listed as a dimension
@@ -199,9 +222,19 @@ const SIZE_TABLE_META_KEYS = new Set(['priceRange', 'goldRange'])
 // bonus draw from whichever items are tagged kind:'Setting' and (if
 // tagged) compatible with this setting specifically -- pure flavor, not
 // counted against the main totals at all.
+// Some types (Dragon) need a DIFFERENT sizeAttr/dimensions depending on
+// another field's current value -- those configs carry a resolve()
+// function instead of static keys. Every consumer of KIND_BUCKET_CONFIG
+// calls this instead of reading the raw entry directly.
+function resolveKindBucketConfig(monsterType, attributeValues) {
+  const raw = KIND_BUCKET_CONFIG[monsterType]
+  if (!raw) return null
+  return raw.resolve ? raw.resolve(attributeValues) : raw
+}
+
 function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeValues, excludedPatterns, features, setting }) {
   const sizeTable = taxonomy.sizeLootTable?.[monsterType]
-  const config = KIND_BUCKET_CONFIG[monsterType]
+  const config = resolveKindBucketConfig(monsterType, attributeValues)
   if (!sizeTable || !config) return { items: [], flavorItems: [], gold: 0 }
 
   const size = attributeValues[config.sizeAttr]
@@ -271,7 +304,7 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
 // generateEncounter).
 function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeValues, excludedPatterns, features }) {
   const sizeTable = taxonomy.sizeLootTable?.[monsterType]
-  const config = KIND_BUCKET_CONFIG[monsterType]
+  const config = resolveKindBucketConfig(monsterType, attributeValues)
   if (!sizeTable || !config) return null
 
   const size = attributeValues[config.sizeAttr]
@@ -865,11 +898,22 @@ function PoolAndCategoryPicker({ pools, onPoolsChange, categories, onCategoriesC
   )
 }
 
+// An attribute can carry an optional `showIf: {attr, values}` -- it only
+// renders once `values[attr]` is one of `values`. This is what lets
+// Dragon show Age Category only for Metallic/Chromatic and Habitat only
+// for Drake/Draconid, without needing four separate near-duplicate
+// monster types.
+function isAttributeVisible(attr, values) {
+  if (!attr.showIf) return true
+  return attr.showIf.values.includes(values[attr.showIf.attr])
+}
+
 function DynamicAttributeFields({ attributes, values, onChange }) {
-  if (!attributes || attributes.length === 0) return null
+  const visible = (attributes || []).filter((attr) => isAttributeVisible(attr, values))
+  if (visible.length === 0) return null
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-      {attributes.map((attr) => (
+      {visible.map((attr) => (
         <label key={attr.id} className="block">
           <span className="text-xs font-display uppercase text-ink-soft">{attr.name}</span>
           <select value={values[attr.id] || ''} onChange={(e) => onChange(attr.id, e.target.value)} className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm">
@@ -937,6 +981,8 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const [categories, setCategories] = useState([])
   const [includeVehicles, setIncludeVehicles] = useState(false)
   const [features, setFeatures] = useState({})
+  const [hasHorde, setHasHorde] = useState(false)
+  const [hordeSize, setHordeSize] = useState('')
 
   const usesWealth = taxonomy.monsterTypeUsesWealth?.[monsterType] === true
   const isKindBucketed = !!taxonomy.sizeLootTable?.[monsterType]
@@ -970,6 +1016,8 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
     setMonsterType(value)
     setAttributeValues({})
     setFeatures({})
+    setHasHorde(false)
+    setHordeSize('')
     const restriction = taxonomy.monsterTypeCategories?.[value]
     if (restriction !== undefined) {
       setCategories((prev) => prev.filter((c) => restriction.includes(c)))
@@ -1024,6 +1072,8 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
       excludedPatterns,
       guaranteedPatterns,
       features,
+      hasHorde: monsterType === 'Dragon' ? hasHorde : false,
+      hordeSize: monsterType === 'Dragon' && hasHorde ? hordeSize : '',
     })
     setNotes('')
   }
@@ -1090,6 +1140,27 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
               </label>
             ))}
           </div>
+        </div>
+      )}
+
+      {monsterType === 'Dragon' && (
+        <div className="border border-leather/30 rounded-sm p-2 bg-white/30">
+          <label className="flex items-center gap-1.5 text-sm font-display uppercase text-ink-soft">
+            <input type="checkbox" checked={hasHorde} onChange={(e) => { setHasHorde(e.target.checked); if (!e.target.checked) setHordeSize('') }} />
+            Has Horde
+          </label>
+          {hasHorde && (
+            <label className="block mt-2">
+              <span className="text-xs font-display uppercase text-ink-soft">Horde Size</span>
+              <select value={hordeSize} onChange={(e) => setHordeSize(e.target.value)} className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm">
+                <option value="">—</option>
+                {Object.keys(taxonomy.hordeGpRanges || {}).map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <span className="text-xs text-ink-soft/50 italic block mt-1">
+                Determines a target gp value for the hoard (Lineage and Setting shape its actual contents when you generate).
+              </span>
+            </label>
+          )}
         </div>
       )}
 
@@ -1190,13 +1261,14 @@ export default function LootTab() {
   async function generateEncounter() {
     setGenerating(true)
     setAiNotice('')
-    const groups = await Promise.all(
+    const groupLists = await Promise.all(
       entities.map(async (e) => {
         const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType]
         const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
         const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
         const tags = [e.monsterName || e.monsterType, ...attrTags, e.setting, e.notes].filter(Boolean)
         const label = tags.join(' · ') || 'Entity'
+        let mainGroup
 
         // Specific Monster or Notes present -> route through the
         // constrained AI-assist path, which is handed the EXACT same
@@ -1221,24 +1293,25 @@ export default function LootTab() {
                 monsterType: e.monsterType,
                 monsterName: e.monsterName ? `${e.monsterName}${srdContext}` : e.monsterName,
                 notes: e.notes,
-                tierLabel: e.attributeValues[KIND_BUCKET_CONFIG[e.monsterType].sizeAttr] || '',
+                tierLabel: e.attributeValues[resolveKindBucketConfig(e.monsterType, e.attributeValues).sizeAttr] || '',
                 countsByKind: poolInfo.countsByKind,
                 eligibleItems: poolInfo.eligibleItems,
                 attributeSummary: poolInfo.attributeSummary,
               })
-              return { label, items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true }
+              mainGroup = { label, items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true }
             } catch (err) {
               if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI loot assist failed, falling back:', err)
-              setAiNotice(
-                err.message === LOOT_AI_UNCONFIGURED
+              setAiNotice((prev) =>
+                prev ||
+                (err.message === LOOT_AI_UNCONFIGURED
                   ? 'AI assist isn\u2019t configured (no API key set) \u2014 used the normal random rules instead.'
-                  : 'AI assist failed \u2014 used the normal random rules instead.'
+                  : 'AI assist failed \u2014 used the normal random rules instead.')
               )
             }
           }
         }
 
-        if (isKindBucketed) {
+        if (!mainGroup && isKindBucketed) {
           const { items: rolled, flavorItems, gold } = generateKindBucketedLoot({
             monsterType: e.monsterType,
             taxonomy: lootTaxonomy,
@@ -1249,38 +1322,85 @@ export default function LootTab() {
             setting: e.setting,
           })
           const flavorTagged = flavorItems.map((i) => ({ ...i, flavor: true }))
-          return { label, items: [...guaranteed, ...rolled, ...flavorTagged], gold }
+          mainGroup = { label, items: [...guaranteed, ...rolled, ...flavorTagged], gold }
         }
 
-        const w = wealthLevel(e.wealthId)
-        const usesWealth = lootTaxonomy.monsterTypeUsesWealth?.[e.monsterType] === true
-        const fixedCount =
-          lootTaxonomy.monsterTypeFixedItemCount?.[e.monsterType] ||
-          lootTaxonomy.monsterTypeFixedItemCount?.default || { minItems: 1, maxItems: 1 }
-        const count = usesWealth
-          ? w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
-          : randomInt(fixedCount.minItems, fixedCount.maxItems)
-        const gold = usesWealth && w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
-        const typeRestriction = lootTaxonomy.monsterTypeCategories?.[e.monsterType]
-        const rolled = drawLoot({
-          pools: e.pools,
-          sources,
-          categories: e.categories,
-          priceMin: usesWealth ? w?.min ?? null : null,
-          priceMax: usesWealth ? w?.max ?? null : null,
-          count,
-          allowDuplicates: false,
-          includeVehicles: e.includeVehicles,
-          excludedPatterns: e.excludedPatterns,
-          monsterType: e.monsterType,
-          typeCategoryRestriction: typeRestriction,
-        })
-        const wealthLabel = usesWealth ? w?.label : null
-        const fullTags = [e.monsterName || e.monsterType, ...attrTags, wealthLabel, e.setting, e.notes].filter(Boolean)
-        return { label: fullTags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold }
+        if (!mainGroup) {
+          const w = wealthLevel(e.wealthId)
+          const usesWealth = lootTaxonomy.monsterTypeUsesWealth?.[e.monsterType] === true
+          const fixedCount =
+            lootTaxonomy.monsterTypeFixedItemCount?.[e.monsterType] ||
+            lootTaxonomy.monsterTypeFixedItemCount?.default || { minItems: 1, maxItems: 1 }
+          const count = usesWealth
+            ? w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
+            : randomInt(fixedCount.minItems, fixedCount.maxItems)
+          const gold = usesWealth && w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
+          const typeRestriction = lootTaxonomy.monsterTypeCategories?.[e.monsterType]
+          const rolled = drawLoot({
+            pools: e.pools,
+            sources,
+            categories: e.categories,
+            priceMin: usesWealth ? w?.min ?? null : null,
+            priceMax: usesWealth ? w?.max ?? null : null,
+            count,
+            allowDuplicates: false,
+            includeVehicles: e.includeVehicles,
+            excludedPatterns: e.excludedPatterns,
+            monsterType: e.monsterType,
+            typeCategoryRestriction: typeRestriction,
+          })
+          const wealthLabel = usesWealth ? w?.label : null
+          const fullTags = [e.monsterName || e.monsterType, ...attrTags, wealthLabel, e.setting, e.notes].filter(Boolean)
+          mainGroup = { label: fullTags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold }
+        }
+
+        const groupsForEntity = [mainGroup]
+
+        // Dragon horde: a SEPARATE result group, not folded into the
+        // creature's own loot. Rolls a target gp from hordeGpRanges,
+        // then hands it to the (deliberately looser) horde-fill AI
+        // along with Lineage/Setting/Notes for flavor and the eligible
+        // item pool as thematic anchors. Falls back to a bare "Coins"
+        // line at the rolled target if AI is unavailable, so a horde
+        // group always has SOME content even without a configured key.
+        if (e.monsterType === 'Dragon' && e.hasHorde && e.hordeSize) {
+          const gpRange = lootTaxonomy.hordeGpRanges?.[e.hordeSize]
+          if (gpRange) {
+            const targetGp = randomInt(gpRange[0], gpRange[1])
+            const poolInfo = computeEligiblePoolForAi({
+              monsterType: 'Dragon', taxonomy: lootTaxonomy, sources,
+              attributeValues: e.attributeValues, excludedPatterns: e.excludedPatterns, features: e.features,
+            })
+            const lineage = e.attributeValues['dragon-lineage']
+            try {
+              const { items: hordeItems, totalGp } = await generateAiHordeContents({
+                lineage, setting: e.setting, notes: e.notes, targetGp,
+                eligibleItems: poolInfo?.eligibleItems || [],
+              })
+              groupsForEntity.push({
+                label: `${label} \u2014 Horde (${e.hordeSize}, target ~${targetGp}gp, actual ${totalGp}gp)`,
+                items: hordeItems, gold: 0, aiAssisted: true, isHorde: true,
+              })
+            } catch (err) {
+              if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI horde fill failed, falling back:', err)
+              setAiNotice((prev) =>
+                (prev ? prev + ' ' : '') +
+                (err.message === LOOT_AI_UNCONFIGURED
+                  ? 'AI assist isn\u2019t configured for horde generation \u2014 showing raw coin value only.'
+                  : 'AI horde fill failed \u2014 showing raw coin value only.')
+              )
+              groupsForEntity.push({
+                label: `${label} \u2014 Horde (${e.hordeSize}, ~${targetGp}gp)`,
+                items: [], gold: targetGp, isHorde: true,
+              })
+            }
+          }
+        }
+
+        return groupsForEntity
       })
     )
-    setResults(groups)
+    setResults(groupLists.flat())
     setCopied(false)
     setGenerating(false)
   }

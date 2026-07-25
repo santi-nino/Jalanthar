@@ -3,4 +3,4 @@
 // the latest code, independent of whether the underlying DATA (buildings,
 // NPCs, sources) has also been reseeded. Code and data are two separate
 // deploy steps; this only speaks to the former.
-export const BUILD_VERSION = 'Version 1.7 — Celestial narrative rank system; AI-assisted loot (Specific Monster / Notes)'
+export const BUILD_VERSION = 'Version 1.8 — Dragon overhaul: Type/Lineage/Age/Habitat, 7-part anatomy x10 colors, Horde+AI'

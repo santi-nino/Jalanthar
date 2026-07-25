@@ -66,15 +66,14 @@ export const DEFAULT_LOOT_TAXONOMY = {
   monsterTypeCategories: {
     Aberration: [],
     Beast: [],
-    Dragon: ['Focus'],
     Elemental: [],
     Fey: ['Focus'],
     // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, all
     // sapient-enough or civilized-enough to plausibly carry a
-    // shopkeeper's kind of gear. Celestial and Construct aren't listed
-    // here either -- both fully kind-bucketed now (see
-    // sizeLootTable.Celestial / sizeLootTable.Construct), so this coarse
-    // restriction is never even consulted for them.
+    // shopkeeper's kind of gear. Celestial, Construct, and Dragon aren't
+    // listed here either -- all three are fully kind-bucketed now (see
+    // sizeLootTable), so this coarse restriction is never even consulted
+    // for them.
     Monstrosity: [],
     Ooze: [],
     Plant: [],
@@ -90,17 +89,16 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // "how rich am I" concept, full stop. Those get their loot from their
   // own tag-scoped pools instead (see monsterTypeFixedItemCount below
   // for Monstrosity's fallback, and sizeLootTable.Construct for
-  // Construct's Purpose-driven count). Celestial isn't here either
-  // anymore -- Rank now carries both amount AND power (via its own
-  // price/gold bands in sizeLootTable.Celestial), so a separate Wealth
-  // field would just be a second, conflicting way to set the same
-  // thing.
+  // Construct's Purpose-driven count). Celestial and Dragon aren't here
+  // either anymore -- both have their own dedicated economic systems now
+  // (Celestial's Rank price/gold bands; Dragon's Horde GP-value system),
+  // so a separate Wealth field would just be a second, conflicting way
+  // to set the same thing.
   monsterTypeUsesWealth: {
     Humanoid: true,
     Fiend: true,
     Giant: true,
     Undead: true,
-    Dragon: true,
   },
 
   // For any type NOT using Wealth, item count still has to come from
@@ -224,8 +222,50 @@ export const DEFAULT_LOOT_TAXONOMY = {
       },
     ],
     Dragon: [
-      { id: 'dragon-age', name: 'Age Category', options: ['Wyrmling', 'Young', 'Adult', 'Ancient'], excludedItemPatterns: {}, guaranteedItems: {} },
-      { id: 'dragon-lineage', name: 'Lineage', options: ['Chromatic', 'Metallic', 'Gem', 'Other'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        id: 'dragon-type', name: 'Type',
+        // Draconid is the deliberate catch-all -- anything that doesn't
+        // fit the other three. This field alone decides which of the
+        // two fields below even shows up (see showIf on each).
+        options: ['Metallic', 'Chromatic', 'Drake', 'Draconid'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'dragon-lineage', name: 'Lineage',
+        showIf: { attr: 'dragon-type', values: ['Metallic', 'Chromatic', 'Drake'] },
+        // One combined list rather than a dynamically-filtered one --
+        // the DM picks whichever matches their Type choice (Chromatic ->
+        // one of the 5 colors, Metallic -> the other 5, Drake -> one of
+        // the elemental/environmental flavors). Item tagging still
+        // enforces the real container regardless of which the DM picks;
+        // this is a UI simplification, not a rules gap.
+        options: [
+          'Black', 'Blue', 'Green', 'Red', 'White',
+          'Brass', 'Bronze', 'Copper', 'Gold', 'Silver',
+          'Fire', 'Frost', 'Storm', 'Swamp', 'Forest',
+        ],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'dragon-age', name: 'Age Category',
+        showIf: { attr: 'dragon-type', values: ['Metallic', 'Chromatic'] },
+        // Only true dragons get this -- it's what drives the full
+        // anatomical kind-bucket set (Wing/Heart/Stomach/Fang/Talon/
+        // Breath Organ/Color-Specific; see sizeLootTable.Dragon).
+        options: ['Wyrmling', 'Young', 'Adult', 'Ancient'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'dragon-habitat', name: 'Habitat',
+        showIf: { attr: 'dragon-type', values: ['Drake', 'Draconid'] },
+        // Drakes and draconids use Habitat instead of Age Category --
+        // it plays the exact same dual role (narrows AND determines
+        // amount) but for a much smaller, more mundane creature.
+        // Domestic = tamed/urban, and runs noticeably smaller than the
+        // others.
+        options: ['Domestic', 'Wild', 'Feral', 'Mountain', 'Swamp', 'Coastal'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
     ],
     Elemental: [
       { id: 'elemental-element', name: 'Element', options: ['Fire', 'Water', 'Air', 'Earth'], excludedItemPatterns: {}, guaranteedItems: {} },
@@ -374,6 +414,27 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Archivist: { Component: [1, 2], Core: [1, 2] },
       Excavator: { Component: [2, 2], Core: [0, 1] },
     },
+    // Two entirely different tier sets coexist in one table because
+    // Dragon's sizeAttr itself is conditional (see KIND_BUCKET_CONFIG.
+    // Dragon.resolve in LootTab.jsx): Metallic/Chromatic look up by Age
+    // Category and get the full anatomical set every true dragon has --
+    // 2 wings, a heart, stomach, fangs, talons, a breath organ, and one
+    // slot specific to their color. Drake/Draconid look up by Habitat
+    // instead and get a much smaller, more mundane Trophy/Parts set,
+    // since they were never meant to have the same anatomy as a true
+    // dragon.
+    Dragon: {
+      Wyrmling: { Wing: [2, 2], Heart: [1, 1], Stomach: [0, 1], Fang: [1, 2], Talon: [1, 2], 'Breath Organ': [0, 1], 'Color-Specific': [1, 1] },
+      Young: { Wing: [2, 2], Heart: [1, 1], Stomach: [1, 1], Fang: [2, 2], Talon: [2, 2], 'Breath Organ': [1, 1], 'Color-Specific': [1, 2] },
+      Adult: { Wing: [2, 2], Heart: [1, 1], Stomach: [1, 2], Fang: [2, 3], Talon: [2, 3], 'Breath Organ': [1, 1], 'Color-Specific': [2, 2] },
+      Ancient: { Wing: [2, 2], Heart: [1, 1], Stomach: [2, 3], Fang: [3, 4], Talon: [3, 4], 'Breath Organ': [1, 2], 'Color-Specific': [2, 3] },
+      Domestic: { Trophy: [0, 1], Parts: [1, 1] },
+      Wild: { Trophy: [1, 1], Parts: [1, 2] },
+      Feral: { Trophy: [1, 2], Parts: [1, 2] },
+      Mountain: { Trophy: [1, 2], Parts: [2, 2] },
+      Swamp: { Trophy: [1, 1], Parts: [1, 2] },
+      Coastal: { Trophy: [1, 1], Parts: [1, 2] },
+    },
   },
 
   // Optional per-entity checkboxes for anatomical/nature features that
@@ -387,6 +448,22 @@ export const DEFAULT_LOOT_TAXONOMY = {
   monsterTypeFeatures: {
     Beast: ['Tusks', 'Horns', 'Wings', 'Venom', 'Shell', 'Beak'],
     Celestial: ['Bestial', 'Wings', 'Sentient'],
+  },
+
+  // Dragon-only: when a DM checks "Has Horde," Horde Size picks one of
+  // these ranges as the horde's TARGET total gp value -- a simplified
+  // 4-tier scale inspired by the real 5e SRD Treasure Hoard tables (CR
+  // 0-4 / 5-10 / 11-16 / 17+), not an exact replica of their percentile
+  // sub-rolls (those require the full Magic Item Tables A-I, which
+  // aren't reproduced here). A random value is rolled within the
+  // chosen range, then handed to the AI horde-fill step along with
+  // Lineage/Setting/Notes as the actual gp budget to assemble contents
+  // toward.
+  hordeGpRanges: {
+    Small: [300, 800],
+    Medium: [3000, 8000],
+    Large: [20000, 40000],
+    Huge: [60000, 150000],
   },
 
   monsterCatalog: SRD_MONSTERS,
