@@ -66,15 +66,15 @@ export const DEFAULT_LOOT_TAXONOMY = {
   monsterTypeCategories: {
     Aberration: [],
     Beast: [],
-    Construct: [],
     Dragon: ['Focus'],
     Elemental: [],
     Fey: ['Focus'],
     // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, all
     // sapient-enough or civilized-enough to plausibly carry a
-    // shopkeeper's kind of gear. Celestial isn't listed here either --
-    // it's fully kind-bucketed now (see sizeLootTable.Celestial), so
-    // this coarse restriction is never even consulted for it.
+    // shopkeeper's kind of gear. Celestial and Construct aren't listed
+    // here either -- both fully kind-bucketed now (see
+    // sizeLootTable.Celestial / sizeLootTable.Construct), so this coarse
+    // restriction is never even consulted for them.
     Monstrosity: [],
     Ooze: [],
     Plant: [],
@@ -87,13 +87,14 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // request that this should be an opt-in list, not opt-out).
   // Wealth is literal economic status, and it genuinely doesn't apply to
   // a wild beast, a monstrosity, or a construct -- none of them have a
-  // "how rich am I" concept, full stop. Those three get their loot from
-  // the tag-scoped Hunter's & Trapper's Price Guide pool instead (see
-  // monsterTypeFixedItemCount below for how their item count works
-  // without a Wealth field at all). Celestial isn't here either anymore
-  // -- Rank now carries both amount AND power (via its own price/gold
-  // bands in sizeLootTable.Celestial), so a separate Wealth field would
-  // just be a second, conflicting way to set the same thing.
+  // "how rich am I" concept, full stop. Those get their loot from their
+  // own tag-scoped pools instead (see monsterTypeFixedItemCount below
+  // for Monstrosity's fallback, and sizeLootTable.Construct for
+  // Construct's Purpose-driven count). Celestial isn't here either
+  // anymore -- Rank now carries both amount AND power (via its own
+  // price/gold bands in sizeLootTable.Celestial), so a separate Wealth
+  // field would just be a second, conflicting way to set the same
+  // thing.
   monsterTypeUsesWealth: {
     Humanoid: true,
     Fiend: true,
@@ -105,11 +106,12 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // For any type NOT using Wealth, item count still has to come from
   // somewhere other than a free-standing input (same "no separate
   // option" rule as everywhere else) -- this is that fallback. Missing
-  // a type here just falls back to the default at the bottom.
+  // a type here just falls back to the default at the bottom. Construct
+  // isn't here anymore -- it's kind-bucketed now, with Purpose driving
+  // its count directly (see sizeLootTable.Construct).
   monsterTypeFixedItemCount: {
     Beast: { minItems: 1, maxItems: 2 },
     Monstrosity: { minItems: 1, maxItems: 2 },
-    Construct: { minItems: 1, maxItems: 2 },
     default: { minItems: 1, maxItems: 1 },
   },
 
@@ -164,13 +166,11 @@ export const DEFAULT_LOOT_TAXONOMY = {
       { id: 'beast-kingdom', name: 'Animal Kingdom', options: ['Mammal', 'Reptile', 'Bird', 'Fish', 'Insect', 'Amphibian'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     Celestial: [
-      // Origin stays a plain cosmetic field (like Setting/Notes) --
-      // labels the entity but doesn't filter anything. Rank and Domain
-      // are the two fields that actually drive generation; see
-      // sizeLootTable.Celestial (Rank -> amount + power, via price/gold
-      // bands and item counts) and each item's lootTags.domain (Domain
-      // -> which items are even eligible).
-      { id: 'celestial-origin', name: 'Origin', options: ['Upper Planes', 'Divine Servant', 'Guardian Spirit'], excludedItemPatterns: {}, guaranteedItems: {} },
+      // Just Rank and Domain -- Origin was removed, it wasn't adding
+      // anything (it never filtered generation, purely cosmetic, and
+      // wasn't wanted). Rank -> amount + power (via sizeLootTable.
+      // Celestial's price/gold bands and item counts); Domain -> which
+      // items are even eligible (see each item's lootTags.domain).
       {
         id: 'celestial-rank', name: 'Rank',
         // Low to high. Rank ONLY controls amount and power (via
@@ -195,12 +195,32 @@ export const DEFAULT_LOOT_TAXONOMY = {
       },
     ],
     Construct: [
-      { id: 'construct-material', name: 'Material', options: ['Stone', 'Metal', 'Wood', 'Clay', 'Flesh (Reanimated)'], excludedItemPatterns: {}, guaranteedItems: {} },
+      // Only these two fields -- nothing else belongs on this page.
+      {
+        id: 'construct-mechanism', name: 'Mechanism',
+        // What actually animates/builds the thing. This is the ONE
+        // field that's strictly exclusive at the item level: a
+        // Mechanical construct's parts should never overlap with a
+        // Magical construct's parts, and so on -- no shared "body part"
+        // pool between mechanisms, only truly generic base loot (coins,
+        // arrows, scrap currency-equivalents) crosses between them.
+        options: ['Magical', 'Arcane-Mechanical', 'Mechanical', 'Bio-Mechanical', 'Biological'],
+        excludedItemPatterns: {},
+        guaranteedItems: {},
+      },
       {
         id: 'construct-purpose', name: 'Purpose',
-        options: ['Guardian', 'Laborer', 'Weapon', 'Servant'],
+        // Purpose does double duty: it narrows WHICH items are
+        // eligible (same tag-matching as every other dimension) AND it
+        // drives HOW MANY (see sizeLootTable.Construct, keyed by these
+        // exact option strings) -- there's no separate Size/Rank field
+        // for Construct at all, Purpose covers both jobs.
+        options: [
+          'Guardian', 'Laborer', 'Sentinel', 'Messenger', 'Siege Engine',
+          'Servant', 'Infiltrator', 'Archivist', 'Excavator',
+        ],
         excludedItemPatterns: {},
-        guaranteedItems: { Guardian: ['Shield'], Laborer: ['Tools'] },
+        guaranteedItems: {},
       },
     ],
     Dragon: [
@@ -251,7 +271,6 @@ export const DEFAULT_LOOT_TAXONOMY = {
           'Mage/Caster': ['Sword'],
         },
         guaranteedItems: {
-          'Mage/Caster': ['Component Pouch'],
           'Guard/Soldier': ['Shield'],
           'Bandit/Criminal': ['Dagger'],
           Noble: ['Signet'],
@@ -332,7 +351,25 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Herald: { priceRange: [30, 80], goldRange: [10, 40], Item: [2, 2], Remains: [1, 2] },
       Exarch: { priceRange: [60, 150], goldRange: [25, 75], Item: [2, 3], Remains: [1, 2] },
       Archon: { priceRange: [120, 300], goldRange: [50, 150], Item: [2, 3], Remains: [2, 3] },
-      Empyreal: { priceRange: [250, 600], goldRange: [100, 400], Item: [3, 4], Remains: [2, 3] },
+      Empyreal: { priceRange: [250, 800], goldRange: [100, 400], Item: [3, 4], Remains: [2, 3] },
+    },
+    // Keyed by Purpose, not Size/Rank -- Construct only has two fields
+    // total, and Purpose does double duty (see monsterTypeAttributes.
+    // Construct): it's both a normal filtering dimension (via each
+    // item's lootTags.purpose) AND the thing driving these counts,
+    // exactly like Size/Rank do everywhere else. No price/gold bands
+    // here -- Construct doesn't use Wealth and Purpose isn't meant to
+    // convey "power" the way Celestial's Rank does, just headcount.
+    Construct: {
+      Guardian: { Component: [1, 2], Core: [1, 1] },
+      Laborer: { Component: [1, 2], Core: [0, 1] },
+      Sentinel: { Component: [1, 2], Core: [1, 1] },
+      Messenger: { Component: [0, 1], Core: [0, 1] },
+      'Siege Engine': { Component: [2, 3], Core: [1, 2] },
+      Servant: { Component: [1, 1], Core: [0, 1] },
+      Infiltrator: { Component: [1, 2], Core: [1, 1] },
+      Archivist: { Component: [1, 2], Core: [1, 2] },
+      Excavator: { Component: [2, 2], Core: [0, 1] },
     },
   },
 

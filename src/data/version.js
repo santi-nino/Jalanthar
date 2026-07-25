@@ -3,4 +3,4 @@
 // the latest code, independent of whether the underlying DATA (buildings,
 // NPCs, sources) has also been reseeded. Code and data are two separate
 // deploy steps; this only speaks to the former.
-export const BUILD_VERSION = 'Version 1.4 — Celestial monster type (Rank/Domain/features), Magical Junk Drawer tagged'
+export const BUILD_VERSION = 'Version 1.6 — Celestial cleanup + dedicated source; Construct overhaul (Mechanism/Purpose)'

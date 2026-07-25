@@ -4536,161 +4536,6 @@ export const mockSources = [
         ]
       },
       {
-        "rowId": "row-trapper-43",
-        "name": "Warped Gearwork",
-        "basePrice": 8,
-        "description": "A tangle of bent brass gears, still worth something to a tinker.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material"
-        ]
-      },
-      {
-        "rowId": "row-trapper-44",
-        "name": "Animated Plating (Scrap)",
-        "basePrice": 25,
-        "description": "A sheet of enchanted armor plating, the magic long faded.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material"
-        ]
-      },
-      {
-        "rowId": "row-trapper-45",
-        "name": "Construct Core Fragment",
-        "basePrice": 60,
-        "description": "A cracked shard of whatever powered the thing. Still faintly warm.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material",
-          "arcane"
-        ]
-      },
-      {
-        "rowId": "row-trapper-46",
-        "name": "Cracked Rune Stone",
-        "basePrice": 45,
-        "description": "Etched with a sigil no one currently living can read.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material",
-          "arcane"
-        ]
-      },
-      {
-        "rowId": "row-trapper-47",
-        "name": "Salvaged Joint Mechanism",
-        "basePrice": 15,
-        "description": "A ball-and-socket joint, oddly well-preserved.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material"
-        ]
-      },
-      {
-        "rowId": "row-trapper-48",
-        "name": "Animated Armor Fragment",
-        "basePrice": 12,
-        "description": "A dented piece of what used to move on its own.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material"
-        ]
-      },
-      {
-        "rowId": "row-trapper-49",
-        "name": "Golem Clay (Sample)",
-        "basePrice": 30,
-        "description": "A lump of enchanted clay, inert now but still faintly warm.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material",
-          "arcane"
-        ]
-      },
-      {
-        "rowId": "row-trapper-50",
-        "name": "Construct Wiring (Arcane)",
-        "basePrice": 20,
-        "description": "Thin filaments of something between wire and sinew.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material",
-          "arcane"
-        ]
-      },
-      {
-        "rowId": "row-trapper-51",
-        "name": "Flying Sword Fragment",
-        "basePrice": 22,
-        "description": "A broken length of blade, still humming faintly if you hold it just right.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material",
-          "arcane"
-        ]
-      },
-      {
-        "rowId": "row-trapper-52",
-        "name": "Stone Golem Chip",
-        "basePrice": 18,
-        "description": "A chipped fragment, heavier than stone this size should be.",
-        "category": "Salvage",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Construct"
-        ],
-        "tags": [
-          "craft-material"
-        ]
-      },
-      {
         "rowId": "row-trapper-53",
         "name": "Black Dragon Horn",
         "basePrice": 170,
@@ -5693,7 +5538,7 @@ export const mockSources = [
         "rowId": "row-beast-15",
         "name": "Sturdy Long Bone",
         "basePrice": 2,
-        "description": "Solid enough to carve into a tool handle, if the buyer's not particular.",
+        "description": "Solid enough to carve into a tool handle, if the buyer's not particular. Left thick, it swings about like a proper Club.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -5711,7 +5556,7 @@ export const mockSources = [
         "rowId": "row-beast-16",
         "name": "Bundle of Small Bones",
         "basePrice": 1,
-        "description": "Rattles pleasantly. Fletchers and charm-makers both want these.",
+        "description": "Rattles pleasantly. Fletchers and charm-makers both want these. Threaded on a cord, they work about like a set of Ball Bearings underfoot.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -5729,7 +5574,7 @@ export const mockSources = [
         "rowId": "row-beast-17",
         "name": "Mammal Long Bone",
         "basePrice": 3,
-        "description": "Dense and heavy for its size, good stock for carving.",
+        "description": "Dense and heavy for its size, good stock for carving. Left thick, it swings about like a proper Club.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -5771,7 +5616,7 @@ export const mockSources = [
         "rowId": "row-beast-19",
         "name": "Hollow Avian Bone",
         "basePrice": 2,
-        "description": "Surprisingly light \u2014 fletchers prize these for delicate work.",
+        "description": "Surprisingly light \u2014 fletchers prize these for delicate work. Hollowed further and notched right, one makes a passable Signal Whistle.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -5921,7 +5766,7 @@ export const mockSources = [
         "rowId": "row-beast-26",
         "name": "Grinding Molar, Worn Flat",
         "basePrice": 2,
-        "description": "Ground down from a lifetime of tough forage \u2014 not much use as a weapon, but a curious keepsake.",
+        "description": "Ground down from a lifetime of tough forage \u2014 not much use as a weapon, but strung together they work about like a set of Ball Bearings underfoot.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -5963,7 +5808,7 @@ export const mockSources = [
         "rowId": "row-beast-28",
         "name": "Curved Predator Claw",
         "basePrice": 5,
-        "description": "Long and wickedly hooked \u2014 could pass for a crude blade.",
+        "description": "Long and wickedly hooked \u2014 could pass for a crude blade. Reforged properly, it swings about like a Handaxe.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -5984,7 +5829,7 @@ export const mockSources = [
         "rowId": "row-beast-29",
         "name": "Digging Claw, Blunt",
         "basePrice": 3,
-        "description": "Worn down from years of digging rather than fighting.",
+        "description": "Worn down from years of digging rather than fighting. Fitted with a haft, it works about like a Shovel.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -6005,7 +5850,7 @@ export const mockSources = [
         "rowId": "row-beast-30",
         "name": "Paired Tusks",
         "basePrice": 18,
-        "description": "Heavy, curved, and worth a great deal to the right ivory carver.",
+        "description": "Heavy, curved, and worth a great deal to the right ivory carver. Reforged, a single tusk swings about like a Handaxe.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -6024,7 +5869,7 @@ export const mockSources = [
         "rowId": "row-beast-31",
         "name": "Set of Horns",
         "basePrice": 12,
-        "description": "Solid at the base, hollow toward the tips.",
+        "description": "Solid at the base, hollow toward the tips. Hollowed further, one makes a passable Signal Whistle.",
         "category": "Parts",
         "monsterTypeTags": [
           "Beast"
@@ -6100,7 +5945,7 @@ export const mockSources = [
         "rowId": "row-beast-35",
         "name": "Coarse Mammal Hide",
         "basePrice": 6,
-        "description": "Thick and warm, good winter lining once properly cured.",
+        "description": "Thick and warm, good winter lining once properly cured. Worked into a coat, it wears about like Hide Armor.",
         "category": "Pelt",
         "monsterTypeTags": [
           "Beast"
@@ -6119,7 +5964,7 @@ export const mockSources = [
         "rowId": "row-beast-36",
         "name": "Supple Reptile Hide",
         "basePrice": 7,
-        "description": "Scaled and surprisingly supple once tanned.",
+        "description": "Scaled and surprisingly supple once tanned. Cut and stitched, it functions like a set of Studded Leather Armor.",
         "category": "Pelt",
         "monsterTypeTags": [
           "Beast"
@@ -6157,7 +6002,7 @@ export const mockSources = [
         "rowId": "row-beast-38",
         "name": "Oiled Fish Skin",
         "basePrice": 3,
-        "description": "Never quite dries out, no matter how long it sits.",
+        "description": "Never quite dries out, no matter how long it sits. Stretched over a pack seam, it holds water out about as well as a proper Waterproof Pack.",
         "category": "Pelt",
         "monsterTypeTags": [
           "Beast"
@@ -6176,7 +6021,7 @@ export const mockSources = [
         "rowId": "row-beast-39",
         "name": "Segmented Exoskeleton Plate",
         "basePrice": 5,
-        "description": "Jointed and surprisingly light for how tough it is.",
+        "description": "Jointed and surprisingly light for how tough it is. A few plates riveted together work about like a rough set of Leather Armor.",
         "category": "Pelt",
         "monsterTypeTags": [
           "Beast"
@@ -6195,7 +6040,7 @@ export const mockSources = [
         "rowId": "row-beast-40",
         "name": "Slick Amphibian Skin",
         "basePrice": 4,
-        "description": "Stays faintly damp no matter the weather.",
+        "description": "Stays faintly damp no matter the weather. Rendered down, the mucus coating works about like a dose of Antitoxin.",
         "category": "Pelt",
         "monsterTypeTags": [
           "Beast"
@@ -6214,7 +6059,7 @@ export const mockSources = [
         "rowId": "row-beast-41",
         "name": "Lean Predator Pelt",
         "basePrice": 9,
-        "description": "Sleek and close-furred, built for stalking rather than warmth.",
+        "description": "Sleek and close-furred, built for stalking rather than warmth. Tanned properly, it moves about as quietly as a fresh set of Leather Armor.",
         "category": "Pelt",
         "monsterTypeTags": [
           "Beast"
@@ -6281,7 +6126,7 @@ export const mockSources = [
         "rowId": "row-beast-44",
         "name": "Rations, Foraged Cache",
         "basePrice": 0.7,
-        "description": "Nuts, roots, and dried greens, gathered and stored before the kill.",
+        "description": "Nuts, roots, and dried greens, gathered and stored before the kill. Packed right, it keeps about as well as a proper Rations (1 day) pack.",
         "category": "Ration",
         "monsterTypeTags": [
           "Beast"
@@ -6563,623 +6408,6 @@ export const mockSources = [
           "kind": "Setting",
           "setting": [
             "Riverside"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-1",
-        "name": "Radiant Feather (Preserved)",
-        "basePrice": 20,
-        "description": "Still glows faintly in true darkness.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Light"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-2",
-        "name": "Halo Fragment",
-        "basePrice": 45,
-        "description": "Warm to the touch, humming with residual light.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Light"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-3",
-        "name": "Vial of Living Light",
-        "basePrice": 55,
-        "description": "This vial can be used like a Potion of Light if uncorked.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Light"
-          ]
-        },
-        "tags": [
-          "alchemical"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-4",
-        "name": "Sprig of Undying Bloom",
-        "basePrice": 25,
-        "description": "Somehow still fresh, weeks after it should have wilted.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Life"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-5",
-        "name": "Vial of Restorative Ichor",
-        "basePrice": 65,
-        "description": "This vial can be used like a Potion of Healing if consumed fresh.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Life"
-          ]
-        },
-        "tags": [
-          "alchemical"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-6",
-        "name": "Warm Heartstone",
-        "basePrice": 50,
-        "description": "Still beats faintly, like an echo.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Life"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-7",
-        "name": "War-Scarred Feather",
-        "basePrice": 22,
-        "description": "Notched as if it once deflected a blade.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "War"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-8",
-        "name": "Battle Standard Fragment",
-        "basePrice": 30,
-        "description": "Torn from something much larger, still faintly stiff with old fervor.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "War"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-9",
-        "name": "Psychopomp's Lantern Shard",
-        "basePrice": 40,
-        "description": "Cold to the touch, no matter how long you hold it.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Death"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-10",
-        "name": "Ashen Wing Membrane",
-        "basePrice": 28,
-        "description": "Crumbles slightly at the edges, no matter how carefully it's handled.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Death"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-11",
-        "name": "Scroll-Bound Feather Quill",
-        "basePrice": 60,
-        "description": "This quill can be used like a Potion of Comprehend Languages the first time it writes in a new tongue.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Knowledge"
-          ]
-        },
-        "tags": [
-          "alchemical"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-12",
-        "name": "Sigil-Etched Bone Fragment",
-        "basePrice": 35,
-        "description": "Covered in tiny sigils in a language no living scholar recognizes.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Knowledge"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-13",
-        "name": "Verdant Down (Preserved)",
-        "basePrice": 18,
-        "description": "Smells faintly of growing things, even pressed flat.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Nature"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-14",
-        "name": "Root-Bound Talon",
-        "basePrice": 24,
-        "description": "Wrapped in living vine that never seems to wilt.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Nature"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-15",
-        "name": "Bleached Celestial Bone",
-        "basePrice": 12,
-        "description": "Lighter than it should be for its size.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-16",
-        "name": "Faint Radiance Dust (vial)",
-        "basePrice": 15,
-        "description": "A pinch, carefully preserved. Glimmers when disturbed.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-17",
-        "name": "Warding Sigil Charm",
-        "basePrice": 20,
-        "description": "A small charm, faintly warm, said to ward off minor curses.",
-        "category": "Item",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Item"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-18",
-        "name": "Celestial Seal (Broken)",
-        "basePrice": 35,
-        "description": "Once bound something significant. Now just a keepsake.",
-        "category": "Item",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Item"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-19",
-        "name": "Bestial Fang (Radiant)",
-        "basePrice": 30,
-        "description": "Glows faintly along a hairline crack.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "requiresFeature": "Bestial"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-20",
-        "name": "Preserved Wing (Feathered)",
-        "basePrice": 40,
-        "description": "The feathers never quite stop moving in ambient air.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "requiresFeature": "Wings"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-21",
-        "name": "Sentient Whisper-Shard",
-        "basePrice": 50,
-        "description": "You can almost hear something speaking, just at the edge of hearing.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "requiresFeature": "Sentient"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-1",
-        "name": "Shard of the Aegis",
-        "basePrice": 350,
-        "description": "A fragment of a celestial's protective ward, still faintly humming.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Light"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-2",
-        "name": "Vial of Concentrated Radiance",
-        "basePrice": 400,
-        "description": "This vial can be used like a Potion of Superior Healing if consumed.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Light"
-          ]
-        },
-        "tags": [
-          "alchemical"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-3",
-        "name": "Heartwood of the World Tree (Splinter)",
-        "basePrice": 300,
-        "description": "Warm and alive despite being cut free.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Nature"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-4",
-        "name": "Everlife Bloom (Preserved)",
-        "basePrice": 380,
-        "description": "This bloom can be used like a Potion of Greater Healing if crushed and consumed fresh.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Life"
-          ]
-        },
-        "tags": [
-          "alchemical"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-5",
-        "name": "Warlord's Signet (Celestial)",
-        "basePrice": 320,
-        "description": "Once commanded armies. Still carries an air of authority.",
-        "category": "Item",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Item",
-          "domain": [
-            "War"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-6",
-        "name": "Death's Ledger Page",
-        "basePrice": 280,
-        "description": "A single page, listing names in a hand that never wavers.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Death"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-7",
-        "name": "Archon's Battle Standard",
-        "basePrice": 450,
-        "description": "Torn from something vast, still humming with old purpose.",
-        "category": "Item",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Item",
-          "domain": [
-            "War"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-8",
-        "name": "Tome of Sealed Knowledge",
-        "basePrice": 350,
-        "description": "Locked shut by magic even its former owner couldn't undo.",
-        "category": "Item",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Item",
-          "domain": [
-            "Knowledge"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-9",
-        "name": "Crown Fragment of the Empyreal Court",
-        "basePrice": 550,
-        "description": "A single jagged piece, but unmistakably regal even broken.",
-        "category": "Item",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Item"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-10",
-        "name": "Wing of Pure Radiance (Preserved)",
-        "basePrice": 420,
-        "description": "Doesn't fade, doesn't wilt, doesn't stop glowing.",
-        "category": "Remains",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Remains",
-          "domain": [
-            "Light"
-          ],
-          "requiresFeature": "Wings"
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-11",
-        "name": "Guardian's Unbroken Shield Fragment",
-        "basePrice": 180,
-        "description": "Dented once, and only once, in a way that clearly ended badly for something else.",
-        "category": "Item",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Item",
-          "domain": [
-            "War"
-          ]
-        },
-        "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-celestial-hi-12",
-        "name": "Chalice of the Undying Vine",
-        "basePrice": 220,
-        "description": "Never runs dry when filled with water. Refuses to explain why.",
-        "category": "Item",
-        "monsterTypeTags": [
-          "Celestial"
-        ],
-        "lootTags": {
-          "kind": "Item",
-          "domain": [
-            "Nature"
           ]
         },
         "tags": [],
@@ -7590,7 +6818,7 @@ export const mockSources = [
         "rowId": "row-trapper-119",
         "name": "Adaptive Gland",
         "basePrice": 24,
-        "description": "The tissue seems to still be deciding what it wants to be.",
+        "description": "The tissue seems to still be deciding what it wants to be. Extracted and worn as a poultice, it works about like a dose of Antitoxin.",
         "category": "Organ",
         "lootTags": {
           "kind": "Organ",
@@ -7735,7 +6963,7 @@ export const mockSources = [
         "rowId": "row-trapper-126",
         "name": "Chitin-Flesh Hybrid Plate",
         "basePrice": 13,
-        "description": "Half shell, half skin, seamed together imperfectly.",
+        "description": "Half shell, half skin, seamed together imperfectly. Worn as-is, it works about like a suit of Leather Armor.",
         "category": "Pelt",
         "lootTags": {
           "kind": "Pelt",
@@ -7777,7 +7005,7 @@ export const mockSources = [
         "rowId": "row-trapper-128",
         "name": "Fused Symbiote Skin",
         "basePrice": 15,
-        "description": "Two distinct textures, grown into one.",
+        "description": "Two distinct textures, grown into one. Stretched and cured, it works about like a set of Padded Armor.",
         "category": "Pelt",
         "lootTags": {
           "kind": "Pelt",
@@ -7798,7 +7026,7 @@ export const mockSources = [
         "rowId": "row-trapper-129",
         "name": "Segmented Exoskeleton Plate",
         "basePrice": 11,
-        "description": "Jointed and surprisingly light for how tough it is.",
+        "description": "Jointed and surprisingly light for how tough it is. A few plates riveted together work about like a rough set of Leather Armor.",
         "category": "Pelt",
         "lootTags": {
           "kind": "Pelt",
@@ -7820,7 +7048,7 @@ export const mockSources = [
         "rowId": "row-trapper-130",
         "name": "Translucent Gel-Skin",
         "basePrice": 9,
-        "description": "Nearly see-through. Doesn't hold its shape once removed.",
+        "description": "Nearly see-through. Doesn't hold its shape once removed, and leaves a faint residue on anything it touches.",
         "category": "Pelt",
         "lootTags": {
           "kind": "Pelt",
@@ -7899,7 +7127,7 @@ export const mockSources = [
         "rowId": "row-trapper-134",
         "name": "Miner's Pickaxe Head (Corroded)",
         "basePrice": 6,
-        "description": "All that's left of somebody's bad day.",
+        "description": "All that's left of somebody's bad day. Still solid enough to function like a Crowbar in a pinch.",
         "category": "Stomach",
         "lootTags": {
           "kind": "Stomach",
@@ -7941,7 +7169,7 @@ export const mockSources = [
         "rowId": "row-trapper-136",
         "name": "Impossible Geometry Fragment",
         "basePrice": 40,
-        "description": "This object should not fit inside anything, and yet.",
+        "description": "This object should not fit inside anything, and yet \u2014 it slides into any Pouch or Sack as if the container were somehow larger inside.",
         "category": "Stomach",
         "lootTags": {
           "kind": "Stomach",
@@ -8079,8 +7307,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item"
+        }
       },
       {
         "priceOverride": "",
@@ -8092,8 +7324,15 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Life"
+          ]
+        }
       },
       {
         "description": "When writing with this quill, the writer can magically change the color of the ink.",
@@ -8228,8 +7467,15 @@ export const mockSources = [
           "magic-item",
           "clothing"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Light"
+          ]
+        }
       },
       {
         "description": "When opened, the locket shows the user a memory deliberately stored in the contraption.",
@@ -8241,8 +7487,15 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Life"
+          ]
+        }
       },
       {
         "description": "This hat or helmet does not disturb your signature haircut, even after many hours in a hot, damp dungeon.",
@@ -8453,5 +7706,1664 @@ export const mockSources = [
     "category": "Magical Trinkets",
     "name": "The Magical Junk Drawer",
     "menu": []
+  },
+  {
+    "id": "src-empyreal-reliquary",
+    "name": "The Empyreal Reliquary",
+    "wares": [
+      {
+        "rowId": "row-celestial-1",
+        "name": "Radiant Feather (Preserved)",
+        "basePrice": 20,
+        "description": "Still glows faintly in true darkness.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-2",
+        "name": "Halo Fragment",
+        "basePrice": 45,
+        "description": "Warm to the touch, humming with residual light.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-3",
+        "name": "Vial of Living Light",
+        "basePrice": 55,
+        "description": "This vial can be used like a Potion of Light if uncorked.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-4",
+        "name": "Sprig of Undying Bloom",
+        "basePrice": 25,
+        "description": "Somehow still fresh, weeks after it should have wilted.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-5",
+        "name": "Vial of Restorative Ichor",
+        "basePrice": 65,
+        "description": "This vial can be used like a Potion of Healing if consumed fresh.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-6",
+        "name": "Warm Heartstone",
+        "basePrice": 50,
+        "description": "Still beats faintly, like an echo.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-7",
+        "name": "War-Scarred Feather",
+        "basePrice": 22,
+        "description": "Notched as if it once deflected a blade. Fletched onto a shaft, it flies about as true as a set of Arrows.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-8",
+        "name": "Battle Standard Fragment",
+        "basePrice": 30,
+        "description": "Torn from something much larger, still faintly stiff with old fervor.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-9",
+        "name": "Psychopomp's Lantern Shard",
+        "basePrice": 40,
+        "description": "Cold to the touch, no matter how long you hold it. Held aloft, it burns about as steady as a Torch, though it gives no warmth.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Death"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-10",
+        "name": "Ashen Wing Membrane",
+        "basePrice": 28,
+        "description": "Crumbles slightly at the edges, no matter how carefully it's handled.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Death"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-11",
+        "name": "Scroll-Bound Feather Quill",
+        "basePrice": 60,
+        "description": "This quill can be used like a Potion of Comprehend Languages the first time it writes in a new tongue.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Knowledge"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-12",
+        "name": "Sigil-Etched Bone Fragment",
+        "basePrice": 35,
+        "description": "Covered in tiny sigils in a language no living scholar recognizes.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Knowledge"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-13",
+        "name": "Verdant Down (Preserved)",
+        "basePrice": 18,
+        "description": "Smells faintly of growing things, even pressed flat.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Nature"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-14",
+        "name": "Root-Bound Talon",
+        "basePrice": 24,
+        "description": "Wrapped in living vine that never seems to wilt. Cut free and dried, the vine cordage holds about as well as 50 feet of Hempen Rope.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Nature"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-15",
+        "name": "Bleached Celestial Bone",
+        "basePrice": 12,
+        "description": "Lighter than it should be for its size. Carved down, it works about like a Quarterstaff, though rather less durable.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-16",
+        "name": "Faint Radiance Dust (vial)",
+        "basePrice": 15,
+        "description": "A pinch, carefully preserved in a stoppered vial. Glimmers faintly when disturbed, fading again within moments.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-17",
+        "name": "Warding Sigil Charm",
+        "basePrice": 20,
+        "description": "A small charm etched with a warding sigil, faintly warm to the touch. No two priests who've examined it agree on which ward it was meant to invoke.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-18",
+        "name": "Celestial Seal (Broken)",
+        "basePrice": 35,
+        "description": "Once bound something significant. Now just a keepsake.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-19",
+        "name": "Bestial Fang (Radiant)",
+        "basePrice": 30,
+        "description": "Glows faintly along a hairline crack.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "requiresFeature": "Bestial"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-20",
+        "name": "Preserved Wing (Feathered)",
+        "basePrice": 40,
+        "description": "The feathers never quite stop moving in ambient air.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "requiresFeature": "Wings"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-21",
+        "name": "Sentient Whisper-Shard",
+        "basePrice": 50,
+        "description": "You can almost hear something speaking, just at the edge of hearing.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "requiresFeature": "Sentient"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-1",
+        "name": "Shard of the Aegis",
+        "basePrice": 350,
+        "description": "A fragment of a celestial's protective ward, still faintly humming.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-2",
+        "name": "Vial of Concentrated Radiance",
+        "basePrice": 400,
+        "description": "This vial can be used like a Potion of Superior Healing if consumed.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-3",
+        "name": "Heartwood of the World Tree (Splinter)",
+        "basePrice": 300,
+        "description": "Warm and alive despite being cut free.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Nature"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-4",
+        "name": "Everlife Bloom (Preserved)",
+        "basePrice": 380,
+        "description": "This bloom can be used like a Potion of Greater Healing if crushed and consumed fresh.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-5",
+        "name": "Warlord's Signet (Celestial)",
+        "basePrice": 320,
+        "description": "Once commanded armies. Still carries an air of authority.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-6",
+        "name": "Death's Ledger Page",
+        "basePrice": 280,
+        "description": "A single page, listing names in a hand that never wavers.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Death"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-7",
+        "name": "Archon's Battle Standard",
+        "basePrice": 450,
+        "description": "Torn from something vast, still humming with old purpose.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-8",
+        "name": "Tome of Sealed Knowledge",
+        "basePrice": 350,
+        "description": "Locked shut by magic even its former owner couldn't undo.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Knowledge"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-9",
+        "name": "Crown Fragment of the Empyreal Court",
+        "basePrice": 550,
+        "description": "A single jagged piece, but unmistakably regal even broken.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-10",
+        "name": "Wing of Pure Radiance (Preserved)",
+        "basePrice": 420,
+        "description": "Doesn't fade, doesn't wilt, doesn't stop glowing.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ],
+          "requiresFeature": "Wings"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-11",
+        "name": "Guardian's Unbroken Shield Fragment",
+        "basePrice": 180,
+        "description": "Dented once, and only once, in a way that clearly ended badly for something else. Still solid enough to function like a proper Shield.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-12",
+        "name": "Chalice of the Undying Vine",
+        "basePrice": 220,
+        "description": "Never runs dry when filled with water. Refuses to explain why.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Nature"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      }
+    ],
+    "menu": [],
+    "services": [],
+    "createdAt": 1753500000000
+  },
+  {
+    "id": "src-animus-salvage-registry",
+    "name": "The Animus Salvage Registry",
+    "wares": [
+      {
+        "rowId": "row-trapper-43",
+        "name": "Warped Gearwork",
+        "basePrice": 8,
+        "description": "A tangle of bent brass gears, still worth something to a tinker.",
+        "category": "Component",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Mechanical"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-44",
+        "name": "Animated Plating (Scrap)",
+        "basePrice": 25,
+        "description": "A sheet of enchanted armor plating, the magic long faded.",
+        "category": "Component",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Magical"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-45",
+        "name": "Construct Core Fragment",
+        "basePrice": 60,
+        "description": "A cracked shard of whatever powered the thing. Still faintly warm.",
+        "category": "Core",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Magical"
+          ],
+          "purpose": [
+            "Guardian"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-46",
+        "name": "Cracked Rune Stone",
+        "basePrice": 45,
+        "description": "Etched with a sigil no one currently living can read.",
+        "category": "Component",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Magical"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-47",
+        "name": "Salvaged Joint Mechanism",
+        "basePrice": 15,
+        "description": "A ball-and-socket joint, oddly well-preserved.",
+        "category": "Component",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Mechanical"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-48",
+        "name": "Animated Armor Fragment",
+        "basePrice": 12,
+        "description": "A dented piece of what used to move on its own.",
+        "category": "Component",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Magical"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-49",
+        "name": "Golem Clay (Sample)",
+        "basePrice": 30,
+        "description": "A lump of enchanted clay, inert now but still faintly warm.",
+        "category": "Core",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Magical"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-50",
+        "name": "Construct Wiring (Arcane)",
+        "basePrice": 20,
+        "description": "Thin filaments of something between wire and sinew.",
+        "category": "Component",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Arcane-Mechanical"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-51",
+        "name": "Flying Sword Fragment",
+        "basePrice": 22,
+        "description": "A broken length of blade, still humming faintly if you hold it just right.",
+        "category": "Core",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Magical"
+          ],
+          "purpose": [
+            "Infiltrator"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-52",
+        "name": "Stone Golem Chip",
+        "basePrice": 18,
+        "description": "A chipped fragment, heavier than stone this size should be.",
+        "category": "Component",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Magical"
+          ]
+        }
+      },
+      {
+        "rowId": "row-construct-1",
+        "name": "Rune-Etched Core Fragment",
+        "basePrice": 55,
+        "description": "A shard of stone, still humming with the command-word that once bound it.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Magical"
+          ],
+          "purpose": [
+            "Guardian"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-2",
+        "name": "Animating Sigil Plate",
+        "basePrice": 15,
+        "description": "A thin metal plate covered in a single, repeating sigil.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Magical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-3",
+        "name": "Bound Elemental Residue (vial)",
+        "basePrice": 60,
+        "description": "Captured essence, faintly warm, from whatever force once drove the construct.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Magical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-4",
+        "name": "Warded Clay Fragment",
+        "basePrice": 10,
+        "description": "Fired clay, still bearing the fingerprints of whoever shaped it \u2014 and the wardmarks of whoever bound it.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Magical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-5",
+        "name": "Golem Heartstone",
+        "basePrice": 70,
+        "description": "The single stone that, by all accounts, should not have been able to think.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Magical"
+          ],
+          "purpose": [
+            "Guardian"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-6",
+        "name": "Enchanted Binding Chain",
+        "basePrice": 20,
+        "description": "Links of dull metal, each etched with a different restraining glyph.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Magical"
+          ],
+          "purpose": [
+            "Sentinel"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-7",
+        "name": "Command Word Tablet",
+        "basePrice": 12,
+        "description": "A stone tablet with a single word carved deep. Speaking it does nothing anymore.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Magical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-8",
+        "name": "Spellbound Dust (vial)",
+        "basePrice": 45,
+        "description": "Fine powder, swept from the construct's core chamber. Still faintly warm.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Magical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-9",
+        "name": "Brass Gearwork Cluster",
+        "basePrice": 8,
+        "description": "A tangle of interlocking gears, still turning slowly on their own.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-10",
+        "name": "Clockwork Spring, Coiled",
+        "basePrice": 6,
+        "description": "Wound tight and dangerous to handle carelessly.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-11",
+        "name": "Piston Assembly, Bent",
+        "basePrice": 10,
+        "description": "Once drove a limb. Now just drives a tinker's curiosity.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-12",
+        "name": "Precision Cog Set",
+        "basePrice": 40,
+        "description": "Matched gears, cut with a precision no local smith could replicate.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Mechanical"
+          ],
+          "purpose": [
+            "Archivist"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-13",
+        "name": "Steam Valve, Corroded",
+        "basePrice": 7,
+        "description": "Rusted shut, but the mechanism inside still turns freely.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-14",
+        "name": "Clockwork Escapement",
+        "basePrice": 50,
+        "description": "The ticking heart of the thing \u2014 remove it, and everything stops.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-15",
+        "name": "Riveted Plating, Scorched",
+        "basePrice": 9,
+        "description": "Dented and blackened, but still holds its shape.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Mechanical"
+          ],
+          "purpose": [
+            "Siege Engine"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-16",
+        "name": "Wind-Key, Oversized",
+        "basePrice": 14,
+        "description": "Far too large for any pocket watch. Clearly made for something else entirely.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-17",
+        "name": "Vat-Grown Tissue Sample",
+        "basePrice": 12,
+        "description": "Grown, not born. The texture is almost right.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Biological"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-18",
+        "name": "Engineered Sinew Cord",
+        "basePrice": 15,
+        "description": "Stronger than it should be for its thickness. Doesn't behave quite like natural muscle.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Biological"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-19",
+        "name": "Artificial Nerve Cluster",
+        "basePrice": 55,
+        "description": "A tangle of fibers that conduct something other than blood.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Biological"
+          ],
+          "purpose": [
+            "Infiltrator"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-20",
+        "name": "Grown-Bone Lattice",
+        "basePrice": 10,
+        "description": "Bone-like in structure, but grown in a mold, not a body.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Biological"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-21",
+        "name": "Homunculus Ichor (vial)",
+        "basePrice": 65,
+        "description": "Thick, faintly luminous fluid. Doesn't behave like normal blood under any test.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Biological"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-22",
+        "name": "Synthetic Membrane Sheet",
+        "basePrice": 11,
+        "description": "Skin-like, but seamless \u2014 no pores, no hair, no history.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Biological"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-23",
+        "name": "Grafted Organ Cluster",
+        "basePrice": 60,
+        "description": "Several small organs, fused together, clearly built rather than grown naturally.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Biological"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-24",
+        "name": "Cultured Growth Medium (jar)",
+        "basePrice": 8,
+        "description": "Whatever this thing was raised in, there's still a little left.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Biological"
+          ],
+          "purpose": [
+            "Servant"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-25",
+        "name": "Rune-Inscribed Gear",
+        "basePrice": 18,
+        "description": "A gear etched with sigils instead of teeth marks \u2014 somehow it still turns.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Arcane-Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-26",
+        "name": "Arcane Capacitor Coil",
+        "basePrice": 65,
+        "description": "Wound copper wire around a crystal core, humming faintly even now.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Arcane-Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-27",
+        "name": "Enchanted Piston Assembly",
+        "basePrice": 22,
+        "description": "Moves smoother than mechanics alone should allow.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Arcane-Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-28",
+        "name": "Spellwrought Clockspring",
+        "basePrice": 70,
+        "description": "A spring that seems to store more tension than metal alone could hold.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Arcane-Mechanical"
+          ],
+          "purpose": [
+            "Siege Engine"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-29",
+        "name": "Glyph-Etched Plating",
+        "basePrice": 20,
+        "description": "Metal plating with a single repeating glyph stamped into every inch.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Arcane-Mechanical"
+          ],
+          "purpose": [
+            "Sentinel"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-30",
+        "name": "Runic Pressure Valve",
+        "basePrice": 16,
+        "description": "Vents something that isn't quite steam when triggered.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Arcane-Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material",
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-31",
+        "name": "Grafted Metal Joint",
+        "basePrice": 20,
+        "description": "Flesh fused seamlessly to metal, healed over as if it always belonged there.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Bio-Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-32",
+        "name": "Cybernetic Nerve Bundle",
+        "basePrice": 75,
+        "description": "Living tissue wound through wire, both somehow still functioning.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Bio-Mechanical"
+          ],
+          "purpose": [
+            "Infiltrator"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-33",
+        "name": "Plated Muscle Fiber",
+        "basePrice": 18,
+        "description": "Muscle tissue reinforced with embedded metal filaments.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Bio-Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-34",
+        "name": "Bio-Mechanical Pump Valve",
+        "basePrice": 70,
+        "description": "Part heart, part machine, entirely unsettling to look at closely.",
+        "category": "Core",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Core",
+          "mechanism": [
+            "Bio-Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-35",
+        "name": "Fused Chassis Fragment",
+        "basePrice": 17,
+        "description": "Bone and metal grown together at the seam \u2014 deliberately, not by accident.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Bio-Mechanical"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-construct-36",
+        "name": "Synthetic Vein Coil",
+        "basePrice": 15,
+        "description": "Tubing that pulses faintly, carrying something that isn't quite blood.",
+        "category": "Component",
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component",
+          "mechanism": [
+            "Bio-Mechanical"
+          ],
+          "purpose": [
+            "Excavator"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      }
+    ],
+    "menu": [],
+    "services": [],
+    "createdAt": 1753600000000
   }
 ]

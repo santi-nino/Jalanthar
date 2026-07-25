@@ -86,6 +86,8 @@ const PROGRAMMATIC_SOURCE_IDS = new Set([
   'src-hunters-trapper-guide-v2',
   'src-xenobiological-ledger',
   'sGUAccXFQOl3hwTl7OYP',
+  'src-empyreal-reliquary',
+  'src-animus-salvage-registry',
 ])
 
 async function updateProgrammaticSources(docs) {

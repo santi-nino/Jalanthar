@@ -138,6 +138,22 @@ const KIND_BUCKET_CONFIG = {
     sizeAttr: 'celestial-rank',
     dimensions: [{ key: 'domain', attr: 'celestial-domain' }],
   },
+  // Construct only has two fields total, and Purpose does double duty:
+  // it's the sizeAttr (drives sizeLootTable.Construct's counts, same as
+  // Size/Rank everywhere else) AND it's ALSO listed as a dimension
+  // (drives eligibility via each item's lootTags.purpose), since the
+  // request was for Purpose to both narrow AND determine amount at
+  // once. Mechanism is the other dimension -- and because every
+  // Construct "parts" item is tagged to exactly one mechanism with no
+  // untagged overlap between them, this is what actually enforces "no
+  // shared body parts between a Magical construct and a Mechanical one."
+  Construct: {
+    sizeAttr: 'construct-purpose',
+    dimensions: [
+      { key: 'mechanism', attr: 'construct-mechanism' },
+      { key: 'purpose', attr: 'construct-purpose' },
+    ],
+  },
 }
 
 // Non-kind keys that can appear alongside the kind buckets in a
