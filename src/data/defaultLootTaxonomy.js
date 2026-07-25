@@ -337,21 +337,24 @@ export const DEFAULT_LOOT_TAXONOMY = {
     },
     // Celestial's tiers are keyed by Rank, not Size -- same mechanism,
     // different name for the same "which attribute drives amount"
-    // concept. Rank ALSO carries priceRange and goldRange (a new
-    // capability, only meaningful for a type where rank should
-    // determine POWER as well as quantity) -- eligible items within
-    // each kind get further filtered to that tier's price band, and
-    // gold is rolled from its own range the same way Wealth levels
-    // already do it elsewhere. Domain (not Rank) is what decides WHICH
-    // items are even in the running -- see each item's lootTags.domain.
+    // concept. No price or gold bands anymore -- this is deliberately
+    // narrative, not economic: a higher rank means more of, and
+    // access to better, Armor/Weapon/Treasure/Religious, not "a bigger
+    // gp budget." Power comes from each item's own lootTags.minRank
+    // (an ordinal threshold against Rank's own low-to-high order,
+    // configured in LootTab.jsx's KIND_BUCKET_CONFIG.Celestial.sizeOrder)
+    // -- a Servant only ever sees minRank 0 items ("a common blessed
+    // shortsword"), an Empyreal sees those AND everything gated to
+    // higher tiers too. Domain still decides WHICH flavor of item is
+    // even in the running -- see each item's lootTags.domain.
     Celestial: {
-      Servant: { priceRange: [1, 15], goldRange: [0, 5], Item: [1, 1], Remains: [0, 1] },
-      Messenger: { priceRange: [5, 30], goldRange: [2, 10], Item: [1, 2], Remains: [0, 1] },
-      Guardian: { priceRange: [15, 50], goldRange: [5, 20], Item: [1, 2], Remains: [1, 1] },
-      Herald: { priceRange: [30, 80], goldRange: [10, 40], Item: [2, 2], Remains: [1, 2] },
-      Exarch: { priceRange: [60, 150], goldRange: [25, 75], Item: [2, 3], Remains: [1, 2] },
-      Archon: { priceRange: [120, 300], goldRange: [50, 150], Item: [2, 3], Remains: [2, 3] },
-      Empyreal: { priceRange: [250, 800], goldRange: [100, 400], Item: [3, 4], Remains: [2, 3] },
+      Servant: { Armor: [0, 1], Weapon: [0, 1], Treasure: [0, 1], Religious: [1, 1] },
+      Messenger: { Armor: [0, 1], Weapon: [0, 1], Treasure: [1, 1], Religious: [1, 1] },
+      Guardian: { Armor: [1, 1], Weapon: [1, 1], Treasure: [1, 2], Religious: [1, 1] },
+      Herald: { Armor: [1, 2], Weapon: [1, 1], Treasure: [1, 2], Religious: [1, 2] },
+      Exarch: { Armor: [1, 2], Weapon: [1, 2], Treasure: [2, 2], Religious: [1, 2] },
+      Archon: { Armor: [2, 2], Weapon: [1, 2], Treasure: [2, 3], Religious: [2, 2] },
+      Empyreal: { Armor: [2, 3], Weapon: [2, 2], Treasure: [3, 4], Religious: [2, 3] },
     },
     // Keyed by Purpose, not Size/Rank -- Construct only has two fields
     // total, and Purpose does double duty (see monsterTypeAttributes.

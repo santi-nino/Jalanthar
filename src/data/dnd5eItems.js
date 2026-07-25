@@ -76,17 +76,17 @@ export const DND5E_ITEMS = [
   // ============ ARMOR ============
   make('wares', 'Armor', 'Padded Armor', 5, 'Quilted cloth reinforced with layers of fabric.', {tags: ["armor-light"]}),
   make('wares', 'Armor', 'Leather Armor', 10, 'Boiled and shaped hide, light enough to move freely in.', {tags: ["armor-light"]}),
-  make('wares', 'Armor', 'Studded Leather Armor', 45, 'Leather reinforced with rivets and small plates.', {tags: ["armor-light"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item"}}),
+  make('wares', 'Armor', 'Studded Leather Armor', 45, 'Leather reinforced with rivets and small plates.', {tags: ["armor-light"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Armor", minRank: 0}}),
   make('wares', 'Armor', 'Hide Armor', 10, 'Roughly cured furs and pelts, common among frontier trackers.', {tags: ["armor-medium"]}),
   make('wares', 'Armor', 'Chain Shirt', 50, 'Interlocking rings worn under a tunic.', {tags: ["armor-medium"]}),
   make('wares', 'Armor', 'Scale Mail', 50, 'Overlapping metal scales sewn to a leather backing.', {tags: ["armor-medium"]}),
-  make('wares', 'Armor', 'Breastplate', 400, 'A fitted metal chestplate, worn with softer armor beneath.', {tags: ["armor-medium"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item"}}),
-  make('wares', 'Armor', 'Half Plate Armor', 750, "Shaped plates covering most of the body, missing only the limbs' full coverage.", {tags: ["armor-medium"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item"}}),
+  make('wares', 'Armor', 'Breastplate', 400, 'A fitted metal chestplate, worn with softer armor beneath.', {tags: ["armor-medium"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Armor", minRank: 4}}),
+  make('wares', 'Armor', 'Half Plate Armor', 750, "Shaped plates covering most of the body, missing only the limbs' full coverage.", {tags: ["armor-medium"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Armor", minRank: 6}}),
   make('wares', 'Armor', 'Ring Mail', 30, 'Leather studded with metal rings for extra protection.', {tags: ["armor-heavy"]}),
-  make('wares', 'Armor', 'Chain Mail', 75, 'A full coat of interlocking rings, heavy but reliable.', {tags: ["armor-heavy"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item"}}),
-  make('wares', 'Armor', 'Splint Armor', 200, 'Vertical metal strips riveted to a leather backing.', {tags: ["armor-heavy"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item"}}),
+  make('wares', 'Armor', 'Chain Mail', 75, 'A full coat of interlocking rings, heavy but reliable.', {tags: ["armor-heavy"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Armor", minRank: 1}}),
+  make('wares', 'Armor', 'Splint Armor', 200, 'Vertical metal strips riveted to a leather backing.', {tags: ["armor-heavy"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Armor", minRank: 3}}),
   make('wares', 'Armor', 'Plate Armor', 1500, 'A full suit of fitted plate, the finest protection money buys.', {tags: ["armor-heavy"]}),
-  make('wares', 'Armor', 'Shield', 10, 'A wooden or metal shield strapped to the forearm.', {tags: ["shield"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item", domain: ["War"]}}),
+  make('wares', 'Armor', 'Shield', 10, 'A wooden or metal shield strapped to the forearm.', {tags: ["shield"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Armor", minRank: 0, domain: ["War"]}}),
 
   // ============ ADVENTURING GEAR ============
   make('wares', 'Gear', 'Acid (vial)', 25, 'Sealed and corrosive; handle it carefully.', {tags: ["consumable", "alchemical"]}),
@@ -184,9 +184,9 @@ export const DND5E_ITEMS = [
   make('wares', 'Focus', 'Druidic Focus, Sprig of Mistletoe', 1, 'Simple and traditional.', {tags: ["caster"]}),
   make('wares', 'Focus', 'Druidic Focus, Wooden Staff', 5, 'Carved and treated to channel primal magic.', {tags: ["caster"]}),
   make('wares', 'Focus', 'Druidic Focus, Yew Wand', 10, 'A wand cut from yew, favored by some druids.', {tags: ["caster"]}),
-  make('wares', 'Focus', 'Holy Symbol, Amulet', 5, 'Worn or held, bejeweled to channel divine magic.', {tags: ["caster"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item"}}),
-  make('wares', 'Focus', 'Holy Symbol, Emblem', 5, 'Stitched or painted onto fabric or a shield.', {tags: ["caster"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item"}}),
-  make('wares', 'Focus', 'Holy Symbol, Reliquary', 5, 'A small housed relic, held while casting.', {tags: ["caster"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Item"}}),
+  make('wares', 'Focus', 'Holy Symbol, Amulet', 5, 'Worn or held, bejeweled to channel divine magic.', {tags: ["caster"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Religious", minRank: 0}}),
+  make('wares', 'Focus', 'Holy Symbol, Emblem', 5, 'Stitched or painted onto fabric or a shield.', {tags: ["caster"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Religious", minRank: 0}}),
+  make('wares', 'Focus', 'Holy Symbol, Reliquary', 5, 'A small housed relic, held while casting.', {tags: ["caster"], monsterTypeTags: ["Celestial"], lootTags: {kind: "Religious", minRank: 0}}),
 
   // ============ TOOLS ============
   make('wares', 'Tool', "Alchemist's Supplies", 50, 'Vials, burners, and reagents for basic alchemy.', {tags: ["artisan-tool", "craft"]}),

@@ -3,6 +3,7 @@ import { useData } from '../../contexts/DataContext'
 import { buildItemPool } from '../../utils/itemPool'
 import { formatPrice } from '../../utils/price'
 import { LOCATION_TYPES, VEHICLE_CATEGORIES } from '../../data/defaultLootTaxonomy'
+import { generateAiAssistedLoot, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
 
 const POOL_OPTIONS = [
   { id: 'wares', label: 'Wares' },
@@ -136,6 +137,11 @@ const KIND_BUCKET_CONFIG = {
   },
   Celestial: {
     sizeAttr: 'celestial-rank',
+    // Low-to-high order, matching the Rank attribute's own options --
+    // this is what lets an item's lootTags.minRank (an index into this
+    // list) gate it to "this rank or higher" rather than needing an
+    // exact-match tag the way Domain works.
+    sizeOrder: ['Servant', 'Messenger', 'Guardian', 'Herald', 'Exarch', 'Archon', 'Empyreal'],
     dimensions: [{ key: 'domain', attr: 'celestial-domain' }],
   },
   // Construct only has two fields total, and Purpose does double duty:
@@ -215,6 +221,11 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
     }
     const required = item.lootTags?.requiresFeature
     if (required && !(features && features[required])) return false
+    const minRank = item.lootTags?.minRank
+    if (minRank != null && config.sizeOrder) {
+      const entityOrdinal = config.sizeOrder.indexOf(size)
+      if (entityOrdinal < minRank) return false
+    }
     return true
   }
 
@@ -249,6 +260,59 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
   const gold = tier.goldRange ? randomInt(tier.goldRange[0], tier.goldRange[1]) : 0
 
   return { items, flavorItems, gold }
+}
+
+// Computes the SAME eligible pool and count limits generateKindBucketedLoot
+// would use, without actually rolling -- this is what gets handed to the
+// AI as context, so it's selecting from (and bounded by) the exact same
+// rules a normal deterministic roll would be, not inventing its own.
+// Works for kind-bucketed types only; non-kind-bucketed types fall back
+// to their normal generation and never reach the AI path (see
+// generateEncounter).
+function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeValues, excludedPatterns, features }) {
+  const sizeTable = taxonomy.sizeLootTable?.[monsterType]
+  const config = KIND_BUCKET_CONFIG[monsterType]
+  if (!sizeTable || !config) return null
+
+  const size = attributeValues[config.sizeAttr]
+  const tier = sizeTable[size]
+  if (!tier) return null
+
+  const dimValues = {}
+  config.dimensions.forEach((d) => {
+    dimValues[d.key] = attributeValues[d.attr]
+  })
+
+  function isCompatible(item) {
+    for (const d of config.dimensions) {
+      const tagVals = item.lootTags?.[d.key]
+      if (tagVals && !tagVals.includes(dimValues[d.key])) return false
+    }
+    const required = item.lootTags?.requiresFeature
+    if (required && !(features && features[required])) return false
+    const minRank = item.lootTags?.minRank
+    if (minRank != null && config.sizeOrder) {
+      const entityOrdinal = config.sizeOrder.indexOf(size)
+      if (entityOrdinal < minRank) return false
+    }
+    return true
+  }
+
+  const countsByKind = {}
+  Object.entries(tier).forEach(([kind, range]) => {
+    if (!SIZE_TABLE_META_KEYS.has(kind)) countsByKind[kind] = range
+  })
+
+  const rawPool = buildItemPool('wares', sources).filter((i) => i.monsterTypeTags?.includes(monsterType))
+  let eligible = rawPool.filter((i) => Object.hasOwn(countsByKind, i.lootTags?.kind) && isCompatible(i))
+  if (excludedPatterns && excludedPatterns.length > 0) {
+    eligible = eligible.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
+  }
+  const eligibleItems = eligible.map((i) => ({
+    name: i.name, priceGp: i.priceGp, description: i.description, kind: i.lootTags.kind,
+  }))
+
+  return { countsByKind, eligibleItems, attributeSummary: Object.entries(dimValues).map(([k, v]) => `${k}=${v || '(any)'}`).join(', ') }
 }
 
 // The other half of "make good guesses": baseline items that appear
@@ -828,7 +892,12 @@ function ResultsPanel({ groups, onCopy, copied }) {
       </div>
       {groups.map((g, gi) => (
         <div key={gi}>
-          {g.label && <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark/80 border-b border-leather/30 pb-1 mb-1.5">{g.label}</h4>}
+          {g.label && (
+            <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark/80 border-b border-leather/30 pb-1 mb-1.5">
+              {g.label}
+              {g.aiAssisted && <span className="ml-2 text-xs normal-case italic text-moss-dark">(AI-assisted)</span>}
+            </h4>
+          )}
           {g.gold != null && <p className="text-sm font-display text-leather-dark mb-1">{g.gold} gp in coin</p>}
           {g.items.length === 0 ? (
             <p className="text-xs text-ink-soft italic">Nothing — widen the filters.</p>
@@ -1088,6 +1157,8 @@ export default function LootTab() {
 
   const [results, setResults] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [aiNotice, setAiNotice] = useState('')
 
   const currentLocationType = LOCATION_TYPES.find((t) => t.id === locationType)
   const locTypeAttributes = useMemo(() => lootTaxonomy.locationTypeAttributes?.[locationType] || [], [lootTaxonomy.locationTypeAttributes, locationType])
@@ -1116,56 +1187,102 @@ export default function LootTab() {
     return lootTaxonomy.wealthLevels.find((x) => x.id === wealthId)
   }
 
-  function generateEncounter() {
-    const groups = entities.map((e) => {
-      const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType]
-      const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
-      const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
-
-      if (isKindBucketed) {
-        const { items: rolled, flavorItems, gold } = generateKindBucketedLoot({
-          monsterType: e.monsterType,
-          taxonomy: lootTaxonomy,
-          sources,
-          attributeValues: e.attributeValues,
-          excludedPatterns: e.excludedPatterns,
-          features: e.features,
-          setting: e.setting,
-        })
-        const flavorTagged = flavorItems.map((i) => ({ ...i, flavor: true }))
+  async function generateEncounter() {
+    setGenerating(true)
+    setAiNotice('')
+    const groups = await Promise.all(
+      entities.map(async (e) => {
+        const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType]
+        const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
+        const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
         const tags = [e.monsterName || e.monsterType, ...attrTags, e.setting, e.notes].filter(Boolean)
-        return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled, ...flavorTagged], gold }
-      }
+        const label = tags.join(' · ') || 'Entity'
 
-      const w = wealthLevel(e.wealthId)
-      const usesWealth = lootTaxonomy.monsterTypeUsesWealth?.[e.monsterType] === true
-      const fixedCount =
-        lootTaxonomy.monsterTypeFixedItemCount?.[e.monsterType] ||
-        lootTaxonomy.monsterTypeFixedItemCount?.default || { minItems: 1, maxItems: 1 }
-      const count = usesWealth
-        ? w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
-        : randomInt(fixedCount.minItems, fixedCount.maxItems)
-      const gold = usesWealth && w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
-      const typeRestriction = lootTaxonomy.monsterTypeCategories?.[e.monsterType]
-      const rolled = drawLoot({
-        pools: e.pools,
-        sources,
-        categories: e.categories,
-        priceMin: usesWealth ? w?.min ?? null : null,
-        priceMax: usesWealth ? w?.max ?? null : null,
-        count,
-        allowDuplicates: false,
-        includeVehicles: e.includeVehicles,
-        excludedPatterns: e.excludedPatterns,
-        monsterType: e.monsterType,
-        typeCategoryRestriction: typeRestriction,
+        // Specific Monster or Notes present -> route through the
+        // constrained AI-assist path, which is handed the EXACT same
+        // eligible pool and count limits the deterministic engine would
+        // use, and is told to select from it (inventing at most 1-2
+        // items only when genuinely justified). Falls back to the
+        // normal deterministic path on any failure, so a missing API
+        // key or a network hiccup never blocks generation entirely.
+        const wantsAi = isKindBucketed && ((e.monsterName && e.monsterName.trim()) || (e.notes && e.notes.trim()))
+        if (wantsAi) {
+          const poolInfo = computeEligiblePoolForAi({
+            monsterType: e.monsterType, taxonomy: lootTaxonomy, sources,
+            attributeValues: e.attributeValues, excludedPatterns: e.excludedPatterns, features: e.features,
+          })
+          if (poolInfo) {
+            const catalogMatch = (lootTaxonomy.monsterCatalog || []).find(
+              (m) => m.name.toLowerCase() === (e.monsterName || '').toLowerCase()
+            )
+            const srdContext = catalogMatch ? ` (SRD data: ${catalogMatch.size} ${catalogMatch.type}${catalogMatch.subtype ? ` (${catalogMatch.subtype})` : ''}, ${catalogMatch.alignment})` : ''
+            try {
+              const aiItems = await generateAiAssistedLoot({
+                monsterType: e.monsterType,
+                monsterName: e.monsterName ? `${e.monsterName}${srdContext}` : e.monsterName,
+                notes: e.notes,
+                tierLabel: e.attributeValues[KIND_BUCKET_CONFIG[e.monsterType].sizeAttr] || '',
+                countsByKind: poolInfo.countsByKind,
+                eligibleItems: poolInfo.eligibleItems,
+                attributeSummary: poolInfo.attributeSummary,
+              })
+              return { label, items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true }
+            } catch (err) {
+              if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI loot assist failed, falling back:', err)
+              setAiNotice(
+                err.message === LOOT_AI_UNCONFIGURED
+                  ? 'AI assist isn\u2019t configured (no API key set) \u2014 used the normal random rules instead.'
+                  : 'AI assist failed \u2014 used the normal random rules instead.'
+              )
+            }
+          }
+        }
+
+        if (isKindBucketed) {
+          const { items: rolled, flavorItems, gold } = generateKindBucketedLoot({
+            monsterType: e.monsterType,
+            taxonomy: lootTaxonomy,
+            sources,
+            attributeValues: e.attributeValues,
+            excludedPatterns: e.excludedPatterns,
+            features: e.features,
+            setting: e.setting,
+          })
+          const flavorTagged = flavorItems.map((i) => ({ ...i, flavor: true }))
+          return { label, items: [...guaranteed, ...rolled, ...flavorTagged], gold }
+        }
+
+        const w = wealthLevel(e.wealthId)
+        const usesWealth = lootTaxonomy.monsterTypeUsesWealth?.[e.monsterType] === true
+        const fixedCount =
+          lootTaxonomy.monsterTypeFixedItemCount?.[e.monsterType] ||
+          lootTaxonomy.monsterTypeFixedItemCount?.default || { minItems: 1, maxItems: 1 }
+        const count = usesWealth
+          ? w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
+          : randomInt(fixedCount.minItems, fixedCount.maxItems)
+        const gold = usesWealth && w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
+        const typeRestriction = lootTaxonomy.monsterTypeCategories?.[e.monsterType]
+        const rolled = drawLoot({
+          pools: e.pools,
+          sources,
+          categories: e.categories,
+          priceMin: usesWealth ? w?.min ?? null : null,
+          priceMax: usesWealth ? w?.max ?? null : null,
+          count,
+          allowDuplicates: false,
+          includeVehicles: e.includeVehicles,
+          excludedPatterns: e.excludedPatterns,
+          monsterType: e.monsterType,
+          typeCategoryRestriction: typeRestriction,
+        })
+        const wealthLabel = usesWealth ? w?.label : null
+        const fullTags = [e.monsterName || e.monsterType, ...attrTags, wealthLabel, e.setting, e.notes].filter(Boolean)
+        return { label: fullTags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold }
       })
-      const wealthLabel = usesWealth ? w?.label : null
-      const tags = [e.monsterName || e.monsterType, ...attrTags, wealthLabel, e.setting, e.notes].filter(Boolean)
-      return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold }
-    })
+    )
     setResults(groups)
     setCopied(false)
+    setGenerating(false)
   }
 
   function generateLocation() {
@@ -1257,9 +1374,10 @@ export default function LootTab() {
               </div>
             )}
 
-            <button type="button" onClick={generateEncounter} disabled={entities.length === 0} className="w-full py-2.5 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40">
-              {results ? 'Reroll' : 'Generate Loot'}
+            <button type="button" onClick={generateEncounter} disabled={entities.length === 0 || generating} className="w-full py-2.5 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40">
+              {generating ? 'Generating\u2026' : results ? 'Reroll' : 'Generate Loot'}
             </button>
+            {aiNotice && <p className="text-xs text-ink-soft/60 italic">{aiNotice}</p>}
           </div>
         )}
 

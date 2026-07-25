@@ -7271,10 +7271,11 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Religious",
           "domain": [
             "Light"
-          ]
+          ],
+          "minRank": 0
         }
       },
       {
@@ -7291,10 +7292,11 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Religious",
           "domain": [
             "Light"
-          ]
+          ],
+          "minRank": 1
         }
       },
       {
@@ -7311,7 +7313,8 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item"
+          "kind": "Treasure",
+          "minRank": 0
         }
       },
       {
@@ -7328,10 +7331,11 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Religious",
           "domain": [
             "Life"
-          ]
+          ],
+          "minRank": 0
         }
       },
       {
@@ -7471,10 +7475,11 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Treasure",
           "domain": [
             "Light"
-          ]
+          ],
+          "minRank": 2
         }
       },
       {
@@ -7491,10 +7496,11 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Treasure",
           "domain": [
             "Life"
-          ]
+          ],
+          "minRank": 0
         }
       },
       {
@@ -7552,10 +7558,11 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Religious",
           "domain": [
             "Knowledge"
-          ]
+          ],
+          "minRank": 2
         }
       },
       {
@@ -7612,10 +7619,11 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Treasure",
           "domain": [
             "Nature"
-          ]
+          ],
+          "minRank": 0
         }
       },
       {
@@ -7716,15 +7724,16 @@ export const mockSources = [
         "name": "Radiant Feather (Preserved)",
         "basePrice": 20,
         "description": "Still glows faintly in true darkness.",
-        "category": "Remains",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Religious",
           "domain": [
             "Light"
-          ]
+          ],
+          "minRank": 0
         },
         "tags": [],
         "priceOverride": "",
@@ -7735,15 +7744,16 @@ export const mockSources = [
         "name": "Halo Fragment",
         "basePrice": 45,
         "description": "Warm to the touch, humming with residual light.",
-        "category": "Remains",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Religious",
           "domain": [
             "Light"
-          ]
+          ],
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -7754,15 +7764,16 @@ export const mockSources = [
         "name": "Vial of Living Light",
         "basePrice": 55,
         "description": "This vial can be used like a Potion of Light if uncorked.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Light"
-          ]
+          ],
+          "minRank": 1
         },
         "tags": [
           "alchemical"
@@ -7775,15 +7786,16 @@ export const mockSources = [
         "name": "Sprig of Undying Bloom",
         "basePrice": 25,
         "description": "Somehow still fresh, weeks after it should have wilted.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Life"
-          ]
+          ],
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -7794,15 +7806,16 @@ export const mockSources = [
         "name": "Vial of Restorative Ichor",
         "basePrice": 65,
         "description": "This vial can be used like a Potion of Healing if consumed fresh.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Life"
-          ]
+          ],
+          "minRank": 2
         },
         "tags": [
           "alchemical"
@@ -7815,15 +7828,16 @@ export const mockSources = [
         "name": "Warm Heartstone",
         "basePrice": 50,
         "description": "Still beats faintly, like an echo.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Life"
-          ]
+          ],
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -7834,15 +7848,16 @@ export const mockSources = [
         "name": "War-Scarred Feather",
         "basePrice": 22,
         "description": "Notched as if it once deflected a blade. Fletched onto a shaft, it flies about as true as a set of Arrows.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "War"
-          ]
+          ],
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -7853,15 +7868,16 @@ export const mockSources = [
         "name": "Battle Standard Fragment",
         "basePrice": 30,
         "description": "Torn from something much larger, still faintly stiff with old fervor.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "War"
-          ]
+          ],
+          "minRank": 2
         },
         "tags": [],
         "priceOverride": "",
@@ -7872,15 +7888,16 @@ export const mockSources = [
         "name": "Psychopomp's Lantern Shard",
         "basePrice": 40,
         "description": "Cold to the touch, no matter how long you hold it. Held aloft, it burns about as steady as a Torch, though it gives no warmth.",
-        "category": "Remains",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Religious",
           "domain": [
             "Death"
-          ]
+          ],
+          "minRank": 2
         },
         "tags": [],
         "priceOverride": "",
@@ -7891,15 +7908,16 @@ export const mockSources = [
         "name": "Ashen Wing Membrane",
         "basePrice": 28,
         "description": "Crumbles slightly at the edges, no matter how carefully it's handled.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Death"
-          ]
+          ],
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -7910,15 +7928,16 @@ export const mockSources = [
         "name": "Scroll-Bound Feather Quill",
         "basePrice": 60,
         "description": "This quill can be used like a Potion of Comprehend Languages the first time it writes in a new tongue.",
-        "category": "Remains",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Religious",
           "domain": [
             "Knowledge"
-          ]
+          ],
+          "minRank": 1
         },
         "tags": [
           "alchemical"
@@ -7931,15 +7950,16 @@ export const mockSources = [
         "name": "Sigil-Etched Bone Fragment",
         "basePrice": 35,
         "description": "Covered in tiny sigils in a language no living scholar recognizes.",
-        "category": "Remains",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Religious",
           "domain": [
             "Knowledge"
-          ]
+          ],
+          "minRank": 0
         },
         "tags": [],
         "priceOverride": "",
@@ -7950,15 +7970,16 @@ export const mockSources = [
         "name": "Verdant Down (Preserved)",
         "basePrice": 18,
         "description": "Smells faintly of growing things, even pressed flat.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Nature"
-          ]
+          ],
+          "minRank": 0
         },
         "tags": [],
         "priceOverride": "",
@@ -7969,15 +7990,16 @@ export const mockSources = [
         "name": "Root-Bound Talon",
         "basePrice": 24,
         "description": "Wrapped in living vine that never seems to wilt. Cut free and dried, the vine cordage holds about as well as 50 feet of Hempen Rope.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Nature"
-          ]
+          ],
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -7988,12 +8010,13 @@ export const mockSources = [
         "name": "Bleached Celestial Bone",
         "basePrice": 12,
         "description": "Lighter than it should be for its size. Carved down, it works about like a Quarterstaff, though rather less durable.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains"
+          "kind": "Treasure",
+          "minRank": 0
         },
         "tags": [],
         "priceOverride": "",
@@ -8004,12 +8027,13 @@ export const mockSources = [
         "name": "Faint Radiance Dust (vial)",
         "basePrice": 15,
         "description": "A pinch, carefully preserved in a stoppered vial. Glimmers faintly when disturbed, fading again within moments.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains"
+          "kind": "Treasure",
+          "minRank": 0
         },
         "tags": [],
         "priceOverride": "",
@@ -8020,12 +8044,13 @@ export const mockSources = [
         "name": "Warding Sigil Charm",
         "basePrice": 20,
         "description": "A small charm etched with a warding sigil, faintly warm to the touch. No two priests who've examined it agree on which ward it was meant to invoke.",
-        "category": "Item",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item"
+          "kind": "Religious",
+          "minRank": 0
         },
         "tags": [],
         "priceOverride": "",
@@ -8036,12 +8061,13 @@ export const mockSources = [
         "name": "Celestial Seal (Broken)",
         "basePrice": 35,
         "description": "Once bound something significant. Now just a keepsake.",
-        "category": "Item",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item"
+          "kind": "Treasure",
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -8052,13 +8078,14 @@ export const mockSources = [
         "name": "Bestial Fang (Radiant)",
         "basePrice": 30,
         "description": "Glows faintly along a hairline crack.",
-        "category": "Remains",
+        "category": "Weapon",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
-          "requiresFeature": "Bestial"
+          "kind": "Weapon",
+          "requiresFeature": "Bestial",
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -8069,13 +8096,14 @@ export const mockSources = [
         "name": "Preserved Wing (Feathered)",
         "basePrice": 40,
         "description": "The feathers never quite stop moving in ambient air.",
-        "category": "Remains",
+        "category": "Armor",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
-          "requiresFeature": "Wings"
+          "kind": "Armor",
+          "requiresFeature": "Wings",
+          "minRank": 1
         },
         "tags": [],
         "priceOverride": "",
@@ -8086,13 +8114,14 @@ export const mockSources = [
         "name": "Sentient Whisper-Shard",
         "basePrice": 50,
         "description": "You can almost hear something speaking, just at the edge of hearing.",
-        "category": "Remains",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
-          "requiresFeature": "Sentient"
+          "kind": "Religious",
+          "requiresFeature": "Sentient",
+          "minRank": 2
         },
         "tags": [],
         "priceOverride": "",
@@ -8103,15 +8132,16 @@ export const mockSources = [
         "name": "Shard of the Aegis",
         "basePrice": 350,
         "description": "A fragment of a celestial's protective ward, still faintly humming.",
-        "category": "Remains",
+        "category": "Armor",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Armor",
           "domain": [
             "Light"
-          ]
+          ],
+          "minRank": 5
         },
         "tags": [],
         "priceOverride": "",
@@ -8122,15 +8152,16 @@ export const mockSources = [
         "name": "Vial of Concentrated Radiance",
         "basePrice": 400,
         "description": "This vial can be used like a Potion of Superior Healing if consumed.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Light"
-          ]
+          ],
+          "minRank": 5
         },
         "tags": [
           "alchemical"
@@ -8143,15 +8174,16 @@ export const mockSources = [
         "name": "Heartwood of the World Tree (Splinter)",
         "basePrice": 300,
         "description": "Warm and alive despite being cut free.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Nature"
-          ]
+          ],
+          "minRank": 5
         },
         "tags": [],
         "priceOverride": "",
@@ -8162,15 +8194,16 @@ export const mockSources = [
         "name": "Everlife Bloom (Preserved)",
         "basePrice": 380,
         "description": "This bloom can be used like a Potion of Greater Healing if crushed and consumed fresh.",
-        "category": "Remains",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Treasure",
           "domain": [
             "Life"
-          ]
+          ],
+          "minRank": 5
         },
         "tags": [
           "alchemical"
@@ -8183,15 +8216,16 @@ export const mockSources = [
         "name": "Warlord's Signet (Celestial)",
         "basePrice": 320,
         "description": "Once commanded armies. Still carries an air of authority.",
-        "category": "Item",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Treasure",
           "domain": [
             "War"
-          ]
+          ],
+          "minRank": 4
         },
         "tags": [],
         "priceOverride": "",
@@ -8202,15 +8236,16 @@ export const mockSources = [
         "name": "Death's Ledger Page",
         "basePrice": 280,
         "description": "A single page, listing names in a hand that never wavers.",
-        "category": "Remains",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Religious",
           "domain": [
             "Death"
-          ]
+          ],
+          "minRank": 4
         },
         "tags": [],
         "priceOverride": "",
@@ -8221,15 +8256,16 @@ export const mockSources = [
         "name": "Archon's Battle Standard",
         "basePrice": 450,
         "description": "Torn from something vast, still humming with old purpose.",
-        "category": "Item",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Treasure",
           "domain": [
             "War"
-          ]
+          ],
+          "minRank": 5
         },
         "tags": [],
         "priceOverride": "",
@@ -8240,15 +8276,16 @@ export const mockSources = [
         "name": "Tome of Sealed Knowledge",
         "basePrice": 350,
         "description": "Locked shut by magic even its former owner couldn't undo.",
-        "category": "Item",
+        "category": "Religious",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Religious",
           "domain": [
             "Knowledge"
-          ]
+          ],
+          "minRank": 4
         },
         "tags": [],
         "priceOverride": "",
@@ -8259,12 +8296,13 @@ export const mockSources = [
         "name": "Crown Fragment of the Empyreal Court",
         "basePrice": 550,
         "description": "A single jagged piece, but unmistakably regal even broken.",
-        "category": "Item",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item"
+          "kind": "Treasure",
+          "minRank": 6
         },
         "tags": [],
         "priceOverride": "",
@@ -8275,16 +8313,17 @@ export const mockSources = [
         "name": "Wing of Pure Radiance (Preserved)",
         "basePrice": 420,
         "description": "Doesn't fade, doesn't wilt, doesn't stop glowing.",
-        "category": "Remains",
+        "category": "Armor",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Remains",
+          "kind": "Armor",
           "domain": [
             "Light"
           ],
-          "requiresFeature": "Wings"
+          "requiresFeature": "Wings",
+          "minRank": 5
         },
         "tags": [],
         "priceOverride": "",
@@ -8295,15 +8334,16 @@ export const mockSources = [
         "name": "Guardian's Unbroken Shield Fragment",
         "basePrice": 180,
         "description": "Dented once, and only once, in a way that clearly ended badly for something else. Still solid enough to function like a proper Shield.",
-        "category": "Item",
+        "category": "Armor",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Armor",
           "domain": [
             "War"
-          ]
+          ],
+          "minRank": 3
         },
         "tags": [],
         "priceOverride": "",
@@ -8314,17 +8354,210 @@ export const mockSources = [
         "name": "Chalice of the Undying Vine",
         "basePrice": 220,
         "description": "Never runs dry when filled with water. Refuses to explain why.",
-        "category": "Item",
+        "category": "Treasure",
         "monsterTypeTags": [
           "Celestial"
         ],
         "lootTags": {
-          "kind": "Item",
+          "kind": "Treasure",
+          "domain": [
+            "Nature"
+          ],
+          "minRank": 4
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-1",
+        "name": "Common Blessed Shortsword",
+        "basePrice": 8,
+        "description": "Unremarkable but for a faint, persistent warmth in the blade.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 0
+        },
+        "tags": [
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-2",
+        "name": "Life-Warded Dagger",
+        "basePrice": 12,
+        "description": "The edge never seems to dull, no matter how it's used.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 1,
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-3",
+        "name": "Verdant-Grown Spear",
+        "basePrice": 15,
+        "description": "The haft is still faintly alive, and doesn't dry out no matter the season.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 2,
           "domain": [
             "Nature"
           ]
         },
-        "tags": [],
+        "tags": [
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-4",
+        "name": "Radiant-Edged Blade",
+        "basePrice": 25,
+        "description": "A short blade, its edge permanently warm to the touch.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 2,
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-5",
+        "name": "Sigil-Wrought Mace",
+        "basePrice": 30,
+        "description": "Etched head, plain haft \u2014 the sigils do the talking.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 2,
+          "domain": [
+            "Knowledge"
+          ]
+        },
+        "tags": [
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-6",
+        "name": "War-Blessed Warhammer",
+        "basePrice": 60,
+        "description": "Weighted for a mortal hand, blessed for something considerably more.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 3,
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-7",
+        "name": "Death's Reaping Scythe (Ceremonial)",
+        "basePrice": 70,
+        "description": "Too ornate for real harvest work. Entirely too practical for anything else.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 3,
+          "domain": [
+            "Death"
+          ]
+        },
+        "tags": [
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-8",
+        "name": "Archon's Twinblade",
+        "basePrice": 150,
+        "description": "A matched pair, meant to be wielded together or not at all.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 5,
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [
+          "arcane"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-weapon-9",
+        "name": "Empyreal War-Blade",
+        "basePrice": 400,
+        "description": "Forged for a hand far larger than any mortal's, and somehow still balanced.",
+        "category": "Weapon",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Weapon",
+          "minRank": 6
+        },
+        "tags": [
+          "arcane"
+        ],
         "priceOverride": "",
         "quantity": 1
       }
