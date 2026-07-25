@@ -6678,8 +6678,13 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "minRank": 1
+        }
       },
       {
         "priceOverride": "",
@@ -6735,8 +6740,12 @@ export const mockSources = [
           "martial",
           "melee"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "lootTags": {
+          "kind": "Weapon"
+        }
       },
       {
         "priceOverride": "",
@@ -6845,8 +6854,12 @@ export const mockSources = [
           "magic-item",
           "utility"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component"
+        }
       },
       {
         "name": "Helm's Scale of Truth",
@@ -6879,8 +6892,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Construct"
+        ],
+        "lootTags": {
+          "kind": "Component"
+        }
       },
       {
         "priceOverride": "",
@@ -6906,8 +6923,15 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "lootTags": {
+          "kind": "Junk",
+          "element": [
+            "Water"
+          ]
+        }
       },
       {
         "name": "Woven Lure",
@@ -6953,8 +6977,16 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Religious",
+          "domain": [
+            "Death"
+          ],
+          "minRank": 1
+        }
       },
       {
         "quantity": 1,
@@ -6996,8 +7028,12 @@ export const mockSources = [
           "simple",
           "melee"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Elemental"
+        ],
+        "lootTags": {
+          "kind": "Weapon"
+        }
       },
       {
         "description": "Uncorking vial makes user smell indistinguishable from a homeless person.",
