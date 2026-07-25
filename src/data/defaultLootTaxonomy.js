@@ -66,14 +66,15 @@ export const DEFAULT_LOOT_TAXONOMY = {
   monsterTypeCategories: {
     Aberration: [],
     Beast: [],
-    Celestial: ['Focus'],
     Construct: [],
     Dragon: ['Focus'],
     Elemental: [],
     Fey: ['Focus'],
     // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, all
     // sapient-enough or civilized-enough to plausibly carry a
-    // shopkeeper's kind of gear.
+    // shopkeeper's kind of gear. Celestial isn't listed here either --
+    // it's fully kind-bucketed now (see sizeLootTable.Celestial), so
+    // this coarse restriction is never even consulted for it.
     Monstrosity: [],
     Ooze: [],
     Plant: [],
@@ -89,12 +90,14 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // "how rich am I" concept, full stop. Those three get their loot from
   // the tag-scoped Hunter's & Trapper's Price Guide pool instead (see
   // monsterTypeFixedItemCount below for how their item count works
-  // without a Wealth field at all).
+  // without a Wealth field at all). Celestial isn't here either anymore
+  // -- Rank now carries both amount AND power (via its own price/gold
+  // bands in sizeLootTable.Celestial), so a separate Wealth field would
+  // just be a second, conflicting way to set the same thing.
   monsterTypeUsesWealth: {
     Humanoid: true,
     Fiend: true,
     Giant: true,
-    Celestial: true,
     Undead: true,
     Dragon: true,
   },
@@ -161,12 +164,34 @@ export const DEFAULT_LOOT_TAXONOMY = {
       { id: 'beast-kingdom', name: 'Animal Kingdom', options: ['Mammal', 'Reptile', 'Bird', 'Fish', 'Insect', 'Amphibian'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     Celestial: [
+      // Origin stays a plain cosmetic field (like Setting/Notes) --
+      // labels the entity but doesn't filter anything. Rank and Domain
+      // are the two fields that actually drive generation; see
+      // sizeLootTable.Celestial (Rank -> amount + power, via price/gold
+      // bands and item counts) and each item's lootTags.domain (Domain
+      // -> which items are even eligible).
       { id: 'celestial-origin', name: 'Origin', options: ['Upper Planes', 'Divine Servant', 'Guardian Spirit'], excludedItemPatterns: {}, guaranteedItems: {} },
       {
         id: 'celestial-rank', name: 'Rank',
-        options: ['Messenger', 'Guardian', 'Named/Unique'],
+        // Low to high. Rank ONLY controls amount and power (via
+        // sizeLootTable.Celestial's price/gold ranges and item counts
+        // per tier) -- it never determines WHAT kind of item shows up,
+        // that's Domain's job entirely.
+        options: ['Servant', 'Messenger', 'Guardian', 'Herald', 'Exarch', 'Archon', 'Empyreal'],
         excludedItemPatterns: {},
-        guaranteedItems: { Guardian: ['Shield'] },
+        guaranteedItems: {},
+      },
+      {
+        id: 'celestial-domain', name: 'Domain',
+        // Each domain is its own container, same overlap rules as every
+        // other kind-bucketed type: an item tagged to one domain only
+        // shows up there; an untagged item is available regardless of
+        // domain. A Servant-rank Life-domain celestial draws from the
+        // intersection of "cheap enough for Servant rank" and "tagged
+        // Life (or untagged)".
+        options: ['Light', 'Life', 'War', 'Death', 'Knowledge', 'Nature'],
+        excludedItemPatterns: {},
+        guaranteedItems: {},
       },
     ],
     Construct: [
@@ -291,18 +316,37 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Large: { Trophy: [2, 2], Parts: [2, 3], Pelt: [1, 2], Ration: [1, 2] },
       Huge: { Trophy: [2, 3], Parts: [3, 4], Pelt: [2, 2], Ration: [1, 2] },
     },
+    // Celestial's tiers are keyed by Rank, not Size -- same mechanism,
+    // different name for the same "which attribute drives amount"
+    // concept. Rank ALSO carries priceRange and goldRange (a new
+    // capability, only meaningful for a type where rank should
+    // determine POWER as well as quantity) -- eligible items within
+    // each kind get further filtered to that tier's price band, and
+    // gold is rolled from its own range the same way Wealth levels
+    // already do it elsewhere. Domain (not Rank) is what decides WHICH
+    // items are even in the running -- see each item's lootTags.domain.
+    Celestial: {
+      Servant: { priceRange: [1, 15], goldRange: [0, 5], Item: [1, 1], Remains: [0, 1] },
+      Messenger: { priceRange: [5, 30], goldRange: [2, 10], Item: [1, 2], Remains: [0, 1] },
+      Guardian: { priceRange: [15, 50], goldRange: [5, 20], Item: [1, 2], Remains: [1, 1] },
+      Herald: { priceRange: [30, 80], goldRange: [10, 40], Item: [2, 2], Remains: [1, 2] },
+      Exarch: { priceRange: [60, 150], goldRange: [25, 75], Item: [2, 3], Remains: [1, 2] },
+      Archon: { priceRange: [120, 300], goldRange: [50, 150], Item: [2, 3], Remains: [2, 3] },
+      Empyreal: { priceRange: [250, 600], goldRange: [100, 400], Item: [3, 4], Remains: [2, 3] },
+    },
   },
 
-  // Optional per-entity checkboxes for anatomical features that don't
-  // apply to every creature of a type even within the same Kingdom/Diet
-  // container -- not every mammal has tusks, not every reptile has a
-  // shell. Items can require one of these (see the seeded Beast items'
+  // Optional per-entity checkboxes for anatomical/nature features that
+  // don't apply to every creature of a type even within the same
+  // container -- not every mammal has tusks, not every celestial is
+  // bestial. Items can require one of these (see the seeded items'
   // lootTags.requiresFeature); unchecked = those items are excluded for
   // this entity, no matter what else matches. Every checkbox starts
   // unchecked, since assuming a feature is present by default risks
-  // handing out tusks to something that shouldn't have any.
+  // handing out tusks (or wings) to something that shouldn't have any.
   monsterTypeFeatures: {
     Beast: ['Tusks', 'Horns', 'Wings', 'Venom', 'Shell', 'Beak'],
+    Celestial: ['Bestial', 'Wings', 'Sentient'],
   },
 
   monsterCatalog: SRD_MONSTERS,

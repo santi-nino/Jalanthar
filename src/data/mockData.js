@@ -6568,6 +6568,623 @@ export const mockSources = [
         "tags": [],
         "priceOverride": "",
         "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-1",
+        "name": "Radiant Feather (Preserved)",
+        "basePrice": 20,
+        "description": "Still glows faintly in true darkness.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-2",
+        "name": "Halo Fragment",
+        "basePrice": 45,
+        "description": "Warm to the touch, humming with residual light.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-3",
+        "name": "Vial of Living Light",
+        "basePrice": 55,
+        "description": "This vial can be used like a Potion of Light if uncorked.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-4",
+        "name": "Sprig of Undying Bloom",
+        "basePrice": 25,
+        "description": "Somehow still fresh, weeks after it should have wilted.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-5",
+        "name": "Vial of Restorative Ichor",
+        "basePrice": 65,
+        "description": "This vial can be used like a Potion of Healing if consumed fresh.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-6",
+        "name": "Warm Heartstone",
+        "basePrice": 50,
+        "description": "Still beats faintly, like an echo.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-7",
+        "name": "War-Scarred Feather",
+        "basePrice": 22,
+        "description": "Notched as if it once deflected a blade.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-8",
+        "name": "Battle Standard Fragment",
+        "basePrice": 30,
+        "description": "Torn from something much larger, still faintly stiff with old fervor.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-9",
+        "name": "Psychopomp's Lantern Shard",
+        "basePrice": 40,
+        "description": "Cold to the touch, no matter how long you hold it.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Death"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-10",
+        "name": "Ashen Wing Membrane",
+        "basePrice": 28,
+        "description": "Crumbles slightly at the edges, no matter how carefully it's handled.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Death"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-11",
+        "name": "Scroll-Bound Feather Quill",
+        "basePrice": 60,
+        "description": "This quill can be used like a Potion of Comprehend Languages the first time it writes in a new tongue.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Knowledge"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-12",
+        "name": "Sigil-Etched Bone Fragment",
+        "basePrice": 35,
+        "description": "Covered in tiny sigils in a language no living scholar recognizes.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Knowledge"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-13",
+        "name": "Verdant Down (Preserved)",
+        "basePrice": 18,
+        "description": "Smells faintly of growing things, even pressed flat.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Nature"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-14",
+        "name": "Root-Bound Talon",
+        "basePrice": 24,
+        "description": "Wrapped in living vine that never seems to wilt.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Nature"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-15",
+        "name": "Bleached Celestial Bone",
+        "basePrice": 12,
+        "description": "Lighter than it should be for its size.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-16",
+        "name": "Faint Radiance Dust (vial)",
+        "basePrice": 15,
+        "description": "A pinch, carefully preserved. Glimmers when disturbed.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-17",
+        "name": "Warding Sigil Charm",
+        "basePrice": 20,
+        "description": "A small charm, faintly warm, said to ward off minor curses.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-18",
+        "name": "Celestial Seal (Broken)",
+        "basePrice": 35,
+        "description": "Once bound something significant. Now just a keepsake.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-19",
+        "name": "Bestial Fang (Radiant)",
+        "basePrice": 30,
+        "description": "Glows faintly along a hairline crack.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "requiresFeature": "Bestial"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-20",
+        "name": "Preserved Wing (Feathered)",
+        "basePrice": 40,
+        "description": "The feathers never quite stop moving in ambient air.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "requiresFeature": "Wings"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-21",
+        "name": "Sentient Whisper-Shard",
+        "basePrice": 50,
+        "description": "You can almost hear something speaking, just at the edge of hearing.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "requiresFeature": "Sentient"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-1",
+        "name": "Shard of the Aegis",
+        "basePrice": 350,
+        "description": "A fragment of a celestial's protective ward, still faintly humming.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-2",
+        "name": "Vial of Concentrated Radiance",
+        "basePrice": 400,
+        "description": "This vial can be used like a Potion of Superior Healing if consumed.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-3",
+        "name": "Heartwood of the World Tree (Splinter)",
+        "basePrice": 300,
+        "description": "Warm and alive despite being cut free.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Nature"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-4",
+        "name": "Everlife Bloom (Preserved)",
+        "basePrice": 380,
+        "description": "This bloom can be used like a Potion of Greater Healing if crushed and consumed fresh.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Life"
+          ]
+        },
+        "tags": [
+          "alchemical"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-5",
+        "name": "Warlord's Signet (Celestial)",
+        "basePrice": 320,
+        "description": "Once commanded armies. Still carries an air of authority.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-6",
+        "name": "Death's Ledger Page",
+        "basePrice": 280,
+        "description": "A single page, listing names in a hand that never wavers.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Death"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-7",
+        "name": "Archon's Battle Standard",
+        "basePrice": 450,
+        "description": "Torn from something vast, still humming with old purpose.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-8",
+        "name": "Tome of Sealed Knowledge",
+        "basePrice": 350,
+        "description": "Locked shut by magic even its former owner couldn't undo.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Knowledge"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-9",
+        "name": "Crown Fragment of the Empyreal Court",
+        "basePrice": 550,
+        "description": "A single jagged piece, but unmistakably regal even broken.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-10",
+        "name": "Wing of Pure Radiance (Preserved)",
+        "basePrice": 420,
+        "description": "Doesn't fade, doesn't wilt, doesn't stop glowing.",
+        "category": "Remains",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Remains",
+          "domain": [
+            "Light"
+          ],
+          "requiresFeature": "Wings"
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-11",
+        "name": "Guardian's Unbroken Shield Fragment",
+        "basePrice": 180,
+        "description": "Dented once, and only once, in a way that clearly ended badly for something else.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "War"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-celestial-hi-12",
+        "name": "Chalice of the Undying Vine",
+        "basePrice": 220,
+        "description": "Never runs dry when filled with water. Refuses to explain why.",
+        "category": "Item",
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Nature"
+          ]
+        },
+        "tags": [],
+        "priceOverride": "",
+        "quantity": 1
       }
     ],
     "menu": [],
@@ -7408,5 +8025,433 @@ export const mockSources = [
     "menu": [],
     "services": [],
     "createdAt": 1753400000000
+  },
+  {
+    "id": "sGUAccXFQOl3hwTl7OYP",
+    "wares": [
+      {
+        "description": "A small vial on a thin leather rope worn as an amulet. Emits dim light up to 5 feet.",
+        "basePrice": 15,
+        "rowId": "row-1783553745889-i5up1",
+        "quantity": 1,
+        "name": "The Light of Pelor",
+        "priceOverride": "",
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Light"
+          ]
+        }
+      },
+      {
+        "priceOverride": "",
+        "name": "Compass of Pelor",
+        "quantity": 1,
+        "rowId": "row-1783553745889-55yux",
+        "description": "This compass, shaped liked a sun, will magically point to the nearest temple of Pelor or any of his allies if it is within 10 miles. ",
+        "basePrice": 40,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Light"
+          ]
+        }
+      },
+      {
+        "name": "Signet Ring",
+        "rowId": "row-1783553745889-ww25f",
+        "quantity": 1,
+        "priceOverride": "",
+        "description": "Golden ring imparts a wax seal to parchment signed by its wearer when pressed.",
+        "basePrice": 20,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "priceOverride": "",
+        "quantity": 1,
+        "name": "Chastity's Promise",
+        "rowId": "row-1783553745889-g1rg1",
+        "description": "Rolls involving seduction or flirting against the wearer have disadvantage.",
+        "basePrice": 30,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "When writing with this quill, the writer can magically change the color of the ink.",
+        "basePrice": 15,
+        "priceOverride": "",
+        "name": "Quill of Many Inks",
+        "quantity": 1,
+        "rowId": "row-1783553745889-3pwb8",
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "This normal-looking gold piece teleports back to the owner after an hour of being more than 10 feet from them.",
+        "basePrice": 50,
+        "priceOverride": "",
+        "rowId": "row-1783553745889-de4bu",
+        "name": "Grifter's Gold",
+        "quantity": 1,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "If any piece of jewelry is left in this case for at least one day, when it is pulled out it will look like a much more valuable version of itself. The illusion lasts for one hour.",
+        "basePrice": 60,
+        "priceOverride": "",
+        "rowId": "row-1783553745889-r233o",
+        "quantity": 1,
+        "name": "Cyrician Jewelry Case",
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "priceOverride": "",
+        "quantity": 1,
+        "rowId": "row-1783553745889-olvi2",
+        "name": "Ring Glove",
+        "description": "This normal-looking ring, when activated, covers the wearer's hand in a black cloth glove.",
+        "basePrice": 20,
+        "tags": [
+          "magic-item",
+          "clothing"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "quantity": 1,
+        "rowId": "row-1783553745889-znkch",
+        "name": "Hood of Tongues",
+        "priceOverride": "",
+        "description": "When you put this hood up and activate it, its magic causes your lips to no longer match your words, preventing any lipreaders from spying on you.",
+        "basePrice": 0,
+        "tags": [
+          "magic-item",
+          "clothing"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "priceOverride": "",
+        "rowId": "row-1783553745889-ulty9",
+        "name": "Gibson's Lute",
+        "quantity": 1,
+        "description": "When a simple melody is played on this lute, the lute can magically play it back in a loop, even if another melody is being played on it.",
+        "basePrice": 120,
+        "tags": [
+          "magic-item",
+          "instrument"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "priceOverride": "",
+        "name": "Showman's Swordsman",
+        "rowId": "row-1783553745889-kagzy",
+        "quantity": 1,
+        "description": " When fighting with an ally who is \"in on it,\" this normal-looking sword allows the wielder to magically stab their ally without harming them. Do not dispel during a live play.",
+        "basePrice": 40,
+        "tags": [
+          "magic-item",
+          "martial",
+          "melee"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "priceOverride": "",
+        "name": "Symphonic Wand",
+        "quantity": 1,
+        "rowId": "row-1783553745889-adfrr",
+        "description": "A wand that, when waved in the air, magically emits the sound of a concerto. The concerto plays relative to the vigor of the wave, so a slow, gentle wave of the wand creates a sad dirge while vigorous slashing of the wand will play a loud, upbeat symphony.",
+        "basePrice": 45,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "This soft rubber ball with a bullseye painted on it can be thrown with uncanny accuracy up to 300 feet. Does not damage.",
+        "basePrice": 35,
+        "quantity": 1,
+        "rowId": "row-1783553745889-zz2j0",
+        "name": "Bullseye Ball",
+        "priceOverride": "",
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "rowId": "row-1783553745889-6508q",
+        "quantity": 1,
+        "name": "Elminster's Earrings",
+        "priceOverride": "",
+        "description": "These earrings create the effect of tiny fireworks, dancing lights, and small fluttering butterflies around the head of the wearer. Supposedly created by Elminster himself.",
+        "basePrice": 55,
+        "tags": [
+          "magic-item",
+          "clothing"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "When opened, the locket shows the user a memory deliberately stored in the contraption.",
+        "basePrice": 10,
+        "priceOverride": "",
+        "rowId": "row-1783553745889-u6ahy",
+        "quantity": 1,
+        "name": "Locket of Memories",
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "This hat or helmet does not disturb your signature haircut, even after many hours in a hot, damp dungeon.",
+        "basePrice": 10,
+        "priceOverride": "",
+        "rowId": "row-1783553745889-qyyvz",
+        "name": "Pompadour's Hat",
+        "quantity": 1,
+        "tags": [
+          "magic-item",
+          "clothing"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "When children are within earshot, this ring magically replaces swear words with more appropriate equivalents.",
+        "basePrice": 20,
+        "priceOverride": "",
+        "rowId": "row-1783553745889-ezuz0",
+        "name": "The Ring of the Inebriated Uncle",
+        "quantity": 1,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "This tool pouch is actually a pocket dimension that prevents any rust, dust, or normal wear from accruing to any artisan's tools while they are stored in it.",
+        "basePrice": 45,
+        "priceOverride": "",
+        "rowId": "row-1783553745889-x3ec9",
+        "name": "Tool Pouch of Maintenance",
+        "quantity": 1,
+        "tags": [
+          "magic-item",
+          "utility"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "name": "Helm's Scale of Truth",
+        "quantity": 1,
+        "rowId": "row-1783553745889-ntsj4",
+        "priceOverride": "",
+        "description": "When a currency is put upon the scales, the scales tip if any of the currency is fake.",
+        "basePrice": 70,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Knowledge"
+          ]
+        }
+      },
+      {
+        "rowId": "row-1783553745889-whkxn",
+        "name": "Helping Hand",
+        "quantity": 1,
+        "priceOverride": "",
+        "description": "A normal-looking ring, but when activated, an invisible hand holds whatever object the wearer is holding in place, including in mid-air, freeing up one of their real hands. The hand cannot move, has the strength of a small child's hand, and must stay within one foot of the ring.",
+        "basePrice": 130,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "priceOverride": "",
+        "name": "Waterproof Pack",
+        "rowId": "row-1783553745889-2c3iy",
+        "quantity": 1,
+        "description": "This medium-sized pack is magically waterproof.",
+        "basePrice": 30,
+        "tags": [
+          "magic-item",
+          "utility"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "name": "Purifix Straw",
+        "rowId": "row-1783553745889-37xh9",
+        "quantity": 1,
+        "priceOverride": "",
+        "description": "This thick silver straw magically removes any contaminants that occurred naturally from a water source, up to half a gallon per day. It does not remove poisons or other contaminants that are in the water source from unnatural sources (such as being placed there by an assassin).",
+        "basePrice": 0,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "name": "Woven Lure",
+        "rowId": "row-1783553745889-wb7pl",
+        "quantity": 1,
+        "priceOverride": "",
+        "description": " A fishing lure blessed by a priest of Sylvanus. Add 1d4 to any fishing roll.",
+        "basePrice": 0,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [
+          "Celestial"
+        ],
+        "lootTags": {
+          "kind": "Item",
+          "domain": [
+            "Nature"
+          ]
+        }
+      },
+      {
+        "priceOverride": "",
+        "rowId": "row-1783553745889-5id8c",
+        "name": "The Dictator",
+        "quantity": 1,
+        "description": "This magical quill automatically writes down the words that are spoken to it by its owner.",
+        "basePrice": 85,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "priceOverride": "",
+        "quantity": 1,
+        "rowId": "row-1783553745889-ou18e",
+        "name": "Symbol of Talona",
+        "description": "Small charm has a mild repelling effect on mosquitoes, bugs, and small gnats.",
+        "basePrice": 45,
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "quantity": 1,
+        "rowId": "row-1783553745889-ile0f",
+        "name": "Long March Boots",
+        "priceOverride": "",
+        "description": "Prevent water and rocks from getting into boots, even when submerged.",
+        "basePrice": 30,
+        "tags": [
+          "magic-item",
+          "clothing"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "Magical cloth removes non-magical dust, rust, grime, leaves polish. Never gets dirty. Cannot repair damage.",
+        "basePrice": 10,
+        "priceOverride": "",
+        "rowId": "row-1783553745889-zo2w1",
+        "name": "Dress Cloth",
+        "quantity": 1,
+        "tags": [
+          "magic-item",
+          "clothing"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "priceOverride": "",
+        "rowId": "row-1783553745889-kvvbo",
+        "quantity": 1,
+        "name": "Feigned Loyalty Dagger",
+        "description": "Magical dagger cannot harm its owner. Attacks with this dagger are not magical.",
+        "basePrice": 30,
+        "tags": [
+          "magic-item",
+          "simple",
+          "melee"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      },
+      {
+        "description": "Uncorking vial makes user smell indistinguishable from a homeless person.",
+        "basePrice": 15,
+        "rowId": "row-1783553745889-bdoqk",
+        "name": "Odeur de la Rue",
+        "quantity": 1,
+        "priceOverride": "",
+        "tags": [
+          "magic-item"
+        ],
+        "monsterTypeTags": [],
+        "lootTags": null
+      }
+    ],
+    "services": [],
+    "createdAt": 1752019200000,
+    "category": "Magical Trinkets",
+    "name": "The Magical Junk Drawer",
+    "menu": []
   }
 ]

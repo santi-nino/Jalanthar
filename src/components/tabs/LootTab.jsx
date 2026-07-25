@@ -134,44 +134,61 @@ const KIND_BUCKET_CONFIG = {
       { key: 'diet', attr: 'beast-diet' },
     ],
   },
+  Celestial: {
+    sizeAttr: 'celestial-rank',
+    dimensions: [{ key: 'domain', attr: 'celestial-domain' }],
+  },
 }
+
+// Non-kind keys that can appear alongside the kind buckets in a
+// sizeLootTable tier (e.g. Celestial's Rank tiers carry priceRange and
+// goldRange too) -- these get pulled out before iterating "kinds",
+// otherwise they'd be mistaken for kind names with a suspiciously
+// two-element array as their "count range."
+const SIZE_TABLE_META_KEYS = new Set(['priceRange', 'goldRange'])
 
 // The kind-bucketed generation engine: instead of one flat random count
 // across the whole pool, each "kind" (per sizeLootTable) gets its own
-// count rolled independently from the entity's Size, then filled from
-// whichever catalog items are compatible with the entity's OTHER
+// count rolled independently from the entity's Size/Rank, then filled
+// from whichever catalog items are compatible with the entity's OTHER
 // dimensions (however many are configured above). An item tagged for a
 // dimension only shows up when the entity's value matches; an item with
 // no tag for that dimension is compatible regardless -- that's the
-// "overlap" mechanism (a generic Parts item shows up for every Kingdom;
-// something tagged Reptile shows up for a Reptile of any Diet; a
-// Reptile+Insectivore entity draws from the union of both). A size
-// rolling 0-0 for a given kind is what actually enforces "this size
-// doesn't yield that kind of loot" -- the count is zero, not a manual
-// block.
+// "overlap" mechanism (a generic Item shows up for every Domain;
+// something tagged Light shows up for a Light-domain celestial of any
+// Rank; a Servant-rank Life-domain celestial draws from the
+// intersection of "cheap enough for Servant" and "tagged Life, or
+// untagged"). A size/rank rolling 0-0 for a given kind is what actually
+// enforces "this tier doesn't yield that kind of loot" -- the count is
+// zero, not a manual block.
+//
+// priceRange / goldRange (optional, per tier): when a tier carries
+// these, eligible items get further filtered to that price band, and
+// gold gets rolled from its own range and returned alongside the items
+// -- this is what lets Rank drive POWER as well as quantity for a type
+// like Celestial, not just Size-style headcounts.
 //
 // features (optional): a {featureName: boolean} map for this entity --
 // any item requiring a feature (lootTags.requiresFeature) that isn't
 // checked true gets excluded outright, regardless of anything else
-// matching. Lets "not every mammal has tusks" hold even within an
-// otherwise-eligible Kingdom+Diet container.
+// matching.
 //
 // setting (optional): after the main kind buckets, a SEPARATE 0-2 item
 // bonus draw from whichever items are tagged kind:'Setting' and (if
 // tagged) compatible with this setting specifically -- pure flavor, not
-// counted against the Trophy/Parts/Pelt/etc totals at all.
+// counted against the main totals at all.
 function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeValues, excludedPatterns, features, setting }) {
   const sizeTable = taxonomy.sizeLootTable?.[monsterType]
   const config = KIND_BUCKET_CONFIG[monsterType]
-  if (!sizeTable || !config) return { items: [], flavorItems: [] }
+  if (!sizeTable || !config) return { items: [], flavorItems: [], gold: 0 }
 
   const size = attributeValues[config.sizeAttr]
   const dimValues = {}
   config.dimensions.forEach((d) => {
     dimValues[d.key] = attributeValues[d.attr]
   })
-  const countsForSize = sizeTable[size]
-  if (!countsForSize) return { items: [], flavorItems: [] }
+  const tier = sizeTable[size]
+  if (!tier) return { items: [], flavorItems: [], gold: 0 }
 
   const rawPool = buildItemPool('wares', sources).filter((i) => i.monsterTypeTags?.includes(monsterType))
 
@@ -185,11 +202,16 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
     return true
   }
 
+  const [priceMin, priceMax] = tier.priceRange || [null, null]
+
   const items = []
-  Object.entries(countsForSize).forEach(([kind, [min, max]]) => {
+  Object.entries(tier).forEach(([kind, range]) => {
+    if (SIZE_TABLE_META_KEYS.has(kind)) return
+    const [min, max] = range
     const n = randomInt(min, max)
     if (n === 0) return
     let eligible = rawPool.filter((i) => i.lootTags?.kind === kind && isCompatible(i))
+    if (priceMin != null) eligible = eligible.filter((i) => i.priceGp >= priceMin && i.priceGp <= priceMax)
     if (excludedPatterns && excludedPatterns.length > 0) {
       eligible = eligible.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
     }
@@ -208,7 +230,9 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
     }
   }
 
-  return { items, flavorItems }
+  const gold = tier.goldRange ? randomInt(tier.goldRange[0], tier.goldRange[1]) : 0
+
+  return { items, flavorItems, gold }
 }
 
 // The other half of "make good guesses": baseline items that appear
@@ -953,7 +977,9 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
           monsterType && (
             <div className="flex items-end pb-1.5">
               <p className="text-xs text-ink-soft/50 italic">
-                {monsterType} doesn't use Wealth — no coin, only whatever's guaranteed below.
+                {Object.values(taxonomy.sizeLootTable?.[monsterType] || {}).some((tier) => tier.goldRange)
+                  ? `${monsterType} doesn't use Wealth — coin comes from its own field above instead.`
+                  : `${monsterType} doesn't use Wealth — no coin, only whatever's guaranteed below.`}
               </p>
             </div>
           )
@@ -1081,7 +1107,7 @@ export default function LootTab() {
       const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
 
       if (isKindBucketed) {
-        const { items: rolled, flavorItems } = generateKindBucketedLoot({
+        const { items: rolled, flavorItems, gold } = generateKindBucketedLoot({
           monsterType: e.monsterType,
           taxonomy: lootTaxonomy,
           sources,
@@ -1092,7 +1118,7 @@ export default function LootTab() {
         })
         const flavorTagged = flavorItems.map((i) => ({ ...i, flavor: true }))
         const tags = [e.monsterName || e.monsterType, ...attrTags, e.setting, e.notes].filter(Boolean)
-        return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled, ...flavorTagged], gold: 0 }
+        return { label: tags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled, ...flavorTagged], gold }
       }
 
       const w = wealthLevel(e.wealthId)

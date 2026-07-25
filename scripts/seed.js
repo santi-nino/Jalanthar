@@ -67,19 +67,26 @@ const { mockBuildings, mockNpcs, mockFamilies, mockSources } = await import(
 )
 
 // A small, explicit list of source documents that are entirely authored
-// here (mockData.js), not through the DM's own Upload Source scans --
-// currently "Hunter's & Trapper's Price Guide" and "Xenobiological
-// Specimen Ledger". For these specific IDs ONLY, content changes should
-// always reach Firestore even though the document already exists --
-// otherwise every future edit to their wares (new items, new tags, a
-// whole type's items replaced) gets silently skipped by the normal
-// skip-if-exists logic, exactly as happened when Beast's 27 old items
-// were replaced with 58 new ones and the change never actually reached
-// the live database. Any OTHER source ID (a DM's own uploaded content)
-// is deliberately NOT in this list and keeps the normal skip-if-exists
-// protection -- this only ever overwrites documents this script itself
-// is the sole author of.
-const PROGRAMMATIC_SOURCE_IDS = new Set(['src-hunters-trapper-guide-v2', 'src-xenobiological-ledger'])
+// here (mockData.js) -- currently "Hunter's & Trapper's Price Guide",
+// "Xenobiological Specimen Ledger", and "The Magical Junk Drawer" (this
+// last one was originally DM-uploaded, but the DM has since asked for
+// its items to be tagged and kept in sync the same way as the other
+// two, so it's managed here from this point forward). For these
+// specific IDs ONLY, content changes should always reach Firestore even
+// though the document already exists -- otherwise every future edit to
+// their wares (new items, new tags, a whole type's items replaced) gets
+// silently skipped by the normal skip-if-exists logic, exactly as
+// happened when Beast's 27 old items were replaced with 58 new ones and
+// the change never actually reached the live database. Any OTHER source
+// ID (something the DM uploads through the app going forward) is
+// deliberately NOT in this list and keeps the normal skip-if-exists
+// protection -- this only ever overwrites documents this script is the
+// sole author of.
+const PROGRAMMATIC_SOURCE_IDS = new Set([
+  'src-hunters-trapper-guide-v2',
+  'src-xenobiological-ledger',
+  'sGUAccXFQOl3hwTl7OYP',
+])
 
 async function updateProgrammaticSources(docs) {
   if (FORCE) return // --force already fully overwrote these, nothing more to do
