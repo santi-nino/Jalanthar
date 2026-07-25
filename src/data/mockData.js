@@ -6652,8 +6652,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "description": "This normal-looking gold piece teleports back to the owner after an hour of being more than 10 feet from them.",
@@ -6665,8 +6669,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "description": "If any piece of jewelry is left in this case for at least one day, when it is pulled out it will look like a much more valuable version of itself. The illusion lasts for one hour.",
@@ -6697,8 +6705,12 @@ export const mockSources = [
           "magic-item",
           "clothing"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "quantity": 1,
@@ -6711,8 +6723,12 @@ export const mockSources = [
           "magic-item",
           "clothing"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "priceOverride": "",
@@ -6725,8 +6741,12 @@ export const mockSources = [
           "magic-item",
           "instrument"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "priceOverride": "",
@@ -6741,10 +6761,12 @@ export const mockSources = [
           "melee"
         ],
         "monsterTypeTags": [
-          "Elemental"
+          "Elemental",
+          "Fey"
         ],
         "lootTags": {
-          "kind": "Weapon"
+          "kind": "Weapon",
+          "loadoutPool": "MagicWeapon"
         }
       },
       {
@@ -6757,8 +6779,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "description": "This soft rubber ball with a bullseye painted on it can be thrown with uncanny accuracy up to 300 feet. Does not damage.",
@@ -6770,8 +6796,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "rowId": "row-1783553745889-6508q",
@@ -6827,8 +6857,12 @@ export const mockSources = [
           "magic-item",
           "clothing"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "Helmet"
+        }
       },
       {
         "description": "When children are within earshot, this ring magically replaces swear words with more appropriate equivalents.",
@@ -6840,8 +6874,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "description": "This tool pouch is actually a pocket dimension that prevents any rust, dust, or normal wear from accruing to any artisan's tools while they are stored in it.",
@@ -6910,8 +6948,12 @@ export const mockSources = [
           "magic-item",
           "utility"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "name": "Purifix Straw",
@@ -6964,8 +7006,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "priceOverride": "",
@@ -6999,8 +7045,12 @@ export const mockSources = [
           "magic-item",
           "clothing"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "Boots"
+        }
       },
       {
         "description": "Magical cloth removes non-magical dust, rust, grime, leaves polish. Never gets dirty. Cannot repair damage.",
@@ -7013,8 +7063,12 @@ export const mockSources = [
           "magic-item",
           "clothing"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       },
       {
         "priceOverride": "",
@@ -7029,10 +7083,12 @@ export const mockSources = [
           "melee"
         ],
         "monsterTypeTags": [
-          "Elemental"
+          "Elemental",
+          "Fey"
         ],
         "lootTags": {
-          "kind": "Weapon"
+          "kind": "Weapon",
+          "loadoutPool": "MagicWeapon"
         }
       },
       {
@@ -7045,8 +7101,12 @@ export const mockSources = [
         "tags": [
           "magic-item"
         ],
-        "monsterTypeTags": [],
-        "lootTags": null
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "lootTags": {
+          "loadoutPool": "MagicItem"
+        }
       }
     ],
     "services": [],
@@ -12773,5 +12833,772 @@ export const mockSources = [
     "menu": [],
     "services": [],
     "createdAt": 1784989027307
+  },
+  {
+    "id": "src-changelings-trunk",
+    "name": "The Changeling's Trunk",
+    "wares": [
+      {
+        "rowId": "row-fey-1",
+        "name": "Pressed Four-Leaf Clover, Still Growing",
+        "basePrice": 8,
+        "description": "Never quite finishes wilting, no matter how long it's pressed.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "court": [
+            "Seelie"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-2",
+        "name": "Frost-Etched Antler Shard",
+        "basePrice": 12,
+        "description": "Cold enough to numb fingers, warm enough it never actually frostbites them.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "court": [
+            "Unseelie"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-3",
+        "name": "Coin From Nowhere in Particular",
+        "basePrice": 15,
+        "description": "The face on it belongs to no ruler anyone here recognizes.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-4",
+        "name": "Bundle of Bramble-Thorns, Bound in Twine",
+        "basePrice": 6,
+        "description": "Handling it wrong draws blood that heals suspiciously fast.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "court": [
+            "Thorned Court"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-5",
+        "name": "Dusk-Colored Feather, Never Molts Further",
+        "basePrice": 10,
+        "description": "Holding it too long in daylight makes the light around it dim slightly.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "court": [
+            "Gloaming Court"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-6",
+        "name": "Twisted Root, Vaguely Face-Shaped",
+        "basePrice": 14,
+        "description": "The resemblance is unsettling enough that most owners keep it wrapped in cloth.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "court": [
+            "Twisted/Blighted"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-7",
+        "name": "Token of a Broken Bargain",
+        "basePrice": 20,
+        "description": "Snapped clean in half; the other half is out there somewhere, presumably still binding.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "court": [
+            "Courtless"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-8",
+        "name": "Hag-Coven Hairpin, Iron-Black",
+        "basePrice": 18,
+        "description": "Bends but never breaks, no matter how it's mistreated.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy",
+          "court": [
+            "Independent"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-9",
+        "name": "Woven Grass Ring, Never Yellows",
+        "basePrice": 10,
+        "description": "Cut fresh, somehow, no matter how old it actually is.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "court": [
+            "Seelie"
+          ],
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-10",
+        "name": "Sliver of Black Ice, Warm to the Touch",
+        "basePrice": 25,
+        "description": "Doesn't melt in a pocket, and doesn't explain why it's warm despite being ice.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "court": [
+            "Unseelie"
+          ],
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-11",
+        "name": "Knot of Bramble Cord",
+        "basePrice": 16,
+        "description": "Tied in a pattern that unravels itself if worn by someone it doesn't like.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "court": [
+            "Thorned Court"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-12",
+        "name": "Locket of Half-Remembered Names",
+        "basePrice": 30,
+        "description": "Opens to a name that's different every time, and never the same twice in a row.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "court": [
+            "Gloaming Court"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-13",
+        "name": "Blighted Sprig, Preserved in Resin",
+        "basePrice": 22,
+        "description": "Withered the day it was picked and hasn't changed since.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "court": [
+            "Twisted/Blighted"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-14",
+        "name": "Wanderer's Waystone Pendant",
+        "basePrice": 28,
+        "description": "Always points, faintly, toward the nearest fey crossing -- whether the wearer wants to go there or not.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "court": [
+            "Wild"
+          ],
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-15",
+        "name": "Coven-Blessed Wart-Charm",
+        "basePrice": 35,
+        "description": "Supposedly wards off warts. Nobody's tested it rigorously.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "court": [
+            "Independent"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-16",
+        "name": "Oathbreaker's Cold Ring",
+        "basePrice": 40,
+        "description": "Grows noticeably colder on the finger of anyone who's broken a promise recently.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "court": [
+            "Courtless"
+          ],
+          "minRank": 2
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-17",
+        "name": "Dewdrop Cut Like a Diamond",
+        "basePrice": 60,
+        "description": "Doesn't evaporate, doesn't melt, and jewelers can't explain why. Sells like a real diamond regardless.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "court": [
+            "Seelie"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-18",
+        "name": "Frost-Cast Silver Torc",
+        "basePrice": 90,
+        "description": "Cold enough to sting bare skin for the first few minutes worn.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "court": [
+            "Unseelie"
+          ],
+          "minRank": 2
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-19",
+        "name": "Thornwood Circlet, Unpolished",
+        "basePrice": 70,
+        "description": "Carved rather than forged, and the thorns are somehow never actually sharp.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "court": [
+            "Thorned Court"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-20",
+        "name": "Twilight-Glass Bead Strand",
+        "basePrice": 55,
+        "description": "Each bead shows a different color depending on the hour, even indoors.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "court": [
+            "Gloaming Court"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-21",
+        "name": "Corrupted Court Signet, Warped Beyond Use",
+        "basePrice": 45,
+        "description": "Once belonged to someone with a title. The title, like the ring, isn't what it used to be.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "court": [
+            "Twisted/Blighted"
+          ],
+          "minRank": 2
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-22",
+        "name": "Handful of Uncut River-Glass",
+        "basePrice": 25,
+        "description": "Passes for gemstones to anyone who doesn't look too closely.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "court": [
+            "Wild"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-23",
+        "name": "Coven's Cauldron-Skimmed Gold Flake",
+        "basePrice": 50,
+        "description": "Skimmed off the top of something better left unasked about.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "court": [
+            "Independent"
+          ],
+          "minRank": 1
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-24",
+        "name": "Bargain-Sealed Wax Medallion",
+        "basePrice": 65,
+        "description": "The wax seal is real gold underneath, once you get past the theatrics.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "court": [
+            "Courtless"
+          ],
+          "minRank": 2
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-25",
+        "name": "Jar of Bottled Laughter",
+        "basePrice": 12,
+        "description": "Uncork it and, for a moment, everyone nearby can't quite remember why they were upset.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy",
+          "court": [
+            "Seelie"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-26",
+        "name": "Snowglobe That Was Never Shaken",
+        "basePrice": 18,
+        "description": "The scene inside changes slightly whenever nobody's looking directly at it.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy",
+          "court": [
+            "Unseelie"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-27",
+        "name": "Bramble-Woven Whistle",
+        "basePrice": 8,
+        "description": "Blowing it summons no one in particular, most of the time.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy",
+          "court": [
+            "Thorned Court"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-28",
+        "name": "Moth Lantern, Never Needs Oil",
+        "basePrice": 20,
+        "description": "The light inside flickers like a real flame despite having no visible fuel.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy",
+          "court": [
+            "Gloaming Court"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-29",
+        "name": "Cracked Mask, Grinning Regardless",
+        "basePrice": 15,
+        "description": "The crack doesn't affect the grin. Somehow the grin gets wider if worn upside down.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy",
+          "court": [
+            "Twisted/Blighted"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-30",
+        "name": "Acorn That Refuses to Sprout",
+        "basePrice": 5,
+        "description": "Been planted at least a dozen times, by a dozen owners. Still just an acorn.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy",
+          "court": [
+            "Wild"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-31",
+        "name": "Coven-Gifted Talking Stone",
+        "basePrice": 22,
+        "description": "Only ever says one word, and it's never the same word twice.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy",
+          "court": [
+            "Independent"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-32",
+        "name": "Unraveling Contract, Never Fully Unravels",
+        "basePrice": 30,
+        "description": "Read it and the terms change slightly by the time you reach the end.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy",
+          "court": [
+            "Courtless"
+          ]
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-33",
+        "name": "Unlabeled Vial of Shimmering Dust",
+        "basePrice": 10,
+        "description": "Nobody remembers what it's for, only that it's clearly fae-made.",
+        "category": "Whimsy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Whimsy"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-34",
+        "name": "Pocketful of Ordinary-Looking Leaves",
+        "basePrice": 3,
+        "description": "Ordinary, except they never dry out or decompose.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-35",
+        "name": "Plain Iron Ring, Suspiciously Cold",
+        "basePrice": 15,
+        "description": "Iron doesn't usually bother fey. This one still avoids being worn by most of them.",
+        "category": "Charm",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Charm",
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fey-36",
+        "name": "Small Pouch of Fae Coin",
+        "basePrice": 20,
+        "description": "Spends fine here. Elsewhere, results vary.",
+        "category": "Treasure",
+        "monsterTypeTags": [
+          "Fey"
+        ],
+        "tags": [
+          "magic-item"
+        ],
+        "lootTags": {
+          "kind": "Treasure",
+          "minRank": 0
+        },
+        "priceOverride": "",
+        "quantity": 1
+      }
+    ],
+    "menu": [],
+    "services": [],
+    "createdAt": 1785007735713
   }
 ]

@@ -90,6 +90,7 @@ const PROGRAMMATIC_SOURCE_IDS = new Set([
   'src-animus-salvage-registry',
   'src-dragonslayers-ledger',
   'src-planebound-ledger',
+  'src-changelings-trunk',
 ])
 
 async function updateProgrammaticSources(docs) {

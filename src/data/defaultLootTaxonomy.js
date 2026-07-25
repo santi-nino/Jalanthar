@@ -66,13 +66,13 @@ export const DEFAULT_LOOT_TAXONOMY = {
   monsterTypeCategories: {
     Aberration: [],
     Beast: [],
-    Fey: ['Focus'],
     // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, all
     // sapient-enough or civilized-enough to plausibly carry a
-    // shopkeeper's kind of gear. Celestial, Construct, Dragon, and now
-    // Elemental aren't listed here either -- all four are fully
-    // kind-bucketed now (see sizeLootTable), so this coarse restriction
-    // is never even consulted for them.
+    // shopkeeper's kind of gear. Celestial, Construct, Dragon, Elemental,
+    // and now Fey aren't listed here either -- Fey's own dispatch (see
+    // generateEncounter in LootTab.jsx) always routes to either the
+    // kind-bucketed engine or the Loadout System, so this coarse
+    // restriction is never consulted for it either.
     Monstrosity: [],
     Ooze: [],
     Plant: [],
@@ -334,9 +334,74 @@ export const DEFAULT_LOOT_TAXONOMY = {
         excludedItemPatterns: {}, guaranteedItems: {},
       },
     ],
+    // Fey works differently from every other overhauled type -- closer to
+    // Humanoid than to Aberration/Beast/etc. There's no anatomy involved
+    // at all when a fey is a person (an eladrin courtier carries armor,
+    // weapons, coin, potions -- things you'd find on a person, just
+    // fae-flavored), so a straight kind-bucketed Trophy/Organ-style system
+    // never fit. Four fields:
+    // - Court: PURE theming, no effect on amount or wealth whatsoever --
+    //   see fey-is-monster below for what actually drives quantity.
+    // - Is Monster: a checkbox, not a dropdown (see the custom UI block
+    //   in EntityBuilder) -- stored as attributeValues['fey-is-monster']
+    //   = 'Monster' | 'Person' so the existing showIf/optionsFor engine
+    //   can gate Role on it with no new mechanism needed. true -> the
+    //   ordinary kind-bucketed path (sizeLootTable.Fey, KIND_BUCKET_CONFIG.
+    //   Fey), same engine as Aberration/Beast/etc, drawing from a new
+    //   dedicated Fey source PLUS relevant established/homebrew items
+    //   (subject to the source-balance rule same as those types). false ->
+    //   Role appears and generation routes through the new Loadout System
+    //   instead (see `loadouts` below and generateLoadoutLoot in
+    //   LootTab.jsx) -- this is the "overlaps with Humanoid's rules" path
+    //   the DM asked for, just with richer per-role rules than Humanoid's
+    //   simple guaranteed-item list.
+    // - Rank: the tier field for BOTH paths -- Minor Fey up to Arch Fey --
+    //   drives amount and gold. Never determines WHICH items are eligible,
+    //   only how many/how much (Court and, on the person path, Role are
+    //   what determine "which").
+    // - Role: only visible when Is Monster is false (see showIf below).
+    //   Keys into `loadouts` -- see that block for what each role actually
+    //   grants. Interpretation call: Caster and Fighter are exactly what
+    //   the DM specified; Trickster/Noble/Wanderer are extrapolated by
+    //   Claude to round out the set the way Humanoid's own Role list does,
+    //   and should be treated as a first draft, not settled.
     Fey: [
-      { id: 'fey-court', name: 'Court', options: ['Seelie/Summer', 'Unseelie/Winter', 'Wild/Unaligned'], excludedItemPatterns: {}, guaranteedItems: {} },
-      { id: 'fey-temperament', name: 'Temperament', options: ['Mischievous', 'Benevolent', 'Malicious'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        id: 'fey-court', name: 'Court',
+        // Wild = never belonged to any court at all (distinct from
+        // Courtless, which implies HAVING belonged and left/been cast
+        // out). Independent covers non-court factions like hag covens.
+        // Gloaming Court and Thorned Court are Claude's own additions for
+        // "smaller courts, their own categories" -- invented names, not
+        // official lore, flag for correction if they don't fit the
+        // campaign. Twisted/Blighted is deliberately separate from
+        // Unseelie -- corrupted/monstrous fey, not just "winter court."
+        options: [
+          'Wild', 'Seelie', 'Unseelie', 'Courtless', 'Independent',
+          'Gloaming Court', 'Thorned Court', 'Twisted/Blighted',
+        ],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'fey-rank', name: 'Rank',
+        // Low to high. Drives sizeLootTable.Fey's counts on the monster
+        // path and loadouts[role].rankScaled / goldByRank on the person
+        // path -- see KIND_BUCKET_CONFIG.Fey.sizeOrder in LootTab.jsx,
+        // which must match this list exactly.
+        options: ['Minor Fey', 'Fey', 'Noble Fey', 'Arch Fey'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'fey-role', name: 'Role',
+        // Only shown once Is Monster is unchecked (Person) -- see the
+        // checkbox block in EntityBuilder, which writes 'Person'/'Monster'
+        // directly into attributeValues['fey-is-monster'] specifically so
+        // this ordinary showIf mechanism can gate on it with no special
+        // casing needed anywhere else.
+        showIf: { attr: 'fey-is-monster', values: ['Person'] },
+        options: ['Caster', 'Fighter', 'Trickster', 'Noble', 'Wanderer'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
     ],
     Fiend: [
       {
@@ -513,6 +578,126 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Elemental: { Weapon: [1, 1], Parts: [1, 2], MagicParts: [1, 1], Junk: [1, 2], Power: [1, 2] },
       'Elder Elemental': { Weapon: [1, 2], Parts: [2, 3], MagicParts: [1, 2], Junk: [1, 2], Power: [1, 2] },
       Myrmidon: { Weapon: [1, 2], Parts: [2, 3], MagicParts: [2, 2], Junk: [1, 2], Power: [2, 2] },
+    },
+    // Fey MONSTER path only (Is Monster checked) -- Person path bypasses
+    // this table entirely and uses `loadouts` instead (see below and
+    // generateLoadoutLoot in LootTab.jsx). Keyed by Rank, same mechanism
+    // as everywhere else. Kinds are deliberately non-anatomical (a fey
+    // monster like a boggle doesn't have "organs" the way an Aberration
+    // does) -- Trophy/Charm/Treasure/Whimsy instead, covering fae-specific
+    // monster loot from the new dedicated Fey source plus relevant
+    // established/homebrew items (see SOURCE_BALANCED_TYPES in
+    // LootTab.jsx, which now includes Fey).
+    Fey: {
+      'Minor Fey': { Trophy: [0, 1], Charm: [1, 1], Treasure: [0, 1], Whimsy: [1, 2] },
+      Fey: { Trophy: [1, 1], Charm: [1, 2], Treasure: [1, 1], Whimsy: [1, 2] },
+      'Noble Fey': { Trophy: [1, 2], Charm: [1, 2], Treasure: [1, 2], Whimsy: [2, 3] },
+      'Arch Fey': { Trophy: [1, 2], Charm: [2, 2], Treasure: [2, 3], Whimsy: [2, 3] },
+    },
+  },
+
+  // The Loadout System -- Fey's Person path (Is Monster unchecked), and
+  // named for reuse: the DM can ask for this same mechanism on Humanoid
+  // (or any future type) later just by saying so. Each role is a fixed
+  // recipe rather than a single item-count roll:
+  // - fixed: exactly `count` of `pool`, always included (a Fighter always
+  //   gets exactly one martial weapon, no roll involved).
+  // - rankScaled: a [min,max] range that itself depends on Rank -- this is
+  //   how "x magic items where x is determined by power" works. The
+  //   ranges below are Claude's own scale (Minor Fey light, Arch Fey
+  //   heaviest), not specified exactly by the DM -- flag for correction.
+  // - ranged: a flat [min,max] roll, same as any ordinary count range,
+  //   EXCEPT when preferMin/preferMax are set -- see weightedRandInt in
+  //   LootTab.jsx, which then rolls 60% of the time from the tighter
+  //   preferred band and 40% from the full range, matching "0-4 with a
+  //   preference for 2-3" precisely rather than a flat uniform roll.
+  // - goldByRank: this role's own gold table, keyed by Rank.
+  // `pool` names resolve in generateLoadoutLoot: MartialWeapon/
+  // SimpleWeapon and ArcaneFocus/Clothes read the SRD catalog's own
+  // existing tags/category (no new tagging needed -- "martial"/"simple"
+  // weapon tags and "clothing"-tagged Gear already exist); Boots/Helmet/
+  // Shoes are three small new base Gear items added to dnd5eItems.js
+  // (SRD tables don't price separate footwear/headwear, so these are a
+  // deliberate small gap-fill); MagicItem/MagicWeapon/Supplementary/Junk
+  // read lootTags.loadoutPool, tagged onto the Magical Junk Drawer's
+  // whimsical items and a curated set of SRD consumables/alchemical/
+  // utility gear -- see the tagging pass in mockData.js and dnd5eItems.js.
+  loadouts: {
+    Caster: {
+      fixed: [
+        { pool: 'Shoes', count: 1 },
+        { pool: 'Clothes', count: 1 },
+        { pool: 'ArcaneFocus', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { 'Minor Fey': [0, 1], Fey: [1, 2], 'Noble Fey': [2, 3], 'Arch Fey': [3, 4] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 10 },
+        { pool: 'Junk', min: 0, max: 4, preferMin: 2, preferMax: 3 },
+      ],
+      goldByRank: { 'Minor Fey': [5, 20], Fey: [20, 60], 'Noble Fey': [60, 150], 'Arch Fey': [150, 400] },
+    },
+    Fighter: {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Boots', count: 1 },
+        { pool: 'Helmet', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicWeapon', rankRange: { 'Minor Fey': [0, 0], Fey: [0, 1], 'Noble Fey': [1, 1], 'Arch Fey': [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'MagicItem', min: 1, max: 2 },
+        { pool: 'Supplementary', min: 0, max: 10 },
+        { pool: 'Junk', min: 0, max: 4, preferMin: 2, preferMax: 3 },
+      ],
+      goldByRank: { 'Minor Fey': [5, 20], Fey: [20, 60], 'Noble Fey': [60, 150], 'Arch Fey': [150, 400] },
+    },
+    // Claude's own extrapolation, matching the Caster/Fighter shape --
+    // first draft, correct as needed.
+    Trickster: {
+      fixed: [
+        { pool: 'Shoes', count: 1 },
+        { pool: 'Clothes', count: 1 },
+        { pool: 'SimpleWeapon', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { 'Minor Fey': [0, 1], Fey: [1, 2], 'Noble Fey': [2, 3], 'Arch Fey': [3, 4] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 8 },
+        { pool: 'Junk', min: 0, max: 4, preferMin: 2, preferMax: 3 },
+      ],
+      goldByRank: { 'Minor Fey': [3, 15], Fey: [15, 45], 'Noble Fey': [45, 110], 'Arch Fey': [110, 300] },
+    },
+    Noble: {
+      fixed: [
+        { pool: 'Clothes', count: 1 },
+        { pool: 'Boots', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { 'Minor Fey': [1, 1], Fey: [1, 2], 'Noble Fey': [2, 3], 'Arch Fey': [3, 5] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 6 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { 'Minor Fey': [10, 40], Fey: [40, 120], 'Noble Fey': [120, 300], 'Arch Fey': [300, 800] },
+    },
+    Wanderer: {
+      fixed: [
+        { pool: 'Shoes', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { 'Minor Fey': [0, 1], Fey: [0, 2], 'Noble Fey': [1, 2], 'Arch Fey': [2, 3] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 10 },
+        { pool: 'Junk', min: 0, max: 4, preferMin: 2, preferMax: 3 },
+      ],
+      goldByRank: { 'Minor Fey': [3, 15], Fey: [15, 45], 'Noble Fey': [45, 110], 'Arch Fey': [110, 300] },
     },
   },
 

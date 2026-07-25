@@ -200,6 +200,16 @@ const KIND_BUCKET_CONFIG = {
       { key: 'subelement', attr: 'elemental-subelement' },
     ],
   },
+  // Fey MONSTER path only -- see fey-is-monster in defaultLootTaxonomy.js.
+  // Court is the sole dimension (pure theming, per the DM); Rank drives
+  // amount, same sizeAttr/sizeOrder role Power Level plays for Elemental.
+  // The Person path never reaches this config at all -- see
+  // generateLoadoutLoot and the dispatch in generateEncounter instead.
+  Fey: {
+    sizeAttr: 'fey-rank',
+    sizeOrder: ['Minor Fey', 'Fey', 'Noble Fey', 'Arch Fey'],
+    dimensions: [{ key: 'court', attr: 'fey-court' }],
+  },
 }
 
 // Non-kind keys that can appear alongside the kind buckets in a
@@ -248,6 +258,34 @@ function resolveKindBucketConfig(monsterType, attributeValues) {
   if (!raw) return null
   return raw.resolve ? raw.resolve(attributeValues) : raw
 }
+
+// The Magical Junk Drawer's fixed Firestore doc ID -- see mockData.js.
+// Hardcoded rather than looked up by name because the DM can rename a
+// source, but this specific document's identity as "the" Junk Drawer is
+// what matters here, same reasoning as PROGRAMMATIC_SOURCE_IDS in seed.js.
+const MAGICAL_JUNK_DRAWER_SOURCE_ID = 'sGUAccXFQOl3hwTl7OYP'
+
+// "Established" = the SRD catalog (dnd5eItems.js, ids like "item-42") or
+// the Magical Junk Drawer specifically -- content that isn't this
+// project's own homebrew. Everything else (Xenobiological Ledger, Empyreal
+// Reliquary, Animus Salvage Registry, Planebound Ledger, a type's future
+// dedicated source, etc) counts as "homebrew" for this purpose. See
+// itemPool.js's sourceItemsForPool for the "source-{sourceId}-{rowId}" id
+// shape this relies on.
+function isEstablishedSource(item) {
+  return item.id?.startsWith('item-') || item.id?.startsWith(`source-${MAGICAL_JUNK_DRAWER_SOURCE_ID}-`)
+}
+
+// The monster types where the DM asked for an enforced mix between
+// established (SRD/Junk Drawer) and homebrew (a type's own dedicated
+// source) content -- everything worked on so far EXCEPT Dragon and
+// Humanoid, which the DM said explicitly "function by their own rules."
+// Add a type here once its own dedicated source exists and it's ready for
+// this treatment. Fey's monster path is included; Fey's Person path
+// (Loadout System) is NOT -- that path deliberately overlaps with
+// Humanoid's own rules, which are explicitly exempt from this balance
+// rule per the DM.
+const SOURCE_BALANCED_TYPES = new Set(['Aberration', 'Beast', 'Celestial', 'Construct', 'Elemental', 'Fey'])
 
 function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeValues, excludedPatterns, features, setting }) {
   const sizeTable = taxonomy.sizeLootTable?.[monsterType]
@@ -303,6 +341,23 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
   }
 
   const usedSlots = new Set()
+  const balanced = SOURCE_BALANCED_TYPES.has(monsterType)
+
+  // Tries to add candidates from `pool`, in shuffled order, until `picked`
+  // reaches `target` -- respecting anatomySlot and never adding the same
+  // item object twice. Shared by both the plain and balanced draw paths
+  // below so slot enforcement is identical either way.
+  function fillFrom(picked, pool, target) {
+    for (const candidate of shuffled(pool)) {
+      if (picked.length >= target) break
+      if (picked.includes(candidate)) continue
+      const slots = slotsOf(candidate)
+      if (slots.some((s) => usedSlots.has(s))) continue
+      picked.push(candidate)
+      slots.forEach((s) => usedSlots.add(s))
+    }
+  }
+
   const items = []
   Object.entries(tier).forEach(([kind, range]) => {
     if (SIZE_TABLE_META_KEYS.has(kind)) return
@@ -315,13 +370,25 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
       eligible = eligible.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
     }
     if (eligible.length === 0) return
+
     const picked = []
-    for (const candidate of shuffled(eligible)) {
-      if (picked.length >= n) break
-      const slots = slotsOf(candidate)
-      if (slots.some((s) => usedSlots.has(s))) continue
-      picked.push(candidate)
-      slots.forEach((s) => usedSlots.add(s))
+    if (balanced) {
+      // Split into established (SRD/Junk Drawer) vs homebrew (the type's
+      // dedicated source), fill roughly half from each -- WHICH side goes
+      // first is randomized per draw so neither side systematically wins
+      // the "gets the odd leftover slot" tiebreak over many rolls -- then
+      // backfill from the other side, then (only if slot conflicts left
+      // both sides short) from the full eligible pool, so a real mix is
+      // enforced first and totals still land on n whenever possible.
+      const established = eligible.filter(isEstablishedSource)
+      const homebrew = eligible.filter((i) => !isEstablishedSource(i))
+      const firstIsEstablished = Math.random() < 0.5
+      const [firstPool, secondPool] = firstIsEstablished ? [established, homebrew] : [homebrew, established]
+      fillFrom(picked, firstPool, Math.min(n, Math.ceil(n / 2)))
+      fillFrom(picked, secondPool, n)
+      if (picked.length < n) fillFrom(picked, eligible, n)
+    } else {
+      fillFrom(picked, eligible, n)
     }
     items.push(...picked)
   })
@@ -340,6 +407,104 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
   const gold = tier.goldRange ? randomInt(tier.goldRange[0], tier.goldRange[1]) : 0
 
   return { items, flavorItems, gold }
+}
+
+// --- The Loadout System ---------------------------------------------------
+// A named, reusable alternative to the kind-bucketed engine above, for
+// types where loot is "things you'd find on a person" rather than
+// anatomy -- built for Fey's Person path, written generically so a future
+// request ("implement the Loadout System with Humanoid") can point it at
+// any monster type's own `taxonomy.loadouts[role]` entry without engine
+// changes. See defaultLootTaxonomy.js's `loadouts` block for the full
+// schema (fixed / rankScaled / ranged / goldByRank) and per-role rules.
+
+// Rolls within [min,max], but 60% of the time narrows first to
+// [preferMin,preferMax] -- this is what makes "0-4 with a preference for
+// 2-3" land mostly in the preferred band without ever being IMPOSSIBLE to
+// roll a 0 or a 4, unlike a hard clamp would.
+function weightedRandInt(min, max, preferMin, preferMax) {
+  if (preferMin != null && preferMax != null && Math.random() < 0.6) {
+    return randomInt(preferMin, preferMax)
+  }
+  return randomInt(min, max)
+}
+
+// Resolves a loadout slot's `pool` name to the actual eligible items.
+// MartialWeapon/SimpleWeapon and Clothes/ArcaneFocus deliberately read
+// the SRD catalog's OWN pre-existing tags/category rather than needing
+// new per-item tagging (a "martial" weapon or "clothing"-tagged Gear item
+// is already exactly that, for any type that wants it) -- Boots/Helmet/
+// Shoes are small new base items added to dnd5eItems.js since the SRD
+// itself doesn't price separate footwear/headwear. Everything else reads
+// lootTags.loadoutPool, tagged per monsterType (see mockData.js/
+// dnd5eItems.js for the Fey tagging pass).
+// Firearms (Musket/Pistol) are tagged "martial" like any other weapon, but
+// they read as jarringly anachronistic for a fae Fighter/Trickster --
+// exactly the "hell-themed fire item for fey" mismatch the DM warned
+// about, just for tech-flavor instead of alignment-flavor. Excluded from
+// BOTH weapon pools regardless of monster type -- no Loadout-System user
+// built so far (Fey; Humanoid whenever it's pointed at this system) wants
+// a musket showing up as their "martial weapon."
+const LOADOUT_WEAPON_EXCLUDES = new Set(['Musket', 'Pistol'])
+
+function loadoutPoolFor(name, rawPool) {
+  switch (name) {
+    case 'MartialWeapon':
+      return rawPool.filter((i) => i.category === 'Weapon' && i.tags?.includes('martial') && !LOADOUT_WEAPON_EXCLUDES.has(i.name))
+    case 'SimpleWeapon':
+      return rawPool.filter((i) => i.category === 'Weapon' && i.tags?.includes('simple') && !LOADOUT_WEAPON_EXCLUDES.has(i.name))
+    case 'ArcaneFocus':
+      return rawPool.filter((i) => i.category === 'Focus' && i.name.startsWith('Arcane Focus'))
+    case 'Clothes':
+      return rawPool.filter((i) => i.tags?.includes('clothing'))
+    default:
+      return rawPool.filter((i) => i.lootTags?.loadoutPool === name)
+  }
+}
+
+function generateLoadoutLoot({ monsterType, role, rank, taxonomy, sources, excludedPatterns }) {
+  const loadout = taxonomy.loadouts?.[role]
+  if (!loadout) return { items: [], gold: 0 }
+
+  // Unlike the kind-bucketed engine, Loadout pools are NOT hard-scoped by
+  // monsterTypeTags for the tag-free pools (MartialWeapon/SimpleWeapon/
+  // Clothes/ArcaneFocus/Boots/Helmet/Shoes) -- those already only contain
+  // items that make sense for anyone using this system. The
+  // loadoutPool-tagged pools (MagicItem/MagicWeapon/Supplementary/Junk)
+  // DO still require monsterTypeTags to include this type, same
+  // hard-scoping convention as everywhere else, so a Fey-tagged whimsical
+  // item never leaks into a different type's Loadout draw.
+  const rawPool = buildItemPool('wares', sources).filter(
+    (i) => !i.lootTags?.loadoutPool || i.monsterTypeTags?.includes(monsterType)
+  )
+
+  const items = []
+  const usedNames = new Set()
+  function draw(pool, n) {
+    if (n <= 0) return
+    let avail = pool.filter((i) => !usedNames.has(i.name))
+    if (excludedPatterns && excludedPatterns.length > 0) {
+      avail = avail.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
+    }
+    const picked = shuffled(avail).slice(0, Math.min(n, avail.length))
+    picked.forEach((i) => usedNames.add(i.name))
+    items.push(...picked)
+  }
+
+  ;(loadout.fixed || []).forEach((slot) => draw(loadoutPoolFor(slot.pool, rawPool), slot.count))
+  ;(loadout.rankScaled || []).forEach((slot) => {
+    const [min, max] = slot.rankRange[rank] || [0, 0]
+    draw(loadoutPoolFor(slot.pool, rawPool), randomInt(min, max))
+  })
+  ;(loadout.ranged || []).forEach((slot) => {
+    const n = weightedRandInt(slot.min, slot.max, slot.preferMin, slot.preferMax)
+    draw(loadoutPoolFor(slot.pool, rawPool), n)
+  })
+
+  const goldRange = loadout.goldByRank?.[rank]
+  const gold = goldRange ? randomInt(goldRange[0], goldRange[1]) : 0
+
+  return { items, gold }
 }
 
 // Computes the SAME eligible pool and count limits generateKindBucketedLoot
@@ -390,8 +555,10 @@ function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeVal
       eligibleItems: eligible.map((i) => ({
         name: i.name, priceGp: i.priceGp, description: i.description,
         kind: i.lootTags?.kind, tags: i.lootTags, anatomySlot: i.lootTags?.anatomySlot,
+        established: isEstablishedSource(i),
       })),
       attributeSummary: 'not yet set by the DM -- infer the right tier and tags from the monster name/notes',
+      balanced: SOURCE_BALANCED_TYPES.has(monsterType),
     }
   }
 
@@ -426,10 +593,14 @@ function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeVal
   }
   const eligibleItems = eligible.map((i) => ({
     name: i.name, priceGp: i.priceGp, description: i.description, kind: i.lootTags.kind,
-    anatomySlot: i.lootTags?.anatomySlot,
+    anatomySlot: i.lootTags?.anatomySlot, established: isEstablishedSource(i),
   }))
 
-  return { countsByKind, eligibleItems, attributeSummary: Object.entries(dimValues).map(([k, v]) => `${k}=${v || '(any)'}`).join(', ') }
+  return {
+    countsByKind, eligibleItems,
+    attributeSummary: Object.entries(dimValues).map(([k, v]) => `${k}=${v || '(any)'}`).join(', '),
+    balanced: SOURCE_BALANCED_TYPES.has(monsterType),
+  }
 }
 
 // The other half of "make good guesses": baseline items that appear
@@ -1109,7 +1280,11 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
 
   function handleMonsterTypeChange(value) {
     setMonsterType(value)
-    setAttributeValues({})
+    // Fey defaults to 'Person' (unchecked "Is a Monster") so Role is
+    // visible right away -- attributeValues['fey-is-monster'] needs SOME
+    // value from the start, or showIf's exact 'Person' match never fires
+    // until the DM happens to click the checkbox at least once.
+    setAttributeValues(value === 'Fey' ? { 'fey-is-monster': 'Person' } : {})
     setFeatures({})
     setHasHorde(false)
     setHordeSize('')
@@ -1215,6 +1390,19 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
           )
         )}
       </div>
+
+      {monsterType === 'Fey' && (
+        <label className="flex items-center gap-1.5 text-sm font-display uppercase text-ink-soft">
+          <input
+            type="checkbox"
+            checked={attributeValues['fey-is-monster'] === 'Monster'}
+            onChange={(e) =>
+              setAttributeValues((prev) => ({ ...prev, 'fey-is-monster': e.target.checked ? 'Monster' : 'Person', 'fey-role': '' }))
+            }
+          />
+          Is a Monster <span className="text-ink-soft/50 normal-case ml-1">(unchecked = a person, e.g. an eladrin -- uses Role below instead)</span>
+        </label>
+      )}
 
       <DynamicAttributeFields attributes={typeAttributes} values={attributeValues} onChange={(attrId, val) => setAttributeValues((prev) => ({ ...prev, [attrId]: val }))} />
 
@@ -1358,7 +1546,14 @@ export default function LootTab() {
     setAiNotice('')
     const groupLists = await Promise.all(
       entities.map(async (e) => {
-        const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType]
+        // Fey is the one type where sizeLootTable having an entry does NOT
+        // mean "use the kind-bucketed engine" -- Is Monster (checked ->
+        // 'Monster') is what actually decides. Unchecked/'Person' routes
+        // to the Loadout System instead, further down, and must never
+        // fall into the ordinary kind-bucketed or AI-assist branches
+        // below (both keyed off isKindBucketed), hence overriding it here.
+        const isFeyPerson = e.monsterType === 'Fey' && e.attributeValues?.['fey-is-monster'] !== 'Monster'
+        const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType] && !isFeyPerson
         const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
         const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
         const tags = [e.monsterName || e.monsterType, ...attrTags, e.setting, e.notes].filter(Boolean)
@@ -1394,6 +1589,7 @@ export default function LootTab() {
                 attributeSummary: poolInfo.attributeSummary,
                 needsInference: poolInfo.needsInference,
                 tierOptions: poolInfo.tierOptions,
+                balanced: poolInfo.balanced,
               })
               mainGroup = { label, items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true }
             } catch (err) {
@@ -1420,6 +1616,20 @@ export default function LootTab() {
           })
           const flavorTagged = flavorItems.map((i) => ({ ...i, flavor: true }))
           mainGroup = { label, items: [...guaranteed, ...rolled, ...flavorTagged], gold }
+        }
+
+        // Fey Person path -- the Loadout System. Role and Rank both come
+        // straight out of attributeValues like any other attribute.
+        if (!mainGroup && isFeyPerson) {
+          const role = e.attributeValues?.['fey-role']
+          const rank = e.attributeValues?.['fey-rank']
+          if (role && rank) {
+            const { items: rolled, gold } = generateLoadoutLoot({
+              monsterType: e.monsterType, role, rank,
+              taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
+            })
+            mainGroup = { label, items: [...guaranteed, ...rolled], gold }
+          }
         }
 
         if (!mainGroup) {

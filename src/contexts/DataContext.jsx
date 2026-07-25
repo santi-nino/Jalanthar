@@ -42,6 +42,7 @@ const TAXONOMY_DICTIONARY_KEYS = [
   'sizeLootTable',
   'locationTypeGuaranteedItems',
   'locationTypeAttributes',
+  'loadouts',
 ]
 
 function mergeLootTaxonomy(defaults, live) {

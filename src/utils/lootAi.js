@@ -9,10 +9,13 @@
 // specific flavor genuinely isn't covered by anything already eligible.
 // Reuses the same Gemini-primary/Claude-fallback pattern as sourceAi.js.
 
-function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary, needsInference, tierOptions }) {
+function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary, needsInference, tierOptions, balanced }) {
   const poolText = eligibleItems
-    .map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.kind} | ${i.description}`)
+    .map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.kind} | ${balanced ? `[${i.established ? 'established' : 'homebrew'}] ` : ''}${i.description}`)
     .join('\n')
+  const balanceNote = balanced
+    ? '\nSOURCE MIX: each item above is marked [established] (official D&D catalog / the Magical Junk Drawer) or [homebrew] (this campaign’s own material). For every kind with items available in BOTH categories, aim for roughly an even split between them rather than picking mostly one -- do not let one category dominate a kind just because more of its items happen to be listed.\n'
+    : ''
 
   if (needsInference) {
     // The DM only filled in Specific Monster and/or Notes -- the
@@ -45,7 +48,7 @@ ${tierOptionsText}
 
 FULL ITEM POOL FOR THIS MONSTER TYPE (each item may be tagged to a specific kind and to other dimensions like origin/lineage/domain -- only select items that make sense for the inferred creature; an item tagged to a specific color/kingdom/domain that doesn't match this creature should NOT be picked):
 ${poolText || '(no items available)'}
-
+${balanceNote}
 TASK:
 1. Infer which tier above best fits the named monster and notes (e.g. "Giant Lizard" -> Large-equivalent tier; "Ancient Red Dragon" -> the Ancient tier).
 2. Infer any other relevant tags implied by the name (e.g. "Giant Lizard" implies Reptile-kingdom, "Red Dragon" implies Red lineage) and only select items compatible with those.
@@ -77,7 +80,7 @@ ${countsText}
 
 ELIGIBLE ITEMS (already filtered to match this creature's fields -- prefer selecting from this list):
 ${poolText || '(no items are currently eligible)'}
-
+${balanceNote}
 TASK:
 1. Read the Specific Monster name and notes carefully. If they describe a creature or context that shifts what makes sense (e.g. "orc priestess" implies religious/humanoid flavor even on a base orc; "Giant Lizard" implies a large reptile from a swamp-like environment), let that inform which eligible items you pick and how you interpret the notes -- but you are still bound by the exact count limits above and by the Monster Type's own established rules.
 2. SELECT items primarily from the ELIGIBLE ITEMS list above. This is your main job.
@@ -108,8 +111,41 @@ Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape
 //    the model padding a kind well past its stated max no longer survives
 //    normalization, regardless of whether it respected the instruction.
 // The existing invented-item cap (max 2 isNew items) runs last, unchanged.
-function normalizeResult(raw, validKinds, { maxByKind, slotByName } = {}) {
-  const items = Array.isArray(raw.items)
+//
+// originByName (optional, only set for source-balanced types -- see
+// SOURCE_BALANCED_TYPES in LootTab.jsx): when present, items are
+// re-ordered PER KIND, interleaving established/homebrew/invented before
+// the per-kind count cap below ever runs. The prompt already asks the
+// model to mix sources, but that's advisory only -- if the model just
+// listed every established item before every homebrew one (or vice
+// versa), the count cap would silently keep only whichever came first.
+// Interleaving first is what makes the cap actually land on a mix rather
+// than trusting the model's own ordering.
+function interleaveByOrigin(items, originByName) {
+  if (!originByName) return items
+  const kindOrder = []
+  const byKind = {}
+  for (const r of items) {
+    if (!byKind[r.kind]) { byKind[r.kind] = { established: [], homebrew: [], unknown: [] }; kindOrder.push(r.kind) }
+    const origin = originByName.get(r.name.toLowerCase())
+    const bucket = origin === true ? 'established' : origin === false ? 'homebrew' : 'unknown'
+    byKind[r.kind][bucket].push(r)
+  }
+  const result = []
+  for (const kind of kindOrder) {
+    const { established, homebrew, unknown } = byKind[kind]
+    const max = Math.max(established.length, homebrew.length, unknown.length)
+    for (let i = 0; i < max; i++) {
+      if (established[i]) result.push(established[i])
+      if (homebrew[i]) result.push(homebrew[i])
+      if (unknown[i]) result.push(unknown[i])
+    }
+  }
+  return result
+}
+
+function normalizeResult(raw, validKinds, { maxByKind, slotByName, originByName } = {}) {
+  let items = Array.isArray(raw.items)
     ? raw.items
         .map((r) => ({
           name: String(r.name || '').trim(),
@@ -120,6 +156,7 @@ function normalizeResult(raw, validKinds, { maxByKind, slotByName } = {}) {
         }))
         .filter((r) => r.name && validKinds.has(r.kind))
     : []
+  items = interleaveByOrigin(items, originByName)
 
   const seenNames = new Set()
   const usedSlots = new Set()
@@ -291,11 +328,11 @@ export async function generateAiHordeContents({ lineage, setting, notes, targetG
 // passed instead -- the AI infers the tier itself as part of the call.
 export async function generateAiAssistedLoot({
   monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary,
-  needsInference, tierOptions,
+  needsInference, tierOptions, balanced,
 }) {
   const prompt = buildPrompt({
     monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary,
-    needsInference, tierOptions,
+    needsInference, tierOptions, balanced,
   })
   const validKinds = needsInference
     ? new Set(
@@ -313,6 +350,13 @@ export async function generateAiAssistedLoot({
       .filter((i) => i.anatomySlot)
       .map((i) => [i.name.toLowerCase(), i.anatomySlot])
   )
+
+  // originByName: only built for source-balanced types (see `balanced`,
+  // set from LootTab.jsx's SOURCE_BALANCED_TYPES) -- true = established
+  // (SRD/Junk Drawer), false = homebrew. Feeds interleaveByOrigin above.
+  const originByName = balanced
+    ? new Map((eligibleItems || []).map((i) => [i.name.toLowerCase(), !!i.established]))
+    : null
 
   // maxByKind: the per-kind hard ceiling to enforce in code, not just
   // prompt text. In the normal path it's just countsByKind's own max. In
@@ -336,14 +380,14 @@ export async function generateAiAssistedLoot({
   let lastError = null
   try {
     const result = await callGemini(prompt)
-    if (result) return normalizeResult(result, validKinds, { maxByKind: resolveMaxByKind(result), slotByName })
+    if (result) return normalizeResult(result, validKinds, { maxByKind: resolveMaxByKind(result), slotByName, originByName })
   } catch (err) {
     console.error('Gemini loot assist failed, trying fallback:', err)
     lastError = err
   }
   try {
     const result = await callClaude(prompt)
-    if (result) return normalizeResult(result, validKinds, { maxByKind: resolveMaxByKind(result), slotByName })
+    if (result) return normalizeResult(result, validKinds, { maxByKind: resolveMaxByKind(result), slotByName, originByName })
   } catch (err) {
     console.error('Claude loot assist failed:', err)
     lastError = err
