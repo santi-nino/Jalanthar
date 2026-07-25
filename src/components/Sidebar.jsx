@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { IconMap, IconBuildings, IconResidents, IconRoster, IconLoot, IconKey, IconExit } from './icons'
 import ExportDataModal from './ExportDataModal'
 import UploadSourceModal from './UploadSourceModal'
+import { BUILD_VERSION } from '../data/version'
 
 const TABS = [
   { id: 'map', label: 'Map', Icon: IconMap },
@@ -130,6 +131,11 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
               <IconKey className="w-4 h-4 shrink-0" />
               <span className={collapsed ? 'md:hidden' : ''}>DM Login</span>
             </button>
+          )}
+          {isDm && !collapsed && (
+            <p className="text-[10px] text-parchment/30 text-center pt-1 leading-tight" title={BUILD_VERSION}>
+              {BUILD_VERSION}
+            </p>
           )}
         </div>
       </aside>

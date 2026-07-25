@@ -66,6 +66,37 @@ const { mockBuildings, mockNpcs, mockFamilies, mockSources } = await import(
   '../src/data/mockData.js'
 )
 
+// A small, explicit list of source documents that are entirely authored
+// here (mockData.js), not through the DM's own Upload Source scans --
+// currently "Hunter's & Trapper's Price Guide" and "Xenobiological
+// Specimen Ledger". For these specific IDs ONLY, content changes should
+// always reach Firestore even though the document already exists --
+// otherwise every future edit to their wares (new items, new tags, a
+// whole type's items replaced) gets silently skipped by the normal
+// skip-if-exists logic, exactly as happened when Beast's 27 old items
+// were replaced with 58 new ones and the change never actually reached
+// the live database. Any OTHER source ID (a DM's own uploaded content)
+// is deliberately NOT in this list and keeps the normal skip-if-exists
+// protection -- this only ever overwrites documents this script itself
+// is the sole author of.
+const PROGRAMMATIC_SOURCE_IDS = new Set(['src-hunters-trapper-guide-v2', 'src-xenobiological-ledger'])
+
+async function updateProgrammaticSources(docs) {
+  if (FORCE) return // --force already fully overwrote these, nothing more to do
+  const batch = db.batch()
+  let updated = 0
+  for (const d of docs) {
+    if (!PROGRAMMATIC_SOURCE_IDS.has(d.id)) continue
+    const { id, ...rest } = d
+    batch.set(db.collection('sources').doc(id), rest)
+    updated++
+  }
+  if (updated > 0) {
+    await batch.commit()
+  }
+  console.log(`"sources": force-updated ${updated} programmatically-authored source(s) with current content`)
+}
+
 async function seedCollection(name, docs) {
   const existingIds = FORCE
     ? new Set()
@@ -128,6 +159,7 @@ await mergeExistingBuildingResidents(mockBuildings, existingBuildingIds)
 await seedCollection('npcs', mockNpcs)
 await seedCollection('families', mockFamilies)
 await seedCollection('sources', mockSources)
+await updateProgrammaticSources(mockSources)
 
 console.log('\nDone.')
 process.exit(0)
