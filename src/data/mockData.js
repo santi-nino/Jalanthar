@@ -5717,6 +5717,118 @@ export const mockSources = [
         "tags": [],
         "priceOverride": "",
         "quantity": 1
+      },
+      {
+        "rowId": "row-beast-den-1",
+        "name": "Broken Arrow Shaft",
+        "basePrice": 0,
+        "description": "Snapped near the fletching -- whatever it hit didn't go down easy.",
+        "category": "Den",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {
+          "kind": "Den"
+        },
+        "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-den-2",
+        "name": "Bloodstained Cloak Scrap",
+        "basePrice": 1,
+        "description": "Torn cloth, stiff and dark. Best not to think too hard about whose it was.",
+        "category": "Den",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {
+          "kind": "Den"
+        },
+        "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-den-3",
+        "name": "Cracked Waterskin",
+        "basePrice": 1,
+        "description": "Punctured and long dry, dragged in and gnawed on out of curiosity more than hunger.",
+        "category": "Den",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {
+          "kind": "Den"
+        },
+        "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-den-4",
+        "name": "Gnawed Boot",
+        "basePrice": 2,
+        "description": "One boot, chewed through at the ankle. Its owner is nowhere in sight.",
+        "category": "Den",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {
+          "kind": "Den"
+        },
+        "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-den-5",
+        "name": "Splintered Torch Handle",
+        "basePrice": 1,
+        "description": "Burned out and broken -- the light didn't save whoever was carrying it.",
+        "category": "Den",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {
+          "kind": "Den"
+        },
+        "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-den-6",
+        "name": "Discarded Belt Pouch",
+        "basePrice": 3,
+        "description": "Empty, or nearly -- whatever was worth taking is long gone.",
+        "category": "Den",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {
+          "kind": "Den"
+        },
+        "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-den-7",
+        "name": "Frayed Rope End",
+        "basePrice": 1,
+        "description": "Chewed clean through, the rest of the coil nowhere to be found.",
+        "category": "Den",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {
+          "kind": "Den"
+        },
+        "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-den-8",
+        "name": "Bent Tent Stake",
+        "basePrice": 1,
+        "description": "Pulled up and carried off, for reasons known only to the beast.",
+        "category": "Den",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {
+          "kind": "Den"
+        },
+        "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
       }
     ],
     "menu": [],
@@ -6575,6 +6687,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Cleric/Devout"],
           "kind": "Religious",
           "domain": [
             "Light"
@@ -6596,6 +6709,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Cleric/Devout", "Traveler", "Wanderer"],
           "kind": "Religious",
           "domain": [
             "Light"
@@ -6617,6 +6731,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Noble"],
           "kind": "Treasure",
           "minRank": 0
         }
@@ -6635,6 +6750,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Noble", "Commoner"],
           "kind": "Religious",
           "domain": [
             "Life"
@@ -6656,6 +6772,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Scholar"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6673,6 +6790,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Trickster", "Bandit/Criminal"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6690,6 +6808,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Merchant", "Noble", "Trickster"],
           "kind": "Treasure",
           "minRank": 1
         }
@@ -6709,6 +6828,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Trickster", "Bandit/Criminal"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6727,6 +6847,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Trickster", "Bandit/Criminal"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6745,6 +6866,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Trickster", "Wanderer"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6765,6 +6887,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Trickster"],
           "kind": "Weapon",
           "loadoutPool": "MagicWeapon"
         }
@@ -6783,6 +6906,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Caster", "Mage/Caster", "Trickster"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6800,6 +6924,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Commoner", "Traveler"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6818,6 +6943,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Noble", "Trickster"],
           "kind": "Treasure",
           "domain": [
             "Light"
@@ -6839,6 +6965,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Commoner", "Noble", "Traveler"],
           "kind": "Treasure",
           "domain": [
             "Life"
@@ -6861,6 +6988,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Noble", "Commoner"],
           "loadoutPool": "Helmet"
         }
       },
@@ -6878,6 +7006,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Commoner", "Noble"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6896,6 +7025,7 @@ export const mockSources = [
           "Construct"
         ],
         "lootTags": {
+          "role": ["Laborer", "Commoner"],
           "kind": "Component"
         }
       },
@@ -6913,6 +7043,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Merchant"],
           "kind": "Religious",
           "domain": [
             "Knowledge"
@@ -6934,6 +7065,7 @@ export const mockSources = [
           "Construct"
         ],
         "lootTags": {
+          "role": ["Laborer", "Commoner"],
           "kind": "Component"
         }
       },
@@ -6952,6 +7084,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Traveler", "Wanderer", "Commoner"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -6969,6 +7102,7 @@ export const mockSources = [
           "Elemental"
         ],
         "lootTags": {
+          "role": ["Traveler", "Wanderer", "Commoner"],
           "kind": "Junk",
           "element": [
             "Water"
@@ -6989,6 +7123,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Commoner", "Wanderer", "Traveler"],
           "kind": "Treasure",
           "domain": [
             "Nature"
@@ -7010,6 +7145,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Scholar"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -7027,6 +7163,7 @@ export const mockSources = [
           "Celestial"
         ],
         "lootTags": {
+          "role": ["Cleric/Devout", "Traveler"],
           "kind": "Religious",
           "domain": [
             "Death"
@@ -7049,6 +7186,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Traveler", "Wanderer", "Guard/Soldier"],
           "loadoutPool": "Boots"
         }
       },
@@ -7067,6 +7205,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Noble", "Commoner"],
           "loadoutPool": "MagicItem"
         }
       },
@@ -7087,6 +7226,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Trickster", "Bandit/Criminal"],
           "kind": "Weapon",
           "loadoutPool": "MagicWeapon"
         }
@@ -7105,6 +7245,7 @@ export const mockSources = [
           "Fey"
         ],
         "lootTags": {
+          "role": ["Trickster", "Bandit/Criminal"],
           "loadoutPool": "MagicItem"
         }
       }

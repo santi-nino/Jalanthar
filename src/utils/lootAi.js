@@ -11,10 +11,10 @@
 
 function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary, needsInference, tierOptions, balanced }) {
   const poolText = eligibleItems
-    .map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.kind} | ${balanced ? `[${i.established ? 'established' : 'homebrew'}] ` : ''}${i.description}`)
+    .map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.kind} | ${balanced ? `[${i.established ? 'established' : 'original'}] ` : ''}${i.description}`)
     .join('\n')
   const balanceNote = balanced
-    ? '\nSOURCE MIX: each item above is marked [established] (official D&D catalog / the Magical Junk Drawer) or [homebrew] (this campaign’s own material). For every kind with items available in BOTH categories, aim for roughly an even split between them rather than picking mostly one -- do not let one category dominate a kind just because more of its items happen to be listed.\n'
+    ? '\nSOURCE MIX: each item above is marked [established] (official D&D catalog / the Magical Junk Drawer) or [original] (this campaign’s own material). For every kind with items available in BOTH categories, aim for roughly an even split between them rather than picking mostly one -- do not let one category dominate a kind just because more of its items happen to be listed.\n'
     : ''
 
   if (needsInference) {
@@ -114,10 +114,10 @@ Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape
 //
 // originByName (optional, only set for source-balanced types -- see
 // SOURCE_BALANCED_TYPES in LootTab.jsx): when present, items are
-// re-ordered PER KIND, interleaving established/homebrew/invented before
+// re-ordered PER KIND, interleaving established/original/invented before
 // the per-kind count cap below ever runs. The prompt already asks the
 // model to mix sources, but that's advisory only -- if the model just
-// listed every established item before every homebrew one (or vice
+// listed every established item before every original one (or vice
 // versa), the count cap would silently keep only whichever came first.
 // Interleaving first is what makes the cap actually land on a mix rather
 // than trusting the model's own ordering.
@@ -126,18 +126,18 @@ function interleaveByOrigin(items, originByName) {
   const kindOrder = []
   const byKind = {}
   for (const r of items) {
-    if (!byKind[r.kind]) { byKind[r.kind] = { established: [], homebrew: [], unknown: [] }; kindOrder.push(r.kind) }
+    if (!byKind[r.kind]) { byKind[r.kind] = { established: [], original: [], unknown: [] }; kindOrder.push(r.kind) }
     const origin = originByName.get(r.name.toLowerCase())
-    const bucket = origin === true ? 'established' : origin === false ? 'homebrew' : 'unknown'
+    const bucket = origin === true ? 'established' : origin === false ? 'original' : 'unknown'
     byKind[r.kind][bucket].push(r)
   }
   const result = []
   for (const kind of kindOrder) {
-    const { established, homebrew, unknown } = byKind[kind]
-    const max = Math.max(established.length, homebrew.length, unknown.length)
+    const { established, original, unknown } = byKind[kind]
+    const max = Math.max(established.length, original.length, unknown.length)
     for (let i = 0; i < max; i++) {
       if (established[i]) result.push(established[i])
-      if (homebrew[i]) result.push(homebrew[i])
+      if (original[i]) result.push(original[i])
       if (unknown[i]) result.push(unknown[i])
     }
   }
@@ -353,7 +353,7 @@ export async function generateAiAssistedLoot({
 
   // originByName: only built for source-balanced types (see `balanced`,
   // set from LootTab.jsx's SOURCE_BALANCED_TYPES) -- true = established
-  // (SRD/Junk Drawer), false = homebrew. Feeds interleaveByOrigin above.
+  // (SRD/Junk Drawer), false = original. Feeds interleaveByOrigin above.
   const originByName = balanced
     ? new Map((eligibleItems || []).map((i) => [i.name.toLowerCase(), !!i.established]))
     : null

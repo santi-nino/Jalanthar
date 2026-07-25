@@ -348,7 +348,7 @@ export const DEFAULT_LOOT_TAXONOMY = {
     //   can gate Role on it with no new mechanism needed. true -> the
     //   ordinary kind-bucketed path (sizeLootTable.Fey, KIND_BUCKET_CONFIG.
     //   Fey), same engine as Aberration/Beast/etc, drawing from a new
-    //   dedicated Fey source PLUS relevant established/homebrew items
+    //   dedicated Fey source PLUS relevant established/original items
     //   (subject to the source-balance rule same as those types). false ->
     //   Role appears and generation routes through the new Loadout System
     //   instead (see `loadouts` below and generateLoadoutLoot in
@@ -496,12 +496,18 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Huge: { Trophy: [2, 3], Organ: [2, 2], Pelt: [1, 2], Stomach: [1, 2] },
       Gargantuan: { Trophy: [3, 4], Organ: [2, 3], Pelt: [2, 2], Stomach: [2, 3] },
     },
+    // Den is new: this represents whatever's lying around a beast's lair
+    // rather than anything from the beast's own body -- broken arrows,
+    // bloody scraps of clothing, gnawed belongings, that kind of thing.
+    // Beast stays exempt from the established/original balance rule (its
+    // own dedicated source only, same as Dragon/Humanoid), so Den items
+    // live in that same dedicated source, not the SRD/Junk Drawer.
     Beast: {
-      Tiny: { Trophy: [1, 1], Parts: [0, 1], Pelt: [0, 0], Ration: [0, 0] },
-      Small: { Trophy: [1, 2], Parts: [1, 1], Pelt: [0, 1], Ration: [0, 1] },
-      Medium: { Trophy: [1, 2], Parts: [1, 2], Pelt: [1, 1], Ration: [1, 1] },
-      Large: { Trophy: [2, 2], Parts: [2, 3], Pelt: [1, 2], Ration: [1, 2] },
-      Huge: { Trophy: [2, 3], Parts: [3, 4], Pelt: [2, 2], Ration: [1, 2] },
+      Tiny: { Trophy: [1, 1], Parts: [0, 1], Pelt: [0, 0], Ration: [0, 0], Den: [0, 1] },
+      Small: { Trophy: [1, 2], Parts: [1, 1], Pelt: [0, 1], Ration: [0, 1], Den: [0, 1] },
+      Medium: { Trophy: [1, 2], Parts: [1, 2], Pelt: [1, 1], Ration: [1, 1], Den: [1, 1] },
+      Large: { Trophy: [2, 2], Parts: [2, 3], Pelt: [1, 2], Ration: [1, 2], Den: [1, 2] },
+      Huge: { Trophy: [2, 3], Parts: [3, 4], Pelt: [2, 2], Ration: [1, 2], Den: [1, 2] },
     },
     // Celestial's tiers are keyed by Rank, not Size -- same mechanism,
     // different name for the same "which attribute drives amount"
@@ -586,7 +592,7 @@ export const DEFAULT_LOOT_TAXONOMY = {
     // monster like a boggle doesn't have "organs" the way an Aberration
     // does) -- Trophy/Charm/Treasure/Whimsy instead, covering fae-specific
     // monster loot from the new dedicated Fey source plus relevant
-    // established/homebrew items (see SOURCE_BALANCED_TYPES in
+    // established/original items (see SOURCE_BALANCED_TYPES in
     // LootTab.jsx, which now includes Fey).
     Fey: {
       'Minor Fey': { Trophy: [0, 1], Charm: [1, 1], Treasure: [0, 1], Whimsy: [1, 2] },
@@ -711,7 +717,21 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // handing out tusks (or wings) to something that shouldn't have any.
   monsterTypeFeatures: {
     Beast: ['Tusks', 'Horns', 'Wings', 'Venom', 'Shell', 'Beak'],
-    Celestial: ['Bestial', 'Wings', 'Sentient'],
+    // 'Very Rare+' reuses this same checkbox mechanism to gate Very
+    // Rare/Legendary magic items -- the DM said these should be an
+    // explicit per-entity opt-in for Dragon, Elemental, Celestial,
+    // Fiend, Humanoid, and Fey (Dragon/Humanoid/Fiend aren't built out
+    // yet, so it's only wired up here for Celestial/Elemental/Fey for
+    // now -- add it to the others' own feature lists once they get
+    // this same treatment). Aberration and Construct were deliberately
+    // left off this list -- those two still never see Very Rare+ items
+    // at all, checkbox or not, since the DM didn't include them.
+    // Unchecked by default like every feature here, so a DM has to
+    // actively opt an entity in rather than legendary loot appearing
+    // by surprise.
+    Celestial: ['Bestial', 'Wings', 'Sentient', 'Very Rare+'],
+    Elemental: ['Very Rare+'],
+    Fey: ['Very Rare+'],
   },
 
   // Dragon-only: when a DM checks "Has Horde," Horde Size picks one of

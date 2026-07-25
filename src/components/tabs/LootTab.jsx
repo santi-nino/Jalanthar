@@ -267,9 +267,9 @@ const MAGICAL_JUNK_DRAWER_SOURCE_ID = 'sGUAccXFQOl3hwTl7OYP'
 
 // "Established" = the SRD catalog (dnd5eItems.js, ids like "item-42") or
 // the Magical Junk Drawer specifically -- content that isn't this
-// project's own homebrew. Everything else (Xenobiological Ledger, Empyreal
-// Reliquary, Animus Salvage Registry, Planebound Ledger, a type's future
-// dedicated source, etc) counts as "homebrew" for this purpose. See
+// project's own original material. Everything else (Xenobiological Ledger,
+// Empyreal Reliquary, Animus Salvage Registry, Planebound Ledger, a type's
+// future dedicated source, etc) counts as "original" for this purpose. See
 // itemPool.js's sourceItemsForPool for the "source-{sourceId}-{rowId}" id
 // shape this relies on.
 function isEstablishedSource(item) {
@@ -277,15 +277,17 @@ function isEstablishedSource(item) {
 }
 
 // The monster types where the DM asked for an enforced mix between
-// established (SRD/Junk Drawer) and homebrew (a type's own dedicated
-// source) content -- everything worked on so far EXCEPT Dragon and
-// Humanoid, which the DM said explicitly "function by their own rules."
-// Add a type here once its own dedicated source exists and it's ready for
-// this treatment. Fey's monster path is included; Fey's Person path
-// (Loadout System) is NOT -- that path deliberately overlaps with
-// Humanoid's own rules, which are explicitly exempt from this balance
-// rule per the DM.
-const SOURCE_BALANCED_TYPES = new Set(['Aberration', 'Beast', 'Celestial', 'Construct', 'Elemental', 'Fey'])
+// established (SRD/Junk Drawer) and original (a type's own dedicated
+// source) content -- everything worked on so far EXCEPT Dragon,
+// Humanoid, and Beast, which the DM said explicitly "function by their
+// own rules" (Beast added to this exemption list after the DM clarified
+// it should stay dedicated-source-only, same as Dragon/Humanoid, rather
+// than needing an established-item mix). Add a type here once its own
+// dedicated source exists and it's ready for this treatment. Fey's
+// monster path is included; Fey's Person path (Loadout System) is NOT --
+// that path deliberately overlaps with Humanoid's own rules, which are
+// explicitly exempt from this balance rule per the DM.
+const SOURCE_BALANCED_TYPES = new Set(['Aberration', 'Celestial', 'Construct', 'Elemental', 'Fey'])
 
 function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeValues, excludedPatterns, features, setting }) {
   const sizeTable = taxonomy.sizeLootTable?.[monsterType]
@@ -373,7 +375,7 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
 
     const picked = []
     if (balanced) {
-      // Split into established (SRD/Junk Drawer) vs homebrew (the type's
+      // Split into established (SRD/Junk Drawer) vs original (the type's
       // dedicated source), fill roughly half from each -- WHICH side goes
       // first is randomized per draw so neither side systematically wins
       // the "gets the odd leftover slot" tiebreak over many rolls -- then
@@ -381,9 +383,9 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
       // both sides short) from the full eligible pool, so a real mix is
       // enforced first and totals still land on n whenever possible.
       const established = eligible.filter(isEstablishedSource)
-      const homebrew = eligible.filter((i) => !isEstablishedSource(i))
+      const original = eligible.filter((i) => !isEstablishedSource(i))
       const firstIsEstablished = Math.random() < 0.5
-      const [firstPool, secondPool] = firstIsEstablished ? [established, homebrew] : [homebrew, established]
+      const [firstPool, secondPool] = firstIsEstablished ? [established, original] : [original, established]
       fillFrom(picked, firstPool, Math.min(n, Math.ceil(n / 2)))
       fillFrom(picked, secondPool, n)
       if (picked.length < n) fillFrom(picked, eligible, n)
@@ -1048,7 +1050,7 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
         These lists are the Loot tab's own — kept completely separate from any NPC species, job,
         or class list elsewhere on the site. Click any entry to rename it; changes save
         immediately. The monster catalog is seeded from the official SRD 5.2.1 (CC-BY-4.0) —
-        add homebrew entries the same way.
+        add original entries the same way.
       </p>
       <EditableWealthList items={taxonomy.wealthLevels} onChange={(v) => onSave({ wealthLevels: v })} />
 
