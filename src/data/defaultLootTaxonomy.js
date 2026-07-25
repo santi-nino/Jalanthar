@@ -232,13 +232,26 @@ export const DEFAULT_LOOT_TAXONOMY = {
       },
       {
         id: 'dragon-lineage', name: 'Lineage',
-        showIf: { attr: 'dragon-type', values: ['Metallic', 'Chromatic', 'Drake'] },
-        // One combined list rather than a dynamically-filtered one --
-        // the DM picks whichever matches their Type choice (Chromatic ->
-        // one of the 5 colors, Metallic -> the other 5, Drake -> one of
-        // the elemental/environmental flavors). Item tagging still
-        // enforces the real container regardless of which the DM picks;
-        // this is a UI simplification, not a rules gap.
+        // Now visible for Draconid too -- it gets the non-color subset,
+        // not full exclusion.
+        showIf: { attr: 'dragon-type', values: ['Metallic', 'Chromatic', 'Drake', 'Draconid'] },
+        // Genuinely conditional options, not just a combined list: which
+        // exact options show depends on the current Dragon Type. Drake
+        // is the only one that sees the full 15; Draconid sees only the
+        // 5 non-color (elemental/environmental) ones; Chromatic/Metallic
+        // each see just their own 5 colors.
+        optionsFor: {
+          Chromatic: ['Black', 'Blue', 'Green', 'Red', 'White'],
+          Metallic: ['Brass', 'Bronze', 'Copper', 'Gold', 'Silver'],
+          Drake: [
+            'Black', 'Blue', 'Green', 'Red', 'White',
+            'Brass', 'Bronze', 'Copper', 'Gold', 'Silver',
+            'Fire', 'Frost', 'Storm', 'Swamp', 'Forest',
+          ],
+          Draconid: ['Fire', 'Frost', 'Storm', 'Swamp', 'Forest'],
+        },
+        // Fallback only -- optionsFor is what actually renders once a
+        // Dragon Type is picked.
         options: [
           'Black', 'Blue', 'Green', 'Red', 'White',
           'Brass', 'Bronze', 'Copper', 'Gold', 'Silver',

@@ -4536,1000 +4536,6 @@ export const mockSources = [
         ]
       },
       {
-        "rowId": "row-trapper-53",
-        "name": "Black Dragon Horn",
-        "basePrice": 170,
-        "description": "Pitted and etched by the acid that once ran down it.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Black"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-54",
-        "name": "Blue Dragon Horn",
-        "basePrice": 180,
-        "description": "Crackles faintly with residual static when touched.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Blue"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-55",
-        "name": "Green Dragon Horn",
-        "basePrice": 170,
-        "description": "Faintly slick, and best handled with gloves.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Green"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-56",
-        "name": "Red Dragon Horn",
-        "basePrice": 190,
-        "description": "Warm to the touch no matter the season.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Red"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-57",
-        "name": "White Dragon Horn",
-        "basePrice": 160,
-        "description": "Cold enough to numb bare skin on contact.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "White"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-58",
-        "name": "Brass Dragon Horn",
-        "basePrice": 175,
-        "description": "Sun-warmed and gritty with desert sand.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Brass"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-59",
-        "name": "Bronze Dragon Horn",
-        "basePrice": 190,
-        "description": "Carries a faint ozone smell, like the air after a storm.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Bronze"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-60",
-        "name": "Copper Dragon Horn",
-        "basePrice": 180,
-        "description": "Etched with what might be the dragon's own claw-marks.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Copper"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-61",
-        "name": "Gold Dragon Horn",
-        "basePrice": 220,
-        "description": "Gleams like polished metal, untarnished by time.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Gold"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-62",
-        "name": "Silver Dragon Horn",
-        "basePrice": 200,
-        "description": "Cool and smooth, prized by jewelers.",
-        "category": "Horn",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Silver"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-63",
-        "name": "Black Dragon Wing (Membrane)",
-        "basePrice": 190,
-        "description": "Pockmarked with old acid scarring.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Black"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-64",
-        "name": "Blue Dragon Wing (Membrane)",
-        "basePrice": 200,
-        "description": "Thin enough to see light through, but tougher than steel plate.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Blue"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-65",
-        "name": "Green Dragon Wing (Membrane)",
-        "basePrice": 190,
-        "description": "Faintly mottled, and best not breathed in too closely.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Green"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-66",
-        "name": "Red Dragon Wing (Membrane)",
-        "basePrice": 210,
-        "description": "Leathery, near-indestructible, and still smells faintly of smoke.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Red"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-67",
-        "name": "White Dragon Wing (Membrane)",
-        "basePrice": 180,
-        "description": "Stiff with a permanent frost that never quite melts.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "White"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-68",
-        "name": "Brass Dragon Wing (Membrane)",
-        "basePrice": 195,
-        "description": "Dry and papery, like old parchment.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Brass"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-69",
-        "name": "Bronze Dragon Wing (Membrane)",
-        "basePrice": 210,
-        "description": "Crackles faintly with stored static.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Bronze"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-70",
-        "name": "Copper Dragon Wing (Membrane)",
-        "basePrice": 200,
-        "description": "Surprisingly ticklish, or so the legends claim.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Copper"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-71",
-        "name": "Gold Dragon Wing (Membrane)",
-        "basePrice": 240,
-        "description": "Edged with what looks like actual gold leaf.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Gold"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-72",
-        "name": "Silver Dragon Wing (Membrane)",
-        "basePrice": 220,
-        "description": "Cool, pale, and untouched by time.",
-        "category": "Wing",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Wing",
-          "lineage": [
-            "Silver"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-73",
-        "name": "Black Dragon Heart",
-        "basePrice": 300,
-        "description": "Still faintly warm, and said to hold the last ember of the dragon's fury.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Black"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-74",
-        "name": "Blue Dragon Heart",
-        "basePrice": 310,
-        "description": "Crackles faintly if you listen closely.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Blue"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-75",
-        "name": "Green Dragon Heart",
-        "basePrice": 300,
-        "description": "Best handled with gloves and a very good reason.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Green"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-76",
-        "name": "Red Dragon Heart",
-        "basePrice": 320,
-        "description": "Radiates heat long after the rest of the body has gone cold.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Red"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-77",
-        "name": "White Dragon Heart",
-        "basePrice": 290,
-        "description": "Cold as the day the dragon died.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "White"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-78",
-        "name": "Brass Dragon Heart",
-        "basePrice": 300,
-        "description": "Radiates a dry, desert heat.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Brass"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-79",
-        "name": "Bronze Dragon Heart",
-        "basePrice": 330,
-        "description": "Hums faintly, like distant thunder.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Bronze"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-80",
-        "name": "Copper Dragon Heart",
-        "basePrice": 310,
-        "description": "Surprisingly light for its size.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Copper"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-81",
-        "name": "Gold Dragon Heart",
-        "basePrice": 380,
-        "description": "Said to never stop glowing faintly, even removed.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Gold"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-82",
-        "name": "Silver Dragon Heart",
-        "basePrice": 360,
-        "description": "Untouched by decay, centuries after the kill.",
-        "category": "Heart",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "alchemical"
-        ],
-        "lootTags": {
-          "kind": "Heart",
-          "lineage": [
-            "Silver"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-83",
-        "name": "Black Dragon Fang",
-        "basePrice": 135,
-        "description": "Long enough to be re-hafted into a genuine dagger, and sharp enough to matter.",
-        "category": "Fang",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material",
-          "weapon-material"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Black"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-84",
-        "name": "Red Dragon Fang",
-        "basePrice": 140,
-        "description": "Long enough to be re-hafted into a genuine dagger, and sharp enough to matter.",
-        "category": "Fang",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material",
-          "weapon-material"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Red"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-85",
-        "name": "Blue Dragon Fang",
-        "basePrice": 138,
-        "description": "Faintly warm and crackling, even long after the kill.",
-        "category": "Fang",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material",
-          "weapon-material"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Blue"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-86",
-        "name": "Gold Dragon Fang",
-        "basePrice": 175,
-        "description": "Gleaming and near-untarnished, worth a small fortune to the right buyer.",
-        "category": "Fang",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material",
-          "weapon-material"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Gold"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-87",
-        "name": "Black Dragon Claw",
-        "basePrice": 130,
-        "description": "Etched with old acid scarring; still holds an edge.",
-        "category": "Claw",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material",
-          "weapon-material"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Black"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-88",
-        "name": "Red Dragon Claw",
-        "basePrice": 135,
-        "description": "Warm to the touch, sharp enough to serve as a wicked dagger.",
-        "category": "Claw",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material",
-          "weapon-material"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Red"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-89",
-        "name": "Silver Dragon Claw",
-        "basePrice": 145,
-        "description": "Cool and pale, prized by silversmiths for the metal it's set into.",
-        "category": "Claw",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material",
-          "weapon-material"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Silver"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-90",
-        "name": "Black Dragon Scale",
-        "basePrice": 90,
-        "description": "Pitted with old acid scarring, tougher than plate armor.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Black"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-91",
-        "name": "Blue Dragon Scale",
-        "basePrice": 95,
-        "description": "A single scale, still crackling faintly with static.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Blue"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-92",
-        "name": "Green Dragon Scale",
-        "basePrice": 90,
-        "description": "Faintly slick to the touch.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Green"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-93",
-        "name": "Red Dragon Scale",
-        "basePrice": 100,
-        "description": "Warm to the touch, prized by armorers.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Red"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-94",
-        "name": "White Dragon Scale",
-        "basePrice": 85,
-        "description": "Cold enough to frost over in a warm room.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "White"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-95",
-        "name": "Brass Dragon Scale",
-        "basePrice": 92,
-        "description": "Warm and gritty, like sun-baked sand.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Brass"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-96",
-        "name": "Bronze Dragon Scale",
-        "basePrice": 100,
-        "description": "Smells faintly of ozone.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Bronze"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-97",
-        "name": "Copper Dragon Scale",
-        "basePrice": 95,
-        "description": "Etched with faint claw-mark patterns.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Copper"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-98",
-        "name": "Gold Dragon Scale",
-        "basePrice": 130,
-        "description": "Gleams like real gold, and is worth nearly as much.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Gold"
-          ]
-        }
-      },
-      {
-        "rowId": "row-trapper-99",
-        "name": "Silver Dragon Scale",
-        "basePrice": 115,
-        "description": "Cool and untarnished, prized by silversmiths.",
-        "category": "Scale",
-        "priceOverride": "",
-        "quantity": 1,
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "tags": [
-          "craft-material"
-        ],
-        "lootTags": {
-          "kind": "Color-Specific",
-          "lineage": [
-            "Silver"
-          ]
-        }
-      },
-      {
         "rowId": "row-beast-1",
         "name": "Weathered Skull Fragment",
         "basePrice": 6,
@@ -6693,984 +5699,6 @@ export const mockSources = [
           ]
         },
         "tags": [],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-1",
-        "name": "Green Dragon Fang",
-        "basePrice": 138,
-        "description": "Long enough to function like a dagger, faintly sticky even when clean.",
-        "category": "Fang",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Green"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-2",
-        "name": "White Dragon Fang",
-        "basePrice": 130,
-        "description": "Cold enough to sting bare skin, even sheathed.",
-        "category": "Fang",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "White"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-3",
-        "name": "Brass Dragon Fang",
-        "basePrice": 132,
-        "description": "Warm and slightly porous, unlike most dragons' teeth.",
-        "category": "Fang",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Brass"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-4",
-        "name": "Bronze Dragon Fang",
-        "basePrice": 140,
-        "description": "A faint static charge lingers on the enamel.",
-        "category": "Fang",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Bronze"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-5",
-        "name": "Copper Dragon Fang",
-        "basePrice": 136,
-        "description": "Faintly corroded at the tip, despite being otherwise intact.",
-        "category": "Fang",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Copper"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-6",
-        "name": "Silver Dragon Fang",
-        "basePrice": 148,
-        "description": "Cold to the touch, no matter how long it's held.",
-        "category": "Fang",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Fang",
-          "lineage": [
-            "Silver"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-7",
-        "name": "Blue Dragon Talon",
-        "basePrice": 140,
-        "description": "Curved and sand-scoured smooth at the tip.",
-        "category": "Talon",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Blue"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-8",
-        "name": "Green Dragon Talon",
-        "basePrice": 130,
-        "description": "Long and slightly hooked, stained faintly green at the base.",
-        "category": "Talon",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Green"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-9",
-        "name": "White Dragon Talon",
-        "basePrice": 125,
-        "description": "Frost-rimed even well after removal.",
-        "category": "Talon",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "White"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-10",
-        "name": "Brass Dragon Talon",
-        "basePrice": 128,
-        "description": "Blunter than most dragon talons \u2014 brass dragons dig more than they fight.",
-        "category": "Talon",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Brass"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-11",
-        "name": "Bronze Dragon Talon",
-        "basePrice": 142,
-        "description": "Salt-crusted, pitted from long exposure to sea air.",
-        "category": "Talon",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Bronze"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-12",
-        "name": "Copper Dragon Talon",
-        "basePrice": 132,
-        "description": "The tip has a faint greenish patina, like aged metal.",
-        "category": "Talon",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Copper"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-13",
-        "name": "Gold Dragon Talon",
-        "basePrice": 165,
-        "description": "Polished smooth, almost ornamental despite the obvious edge.",
-        "category": "Talon",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Talon",
-          "lineage": [
-            "Gold"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-14",
-        "name": "Black Dragon Breath Organ (Acid)",
-        "basePrice": 220,
-        "description": "A sac of corrosive fluid, sealed tight against its own bite.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Black"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-15",
-        "name": "Blue Dragon Breath Organ (Lightning)",
-        "basePrice": 230,
-        "description": "Crackles faintly if handled with bare, damp hands.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Blue"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-16",
-        "name": "Green Dragon Breath Organ (Poison)",
-        "basePrice": 215,
-        "description": "Handle with tongs. The vapor alone stings the eyes.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Green"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-17",
-        "name": "Red Dragon Breath Organ (Fire)",
-        "basePrice": 240,
-        "description": "Warm long after removal, and slow to cool further.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Red"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-18",
-        "name": "White Dragon Breath Organ (Cold)",
-        "basePrice": 210,
-        "description": "Frost forms on anything left touching it too long.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "White"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-19",
-        "name": "Brass Dragon Breath Organ (Fire)",
-        "basePrice": 215,
-        "description": "Warm and dry, smells faintly of embers.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Brass"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-20",
-        "name": "Bronze Dragon Breath Organ (Lightning)",
-        "basePrice": 235,
-        "description": "A faint charge lingers, enough to raise the hair on your arm.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Bronze"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-21",
-        "name": "Copper Dragon Breath Organ (Acid)",
-        "basePrice": 225,
-        "description": "Corrosive residue has etched the inside of its own housing.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Copper"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-22",
-        "name": "Gold Dragon Breath Organ (Fire)",
-        "basePrice": 280,
-        "description": "Radiates heat evenly, never quite cooling to ambient.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Gold"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-23",
-        "name": "Silver Dragon Breath Organ (Cold)",
-        "basePrice": 260,
-        "description": "Frost-rimed no matter the surrounding temperature.",
-        "category": "Breath Organ",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Breath Organ",
-          "lineage": [
-            "Silver"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-24",
-        "name": "Black Dragon Stomach Contents",
-        "basePrice": 60,
-        "description": "Bones, coin, and things better left unidentified, dissolving slowly.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Black"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-25",
-        "name": "Blue Dragon Stomach Contents",
-        "basePrice": 65,
-        "description": "Sand-scoured bones and a few desert coins, fused together.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Blue"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-26",
-        "name": "Green Dragon Stomach Contents",
-        "basePrice": 55,
-        "description": "Mostly plant matter and bone, and one very old dagger.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Green"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-27",
-        "name": "Red Dragon Stomach Contents",
-        "basePrice": 60,
-        "description": "Ash, bone, and slag \u2014 whatever was here didn't survive the heat.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Red"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-28",
-        "name": "White Dragon Stomach Contents",
-        "basePrice": 50,
-        "description": "Frozen solid. Whatever's inside will have to wait to be identified.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "White"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-29",
-        "name": "Brass Dragon Stomach Contents",
-        "basePrice": 55,
-        "description": "Mostly sand and bone \u2014 brass dragons prefer to talk before they eat.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Brass"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-30",
-        "name": "Bronze Dragon Stomach Contents",
-        "basePrice": 65,
-        "description": "Storm-tossed debris, driftwood, and a few waterlogged coins.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Bronze"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-31",
-        "name": "Copper Dragon Stomach Contents",
-        "basePrice": 58,
-        "description": "A joke, half-digested, along with the usual bone and coin.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Copper"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-32",
-        "name": "Gold Dragon Stomach Contents",
-        "basePrice": 90,
-        "description": "Remarkably orderly for a stomach. Coin sorted almost by size.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Gold"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-dragon-anatomy-33",
-        "name": "Silver Dragon Stomach Contents",
-        "basePrice": 75,
-        "description": "Mountain-worn stone and bone, packed tight with old frost.",
-        "category": "Stomach",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Stomach",
-          "lineage": [
-            "Silver"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-1",
-        "name": "Tamed Drake Collar (Worn)",
-        "basePrice": 15,
-        "description": "Leather and brass, clearly made for a creature that answered to a name.",
-        "category": "Trophy",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Trophy"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-2",
-        "name": "Feral Claw Bundle",
-        "basePrice": 20,
-        "description": "Uneven and chipped \u2014 whatever wore these fought for everything it had.",
-        "category": "Trophy",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Trophy"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-3",
-        "name": "Mountain Drake Horn Fragment",
-        "basePrice": 25,
-        "description": "Worn smooth by wind and altitude.",
-        "category": "Trophy",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Trophy"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-4",
-        "name": "Coastal Drake Fin-Spine",
-        "basePrice": 18,
-        "description": "Salt-crusted and still faintly damp.",
-        "category": "Trophy",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Trophy"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-5",
-        "name": "Swamp Drake Jawbone",
-        "basePrice": 20,
-        "description": "Half-sunk in muck for who knows how long before it was found.",
-        "category": "Trophy",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Trophy"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-6",
-        "name": "Wild Drake Skull, Small",
-        "basePrice": 22,
-        "description": "Small enough to have belonged to something young \u2014 or something that simply never grew large.",
-        "category": "Trophy",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Trophy"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-7",
-        "name": "Drake Hide Scrap",
-        "basePrice": 8,
-        "description": "Tougher than it looks for how thin it is.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-8",
-        "name": "Small Wing Membrane (Drake)",
-        "basePrice": 10,
-        "description": "A fraction the size of a true dragon's, but the same basic structure.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-9",
-        "name": "Draconid Talon, Blunt",
-        "basePrice": 6,
-        "description": "Worn down from digging or scrambling more than fighting.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-10",
-        "name": "Domesticated Drake Scale",
-        "basePrice": 5,
-        "description": "Duller than a wild drake's \u2014 years of handling wear the shine off.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts"
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-11",
-        "name": "Fire-Warmed Scale",
-        "basePrice": 12,
-        "description": "Stays faintly warm no matter the ambient temperature.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts",
-          "lineage": [
-            "Fire"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-12",
-        "name": "Frost-Rimed Scale",
-        "basePrice": 12,
-        "description": "A thin layer of frost reforms within minutes of being wiped clean.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts",
-          "lineage": [
-            "Frost"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-13",
-        "name": "Storm-Charged Scale",
-        "basePrice": 14,
-        "description": "A faint static charge builds on it during any approaching storm.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts",
-          "lineage": [
-            "Storm"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-14",
-        "name": "Bog-Slick Scale",
-        "basePrice": 9,
-        "description": "Never quite dries out, no matter how long it's stored.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts",
-          "lineage": [
-            "Swamp"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
-        "priceOverride": "",
-        "quantity": 1
-      },
-      {
-        "rowId": "row-drake-15",
-        "name": "Bark-Textured Scale",
-        "basePrice": 9,
-        "description": "Rough and mottled, easy to mistake for actual bark at a glance.",
-        "category": "Parts",
-        "monsterTypeTags": [
-          "Dragon"
-        ],
-        "lootTags": {
-          "kind": "Parts",
-          "lineage": [
-            "Forest"
-          ]
-        },
-        "tags": [
-          "craft-material"
-        ],
         "priceOverride": "",
         "quantity": 1
       }
@@ -10858,5 +8886,1986 @@ export const mockSources = [
     "menu": [],
     "services": [],
     "createdAt": 1753600000000
+  },
+  {
+    "id": "src-dragonslayers-ledger",
+    "name": "The Dragonslayer's Ledger",
+    "wares": [
+      {
+        "rowId": "row-trapper-53",
+        "name": "Black Dragon Horn",
+        "basePrice": 170,
+        "description": "Pitted and etched by the acid that once ran down it.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Black"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-54",
+        "name": "Blue Dragon Horn",
+        "basePrice": 180,
+        "description": "Crackles faintly with residual static when touched.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Blue"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-55",
+        "name": "Green Dragon Horn",
+        "basePrice": 170,
+        "description": "Faintly slick, and best handled with gloves.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Green"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-56",
+        "name": "Red Dragon Horn",
+        "basePrice": 190,
+        "description": "Warm to the touch no matter the season.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Red"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-57",
+        "name": "White Dragon Horn",
+        "basePrice": 160,
+        "description": "Cold enough to numb bare skin on contact.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "White"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-58",
+        "name": "Brass Dragon Horn",
+        "basePrice": 175,
+        "description": "Sun-warmed and gritty with desert sand.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Brass"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-59",
+        "name": "Bronze Dragon Horn",
+        "basePrice": 190,
+        "description": "Carries a faint ozone smell, like the air after a storm.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Bronze"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-60",
+        "name": "Copper Dragon Horn",
+        "basePrice": 180,
+        "description": "Etched with what might be the dragon's own claw-marks.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Copper"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-61",
+        "name": "Gold Dragon Horn",
+        "basePrice": 220,
+        "description": "Gleams like polished metal, untarnished by time.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Gold"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-62",
+        "name": "Silver Dragon Horn",
+        "basePrice": 200,
+        "description": "Cool and smooth, prized by jewelers.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Silver"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-63",
+        "name": "Black Dragon Wing (Membrane)",
+        "basePrice": 190,
+        "description": "Pockmarked with old acid scarring.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Black"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-64",
+        "name": "Blue Dragon Wing (Membrane)",
+        "basePrice": 200,
+        "description": "Thin enough to see light through, but tougher than steel plate.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Blue"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-65",
+        "name": "Green Dragon Wing (Membrane)",
+        "basePrice": 190,
+        "description": "Faintly mottled, and best not breathed in too closely.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Green"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-66",
+        "name": "Red Dragon Wing (Membrane)",
+        "basePrice": 210,
+        "description": "Leathery, near-indestructible, and still smells faintly of smoke.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Red"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-67",
+        "name": "White Dragon Wing (Membrane)",
+        "basePrice": 180,
+        "description": "Stiff with a permanent frost that never quite melts.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "White"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-68",
+        "name": "Brass Dragon Wing (Membrane)",
+        "basePrice": 195,
+        "description": "Dry and papery, like old parchment.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Brass"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-69",
+        "name": "Bronze Dragon Wing (Membrane)",
+        "basePrice": 210,
+        "description": "Crackles faintly with stored static.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Bronze"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-70",
+        "name": "Copper Dragon Wing (Membrane)",
+        "basePrice": 200,
+        "description": "Surprisingly ticklish, or so the legends claim.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Copper"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-71",
+        "name": "Gold Dragon Wing (Membrane)",
+        "basePrice": 240,
+        "description": "Edged with what looks like actual gold leaf.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Gold"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-72",
+        "name": "Silver Dragon Wing (Membrane)",
+        "basePrice": 220,
+        "description": "Cool, pale, and untouched by time.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Wing",
+          "lineage": [
+            "Silver"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-73",
+        "name": "Black Dragon Heart",
+        "basePrice": 300,
+        "description": "Still faintly warm, and said to hold the last ember of the dragon's fury.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Black"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-74",
+        "name": "Blue Dragon Heart",
+        "basePrice": 310,
+        "description": "Crackles faintly if you listen closely.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Blue"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-75",
+        "name": "Green Dragon Heart",
+        "basePrice": 300,
+        "description": "Best handled with gloves and a very good reason.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Green"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-76",
+        "name": "Red Dragon Heart",
+        "basePrice": 320,
+        "description": "Radiates heat long after the rest of the body has gone cold.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Red"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-77",
+        "name": "White Dragon Heart",
+        "basePrice": 290,
+        "description": "Cold as the day the dragon died.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "White"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-78",
+        "name": "Brass Dragon Heart",
+        "basePrice": 300,
+        "description": "Radiates a dry, desert heat.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Brass"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-79",
+        "name": "Bronze Dragon Heart",
+        "basePrice": 330,
+        "description": "Hums faintly, like distant thunder.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Bronze"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-80",
+        "name": "Copper Dragon Heart",
+        "basePrice": 310,
+        "description": "Surprisingly light for its size.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Copper"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-81",
+        "name": "Gold Dragon Heart",
+        "basePrice": 380,
+        "description": "Said to never stop glowing faintly, even removed.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Gold"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-82",
+        "name": "Silver Dragon Heart",
+        "basePrice": 360,
+        "description": "Untouched by decay, centuries after the kill.",
+        "category": "Heart",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "alchemical"
+        ],
+        "lootTags": {
+          "kind": "Heart",
+          "lineage": [
+            "Silver"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-83",
+        "name": "Black Dragon Fang",
+        "basePrice": 135,
+        "description": "Long enough to be re-hafted into a genuine dagger, and sharp enough to matter.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Black"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-84",
+        "name": "Red Dragon Fang",
+        "basePrice": 140,
+        "description": "Long enough to be re-hafted into a genuine dagger, and sharp enough to matter.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Red"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-85",
+        "name": "Blue Dragon Fang",
+        "basePrice": 138,
+        "description": "Faintly warm and crackling, even long after the kill.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Blue"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-86",
+        "name": "Gold Dragon Fang",
+        "basePrice": 175,
+        "description": "Gleaming and near-untarnished, worth a small fortune to the right buyer.",
+        "category": "Fang",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Gold"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-87",
+        "name": "Black Dragon Claw",
+        "basePrice": 130,
+        "description": "Etched with old acid scarring; still holds an edge.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Black"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-88",
+        "name": "Red Dragon Claw",
+        "basePrice": 135,
+        "description": "Warm to the touch, sharp enough to serve as a wicked dagger.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Red"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-89",
+        "name": "Silver Dragon Claw",
+        "basePrice": 145,
+        "description": "Cool and pale, prized by silversmiths for the metal it's set into.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material",
+          "weapon-material"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Silver"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-90",
+        "name": "Black Dragon Scale",
+        "basePrice": 90,
+        "description": "Pitted with old acid scarring, tougher than plate armor.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Black"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-91",
+        "name": "Blue Dragon Scale",
+        "basePrice": 95,
+        "description": "A single scale, still crackling faintly with static.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Blue"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-92",
+        "name": "Green Dragon Scale",
+        "basePrice": 90,
+        "description": "Faintly slick to the touch.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Green"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-93",
+        "name": "Red Dragon Scale",
+        "basePrice": 100,
+        "description": "Warm to the touch, prized by armorers.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Red"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-94",
+        "name": "White Dragon Scale",
+        "basePrice": 85,
+        "description": "Cold enough to frost over in a warm room.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "White"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-95",
+        "name": "Brass Dragon Scale",
+        "basePrice": 92,
+        "description": "Warm and gritty, like sun-baked sand.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Brass"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-96",
+        "name": "Bronze Dragon Scale",
+        "basePrice": 100,
+        "description": "Smells faintly of ozone.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Bronze"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-97",
+        "name": "Copper Dragon Scale",
+        "basePrice": 95,
+        "description": "Etched with faint claw-mark patterns.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Copper"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-98",
+        "name": "Gold Dragon Scale",
+        "basePrice": 130,
+        "description": "Gleams like real gold, and is worth nearly as much.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Gold"
+          ]
+        }
+      },
+      {
+        "rowId": "row-trapper-99",
+        "name": "Silver Dragon Scale",
+        "basePrice": 115,
+        "description": "Cool and untarnished, prized by silversmiths.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "tags": [
+          "craft-material"
+        ],
+        "lootTags": {
+          "kind": "Color-Specific",
+          "lineage": [
+            "Silver"
+          ]
+        }
+      },
+      {
+        "rowId": "row-dragon-anatomy-1",
+        "name": "Green Dragon Fang",
+        "basePrice": 138,
+        "description": "Long enough to function like a dagger, faintly sticky even when clean.",
+        "category": "Fang",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Green"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-2",
+        "name": "White Dragon Fang",
+        "basePrice": 130,
+        "description": "Cold enough to sting bare skin, even sheathed.",
+        "category": "Fang",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "White"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-3",
+        "name": "Brass Dragon Fang",
+        "basePrice": 132,
+        "description": "Warm and slightly porous, unlike most dragons' teeth.",
+        "category": "Fang",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Brass"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-4",
+        "name": "Bronze Dragon Fang",
+        "basePrice": 140,
+        "description": "A faint static charge lingers on the enamel.",
+        "category": "Fang",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Bronze"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-5",
+        "name": "Copper Dragon Fang",
+        "basePrice": 136,
+        "description": "Faintly corroded at the tip, despite being otherwise intact.",
+        "category": "Fang",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Copper"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-6",
+        "name": "Silver Dragon Fang",
+        "basePrice": 148,
+        "description": "Cold to the touch, no matter how long it's held.",
+        "category": "Fang",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Fang",
+          "lineage": [
+            "Silver"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-7",
+        "name": "Blue Dragon Talon",
+        "basePrice": 140,
+        "description": "Curved and sand-scoured smooth at the tip.",
+        "category": "Talon",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Blue"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-8",
+        "name": "Green Dragon Talon",
+        "basePrice": 130,
+        "description": "Long and slightly hooked, stained faintly green at the base.",
+        "category": "Talon",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Green"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-9",
+        "name": "White Dragon Talon",
+        "basePrice": 125,
+        "description": "Frost-rimed even well after removal.",
+        "category": "Talon",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "White"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-10",
+        "name": "Brass Dragon Talon",
+        "basePrice": 128,
+        "description": "Blunter than most dragon talons \u2014 brass dragons dig more than they fight.",
+        "category": "Talon",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Brass"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-11",
+        "name": "Bronze Dragon Talon",
+        "basePrice": 142,
+        "description": "Salt-crusted, pitted from long exposure to sea air.",
+        "category": "Talon",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Bronze"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-12",
+        "name": "Copper Dragon Talon",
+        "basePrice": 132,
+        "description": "The tip has a faint greenish patina, like aged metal.",
+        "category": "Talon",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Copper"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-13",
+        "name": "Gold Dragon Talon",
+        "basePrice": 165,
+        "description": "Polished smooth, almost ornamental despite the obvious edge.",
+        "category": "Talon",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Talon",
+          "lineage": [
+            "Gold"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-14",
+        "name": "Black Dragon Breath Organ (Acid)",
+        "basePrice": 220,
+        "description": "A sac of corrosive fluid, sealed tight against its own bite.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Black"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-15",
+        "name": "Blue Dragon Breath Organ (Lightning)",
+        "basePrice": 230,
+        "description": "Crackles faintly if handled with bare, damp hands.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Blue"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-16",
+        "name": "Green Dragon Breath Organ (Poison)",
+        "basePrice": 215,
+        "description": "Handle with tongs. The vapor alone stings the eyes.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Green"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-17",
+        "name": "Red Dragon Breath Organ (Fire)",
+        "basePrice": 240,
+        "description": "Warm long after removal, and slow to cool further.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Red"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-18",
+        "name": "White Dragon Breath Organ (Cold)",
+        "basePrice": 210,
+        "description": "Frost forms on anything left touching it too long.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "White"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-19",
+        "name": "Brass Dragon Breath Organ (Fire)",
+        "basePrice": 215,
+        "description": "Warm and dry, smells faintly of embers.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Brass"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-20",
+        "name": "Bronze Dragon Breath Organ (Lightning)",
+        "basePrice": 235,
+        "description": "A faint charge lingers, enough to raise the hair on your arm.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Bronze"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-21",
+        "name": "Copper Dragon Breath Organ (Acid)",
+        "basePrice": 225,
+        "description": "Corrosive residue has etched the inside of its own housing.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Copper"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-22",
+        "name": "Gold Dragon Breath Organ (Fire)",
+        "basePrice": 280,
+        "description": "Radiates heat evenly, never quite cooling to ambient.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Gold"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-23",
+        "name": "Silver Dragon Breath Organ (Cold)",
+        "basePrice": 260,
+        "description": "Frost-rimed no matter the surrounding temperature.",
+        "category": "Breath Organ",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Breath Organ",
+          "lineage": [
+            "Silver"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-24",
+        "name": "Black Dragon Stomach Contents",
+        "basePrice": 60,
+        "description": "Bones, coin, and things better left unidentified, dissolving slowly.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Black"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-25",
+        "name": "Blue Dragon Stomach Contents",
+        "basePrice": 65,
+        "description": "Sand-scoured bones and a few desert coins, fused together.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Blue"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-26",
+        "name": "Green Dragon Stomach Contents",
+        "basePrice": 55,
+        "description": "Mostly plant matter and bone, and one very old dagger.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Green"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-27",
+        "name": "Red Dragon Stomach Contents",
+        "basePrice": 60,
+        "description": "Ash, bone, and slag \u2014 whatever was here didn't survive the heat.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Red"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-28",
+        "name": "White Dragon Stomach Contents",
+        "basePrice": 50,
+        "description": "Frozen solid. Whatever's inside will have to wait to be identified.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "White"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-29",
+        "name": "Brass Dragon Stomach Contents",
+        "basePrice": 55,
+        "description": "Mostly sand and bone \u2014 brass dragons prefer to talk before they eat.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Brass"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-30",
+        "name": "Bronze Dragon Stomach Contents",
+        "basePrice": 65,
+        "description": "Storm-tossed debris, driftwood, and a few waterlogged coins.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Bronze"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-31",
+        "name": "Copper Dragon Stomach Contents",
+        "basePrice": 58,
+        "description": "A joke, half-digested, along with the usual bone and coin.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Copper"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-32",
+        "name": "Gold Dragon Stomach Contents",
+        "basePrice": 90,
+        "description": "Remarkably orderly for a stomach. Coin sorted almost by size.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Gold"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-anatomy-33",
+        "name": "Silver Dragon Stomach Contents",
+        "basePrice": 75,
+        "description": "Mountain-worn stone and bone, packed tight with old frost.",
+        "category": "Stomach",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Stomach",
+          "lineage": [
+            "Silver"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-1",
+        "name": "Tamed Drake Collar (Worn)",
+        "basePrice": 15,
+        "description": "Leather and brass, clearly made for a creature that answered to a name.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-2",
+        "name": "Feral Claw Bundle",
+        "basePrice": 20,
+        "description": "Uneven and chipped \u2014 whatever wore these fought for everything it had.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-3",
+        "name": "Mountain Drake Horn Fragment",
+        "basePrice": 25,
+        "description": "Worn smooth by wind and altitude.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-4",
+        "name": "Coastal Drake Fin-Spine",
+        "basePrice": 18,
+        "description": "Salt-crusted and still faintly damp.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-5",
+        "name": "Swamp Drake Jawbone",
+        "basePrice": 20,
+        "description": "Half-sunk in muck for who knows how long before it was found.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-6",
+        "name": "Wild Drake Skull, Small",
+        "basePrice": 22,
+        "description": "Small enough to have belonged to something young \u2014 or something that simply never grew large.",
+        "category": "Trophy",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Trophy"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-7",
+        "name": "Drake Hide Scrap",
+        "basePrice": 8,
+        "description": "Tougher than it looks for how thin it is.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-8",
+        "name": "Small Wing Membrane (Drake)",
+        "basePrice": 10,
+        "description": "A fraction the size of a true dragon's, but the same basic structure.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-9",
+        "name": "Draconid Talon, Blunt",
+        "basePrice": 6,
+        "description": "Worn down from digging or scrambling more than fighting.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-10",
+        "name": "Domesticated Drake Scale",
+        "basePrice": 5,
+        "description": "Duller than a wild drake's \u2014 years of handling wear the shine off.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts"
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-11",
+        "name": "Fire-Warmed Scale",
+        "basePrice": 12,
+        "description": "Stays faintly warm no matter the ambient temperature.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "lineage": [
+            "Fire"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-12",
+        "name": "Frost-Rimed Scale",
+        "basePrice": 12,
+        "description": "A thin layer of frost reforms within minutes of being wiped clean.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "lineage": [
+            "Frost"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-13",
+        "name": "Storm-Charged Scale",
+        "basePrice": 14,
+        "description": "A faint static charge builds on it during any approaching storm.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "lineage": [
+            "Storm"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-14",
+        "name": "Bog-Slick Scale",
+        "basePrice": 9,
+        "description": "Never quite dries out, no matter how long it's stored.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "lineage": [
+            "Swamp"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-drake-15",
+        "name": "Bark-Textured Scale",
+        "basePrice": 9,
+        "description": "Rough and mottled, easy to mistake for actual bark at a glance.",
+        "category": "Parts",
+        "monsterTypeTags": [
+          "Dragon"
+        ],
+        "lootTags": {
+          "kind": "Parts",
+          "lineage": [
+            "Forest"
+          ]
+        },
+        "tags": [
+          "craft-material"
+        ],
+        "priceOverride": "",
+        "quantity": 1
+      }
+    ],
+    "menu": [],
+    "services": [],
+    "createdAt": 1753700000000
   }
 ]

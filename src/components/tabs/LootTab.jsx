@@ -309,7 +309,32 @@ function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeVal
 
   const size = attributeValues[config.sizeAttr]
   const tier = sizeTable[size]
-  if (!tier) return null
+  const rawPool = buildItemPool('wares', sources).filter((i) => i.monsterTypeTags?.includes(monsterType))
+
+  if (!tier) {
+    // The tier-driving field (Size/Age/Rank/Purpose/Habitat) isn't set
+    // -- this happens whenever a DM fills in ONLY Specific Monster or
+    // Notes without also touching the dropdowns, which is exactly the
+    // "pick Giant Lizard and go" workflow that was asked for. Rather
+    // than fail outright (which is what silently produced 0gp/nothing
+    // before), hand the AI the FULL tier table so it can infer which
+    // tier fits the named monster/notes, plus the full tagged pool
+    // (unfiltered by dimension, since we don't know the dimension
+    // value yet either) so it has real options to choose from.
+    let eligible = rawPool
+    if (excludedPatterns && excludedPatterns.length > 0) {
+      eligible = eligible.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
+    }
+    return {
+      needsInference: true,
+      tierOptions: sizeTable,
+      eligibleItems: eligible.map((i) => ({
+        name: i.name, priceGp: i.priceGp, description: i.description,
+        kind: i.lootTags?.kind, tags: i.lootTags,
+      })),
+      attributeSummary: 'not yet set by the DM -- infer the right tier and tags from the monster name/notes',
+    }
+  }
 
   const dimValues = {}
   config.dimensions.forEach((d) => {
@@ -336,7 +361,6 @@ function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeVal
     if (!SIZE_TABLE_META_KEYS.has(kind)) countsByKind[kind] = range
   })
 
-  const rawPool = buildItemPool('wares', sources).filter((i) => i.monsterTypeTags?.includes(monsterType))
   let eligible = rawPool.filter((i) => Object.hasOwn(countsByKind, i.lootTags?.kind) && isCompatible(i))
   if (excludedPatterns && excludedPatterns.length > 0) {
     eligible = eligible.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
@@ -908,6 +932,16 @@ function isAttributeVisible(attr, values) {
   return attr.showIf.values.includes(values[attr.showIf.attr])
 }
 
+// An attribute can carry optionsFor: {[controllingValue]: [options]} instead
+// of a flat options array -- the actual list shown depends on whatever the
+// controlling field (attr.showIf.attr) currently is. Falls back to
+// attr.options if optionsFor isn't set or has no entry for the current value.
+function resolveAttributeOptions(attr, values) {
+  if (!attr.optionsFor) return attr.options
+  const controllingValue = attr.showIf ? values[attr.showIf.attr] : null
+  return attr.optionsFor[controllingValue] || attr.options || []
+}
+
 function DynamicAttributeFields({ attributes, values, onChange }) {
   const visible = (attributes || []).filter((attr) => isAttributeVisible(attr, values))
   if (visible.length === 0) return null
@@ -918,7 +952,7 @@ function DynamicAttributeFields({ attributes, values, onChange }) {
           <span className="text-xs font-display uppercase text-ink-soft">{attr.name}</span>
           <select value={values[attr.id] || ''} onChange={(e) => onChange(attr.id, e.target.value)} className="mt-1 w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-sm">
             <option value="">—</option>
-            {attr.options.map((o) => <option key={o} value={o}>{o}</option>)}
+            {resolveAttributeOptions(attr, values).map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
         </label>
       ))}
@@ -943,6 +977,7 @@ function ResultsPanel({ groups, onCopy, copied }) {
             </h4>
           )}
           {g.gold != null && <p className="text-sm font-display text-leather-dark mb-1">{g.gold} gp in coin</p>}
+          {g.isHorde && g.hordeTotal != null && <p className="text-sm font-display text-leather-dark mb-1">Horde Total: {g.hordeTotal} gp</p>}
           {g.items.length === 0 ? (
             <p className="text-xs text-ink-soft italic">Nothing — widen the filters.</p>
           ) : (
@@ -1293,10 +1328,12 @@ export default function LootTab() {
                 monsterType: e.monsterType,
                 monsterName: e.monsterName ? `${e.monsterName}${srdContext}` : e.monsterName,
                 notes: e.notes,
-                tierLabel: e.attributeValues[resolveKindBucketConfig(e.monsterType, e.attributeValues).sizeAttr] || '',
+                tierLabel: e.attributeValues[resolveKindBucketConfig(e.monsterType, e.attributeValues).sizeAttr] || '(not set -- AI will infer)',
                 countsByKind: poolInfo.countsByKind,
                 eligibleItems: poolInfo.eligibleItems,
                 attributeSummary: poolInfo.attributeSummary,
+                needsInference: poolInfo.needsInference,
+                tierOptions: poolInfo.tierOptions,
               })
               mainGroup = { label, items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true }
             } catch (err) {
@@ -1372,14 +1409,24 @@ export default function LootTab() {
               attributeValues: e.attributeValues, excludedPatterns: e.excludedPatterns, features: e.features,
             })
             const lineage = e.attributeValues['dragon-lineage']
+            // No loot item should appear twice for the same dragon --
+            // its own anatomical parts shouldn't also turn up in its
+            // horde. Exclude anything already selected for mainGroup
+            // from both the pool offered to the AI and (as a hard
+            // backstop) the AI's own output, in case it ignores the
+            // instruction.
+            const usedNames = new Set(mainGroup.items.map((i) => i.name))
+            const hordePool = (poolInfo?.eligibleItems || []).filter((i) => !usedNames.has(i.name))
             try {
-              const { items: hordeItems, totalGp } = await generateAiHordeContents({
+              const { items: rawHordeItems } = await generateAiHordeContents({
                 lineage, setting: e.setting, notes: e.notes, targetGp,
-                eligibleItems: poolInfo?.eligibleItems || [],
+                eligibleItems: hordePool, excludeNames: [...usedNames],
               })
+              const hordeItems = rawHordeItems.filter((i) => !usedNames.has(i.name))
+              const totalGp = hordeItems.reduce((sum, i) => sum + (i.priceGp || 0), 0)
               groupsForEntity.push({
-                label: `${label} \u2014 Horde (${e.hordeSize}, target ~${targetGp}gp, actual ${totalGp}gp)`,
-                items: hordeItems, gold: 0, aiAssisted: true, isHorde: true,
+                label: `${label} \u2014 Horde (${e.hordeSize}, target ~${targetGp}gp)`,
+                items: hordeItems, gold: null, aiAssisted: true, isHorde: true, hordeTotal: totalGp,
               })
             } catch (err) {
               if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI horde fill failed, falling back:', err)
@@ -1431,6 +1478,7 @@ export default function LootTab() {
     results.forEach((g) => {
       if (g.label) lines.push(`— ${g.label} —`)
       if (g.gold != null) lines.push(`${g.gold} gp`)
+      if (g.isHorde && g.hordeTotal != null) lines.push(`Horde Total: ${g.hordeTotal} gp`)
       g.items.forEach((i) => lines.push(`${i.name}${i.guaranteed ? ' (always carries)' : ''} (${i.priceGp == null ? '—' : formatPrice(i.priceGp)})`))
     })
     navigator.clipboard?.writeText(lines.join('\n')).then(() => {

@@ -9,13 +9,58 @@
 // specific flavor genuinely isn't covered by anything already eligible.
 // Reuses the same Gemini-primary/Claude-fallback pattern as sourceAi.js.
 
-function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary }) {
-  const countsText = Object.entries(countsByKind)
-    .map(([kind, [min, max]]) => `${kind}: ${min}-${max}`)
-    .join(', ')
+function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary, needsInference, tierOptions }) {
   const poolText = eligibleItems
     .map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.kind} | ${i.description}`)
     .join('\n')
+
+  if (needsInference) {
+    // The DM only filled in Specific Monster and/or Notes -- the
+    // dropdown that would normally pick a tier (Size/Age Category/
+    // Rank/Purpose/Habitat) was left blank. Rather than fail, the AI
+    // does double duty: pick the tier that best fits the named
+    // creature/notes, THEN select loot within THAT tier's exact counts.
+    const tierOptionsText = Object.entries(tierOptions)
+      .map(([tierName, counts]) => {
+        const countsText = Object.entries(counts)
+          .filter(([k]) => k !== 'priceRange' && k !== 'goldRange')
+          .map(([kind, range]) => `${kind}: ${range[0]}-${range[1]}`)
+          .join(', ')
+        return `- ${tierName}: ${countsText}`
+      })
+      .join('\n')
+
+    return `
+You are helping a Dungeon Master generate believable loot for a D&D creature, working within a strict pre-built rule system.
+
+CREATURE CONTEXT:
+- Monster Type: ${monsterType}
+- Specific Monster (if given): ${monsterName || '(none)'}
+- DM's freeform notes: ${notes || '(none)'}
+
+The DM has NOT set a tier (size/age/rank/purpose category) -- infer the single best-fitting tier below from the monster name and notes.
+
+AVAILABLE TIERS (pick exactly one, then NEVER exceed its limits for any kind, across ALL items combined):
+${tierOptionsText}
+
+FULL ITEM POOL FOR THIS MONSTER TYPE (each item may be tagged to a specific kind and to other dimensions like origin/lineage/domain -- only select items that make sense for the inferred creature; an item tagged to a specific color/kingdom/domain that doesn't match this creature should NOT be picked):
+${poolText || '(no items available)'}
+
+TASK:
+1. Infer which tier above best fits the named monster and notes (e.g. "Giant Lizard" -> Large-equivalent tier; "Ancient Red Dragon" -> the Ancient tier).
+2. Infer any other relevant tags implied by the name (e.g. "Giant Lizard" implies Reptile-kingdom, "Red Dragon" implies Red lineage) and only select items compatible with those.
+3. SELECT items primarily from the FULL ITEM POOL above, respecting your inferred tier's exact count limits for every kind.
+4. You may invent AT MOST ONE OR TWO brand-new items, and ONLY if the monster/notes describe something genuinely not covered by anything in the pool. Never invent more than 2.
+5. Do not pad the list "to be thorough" -- respect the inferred tier's limits exactly.
+
+Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
+{ "inferredTier": string, "items": [ { "name": string, "priceGp": number, "description": string, "kind": string, "isNew": boolean } ] }
+`.trim()
+  }
+
+  const countsText = Object.entries(countsByKind)
+    .map(([kind, [min, max]]) => `${kind}: ${min}-${max}`)
+    .join(', ')
 
   return `
 You are helping a Dungeon Master generate believable loot for a D&D creature, working within a strict pre-built rule system. Do not break the numeric limits below under any circumstances.
@@ -129,8 +174,11 @@ export const LOOT_AI_UNCONFIGURED = 'LOOT_AI_UNCONFIGURED'
 // on how many new luxury/art/curio items the model invents to reach the
 // target.
 
-function buildHordePrompt({ lineage, setting, notes, targetGp, eligibleItems }) {
+function buildHordePrompt({ lineage, setting, notes, targetGp, eligibleItems, excludeNames }) {
   const poolText = eligibleItems.map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.description}`).join('\n')
+  const excludeText = excludeNames && excludeNames.length > 0
+    ? `\nDO NOT include any of these (already accounted for elsewhere for this dragon): ${excludeNames.join(', ')}`
+    : ''
   return `
 You are helping a Dungeon Master assemble the CONTENTS of a dragon's horde, targeting an approximate total gp value.
 
@@ -140,20 +188,22 @@ DRAGON CONTEXT:
 - DM's notes: ${notes || '(none)'}
 - Target horde value: approximately ${targetGp} gp (land within roughly 10-20% of this total)
 
-EXISTING DATABASE ITEMS (thematic inspiration -- include some directly where they genuinely fit, but don't force it):
+EXISTING DATABASE ITEMS (draw from these for most of the non-coin value):
 ${poolText || '(none particularly relevant)'}
+${excludeText}
 
-TASK: Assemble the horde's contents, reasoning about what THIS dragon would realistically have collected given its lineage and setting -- a dragon that loves art hoards differently than one that hoards raw metal or gemstones. Include a mix of:
-1. A single "Coins" line item covering the bulk of the raw currency value.
-2. A handful of gems and/or art objects (invent specific, evocative ones -- "a marble statue of a satyr," "a fistful of uncut sapphires" -- rather than generic placeholders).
-3. A few magic items or curiosities, pulling from the database above where thematically fitting, inventing new ones otherwise.
-Invention is expected and encouraged here -- this is not a "pick from a short list" task, it's "build a believable pile of treasure." The SUM of every item's value should land close to the target.
+TASK: Assemble the horde's contents, reasoning about what THIS dragon would realistically have collected given its lineage and setting -- a dragon that loves art hoards differently than one that hoards raw metal or gemstones.
+1. A single "Coins" line item covering the bulk of the raw currency value -- this is baseline and doesn't count toward the ratio in step 2.
+2. Of the REMAINING value (everything besides the Coins line): roughly 75% of that value should come from items pulled DIRECTLY from the EXISTING DATABASE ITEMS list above (use their exact name, price, and description), and roughly 25% should be newly invented luxury goods, art objects, gems, or curiosities specific to this dragon's taste (invent specific, evocative ones -- "a marble statue of a satyr," "a fistful of uncut sapphires" -- not generic placeholders). This is the one AI use case where invention is expected, but it should still be the smaller share of the total.
+3. The SUM of every item's value (including Coins) should land close to the target.
+4. Never repeat an item name from the exclusion list above.
 
 Return ONLY JSON (no markdown fences, no commentary): { "items": [ { "name": string, "priceGp": number, "description": string } ], "totalGp": number }
 `.trim()
 }
 
-function normalizeHordeResult(raw) {
+function normalizeHordeResult(raw, excludeNames) {
+  const excludeSet = new Set(excludeNames || [])
   const items = Array.isArray(raw.items)
     ? raw.items
         .map((r) => ({
@@ -161,26 +211,26 @@ function normalizeHordeResult(raw) {
           priceGp: Number(r.priceGp) || 0,
           description: String(r.description || '').trim(),
         }))
-        .filter((r) => r.name)
+        .filter((r) => r.name && !excludeSet.has(r.name))
     : []
   const totalGp = items.reduce((sum, i) => sum + i.priceGp, 0)
   return { items, totalGp }
 }
 
-export async function generateAiHordeContents({ lineage, setting, notes, targetGp, eligibleItems }) {
-  const prompt = buildHordePrompt({ lineage, setting, notes, targetGp, eligibleItems })
+export async function generateAiHordeContents({ lineage, setting, notes, targetGp, eligibleItems, excludeNames }) {
+  const prompt = buildHordePrompt({ lineage, setting, notes, targetGp, eligibleItems, excludeNames })
 
   let lastError = null
   try {
     const result = await callGemini(prompt)
-    if (result) return normalizeHordeResult(result)
+    if (result) return normalizeHordeResult(result, excludeNames)
   } catch (err) {
     console.error('Gemini horde fill failed, trying fallback:', err)
     lastError = err
   }
   try {
     const result = await callClaude(prompt)
-    if (result) return normalizeHordeResult(result)
+    if (result) return normalizeHordeResult(result, excludeNames)
   } catch (err) {
     console.error('Claude horde fill failed:', err)
     lastError = err
@@ -194,12 +244,25 @@ export async function generateAiHordeContents({ lineage, setting, notes, targetG
 // the same numbers the deterministic engine would use. eligibleItems:
 // the same pool the deterministic engine would draw from (already
 // filtered by dimensions/features/minRank/etc), each as
-// {name, priceGp, description, kind}.
+// {name, priceGp, description, kind}. When needsInference is true
+// (DM only set Specific Monster/Notes, no tier dropdown), countsByKind
+// is omitted and tierOptions (the full sizeLootTable for this type) is
+// passed instead -- the AI infers the tier itself as part of the call.
 export async function generateAiAssistedLoot({
   monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary,
+  needsInference, tierOptions,
 }) {
-  const prompt = buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary })
-  const validKinds = new Set(Object.keys(countsByKind))
+  const prompt = buildPrompt({
+    monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary,
+    needsInference, tierOptions,
+  })
+  const validKinds = needsInference
+    ? new Set(
+        Object.values(tierOptions || {}).flatMap((tier) =>
+          Object.keys(tier).filter((k) => k !== 'priceRange' && k !== 'goldRange')
+        )
+      )
+    : new Set(Object.keys(countsByKind))
 
   let lastError = null
   try {
