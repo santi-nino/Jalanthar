@@ -565,7 +565,7 @@ function loadoutPoolFor(name, rawPool) {
   }
 }
 
-function generateLoadoutLoot({ monsterType, role, rank, taxonomy, sources, excludedPatterns, dimensionKey, dimensionValue }) {
+function generateLoadoutLoot({ monsterType, role, rank, taxonomy, sources, excludedPatterns, dimensionKey, dimensionValue, dimensions }) {
   const loadout = taxonomy.loadouts?.[role]
   if (!loadout) return { items: [], gold: 0 }
 
@@ -578,21 +578,33 @@ function generateLoadoutLoot({ monsterType, role, rank, taxonomy, sources, exclu
   // hard-scoping convention as everywhere else, so a Fey-tagged whimsical
   // item never leaks into a different type's Loadout draw.
   //
-  // dimensionKey/dimensionValue (optional): a second, finer narrowing pass
-  // on top of the monsterType gate, for types where the Loadout System
-  // itself has a themed sub-dimension -- currently only Giant Kind (see
-  // lootTags.giantKind and monsterTypeAttributes.Giant's giant-kind field).
-  // Plays the same role KIND_BUCKET_CONFIG's dimensions play for the
-  // kind-bucketed engine: items untagged for this dimension stay eligible
-  // for every value of it (a generic Ring of Protection works for any
-  // Giant Kind), while items carrying the dimension array only surface
-  // when the entity's own value is in that array (a Storm Giant's
-  // Thundercloud-Charged Warhorn never reaches a Hill Giant).
+  // dimensions (optional): a list of { key, value } pairs, each a further
+  // narrowing pass on top of the monsterType gate, for types where the
+  // Loadout System itself has one or more themed sub-dimensions -- e.g.
+  // Giant Kind (lootTags.giantKind) or, for Monstrosity, Origin + Climate
+  // simultaneously (lootTags.origin / lootTags.climate). Plays the same
+  // role KIND_BUCKET_CONFIG's dimensions play for the kind-bucketed
+  // engine: items untagged for a given dimension stay eligible for every
+  // value of it (a generic Ring of Protection works for any Giant Kind),
+  // while items carrying that dimension's array only surface when the
+  // entity's own value is in that array (a Storm Giant's
+  // Thundercloud-Charged Warhorn never reaches a Hill Giant; a Roc's
+  // sandy-colored feathers never reach a jungle-climate bird). An item
+  // must pass EVERY dimension's check to remain eligible.
+  //
+  // dimensionKey/dimensionValue (legacy, single-dimension form): still
+  // accepted as-is so existing call sites (Giant) don't need to change --
+  // internally folded into the same dimensions array.
+  const allDimensions = dimensions && dimensions.length > 0
+    ? dimensions
+    : (dimensionKey && dimensionValue ? [{ key: dimensionKey, value: dimensionValue }] : [])
+
   const rawPool = buildItemPool('wares', sources).filter((i) => {
     if (i.lootTags?.loadoutPool && !i.monsterTypeTags?.includes(monsterType)) return false
-    if (dimensionKey && dimensionValue) {
-      const tagged = i.lootTags?.[dimensionKey]
-      if (tagged && tagged.length > 0 && !tagged.includes(dimensionValue)) return false
+    for (const dim of allDimensions) {
+      if (!dim.key || !dim.value) continue
+      const tagged = i.lootTags?.[dim.key]
+      if (tagged && tagged.length > 0 && !tagged.includes(dim.value)) return false
     }
     return true
   })
@@ -1829,6 +1841,38 @@ export default function LootTab() {
               monsterType: e.monsterType, role: `Humanoid:${role}`, rank,
               taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
               dimensionKey: 'subrole', dimensionValue: subrole,
+            })
+            mainGroup = { label, items: [...guaranteed, ...rolled], gold }
+          }
+        }
+
+        // Monstrosity -- combines the Loadout System with Beast's
+        // kind-bucketed "each field is its own container" approach, per
+        // the DM's own framing. Phenotype picks the loadout profile (the
+        // body-part recipe, e.g. Bird = skull/2 wings/beak/talons/
+        // feathers); Origin AND Climate both ride along simultaneously as
+        // the new `dimensions` array (see generateLoadoutLoot) so an item
+        // like "Sandy-Colored Roc Feather" (tagged origin:['Natural'],
+        // climate:['Desert']) only surfaces for an entity matching BOTH,
+        // while untagged items stay universal. No Rank field for this
+        // type, so `rank` is simply omitted -- every Monstrosity loadout
+        // below is fixed/ranged only, no rankScaled/goldByRank entries to
+        // resolve. Placed BEFORE discretion mode so a DM who fills in all
+        // three fields gets the precise body-part system; a DM who picks
+        // a real catalog monster without setting them still falls through
+        // to discretion mode (Owlbear fix) as a graceful fallback.
+        if (!mainGroup && e.monsterType === 'Monstrosity') {
+          const phenotype = e.attributeValues?.['monstrosity-phenotype']
+          const origin = e.attributeValues?.['monstrosity-origin']
+          const climate = e.attributeValues?.['monstrosity-climate']
+          if (phenotype) {
+            const { items: rolled, gold } = generateLoadoutLoot({
+              monsterType: e.monsterType, role: `Monstrosity:${phenotype}`,
+              taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
+              dimensions: [
+                { key: 'origin', value: origin },
+                { key: 'climate', value: climate },
+              ],
             })
             mainGroup = { label, items: [...guaranteed, ...rolled], gold }
           }

@@ -5088,6 +5088,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Skull", "origin": ["Natural"]},
         "tags": [
           "display"
         ]
@@ -5103,6 +5104,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Tail", "origin": ["Natural"]},
         "tags": [
           "display"
         ]
@@ -5118,6 +5120,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Skull", "origin": ["Natural"]},
         "tags": [
           "display"
         ]
@@ -5133,6 +5136,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Pelt", "origin": ["Natural"]},
         "tags": [
           "display"
         ]
@@ -5148,6 +5152,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Pelt", "origin": ["Natural"]},
         "tags": [
           "craft-material"
         ]
@@ -5163,6 +5168,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Horn", "origin": ["Natural"]},
         "tags": [
           "craft-material"
         ]
@@ -5178,6 +5184,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Feather", "origin": ["Natural"]},
         "tags": [
           "craft-material"
         ]
@@ -5193,6 +5200,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Organ", "origin": ["Natural"]},
         "tags": [
           "alchemical"
         ]
@@ -5208,6 +5216,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Fang", "origin": ["Natural"]},
         "tags": [
           "craft-material"
         ]
@@ -5223,6 +5232,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Fang", "origin": ["Natural"]},
         "tags": [
           "craft-material"
         ]
@@ -5238,6 +5248,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Claw", "origin": ["Natural"]},
         "tags": [
           "craft-material",
           "weapon-material"
@@ -5254,6 +5265,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Talon", "origin": ["Natural"]},
         "tags": [
           "craft-material",
           "weapon-material"
@@ -5270,6 +5282,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Scale", "origin": ["Natural"]},
         "tags": [
           "craft-material"
         ]
@@ -5285,6 +5298,7 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Scale", "origin": ["Natural"]},
         "tags": [
           "craft-material"
         ]
@@ -5300,9 +5314,346 @@ export const mockSources = [
         "monsterTypeTags": [
           "Monstrosity"
         ],
+        "lootTags": {"loadoutPool": "Feather", "origin": ["Arcanum"]},
         "tags": [
           "craft-material"
         ]
+      },
+      {
+        "rowId": "row-trapper-43",
+        "name": "Sun-Bleached Monstrosity Bone",
+        "basePrice": 12,
+        "description": "Impossible to place on any known skeleton chart -- probably for the best.",
+        "category": "Bone",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Bone"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-44",
+        "name": "Weather-Worn Wing Bone",
+        "basePrice": 15,
+        "description": "Hollow and light, the way only a flier's bones ever get.",
+        "category": "Bone",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Bone"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-45",
+        "name": "Cracked Ivory Beak",
+        "basePrice": 30,
+        "description": "Hooked and heavy, still sharp along the cutting edge.",
+        "category": "Beak",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Beak"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-46",
+        "name": "Dried Venom Sac",
+        "basePrice": 55,
+        "description": "Still faintly viscous inside. An alchemist would pay well for this, carefully.",
+        "category": "Venom Gland",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "VenomGland"},
+        "tags": ["alchemical"]
+      },
+      {
+        "rowId": "row-trapper-47",
+        "name": "Chitinous Shell Plate",
+        "basePrice": 25,
+        "description": "A single segment of an armored carapace, still glossy black.",
+        "category": "Shell",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Shell"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-48",
+        "name": "Barbed Mandible",
+        "basePrice": 28,
+        "description": "Serrated along the inner edge, still faintly stained.",
+        "category": "Mandible",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Mandible"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-49",
+        "name": "Segmented Chitin Plating",
+        "basePrice": 18,
+        "description": "Lightweight, layered, and surprisingly resilient to a blade's edge.",
+        "category": "Chitin",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Chitin"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-50",
+        "name": "Severed Insectoid Leg",
+        "basePrice": 20,
+        "description": "Jointed in three places, ending in a hooked claw-foot.",
+        "category": "Leg",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Leg"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-51",
+        "name": "Webbed Fin",
+        "basePrice": 22,
+        "description": "Translucent membrane stretched over a fan of thin bone spars.",
+        "category": "Fin",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Fin"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-52",
+        "name": "Writhing Tentacle (Preserved)",
+        "basePrice": 48,
+        "description": "Suckers still faintly twitch in cold brine. Best not to think about why.",
+        "category": "Tentacle",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Tentacle"},
+        "tags": ["alchemical", "display"]
+      },
+      {
+        "rowId": "row-trapper-53",
+        "name": "Coiled Serpent Tail",
+        "basePrice": 32,
+        "description": "Still holds its curl even dried. The rattle at the tip is long gone.",
+        "category": "Tail",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Tail"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-54",
+        "name": "Preserved Beast-Wing (Feathered)",
+        "basePrice": 50,
+        "description": "Mounted mid-spread, every pinion still in place.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Wing"},
+        "tags": ["display"]
+      },
+      {
+        "rowId": "row-trapper-55",
+        "name": "Leathery Wing Membrane",
+        "basePrice": 40,
+        "description": "Stretched taut between two long, hooked finger-bones.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Wing"},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-56",
+        "name": "Storm-Battered Wing",
+        "basePrice": 45,
+        "description": "Ragged at the edges from a life spent riding mountain updrafts.",
+        "category": "Wing",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Wing", "climate": ["Mountain"]},
+        "tags": ["display"]
+      },
+      {
+        "rowId": "row-trapper-57",
+        "name": "Sandy-Colored Roc Feather",
+        "basePrice": 40,
+        "description": "The color of dune-sand from root to tip -- unmistakably a desert flier's plumage.",
+        "category": "Feather",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Feather", "origin": ["Natural"], "climate": ["Desert"]},
+        "tags": ["display"]
+      },
+      {
+        "rowId": "row-trapper-58",
+        "name": "Frost-Rimed Feather",
+        "basePrice": 40,
+        "description": "Ice crystals cling to the barbs no matter how long it's kept indoors.",
+        "category": "Feather",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Feather", "origin": ["Natural"], "climate": ["Arctic/Tundra"]},
+        "tags": ["display"]
+      },
+      {
+        "rowId": "row-trapper-59",
+        "name": "Jungle-Toned Camouflage Feather",
+        "basePrice": 38,
+        "description": "Mottled greens and browns, near-invisible against dense canopy.",
+        "category": "Feather",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Feather", "origin": ["Natural"], "climate": ["Jungle/Tropical"]},
+        "tags": ["display"]
+      },
+      {
+        "rowId": "row-trapper-60",
+        "name": "Sun-Baked Scale Plate",
+        "basePrice": 32,
+        "description": "Bleached almost white, hot to the touch even hours after skinning.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Scale", "climate": ["Desert"]},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-61",
+        "name": "Ice-Cracked Scale Plate",
+        "basePrice": 32,
+        "description": "Fine cracks run through it like a frozen pond, but it hasn't lost its edge.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Scale", "climate": ["Arctic/Tundra"]},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-62",
+        "name": "Swamp-Slicked Hide",
+        "basePrice": 38,
+        "description": "Never quite dries out; smells faintly of standing water no matter how it's cured.",
+        "category": "Pelt",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Pelt", "climate": ["Swamp/Wetland"]},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-63",
+        "name": "Volcanic Ash-Coated Skull",
+        "basePrice": 65,
+        "description": "A fine layer of grey ash is baked permanently into every crevice.",
+        "category": "Skull",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Skull", "climate": ["Volcanic"]},
+        "tags": ["display"]
+      },
+      {
+        "rowId": "row-trapper-64",
+        "name": "Coral-Encrusted Fin",
+        "basePrice": 24,
+        "description": "Small polyps have already taken root along the leading edge.",
+        "category": "Fin",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Fin", "climate": ["Coastal/Aquatic"]},
+        "tags": ["display"]
+      },
+      {
+        "rowId": "row-trapper-65",
+        "name": "Cave-Pale Chitin Plating",
+        "basePrice": 18,
+        "description": "Bleached nearly translucent from a life spent entirely without sunlight.",
+        "category": "Chitin",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Chitin", "climate": ["Underground/Subterranean"]},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-66",
+        "name": "Arcanum-Warped Talon",
+        "basePrice": 60,
+        "description": "Faceted like cut crystal along one edge, as though magic reshaped it mid-growth.",
+        "category": "Claw",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Talon", "origin": ["Arcanum"]},
+        "tags": ["craft-material", "arcane"]
+      },
+      {
+        "rowId": "row-trapper-67",
+        "name": "Aberrant Eye-Cluster",
+        "basePrice": 70,
+        "description": "Several small eyes, none of them pointing the same direction, all of them still faintly moist.",
+        "category": "Organ",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Organ", "origin": ["Aberrant"]},
+        "tags": ["alchemical", "display"]
+      },
+      {
+        "rowId": "row-trapper-68",
+        "name": "Fiendish Sulfur-Stained Horn",
+        "basePrice": 55,
+        "description": "The base still smells faintly of brimstone no amount of scrubbing removes.",
+        "category": "Horn",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Horn", "origin": ["Fiendish"]},
+        "tags": ["craft-material"]
+      },
+      {
+        "rowId": "row-trapper-69",
+        "name": "Draconic-Sheened Scale Fragment",
+        "basePrice": 58,
+        "description": "Catches the light with a faint metallic sheen no ordinary reptile scale has.",
+        "category": "Scale",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Scale", "origin": ["Draconic-Touched"]},
+        "tags": ["craft-material", "display"]
+      },
+      {
+        "rowId": "row-trapper-70",
+        "name": "Grave-Cold Bone Shard",
+        "basePrice": 35,
+        "description": "Cold to the touch no matter how close to the fire it sits.",
+        "category": "Bone",
+        "priceOverride": "",
+        "quantity": 1,
+        "monsterTypeTags": ["Monstrosity"],
+        "lootTags": {"loadoutPool": "Bone", "origin": ["Undead-Touched"]},
+        "tags": ["craft-material", "display"]
       },
       {
         "rowId": "row-beast-1",

@@ -1,4 +1,4 @@
-import { SRD_MONSTERS } from './srdMonsters'
+import { SRD_MONSTERS } from './srdMonsters.js'
 
 // Default values for the Loot tab's own independent category system. This
 // is deliberately NOT shared with any NPC taxonomy -- kept fully separate
@@ -48,16 +48,35 @@ export const DEFAULT_LOOT_TAXONOMY = {
     'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead',
   ],
 
-  // monsterTypeCategories (the old coarse type-level category restriction
-  // -- Weapon/Armor/Tool/etc, one flat list per type) was removed
-  // entirely per the DM ("cluttered and not necessary"): every type now
-  // either runs through the kind-bucketed engine or the Loadout System,
-  // both of which already scope eligibility far more precisely via real
-  // item tags (monsterTypeTags, lootTags.kind/domain/element/role/etc)
-  // than a coarse SRD-category allowlist ever did. The handful of types
-  // still on the plain flat draw (Undead, Monstrosity, Ooze, Plant, and
-  // Humanoid before a Role is picked) just draw unrestricted by category
-  // now, same as everything else effectively already was.
+  // Coarse type-level category restriction -- a broad first pass before
+  // the finer per-option item-name exclusions narrow things further. An
+  // EXPLICIT empty array means "this type carries nothing from the
+  // manufactured-goods catalog" -- not "unrestricted." A key that's
+  // absent entirely means unrestricted.
+  // Category names here are SRD category names only (Weapon, Armor,
+  // Tool, Focus, etc) or "Source: X (Y)" for a specific uploaded
+  // source's category. The Hunter's & Trapper's Price Guide items
+  // (trophies, pelts, horns, hearts, etc.) are DELIBERATELY not listed
+  // here at all -- they reach Beast/Monstrosity/Construct/Dragon through
+  // the separate, invisible monsterTypeTag mechanism instead (see
+  // LootTab.jsx), which hard-scopes each item to its actual creature
+  // type regardless of category or price overlap. Listing those
+  // category strings here too was fragile (an exact-string dependency
+  // on the source's name) and unnecessary once the tag exists.
+  monsterTypeCategories: {
+    Aberration: [],
+    Beast: [],
+    // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, all
+    // sapient-enough or civilized-enough to plausibly carry a
+    // shopkeeper's kind of gear. Celestial, Construct, Dragon, Elemental,
+    // and now Fey aren't listed here either -- Fey's own dispatch (see
+    // generateEncounter in LootTab.jsx) always routes to either the
+    // kind-bucketed engine or the Loadout System, so this coarse
+    // restriction is never consulted for it either.
+    Monstrosity: [],
+    Ooze: [],
+    Plant: [],
+  },
 
   // Whether Wealth applies at all for this type. Only genuinely
   // "economic" creatures get it -- a dragon hoards gold, a bandit has a
@@ -525,36 +544,6 @@ export const DEFAULT_LOOT_TAXONOMY = {
         excludedItemPatterns: {}, guaranteedItems: {},
       },
     ],
-    // Humanoid now routes through the Loadout System (same "things found
-    // on a person" mechanism as Fey's Person path, Devil, and Giant) --
-    // see the isHumanoid dispatch in generateEncounter, LootTab.jsx.
-    // Role picks the loadout profile/container (same job Fey's Role or
-    // Giant's Role play); the pre-existing Wealth field (still shown,
-    // still the same dropdown, monsterTypeUsesWealth.Humanoid stays true)
-    // does double duty as the `rank` input into that loadout's
-    // rankScaled/goldByRank -- no separate Rank field needed since Wealth
-    // was already exactly that concept ("how many possessions, how much
-    // gold") for this one type. Subrole is the new second field: a
-    // further specialization WITHIN a Role's own loadout/container,
-    // conditional on which Role is picked (optionsFor+showIf, same
-    // pattern as Fiend's Origin or Dragon's Lineage) -- passed to
-    // generateLoadoutLoot as dimensionKey:'subrole', same generic
-    // narrowing mechanism Giant Kind already uses for dimensionKey:
-    // 'giantKind'. Only items actually tagged lootTags.subrole (a
-    // curated set of weapons/tools in dnd5eItems.js, plus a handful of
-    // small new flavor items) are narrowed by it -- everything else in
-    // the Role's loadout (Boots, Clothes, MagicItem, Supplementary, Junk)
-    // stays untagged and universal, which is what naturally produces the
-    // "mostly the base Role's own loadout, just an Archer's weapon and a
-    // bit of Archer flavor" result the DM asked for, with no separate
-    // weighting mechanism needed -- it falls out of which items happen to
-    // carry a subrole tag at all.
-    // Four new roles added this round (Artisan/Craftsman, Sailor/
-    // Dockhand, Entertainer, Farmer/Herder) to round out the set; not
-    // every role got a Subrole (Commoner/Laborer/Traveler/Sailor/
-    // Entertainer/Farmer don't have an obvious further specialization the
-    // way a soldier or a mage does) -- see humanoid-subrole's optionsFor
-    // for exactly which 8 do.
     Humanoid: [
       {
         id: 'humanoid-role', name: 'Role',
@@ -565,7 +554,6 @@ export const DEFAULT_LOOT_TAXONOMY = {
         options: [
           'Commoner', 'Laborer', 'Merchant', 'Guard/Soldier', 'Bandit/Criminal',
           'Noble', 'Scholar', 'Mage/Caster', 'Cleric/Devout', 'Traveler',
-          'Artisan/Craftsman', 'Sailor/Dockhand', 'Entertainer', 'Farmer/Herder',
         ],
         excludedItemPatterns: {
           // The concrete example from the request: a mage specifically
@@ -582,102 +570,10 @@ export const DEFAULT_LOOT_TAXONOMY = {
           'Cleric/Devout': ['Holy Symbol'],
         },
       },
-      {
-        id: 'humanoid-subrole', name: 'Subrole',
-        // Conditional on Role, same optionsFor+showIf mechanism as
-        // Fiend's Origin/Dragon's Lineage -- every Role that HAS
-        // subroles needs to be listed in showIf.values (not just have an
-        // optionsFor entry), same gotcha documented on Fiend's Origin
-        // field above.
-        showIf: {
-          attr: 'humanoid-role',
-          values: [
-            'Guard/Soldier', 'Bandit/Criminal', 'Mage/Caster', 'Cleric/Devout',
-            'Scholar', 'Merchant', 'Artisan/Craftsman', 'Noble',
-          ],
-        },
-        optionsFor: {
-          'Guard/Soldier': ['Archer', 'Swordsman', 'Spearman', 'Cavalry'],
-          'Bandit/Criminal': ['Thief', 'Thug', 'Highwayman', 'Smuggler'],
-          'Mage/Caster': ['Elementalist', 'Illusionist', 'Enchanter', 'Diviner'],
-          'Cleric/Devout': ['Battle Cleric', 'Healer', 'Inquisitor', 'Missionary'],
-          Scholar: ['Historian', 'Alchemist', 'Cartographer', 'Astronomer'],
-          Merchant: ['General Trader', 'Exotic Importer', 'Moneylender', 'Caravan Master'],
-          'Artisan/Craftsman': ['Blacksmith', 'Carpenter', 'Tailor', 'Jeweler'],
-          Noble: ['Courtier', 'Warlord', 'Merchant-Prince', 'Recluse'],
-        },
-        options: [],
-        excludedItemPatterns: {}, guaranteedItems: {},
-      },
     ],
-    // Monstrosity combines the Loadout System with Beast's kind-bucketed
-    // "each field is its own container" approach, per the DM's own framing
-    // ("a combination of the loadout system from roles and the beast loot
-    // generation system"). Three fields, each one narrowing further:
-    // - Climate is the first container -- where the creature is actually
-    //   found. This is deliberately its own field, separate from the
-    //   site-wide Setting field every type already has (Setting drives the
-    //   small supplementary side-loadout everywhere; Climate here is a
-    //   primary theming dimension in its own right, the same weight
-    //   Element carries for Elemental).
-    // - Origin is the second container -- WHAT KIND of monstrosity this
-    //   is, not where it lives. Natural and Arcanum are the DM's own two
-    //   named examples (Natural: phoenixes, rocs -- creatures that are
-    //   simply born, however strange; Arcanum: manticores, cockatrices --
-    //   creatures whose existence is itself a magical/alchemical act).
-    //   Aberrant/Fiendish/Draconic-Touched/Undead-Touched are Claude's own
-    //   extrapolation to round out "and more" -- first draft, flag for
-    //   correction.
-    // - Phenotype is where the Loadout System itself comes in -- it picks
-    //   the body-part RECIPE (see loadouts['Monstrosity:<Phenotype>']
-    //   below), the same role Role plays for Fey/Giant/Humanoid, just
-    //   built from anatomy slots (Skull/Wing/Fang/Scale/etc, see
-    //   loadoutPoolFor's default case) instead of "things found on a
-    //   person". No separate Rank/tier field -- the DM's spec doesn't
-    //   call for one, and generateLoadoutLoot degrades cleanly without a
-    //   rank when a loadout has no rankScaled/goldByRank entries (every
-    //   Monstrosity phenotype below is fixed/ranged only).
-    //
-    // Both Origin AND Climate are passed to generateLoadoutLoot as
-    // simultaneous dimensions (see its `dimensions` array param) -- an
-    // item tagged to a specific origin AND/OR a specific climate only
-    // surfaces when the entity's own values match both, while an untagged
-    // item stays universal. This is exactly the DM's own example: "a Roc
-    // from the desert would have 'sandy-colored feathers'" is an item
-    // tagged { loadoutPool: 'Feather', origin: ['Natural'], climate:
-    // ['Desert'] } -- it only ever appears for a Natural-origin,
-    // Desert-climate entity, while a generic feather with no tags at all
-    // reaches every Roc regardless of origin or climate.
     Monstrosity: [
-      {
-        id: 'monstrosity-climate', name: 'Climate',
-        options: [
-          'Temperate', 'Desert', 'Arctic/Tundra', 'Jungle/Tropical',
-          'Swamp/Wetland', 'Mountain', 'Coastal/Aquatic',
-          'Underground/Subterranean', 'Volcanic',
-        ],
-        excludedItemPatterns: {}, guaranteedItems: {},
-      },
-      {
-        id: 'monstrosity-origin', name: 'Origin',
-        options: [
-          'Natural', 'Arcanum', 'Aberrant', 'Fiendish',
-          'Draconic-Touched', 'Undead-Touched',
-        ],
-        excludedItemPatterns: {}, guaranteedItems: {},
-      },
-      {
-        id: 'monstrosity-phenotype', name: 'Phenotype',
-        // Each option is its own key in loadouts below, namespaced
-        // 'Monstrosity:<Phenotype>' (same collision-avoidance convention
-        // Humanoid's roles use) -- see that block for the exact body-part
-        // recipe each one grants.
-        options: [
-          'Flying Beast', 'Bird', 'Serpentine', 'Quadruped Predator',
-          'Insectoid', 'Aquatic Horror',
-        ],
-        excludedItemPatterns: {}, guaranteedItems: {},
-      },
+      { id: 'monstrosity-origin', name: 'Origin', options: ['Natural Mutation', 'Magical Creation', 'Ancient Beast'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'monstrosity-threat', name: 'Threat Level', options: ['Predator', 'Territorial', 'Aggressive'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     Ooze: [
       { id: 'ooze-composition', name: 'Composition', options: ['Acidic', 'Corrosive', 'Adhesive', 'Caustic'], excludedItemPatterns: {}, guaranteedItems: {} },
@@ -1103,313 +999,6 @@ export const DEFAULT_LOOT_TAXONOMY = {
       ],
       goldByRank: { Young: [50, 150], Adult: [150, 500], Elder: [500, 1500], Ancient: [1500, 5000] },
     },
-
-    // Humanoid -- 14 Role profiles, all keyed by rank = the EXISTING
-    // Wealth field's label (Destitute/Poor/Modest/Comfortable/Wealthy/
-    // Aristocratic), not a new dedicated rank field -- see the comment on
-    // monsterTypeAttributes.Humanoid above for why. goldByRank is
-    // deliberately IDENTICAL across every single role below and matches
-    // wealthLevels' own goldMin/goldMax exactly (line ~35) -- gold comes
-    // from how rich you are, full stop, regardless of profession; only
-    // the item-slot recipe differs by role. Boots/Clothes are NOT
-    // repeated in any role's `fixed` list -- monsterTypeGuaranteedItems.
-    // Humanoid already adds those to every Humanoid regardless of Role,
-    // so putting them here too would just double them up.
-    // Variety fix (per the DM: a Mage/Caster generated "for the road" came
-    // back with only a focus and clothes -- MagicItem is correctly
-    // wealth-gated to near-zero at low Wealth, but Supplementary had a
-    // min of 0 too, so a run of bad rolls could plausibly return NOTHING
-    // beyond the fixed slots). Every role below now guarantees real
-    // variety regardless of wealth: Supplementary's min is 1 (not 0)
-    // almost everywhere, and every role gets a NEW PersonalEffects slot
-    // (min 1, max 2) -- small, characterful belongings (a keepsake, a
-    // letter, a worn charm) that are a third, distinct flavor from
-    // Supplementary (practical/utility gear) and Junk (worthless odds and
-    // ends). MagicItem/MagicWeapon/Luxury stay wealth-gated on purpose --
-    // "some of them should have magic items" reads as variety ACROSS many
-    // rolls, not a guarantee on every single one -- but nobody should ever
-    // walk away with literally just their fixed slots anymore.
-    'Humanoid:Commoner': {
-      fixed: [],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 2 },
-        { pool: 'Junk', min: 0, max: 2 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Laborer': {
-      fixed: [
-        { pool: 'SimpleWeapon', count: 1 },
-        { pool: 'Tool', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 2 },
-        { pool: 'Junk', min: 0, max: 2 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Merchant': {
-      fixed: [
-        { pool: 'Tool', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
-        { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [2, 4] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 3 },
-        { pool: 'Junk', min: 0, max: 1 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Guard/Soldier': {
-      fixed: [
-        { pool: 'MartialWeapon', count: 1 },
-        { pool: 'Helmet', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
-        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 3 },
-        { pool: 'Junk', min: 0, max: 1 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Bandit/Criminal': {
-      fixed: [
-        { pool: 'SimpleWeapon', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
-        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 2 },
-        { pool: 'Junk', min: 0, max: 2 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Noble': {
-      fixed: [],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [2, 3] } },
-        { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 3], Aristocratic: [3, 5] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 2 },
-        { pool: 'Junk', min: 0, max: 1 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Scholar': {
-      fixed: [
-        { pool: 'Tool', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 3 },
-        { pool: 'Junk', min: 0, max: 1 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Mage/Caster': {
-      fixed: [
-        { pool: 'ArcaneFocus', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 2], Aristocratic: [2, 4] } },
-        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 1] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 3 },
-        { pool: 'Junk', min: 0, max: 1 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Cleric/Devout': {
-      fixed: [
-        { pool: 'SimpleWeapon', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 3 },
-        { pool: 'Junk', min: 0, max: 1 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Traveler': {
-      fixed: [
-        { pool: 'SimpleWeapon', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 4 },
-        { pool: 'Junk', min: 0, max: 2 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Artisan/Craftsman': {
-      fixed: [
-        { pool: 'Tool', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 2 },
-        { pool: 'Junk', min: 0, max: 1 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Sailor/Dockhand': {
-      fixed: [
-        { pool: 'SimpleWeapon', count: 1 },
-        { pool: 'Tool', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 2 },
-        { pool: 'Junk', min: 0, max: 2 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Entertainer': {
-      fixed: [
-        { pool: 'Tool', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 3 },
-        { pool: 'Junk', min: 0, max: 2 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-    'Humanoid:Farmer/Herder': {
-      fixed: [
-        { pool: 'SimpleWeapon', count: 1 },
-        { pool: 'Tool', count: 1 },
-      ],
-      rankScaled: [
-        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
-      ],
-      ranged: [
-        { pool: 'Supplementary', min: 1, max: 2 },
-        { pool: 'Junk', min: 0, max: 2 },
-        { pool: 'PersonalEffects', min: 1, max: 2 },
-      ],
-      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
-    },
-
-    // Monstrosity -- six Phenotype profiles, namespaced 'Monstrosity:
-    // <Phenotype>' per the collision-avoidance convention (see the
-    // Fey/Humanoid "Noble" collision this same session fixed). No
-    // rankScaled/goldByRank on any of these -- Monstrosity has no Rank
-    // field, these are pure body-part recipes, fixed + ranged only. Pool
-    // names (Skull/Wing/Beak/Talon/Feather/Scale/Fang/VenomGland/Tail/
-    // Claw/Pelt/Bone/Organ/Horn/Shell/Mandible/Chitin/Leg/Fin/Tentacle)
-    // all resolve via loadoutPoolFor's default case (lootTags.loadoutPool
-    // === name) -- see the retagged Hunter's & Trapper's Price Guide
-    // items and the new anatomy items added alongside them in
-    // mockData.js, several of which carry lootTags.origin and/or
-    // lootTags.climate for the "sandy-colored feathers on a desert Roc"
-    // narrowing the DM specifically asked for.
-    'Monstrosity:Flying Beast': {
-      fixed: [
-        { pool: 'Skull', count: 1 },
-        { pool: 'Pelt', count: 1 },
-        { pool: 'Wing', count: 2 },
-      ],
-      ranged: [
-        { pool: 'Bone', min: 1, max: 3 },
-        { pool: 'Organ', min: 0, max: 1 },
-      ],
-    },
-    'Monstrosity:Bird': {
-      fixed: [
-        { pool: 'Skull', count: 1 },
-        { pool: 'Wing', count: 2 },
-        { pool: 'Beak', count: 1 },
-      ],
-      ranged: [
-        { pool: 'Talon', min: 1, max: 2 },
-        { pool: 'Feather', min: 1, max: 3 },
-      ],
-    },
-    'Monstrosity:Serpentine': {
-      fixed: [
-        { pool: 'Skull', count: 1 },
-        { pool: 'Fang', count: 1 },
-        { pool: 'Tail', count: 1 },
-      ],
-      ranged: [
-        { pool: 'Scale', min: 3, max: 6 },
-        { pool: 'VenomGland', min: 0, max: 1 },
-      ],
-    },
-    'Monstrosity:Quadruped Predator': {
-      fixed: [
-        { pool: 'Skull', count: 1 },
-        { pool: 'Pelt', count: 1 },
-        { pool: 'Fang', count: 1 },
-      ],
-      ranged: [
-        { pool: 'Claw', min: 2, max: 4 },
-        { pool: 'Bone', min: 1, max: 2 },
-        { pool: 'Horn', min: 0, max: 1 },
-        { pool: 'Organ', min: 0, max: 1 },
-      ],
-    },
-    'Monstrosity:Insectoid': {
-      fixed: [
-        { pool: 'Shell', count: 1 },
-        { pool: 'Mandible', count: 1 },
-      ],
-      ranged: [
-        { pool: 'Chitin', min: 2, max: 4 },
-        { pool: 'Leg', min: 1, max: 3 },
-      ],
-    },
-    'Monstrosity:Aquatic Horror': {
-      fixed: [
-        { pool: 'Skull', count: 1 },
-        { pool: 'Fin', count: 2 },
-      ],
-      ranged: [
-        { pool: 'Scale', min: 2, max: 4 },
-        { pool: 'Tentacle', min: 0, max: 2 },
-      ],
-    },
   },
 
   // Optional per-entity checkboxes for anatomical/nature features that
@@ -1423,32 +1012,20 @@ export const DEFAULT_LOOT_TAXONOMY = {
   monsterTypeFeatures: {
     Beast: ['Tusks', 'Horns', 'Wings', 'Venom', 'Shell', 'Beak'],
     // 'Very Rare+' reuses this same checkbox mechanism to gate Very
-    // Rare/Legendary magic items -- the DM's original list was Dragon,
-    // Elemental, Celestial, Fiend, Humanoid, and Fey. Dragon/Fiend/
-    // Humanoid were left off this list originally because they weren't
-    // built out yet -- caught as a real gap during a later tagging-
-    // completeness verification pass: several catalog items (including
-    // the new named +3 weapons/armor/ammo) were already being TAGGED
-    // requiresFeature: 'Very Rare+' with Dragon/Fiend/Humanoid in their
-    // monsterTypeTags, but since none of those three ever had 'Very
-    // Rare+' in their OWN feature list here, there was no checkbox for a
-    // DM to ever check, and those items could never actually surface for
-    // any of the three -- silently unreachable rather than functioning
-    // as the intended opt-in. All three are fully built out now (Dragon
-    // was kind-bucketed from the start; Fiend's Demon path is kind-
-    // bucketed; Humanoid runs the Loadout System), so all three are
-    // added here to match the DM's original list. Aberration and
-    // Construct remain deliberately excluded -- those two still never
-    // see Very Rare+ items at all, checkbox or not, since the DM didn't
-    // include them. Unchecked by default like every feature here, so a
-    // DM has to actively opt an entity in rather than legendary loot
-    // appearing by surprise.
+    // Rare/Legendary magic items -- the DM said these should be an
+    // explicit per-entity opt-in for Dragon, Elemental, Celestial,
+    // Fiend, Humanoid, and Fey (Dragon/Humanoid/Fiend aren't built out
+    // yet, so it's only wired up here for Celestial/Elemental/Fey for
+    // now -- add it to the others' own feature lists once they get
+    // this same treatment). Aberration and Construct were deliberately
+    // left off this list -- those two still never see Very Rare+ items
+    // at all, checkbox or not, since the DM didn't include them.
+    // Unchecked by default like every feature here, so a DM has to
+    // actively opt an entity in rather than legendary loot appearing
+    // by surprise.
     Celestial: ['Bestial', 'Wings', 'Sentient', 'Very Rare+'],
     Elemental: ['Very Rare+'],
     Fey: ['Very Rare+'],
-    Dragon: ['Very Rare+'],
-    Fiend: ['Very Rare+'],
-    Humanoid: ['Very Rare+'],
   },
 
   // Dragon-only: when a DM checks "Has Horde," Horde Size picks one of
@@ -1517,55 +1094,6 @@ export const DEFAULT_LOOT_TAXONOMY = {
     Riverside: { guaranteedItems: [], excludedItemPatterns: [] },
     Town: { guaranteedItems: [], excludedItemPatterns: [] },
     City: { guaranteedItems: [], excludedItemPatterns: [] },
-  },
-
-  // The "side loadout system" -- a SEPARATE mechanism from settingRules
-  // above (which only nudges the existing draw via guaranteed/excluded
-  // patterns). This one ADDS a small number of extra items on top of
-  // whatever the entity's normal kind-bucketed roll produced, drawn from
-  // Setting-and-type-specific named buckets, sized by the entity's own
-  // tier (Size for Beast, Age/Habitat for Dragon, Power Level for
-  // Elemental -- see SETTING_LOADOUT_TIER_ORDER and
-  // generateSettingLoadout in LootTab.jsx). Per the DM: only Beast,
-  // Dragon, and Elemental read this at all -- every other type's Setting
-  // field stays purely the settingRules nudge above. Also per the DM,
-  // these items must still make sense for the specific creature -- a
-  // wolf doesn't wear fancy clothes -- so every item here is framed as
-  // something SCAVENGED, CACHED, or ENTANGLED near the creature/its lair
-  // rather than worn or used, same "found near, not carried by" framing
-  // Beast's existing Den bucket already uses. Each item is tagged
-  // lootTags.settingBucket matching one of the ids below, plus the usual
-  // monsterTypeTags hard-scoping (Beast/Dragon/Elemental only, never
-  // shared across the three) so setting content still respects each
-  // type's own eligibility rules, never supersedes them.
-  //
-  // Only City and Mountain have real catalog content behind them right
-  // now (the two settings the DM gave concrete examples for -- City's
-  // Junk/Equipment split, Mountain's Survival Gear/Cold Weather Gear/
-  // Equipment split). The other ten settings are wired up with the same
-  // universal Junk/Equipment shape so the mechanism never errors, but
-  // draw from an empty pool until they get their own items -- flag for
-  // a follow-up content pass if the DM wants the rest filled in too.
-  settingLoadouts: {
-    City: [
-      { id: 'City-Junk', label: 'Junk' },
-      { id: 'City-Equipment', label: 'Equipment' },
-    ],
-    Mountain: [
-      { id: 'Mountain-Survival', label: 'Survival Gear' },
-      { id: 'Mountain-ColdWeather', label: 'Cold Weather Gear' },
-      { id: 'Mountain-Equipment', label: 'Equipment' },
-    ],
-    Town: [{ id: 'Town-Junk', label: 'Junk' }, { id: 'Town-Equipment', label: 'Equipment' }],
-    Jungle: [{ id: 'Jungle-Junk', label: 'Junk' }, { id: 'Jungle-Equipment', label: 'Equipment' }],
-    Forest: [{ id: 'Forest-Junk', label: 'Junk' }, { id: 'Forest-Equipment', label: 'Equipment' }],
-    Swamp: [{ id: 'Swamp-Junk', label: 'Junk' }, { id: 'Swamp-Equipment', label: 'Equipment' }],
-    Coast: [{ id: 'Coast-Junk', label: 'Junk' }, { id: 'Coast-Equipment', label: 'Equipment' }],
-    Desert: [{ id: 'Desert-Junk', label: 'Junk' }, { id: 'Desert-Equipment', label: 'Equipment' }],
-    Underdark: [{ id: 'Underdark-Junk', label: 'Junk' }, { id: 'Underdark-Equipment', label: 'Equipment' }],
-    Ruins: [{ id: 'Ruins-Junk', label: 'Junk' }, { id: 'Ruins-Equipment', label: 'Equipment' }],
-    Road: [{ id: 'Road-Junk', label: 'Junk' }, { id: 'Road-Equipment', label: 'Equipment' }],
-    Riverside: [{ id: 'Riverside-Junk', label: 'Junk' }, { id: 'Riverside-Equipment', label: 'Equipment' }],
   },
 
   // Shop now covers everything commerce-related -- general stores,
