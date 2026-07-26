@@ -29,6 +29,13 @@
 //      (see buildHordePrompt's TASK step 2) -- kept because a dragon
 //      horde's whole point is one-of-a-kind flavor that a fixed catalog
 //      can never fully anticipate.
+//   3. generateAiShopWares (added v3.9, DM-directed) -- full, uncapped
+//      invention for shop stock, same reasoning as #2: a shop's whole
+//      point is stock a fixed catalog can't fully anticipate, and the DM
+//      explicitly asked for AI to "make a fully functioning D&D [shop]
+//      within the parameters" this round rather than staying select-only.
+//      Still constrained to mechanically real 5.5e-style items (see its
+//      own prompt), just not select-from-catalog-only.
 
 function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary, needsInference, tierOptions, balanced }) {
   const poolText = eligibleItems
@@ -457,6 +464,123 @@ export async function generateAiAssistedLootDiscretion({ monsterType, monsterNam
 // (DM only set Specific Monster/Notes, no tier dropdown), countsByKind
 // is omitted and tierOptions (the full sizeLootTable for this type) is
 // passed instead -- the AI infers the tier itself as part of the call.
+// --- Shop wares: a THIRD, deliberately loose use of AI, same spirit as
+// generateAiHordeContents above but for an entire store's stock instead
+// of one dragon's pile. Per the DM (v3.9): shop generation is AI-driven
+// now, full stop -- every field from the shop entity form (Type/Scale/
+// Reputation/Cuisine/Clientele/Atmosphere/Notes) gets handed to the
+// model, which is expected to build "a fully functioning D&D [store]
+// within the parameters" -- i.e. genuine invention is not just allowed
+// here, it's the point, same as horde contents. This is a THIRD explicit
+// grandfathered exception to the file-top STANDING RULE, alongside the
+// two already listed there -- add it to that list's reasoning: a shop's
+// whole point (like a horde's) is one-of-a-kind stock a fixed catalog
+// can never fully anticipate, and the DM asked for this explicitly this
+// round rather than it being inferred.
+//
+// Existing database items are still offered as anchors/inspiration (and
+// the model is told to use them directly where they fit), but there's no
+// invented-item cap the way regular/discretion loot has -- a shop with
+// zero invented flavor would read as flat and same-y run after run.
+//
+// Reputation drives BOTH quality (price band/rarity skew) and quantity
+// (a shady back-alley table and a prestigious emporium shouldn't just
+// differ in flavor text) -- SCALE_COUNT_RANGE below sets the baseline
+// item-count band per Scale, and the prompt itself is what actually
+// tells the model how Reputation should shift both dimensions from
+// there, since "how much fancier is Prestigious than Modest" isn't a
+// clean enough number to hardcode.
+const SCALE_COUNT_RANGE = {
+  'Road Merchant': [4, 8],
+  'Market Stall': [6, 12],
+  'Modest Shop': [12, 24],
+  'Large Emporium': [25, 45],
+  'Guild Hall': [35, 60],
+}
+
+function buildShopPrompt({ shopType, scale, reputation, cuisine, clientele, atmosphere, notes, eligibleItems, countRange }) {
+  const poolText = eligibleItems.map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.category || i.kind || 'Misc'} | ${i.description}`).join('\n')
+  const tavernFields = (cuisine || clientele || atmosphere)
+    ? `\n- Cuisine Style: ${cuisine || '(unspecified)'}\n- Clientele: ${clientele || '(unspecified)'}\n- Atmosphere: ${atmosphere || '(unspecified)'}`
+    : ''
+  return `
+You are helping a Dungeon Master stock an entire D&D 5.5e shop with believable wares, working within real game mechanics but otherwise using your own judgment and creativity -- this is NOT a strict select-only task like other loot generation on this site. Build a fully functioning, internally consistent shop within the parameters below.
+
+SHOP:
+- Type: ${shopType || '(unspecified)'}
+- Scale: ${scale || '(unspecified)'}
+- Reputation: ${reputation || '(unspecified)'}${tavernFields}
+- DM's notes: ${notes || '(none)'}
+
+TARGET SIZE: roughly ${countRange[0]}-${countRange[1]} distinct wares (a shop should have MUCH more stock than a single creature's body loot -- do not undershoot this). Reputation shifts this from the baseline: Shady leans toward the low end of the range (and toward cheap/illicit goods); Prestigious leans toward the high end (and toward higher-value, rarer, better-made goods). Reputation should ALSO shift the average price/rarity of what's offered -- a Prestigious emporium's median item should read as noticeably nicer than a Shady stall's, independent of count.
+
+EXISTING DATABASE ITEMS (real 5.5e SRD items and Magical Junk Drawer items -- use these directly by exact name/price/description wherever they fit this shop; they're your anchors for what's mechanically real):
+${poolText || '(none particularly relevant -- invent within genuine 5.5e parameters instead)'}
+
+TASK:
+1. Populate the shop's stock so it reads like a real, coherent business of this Type/Scale/Reputation -- a Blacksmith sells weapons/armor/tools, not potions; a Fine Dining establishment's stock is food/drink/service items, not adventuring gear.
+2. Use EXISTING DATABASE ITEMS above directly wherever they fit -- exact name, price, and description, unchanged.
+3. Where the database doesn't cover something this shop would obviously carry, invent it -- genuinely new items are expected and welcome here, not just a rare exception. Every invented item must still be MECHANICALLY REAL within 5.5e's own logic: if you invent a magic item, its effect must be a plausible, appropriately-costed 5.5e-style effect (comparable to real Common/Uncommon/Rare/Very Rare magic items at that price point), not a vague or overpowered ability. Mundane goods (food, drink, trade goods, tools, trinkets) just need a sensible price and one-line description.
+4. Assign every item a "category" for display grouping -- use natural shop-appropriate categories (e.g. "Weapons", "Armor", "Potions & Alchemy", "Magic Items", "Tools & Trade Goods", "Food & Drink", "Trinkets & Curios", "Clothing & Accessories", "Services") -- pick whichever subset actually fits this shop's Type, don't force categories that don't belong.
+5. Hit roughly the target size above, shaped by Reputation as described. Do not pad with near-duplicate items just to hit the number.
+
+Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
+{ "items": [ { "name": string, "priceGp": number, "description": string, "category": string, "isNew": boolean } ] }
+`.trim()
+}
+
+function normalizeShopResult(raw, maxTotal) {
+  const items = Array.isArray(raw.items)
+    ? raw.items
+        .map((r) => ({
+          name: String(r.name || '').trim(),
+          priceGp: Number(r.priceGp) || 0,
+          description: String(r.description || '').trim(),
+          category: String(r.category || 'Misc').trim() || 'Misc',
+          isNew: !!r.isNew,
+        }))
+        .filter((r) => r.name)
+    : []
+  const seenNames = new Set()
+  const filtered = []
+  for (const r of items) {
+    const nameKey = r.name.toLowerCase()
+    if (seenNames.has(nameKey)) continue
+    if (maxTotal != null && filtered.length >= maxTotal) break
+    seenNames.add(nameKey)
+    filtered.push(r)
+  }
+  return filtered
+}
+
+export async function generateAiShopWares({ shopType, scale, reputation, cuisine, clientele, atmosphere, notes, eligibleItems }) {
+  const [lo, hi] = SCALE_COUNT_RANGE[scale] || [10, 20]
+  const countRange = [lo, hi]
+  const prompt = buildShopPrompt({ shopType, scale, reputation, cuisine, clientele, atmosphere, notes, eligibleItems, countRange })
+  // Loose safety net, not a strict cap -- same reasoning as discretion
+  // mode's headroom, just scaled up: a Prestigious Guild Hall reasonably
+  // running past the stated band shouldn't get truncated mid-shelf.
+  const maxTotal = hi + Math.ceil(hi * 0.5)
+
+  let lastError = null
+  try {
+    const result = await callGemini(prompt)
+    if (result) return normalizeShopResult(result, maxTotal)
+  } catch (err) {
+    console.error('Gemini shop wares generation failed, trying fallback:', err)
+    lastError = err
+  }
+  try {
+    const result = await callClaude(prompt)
+    if (result) return normalizeShopResult(result, maxTotal)
+  } catch (err) {
+    console.error('Claude shop wares generation failed:', err)
+    lastError = err
+  }
+  if (lastError) throw lastError
+  throw new Error(LOOT_AI_UNCONFIGURED)
+}
+
 export async function generateAiAssistedLoot({
   monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary,
   needsInference, tierOptions, balanced,

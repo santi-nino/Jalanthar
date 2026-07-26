@@ -1571,11 +1571,26 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // Shop now covers everything commerce-related -- general stores,
   // restaurants, and taverns are all just different Shop Types rather
   // than separate top-level location categories, per the request.
+  //
+  // v3.9: this list now ALSO absorbs the old "Specialty" field entirely
+  // (see the removed shop-specialty attribute below) -- Type and
+  // Specialty covered nearly the same ground twice (Blacksmith vs.
+  // "Weapons Focus", Apothecary vs. "Alchemy Focus", etc.), so per the
+  // DM's request they're merged into this single list, redundancies
+  // dropped, and a handful of new categories added (Black Market, Fence/
+  // Pawnbroker, Exotic/Luxury Importer) to round it out.
   shopTypes: [
-    'General Store', 'Blacksmith', 'Apothecary', 'Jeweler', 'Bookshop', 'Tailor', 'Magic Shop',
+    'General Store', 'Blacksmith', 'Armorer', 'Apothecary/Alchemist', 'Jeweler',
+    'Bookshop', 'Tailor/Clothier', 'Magic Shop', 'Black Market', 'Fence/Pawnbroker',
+    'Tool & Trade Supplier', 'Exotic/Luxury Importer',
     'Street Food Stall', 'Modest Eatery', 'Fine Dining',
     'Dive Bar', 'Working Tavern', 'Upscale Inn',
   ],
+  // The subset of shopTypes above that's genuinely a tavern/eatery --
+  // drives showIf on shop-cuisine/shop-clientele/shop-atmosphere below,
+  // and matched against the 'shop-type' synthetic key LootTab.jsx merges
+  // into DynamicAttributeFields' values (see the shop entity form).
+  shopTavernEateryTypes: ['Street Food Stall', 'Modest Eatery', 'Fine Dining', 'Dive Bar', 'Working Tavern', 'Upscale Inn'],
   explorationTypes: ['Dungeon', 'Ruins', 'Cave', 'Battlefield', 'Shipwreck', 'Tomb', 'Abandoned Camp'],
 
   locationTypeGuaranteedItems: {},
@@ -1585,14 +1600,36 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // Restaurant's and Tavern's own fields (Cuisine Style, Clientele,
   // Atmosphere) alongside its original ones, since all of those
   // establishment types now live under Shop.
+  //
+  // v3.9: shop-specialty removed entirely (merged into shopTypes above);
+  // shop-scale expanded per the DM (Road Merchant added, plus Guild Hall
+  // as a new top tier so Scale has real range beyond "big store");
+  // shop-cuisine/clientele/atmosphere are now genuinely conditional
+  // (showIf against the synthetic 'shop-type' key, matched against
+  // shopTavernEateryTypes) instead of just a hint in the label text.
+  // Reputation's own effect (driving BOTH item quality and quantity, not
+  // just a cosmetic descriptor) lives in the new AI shop-generation
+  // prompt (see generateAiShopWares in lootAi.js), not in this taxonomy
+  // data -- there's no separate "quality" knob to configure here.
   locationTypeAttributes: {
     shop: [
-      { id: 'shop-specialty', name: 'Specialty', options: ['General Goods', 'Weapons Focus', 'Armor Focus', 'Alchemy Focus', 'Luxury Goods', 'Tools & Trade', 'Food & Drink'], excludedItemPatterns: {}, guaranteedItems: {} },
-      { id: 'shop-scale', name: 'Scale', options: ['Market Stall', 'Modest Shop', 'Large Emporium'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'shop-scale', name: 'Scale', options: ['Road Merchant', 'Market Stall', 'Modest Shop', 'Large Emporium', 'Guild Hall'], excludedItemPatterns: {}, guaranteedItems: {} },
       { id: 'shop-reputation', name: 'Reputation', options: ['Shady', 'Modest', 'Reputable', 'Prestigious'], excludedItemPatterns: {}, guaranteedItems: {} },
-      { id: 'shop-cuisine', name: 'Cuisine Style (if food/drink)', options: ['Home-style', 'Regional Specialty', 'Exotic/Imported', 'Street Food'], excludedItemPatterns: {}, guaranteedItems: {} },
-      { id: 'shop-clientele', name: 'Clientele (if tavern/eatery)', options: ['Locals', 'Travelers', 'Rough Crowd', 'High Society'], excludedItemPatterns: {}, guaranteedItems: {} },
-      { id: 'shop-atmosphere', name: 'Atmosphere (if tavern/eatery)', options: ['Rowdy', 'Quiet', 'Festive', 'Seedy'], excludedItemPatterns: {}, guaranteedItems: { Rowdy: ['Ale'] } },
+      {
+        id: 'shop-cuisine', name: 'Cuisine Style',
+        showIf: { attr: 'shop-type', values: ['Street Food Stall', 'Modest Eatery', 'Fine Dining', 'Dive Bar', 'Working Tavern', 'Upscale Inn'] },
+        options: ['Home-style', 'Regional Specialty', 'Exotic/Imported', 'Street Food'], excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'shop-clientele', name: 'Clientele',
+        showIf: { attr: 'shop-type', values: ['Street Food Stall', 'Modest Eatery', 'Fine Dining', 'Dive Bar', 'Working Tavern', 'Upscale Inn'] },
+        options: ['Locals', 'Travelers', 'Rough Crowd', 'High Society'], excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'shop-atmosphere', name: 'Atmosphere',
+        showIf: { attr: 'shop-type', values: ['Street Food Stall', 'Modest Eatery', 'Fine Dining', 'Dive Bar', 'Working Tavern', 'Upscale Inn'] },
+        options: ['Rowdy', 'Quiet', 'Festive', 'Seedy'], excludedItemPatterns: {}, guaranteedItems: { Rowdy: ['Ale'] },
+      },
     ],
     exploration: [
       { id: 'exploration-condition', name: 'Condition', options: ['Pristine', 'Already Looted', 'Ancient/Decayed', 'Trapped'], excludedItemPatterns: {}, guaranteedItems: {} },

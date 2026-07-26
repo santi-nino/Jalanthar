@@ -4698,6 +4698,54 @@ export const mockSources = [
         "tags": [],
         "priceOverride": "",
         "quantity": 1
+      },
+      {
+        "rowId": "row-fiend-33",
+        "name": "Demon Lord's Broken Chain of Office",
+        "basePrice": 300,
+        "description": "Purely a trophy -- no lingering power, just proof of whose court it once hung in. Collectors pay dearly regardless.",
+        "category": "Trophy",
+        "monsterTypeTags": ["Fiend"],
+        "lootTags": {"kind": "Trophy"},
+        "tags": ["display"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fiend-34",
+        "name": "Vial of Bottled Screaming",
+        "basePrice": 50,
+        "description": "A vial of thick black ichor that heals wounds as fast as it burns going down.",
+        "category": "Gear",
+        "monsterTypeTags": ["Fiend"],
+        "lootTags": {"kind": "Ichor"},
+        "tags": ["consumable", "alchemical"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fiend-35",
+        "name": "Demon Lord's Signet, Cold to the Touch",
+        "basePrice": 350,
+        "description": "Worn by something that ruled. Grants a small bonus to Armor Class and to saving throws while worn.",
+        "category": "Wondrous Item",
+        "monsterTypeTags": ["Fiend"],
+        "lootTags": {"kind": "Trophy"},
+        "tags": ["magic-item"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-fiend-36",
+        "name": "Preserved Screaming Mask",
+        "basePrice": 120,
+        "description": "Cast from the face of something that died mid-scream. No effect beyond the unsettling resemblance.",
+        "category": "Trophy",
+        "monsterTypeTags": ["Fiend"],
+        "lootTags": {"kind": "Den"},
+        "tags": ["display"],
+        "priceOverride": "",
+        "quantity": 1
       }
     ],
     "menu": [],
@@ -6947,6 +6995,54 @@ export const mockSources = [
           "kind": "Den"
         },
         "tags": ["dungeon"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-59",
+        "name": "First-Kill Fang, Mounted in Silver",
+        "basePrice": 180,
+        "description": "Every hunter remembers their first real kill. This one paid for the mounting.",
+        "category": "Trophy",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {"kind": "Trophy"},
+        "tags": ["display"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-60",
+        "name": "Rendered Fat, Sealed Jar",
+        "basePrice": 200,
+        "description": "Rubbed into leather, it makes the hide supple and resistant to weather for a long while.",
+        "category": "Gear",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {"kind": "Parts"},
+        "tags": ["alchemical"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-61",
+        "name": "Cloak Lined in Matched Pelt",
+        "basePrice": 200,
+        "description": "Every panel cut from the same hide, matched grain for grain. Grants a small bonus to Armor Class and to saving throws while worn.",
+        "category": "Wondrous Item",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {"kind": "Pelt"},
+        "tags": ["magic-item"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-beast-62",
+        "name": "Den Idol, Crudely Carved",
+        "basePrice": 140,
+        "description": "Something in the den arranged bones into a shape. It is unclear whether that means anything.",
+        "category": "Trophy",
+        "monsterTypeTags": ["Beast"],
+        "lootTags": {"kind": "Den"},
+        "tags": ["display"],
         "priceOverride": "",
         "quantity": 1
       }
@@ -12239,6 +12335,54 @@ export const mockSources = [
         "tags": [
           "craft-material"
         ],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-newer-1",
+        "name": "Wyrmling's First Scale, Never Shed Again",
+        "basePrice": 250,
+        "description": "Kept from the day it grew large enough to stop molting. Pure sentiment -- no lingering power.",
+        "category": "Trophy",
+        "monsterTypeTags": ["Dragon"],
+        "lootTags": {"kind": "Color-Specific"},
+        "tags": ["display"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-newer-2",
+        "name": "Vial of Rendered Heart-Blood",
+        "basePrice": 50,
+        "description": "A ruby-red draught, drawn straight from the source, that knits wounds quickly.",
+        "category": "Gear",
+        "monsterTypeTags": ["Dragon"],
+        "lootTags": {"kind": "Heart"},
+        "tags": ["consumable", "alchemical"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-newer-3",
+        "name": "Cured Wing-Membrane Cloak, Clasped in Bone",
+        "basePrice": 200,
+        "description": "Cut from a single wing and cured whole -- still faintly translucent when held to the light. Grants a small bonus to Armor Class and to saving throws while worn.",
+        "category": "Wondrous Item",
+        "monsterTypeTags": ["Dragon"],
+        "lootTags": {"kind": "Wing"},
+        "tags": ["magic-item"],
+        "priceOverride": "",
+        "quantity": 1
+      },
+      {
+        "rowId": "row-dragon-newer-4",
+        "name": "Sealed Breath-Organ, Preserved in Glass",
+        "basePrice": 500,
+        "description": "Whatever powered the breath weapon, bottled intact by someone patient and very careful. Museum-quality, nothing more.",
+        "category": "Trophy",
+        "monsterTypeTags": ["Dragon"],
+        "lootTags": {"kind": "Breath Organ"},
+        "tags": ["display"],
         "priceOverride": "",
         "quantity": 1
       }

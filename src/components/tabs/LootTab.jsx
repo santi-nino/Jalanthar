@@ -3,7 +3,7 @@ import { useData } from '../../contexts/DataContext'
 import { buildItemPool } from '../../utils/itemPool'
 import { formatPrice } from '../../utils/price'
 import { LOCATION_TYPES, VEHICLE_CATEGORIES } from '../../data/defaultLootTaxonomy'
-import { generateAiAssistedLoot, generateAiAssistedLootDiscretion, generateAiHordeContents, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
+import { generateAiAssistedLoot, generateAiAssistedLootDiscretion, generateAiHordeContents, generateAiShopWares, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
 
 const POOL_OPTIONS = [
   { id: 'wares', label: 'Wares' },
@@ -1255,24 +1255,41 @@ function TaxonomyManager({ taxonomy, onSave }) {
 // Location loot (shops/exploration) still uses the plain flat draw with
 // no equivalent tagging system, so it keeps Categories -- this prop
 // defaults to false/shown for that reason.
-function PoolAndCategoryPicker({ pools, onPoolsChange, categories, onCategoriesChange, availableCategories, includeVehicles, onIncludeVehiclesChange, hideCategories = false }) {
+//
+// hideDrawFrom: same reasoning, one round later -- monster entities never
+// actually need the Wares/Menu/Services picker at all (a monster has no
+// "menu" or "services" concept, only Wares), so the DM asked to drop it
+// entirely for every monster type and just always assume wares. Location
+// loot (Shop in particular genuinely uses Menu for food/drink items,
+// Services for e.g. a blacksmith's repair work) keeps the picker --
+// defaults to false/shown for that reason, same pattern as hideCategories.
+function PoolAndCategoryPicker({ pools, onPoolsChange, categories, onCategoriesChange, availableCategories, includeVehicles, onIncludeVehiclesChange, hideCategories = false, hideDrawFrom = false }) {
   return (
     <div className="space-y-2">
-      <div>
-        <span className="text-xs font-display uppercase text-ink-soft block mb-1">Draw From</span>
-        <div className="flex gap-3 flex-wrap items-center">
-          {POOL_OPTIONS.map((p) => (
-            <label key={p.id} className="flex items-center gap-1.5 text-sm">
-              <input type="checkbox" checked={pools.includes(p.id)} onChange={() => onPoolsChange(pools.includes(p.id) ? pools.filter((x) => x !== p.id) : [...pools, p.id])} />
-              {p.label}
-            </label>
-          ))}
-          <label className="flex items-center gap-1.5 text-sm ml-2 pl-2 border-l border-leather/30">
+      {hideDrawFrom ? (
+        <div>
+          <label className="flex items-center gap-1.5 text-sm">
             <input type="checkbox" checked={includeVehicles} onChange={(e) => onIncludeVehiclesChange(e.target.checked)} />
             Include vehicles &amp; mounts
           </label>
         </div>
-      </div>
+      ) : (
+        <div>
+          <span className="text-xs font-display uppercase text-ink-soft block mb-1">Draw From</span>
+          <div className="flex gap-3 flex-wrap items-center">
+            {POOL_OPTIONS.map((p) => (
+              <label key={p.id} className="flex items-center gap-1.5 text-sm">
+                <input type="checkbox" checked={pools.includes(p.id)} onChange={() => onPoolsChange(pools.includes(p.id) ? pools.filter((x) => x !== p.id) : [...pools, p.id])} />
+                {p.label}
+              </label>
+            ))}
+            <label className="flex items-center gap-1.5 text-sm ml-2 pl-2 border-l border-leather/30">
+              <input type="checkbox" checked={includeVehicles} onChange={(e) => onIncludeVehiclesChange(e.target.checked)} />
+              Include vehicles &amp; mounts
+            </label>
+          </div>
+        </div>
+      )}
       {!hideCategories && availableCategories.length > 0 && (
         <div>
           <span className="text-xs font-display uppercase text-ink-soft block mb-1">Categories <span className="text-ink-soft/50 normal-case">(none = all)</span></span>
@@ -1332,6 +1349,20 @@ function DynamicAttributeFields({ attributes, values, onChange }) {
   )
 }
 
+// Preserves first-seen category order (AI output order) rather than
+// alphabetizing -- reads more naturally, e.g. "Weapons" before "Trinkets
+// & Curios" if that's the order the model produced them in.
+function groupItemsByCategory(items) {
+  const order = []
+  const byCat = {}
+  for (const item of items) {
+    const cat = item.category || 'Misc'
+    if (!byCat[cat]) { byCat[cat] = []; order.push(cat) }
+    byCat[cat].push(item)
+  }
+  return order.map((cat) => [cat, byCat[cat]])
+}
+
 function ResultsPanel({ groups, onCopy, copied }) {
   const grandTotal = groups.reduce((sum, g) => sum + g.items.reduce((s, i) => s + (i.priceGp || 0), 0) + (g.gold || 0), 0)
   return (
@@ -1352,6 +1383,28 @@ function ResultsPanel({ groups, onCopy, copied }) {
           {g.isHorde && g.hordeTotal != null && <p className="text-sm font-display text-leather-dark mb-1">Horde Total: {g.hordeTotal} gp</p>}
           {g.items.length === 0 ? (
             <p className="text-xs text-ink-soft italic">Nothing — widen the filters.</p>
+          ) : g.categorized ? (
+            // Shop wares (v3.9): grouped under their own category
+            // subheaders instead of one flat list, since a store's stock
+            // reads much better sorted ("Weapons", "Potions & Alchemy",
+            // etc -- whatever categories the AI assigned) than a jumble.
+            groupItemsByCategory(g.items).map(([cat, items]) => (
+              <div key={cat} className="mb-2 last:mb-0">
+                <h5 className="text-xs font-display uppercase tracking-wide text-moss-dark/80 mb-1">{cat}</h5>
+                <ul className="space-y-1">
+                  {items.map((item, i) => (
+                    <li key={`${cat}-${i}`} className="flex items-start justify-between gap-3 text-sm">
+                      <div>
+                        <span className="font-display text-leather-dark">{item.name}</span>
+                        {item.isNew && <span className="ml-1.5 text-xs text-ink-soft/50 italic">(new)</span>}
+                        {item.description && <p className="text-xs text-ink-soft/70 italic">{item.description}</p>}
+                      </div>
+                      <span className="text-xs text-ink-soft shrink-0">{item.priceGp == null ? '—' : formatPrice(item.priceGp)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
           ) : (
             <ul className="space-y-1">
               {g.items.map((item, i) => (
@@ -1385,7 +1438,12 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const [wealthId, setWealthId] = useState('')
   const [setting, setSetting] = useState('')
   const [notes, setNotes] = useState('')
-  const [pools, setPools] = useState(DEFAULT_POOLS.encounter)
+  // Monster entities always draw from Wares only now -- a monster has no
+  // Menu/Services concept, and the DM asked to drop the picker for every
+  // monster type and just assume Wares. setPools is kept unused-but-wired
+  // (PoolAndCategoryPicker still technically accepts it) purely so the
+  // component doesn't need a second, pools-less variant.
+  const [pools] = useState(['wares'])
   const [categories, setCategories] = useState([])
   const [includeVehicles, setIncludeVehicles] = useState(false)
   const [features, setFeatures] = useState({})
@@ -1603,13 +1661,14 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
       ) : (
         <PoolAndCategoryPicker
           pools={pools}
-          onPoolsChange={setPools}
+          onPoolsChange={() => {}}
           categories={categories}
           onCategoriesChange={setCategories}
           availableCategories={availableCategories}
           includeVehicles={includeVehicles}
           onIncludeVehiclesChange={setIncludeVehicles}
           hideCategories
+          hideDrawFrom
         />
       )}
 
@@ -2014,8 +2073,67 @@ export default function LootTab() {
     setGenerating(false)
   }
 
-  function generateLocation() {
+  // Shop (v3.9): fully AI-driven now, per the DM -- every field from the
+  // shop entity form gets passed to generateAiShopWares, which builds the
+  // store's whole stock with real discretion (see the STANDING RULE's
+  // third grandfathered exception in lootAi.js). Existing catalog items
+  // are still handed over as anchors (same buildItemPool('wares', ...)
+  // pool the deterministic draw used), just no longer the only source.
+  // Falls back to the old deterministic drawLoot path if AI isn't
+  // configured or the call fails, same fallback pattern used everywhere
+  // else AI assist is optional. Exploration is untouched -- still the
+  // plain deterministic draw, checkboxes and all.
+  async function generateLocation() {
     const w = wealthLevel(locWealthId)
+
+    if (locationType === 'shop') {
+      setGenerating(true)
+      setAiNotice('')
+      // Pulls from whichever pools the DM left checked (Wares/Menu/
+      // Services -- still relevant here even without the deterministic
+      // draw, since e.g. Menu is what surfaces real food/drink anchors
+      // for a tavern/eatery Type), same source buildItemPool draws from.
+      const eligible = locPools
+        .flatMap((p) => buildItemPool(p, sources))
+        .filter((i) => locIncludeVehicles || !VEHICLE_CATEGORIES.includes(i.category))
+        .map((i) => ({ name: i.name, priceGp: i.priceGp, description: i.description, category: i.category }))
+      try {
+        const aiItems = await generateAiShopWares({
+          shopType: subtype,
+          scale: locAttributeValues['shop-scale'],
+          reputation: locAttributeValues['shop-reputation'],
+          cuisine: locAttributeValues['shop-cuisine'],
+          clientele: locAttributeValues['shop-clientele'],
+          atmosphere: locAttributeValues['shop-atmosphere'],
+          notes: '',
+          eligibleItems: eligible,
+        })
+        const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
+        setResults([{ label: '', items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true, categorized: true }])
+      } catch (err) {
+        if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI shop wares generation failed, falling back:', err)
+        setAiNotice(
+          err.message === LOOT_AI_UNCONFIGURED
+            ? 'AI assist isn’t configured (no API key set) — used the normal random rules instead.'
+            : 'AI assist failed — used the normal random rules instead.'
+        )
+        const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
+        const gold = w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
+        const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
+        const rolled = drawLoot({
+          pools: locPools, sources, categories: locCategories,
+          priceMin: w?.min ?? null, priceMax: w?.max ?? null, count,
+          allowDuplicates: locAllowDuplicates, includeVehicles: locIncludeVehicles,
+          excludedPatterns: locExcludedPatterns,
+        })
+        setResults([{ label: '', items: [...guaranteed, ...rolled], gold }])
+      } finally {
+        setGenerating(false)
+      }
+      setCopied(false)
+      return
+    }
+
     const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
     const gold = w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
     const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
@@ -2147,7 +2265,19 @@ export default function LootTab() {
                   </label>
                 </div>
 
-                <DynamicAttributeFields attributes={locTypeAttributes} values={locAttributeValues} onChange={(attrId, val) => setLocAttributeValues((prev) => ({ ...prev, [attrId]: val }))} />
+                {/* 'shop-type' is a synthetic key, not a real attribute id
+                    -- it's what lets shop-cuisine/clientele/atmosphere's
+                    showIf reference the Type dropdown (`subtype` state)
+                    above, which lives outside locAttributeValues entirely
+                    (Type is backed by taxonomy.shopTypes via
+                    currentLocationType.taxonomyKey, not by
+                    locationTypeAttributes). Harmless for Exploration,
+                    which has no showIf referencing this key. */}
+                <DynamicAttributeFields
+                  attributes={locTypeAttributes}
+                  values={{ ...locAttributeValues, 'shop-type': subtype }}
+                  onChange={(attrId, val) => setLocAttributeValues((prev) => ({ ...prev, [attrId]: val }))}
+                />
 
                 {(locExcludedPatterns.length > 0 || locGuaranteedPatterns.length > 0) && (
                   <div className="text-xs text-ink-soft/60 italic space-y-0.5">
@@ -2171,9 +2301,10 @@ export default function LootTab() {
                   Allow duplicates
                 </label>
 
-                <button type="button" onClick={generateLocation} className="w-full py-2.5 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm hover:bg-leather-dark">
-                  {results ? 'Reroll' : 'Generate Loot'}
+                <button type="button" onClick={generateLocation} disabled={generating} className="w-full py-2.5 text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm hover:bg-leather-dark disabled:opacity-40">
+                  {generating ? 'Generating…' : results ? 'Reroll' : 'Generate Loot'}
                 </button>
+                {aiNotice && <p className="text-xs text-ink-soft/60 italic">{aiNotice}</p>}
               </div>
             )}
           </div>
