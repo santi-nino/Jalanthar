@@ -48,35 +48,16 @@ export const DEFAULT_LOOT_TAXONOMY = {
     'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead',
   ],
 
-  // Coarse type-level category restriction -- a broad first pass before
-  // the finer per-option item-name exclusions narrow things further. An
-  // EXPLICIT empty array means "this type carries nothing from the
-  // manufactured-goods catalog" -- not "unrestricted." A key that's
-  // absent entirely means unrestricted.
-  // Category names here are SRD category names only (Weapon, Armor,
-  // Tool, Focus, etc) or "Source: X (Y)" for a specific uploaded
-  // source's category. The Hunter's & Trapper's Price Guide items
-  // (trophies, pelts, horns, hearts, etc.) are DELIBERATELY not listed
-  // here at all -- they reach Beast/Monstrosity/Construct/Dragon through
-  // the separate, invisible monsterTypeTag mechanism instead (see
-  // LootTab.jsx), which hard-scopes each item to its actual creature
-  // type regardless of category or price overlap. Listing those
-  // category strings here too was fragile (an exact-string dependency
-  // on the source's name) and unnecessary once the tag exists.
-  monsterTypeCategories: {
-    Aberration: [],
-    Beast: [],
-    // Fiend, Giant, Humanoid, Undead: no entry -- unrestricted, all
-    // sapient-enough or civilized-enough to plausibly carry a
-    // shopkeeper's kind of gear. Celestial, Construct, Dragon, Elemental,
-    // and now Fey aren't listed here either -- Fey's own dispatch (see
-    // generateEncounter in LootTab.jsx) always routes to either the
-    // kind-bucketed engine or the Loadout System, so this coarse
-    // restriction is never consulted for it either.
-    Monstrosity: [],
-    Ooze: [],
-    Plant: [],
-  },
+  // monsterTypeCategories (the old coarse type-level category restriction
+  // -- Weapon/Armor/Tool/etc, one flat list per type) was removed
+  // entirely per the DM ("cluttered and not necessary"): every type now
+  // either runs through the kind-bucketed engine or the Loadout System,
+  // both of which already scope eligibility far more precisely via real
+  // item tags (monsterTypeTags, lootTags.kind/domain/element/role/etc)
+  // than a coarse SRD-category allowlist ever did. The handful of types
+  // still on the plain flat draw (Undead, Monstrosity, Ooze, Plant, and
+  // Humanoid before a Role is picked) just draw unrestricted by category
+  // now, same as everything else effectively already was.
 
   // Whether Wealth applies at all for this type. Only genuinely
   // "economic" creatures get it -- a dragon hoards gold, a bandit has a
@@ -1069,14 +1050,29 @@ export const DEFAULT_LOOT_TAXONOMY = {
     // repeated in any role's `fixed` list -- monsterTypeGuaranteedItems.
     // Humanoid already adds those to every Humanoid regardless of Role,
     // so putting them here too would just double them up.
+    // Variety fix (per the DM: a Mage/Caster generated "for the road" came
+    // back with only a focus and clothes -- MagicItem is correctly
+    // wealth-gated to near-zero at low Wealth, but Supplementary had a
+    // min of 0 too, so a run of bad rolls could plausibly return NOTHING
+    // beyond the fixed slots). Every role below now guarantees real
+    // variety regardless of wealth: Supplementary's min is 1 (not 0)
+    // almost everywhere, and every role gets a NEW PersonalEffects slot
+    // (min 1, max 2) -- small, characterful belongings (a keepsake, a
+    // letter, a worn charm) that are a third, distinct flavor from
+    // Supplementary (practical/utility gear) and Junk (worthless odds and
+    // ends). MagicItem/MagicWeapon/Luxury stay wealth-gated on purpose --
+    // "some of them should have magic items" reads as variety ACROSS many
+    // rolls, not a guarantee on every single one -- but nobody should ever
+    // walk away with literally just their fixed slots anymore.
     'Humanoid:Commoner': {
       fixed: [],
       rankScaled: [
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Supplementary', min: 1, max: 2 },
         { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1089,8 +1085,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Supplementary', min: 1, max: 2 },
         { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1103,8 +1100,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [2, 4] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Supplementary', min: 1, max: 3 },
         { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1118,8 +1116,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Supplementary', min: 1, max: 3 },
         { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1132,8 +1131,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Supplementary', min: 1, max: 2 },
         { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1144,7 +1144,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 3], Aristocratic: [3, 5] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Supplementary', min: 1, max: 2 },
+        { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1156,8 +1158,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Supplementary', min: 1, max: 3 },
         { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1170,7 +1173,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 1] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Supplementary', min: 1, max: 3 },
+        { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1182,7 +1187,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Supplementary', min: 1, max: 3 },
+        { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1196,6 +1203,7 @@ export const DEFAULT_LOOT_TAXONOMY = {
       ranged: [
         { pool: 'Supplementary', min: 1, max: 4 },
         { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1207,8 +1215,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Supplementary', min: 1, max: 2 },
         { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1221,8 +1230,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Supplementary', min: 1, max: 2 },
         { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1234,8 +1244,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Supplementary', min: 1, max: 3 },
         { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },
@@ -1248,8 +1259,9 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
       ],
       ranged: [
-        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Supplementary', min: 1, max: 2 },
         { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
     },

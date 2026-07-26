@@ -8394,6 +8394,9 @@ export const mockSources = [
         ],
         "lootTags": {
           "kind": "Weapon",
+          "domain": [
+            "Light"
+          ],
           "requiresFeature": "Bestial",
           "minRank": 1
         },
@@ -8430,6 +8433,9 @@ export const mockSources = [
         ],
         "lootTags": {
           "kind": "Religious",
+          "domain": [
+            "Knowledge"
+          ],
           "requiresFeature": "Sentient",
           "minRank": 2
         },
@@ -11910,6 +11916,9 @@ export const mockSources = [
           "kind": "Weapon",
           "element": [
             "Fire"
+          ],
+          "subelement": [
+            "Cinder"
           ]
         },
         "priceOverride": "",
@@ -12051,6 +12060,9 @@ export const mockSources = [
           "kind": "Parts",
           "element": [
             "Fire"
+          ],
+          "subelement": [
+            "Flame"
           ]
         },
         "priceOverride": "",
@@ -12096,6 +12108,10 @@ export const mockSources = [
           "kind": "MagicParts",
           "element": [
             "Fire"
+          ],
+          "subelement": [
+            "Cinder",
+            "Ash"
           ],
           "anatomySlot": "Core"
         },
@@ -12190,6 +12206,9 @@ export const mockSources = [
           "kind": "Junk",
           "element": [
             "Fire"
+          ],
+          "subelement": [
+            "Magma"
           ]
         },
         "priceOverride": "",
@@ -12235,6 +12254,10 @@ export const mockSources = [
           "kind": "Junk",
           "element": [
             "Fire"
+          ],
+          "subelement": [
+            "Flame",
+            "Ash"
           ]
         },
         "priceOverride": "",
@@ -12256,6 +12279,9 @@ export const mockSources = [
           "kind": "Power",
           "element": [
             "Fire"
+          ],
+          "subelement": [
+            "Cinder"
           ],
           "minRank": 0
         },
@@ -12279,6 +12305,9 @@ export const mockSources = [
           "element": [
             "Fire"
           ],
+          "subelement": [
+            "Flame"
+          ],
           "minRank": 1
         },
         "priceOverride": "",
@@ -12301,6 +12330,9 @@ export const mockSources = [
           "element": [
             "Fire"
           ],
+          "subelement": [
+            "Ash"
+          ],
           "minRank": 2
         },
         "priceOverride": "",
@@ -12322,6 +12354,10 @@ export const mockSources = [
           "kind": "Power",
           "element": [
             "Fire"
+          ],
+          "subelement": [
+            "Cinder",
+            "Magma"
           ],
           "minRank": 3
         },
@@ -12534,6 +12570,9 @@ export const mockSources = [
           "element": [
             "Water"
           ],
+          "subelement": [
+            "Wave"
+          ],
           "anatomySlot": "Core"
         },
         "priceOverride": "",
@@ -12627,6 +12666,9 @@ export const mockSources = [
           "kind": "Junk",
           "element": [
             "Water"
+          ],
+          "subelement": [
+            "Wave"
           ]
         },
         "priceOverride": "",
@@ -12697,6 +12739,9 @@ export const mockSources = [
           "element": [
             "Water"
           ],
+          "subelement": [
+            "Wave"
+          ],
           "minRank": 0
         },
         "priceOverride": "",
@@ -12741,6 +12786,9 @@ export const mockSources = [
           "element": [
             "Water"
           ],
+          "subelement": [
+            "Deep"
+          ],
           "minRank": 2
         },
         "priceOverride": "",
@@ -12762,6 +12810,10 @@ export const mockSources = [
           "kind": "Power",
           "element": [
             "Water"
+          ],
+          "subelement": [
+            "Wave",
+            "Deep"
           ],
           "minRank": 3
         },
@@ -12856,6 +12908,9 @@ export const mockSources = [
           "kind": "Parts",
           "element": [
             "Earth"
+          ],
+          "subelement": [
+            "Stone"
           ]
         },
         "priceOverride": "",
@@ -12974,6 +13029,9 @@ export const mockSources = [
           "element": [
             "Earth"
           ],
+          "subelement": [
+            "Crystal"
+          ],
           "anatomySlot": "Core"
         },
         "priceOverride": "",
@@ -13067,6 +13125,9 @@ export const mockSources = [
           "kind": "Junk",
           "element": [
             "Earth"
+          ],
+          "subelement": [
+            "Stone"
           ]
         },
         "priceOverride": "",
@@ -13137,6 +13198,9 @@ export const mockSources = [
           "element": [
             "Earth"
           ],
+          "subelement": [
+            "Stone"
+          ],
           "minRank": 0
         },
         "priceOverride": "",
@@ -13158,6 +13222,10 @@ export const mockSources = [
           "kind": "Power",
           "element": [
             "Earth"
+          ],
+          "subelement": [
+            "Crystal",
+            "Stone"
           ],
           "minRank": 1
         },
@@ -13181,6 +13249,9 @@ export const mockSources = [
           "element": [
             "Earth"
           ],
+          "subelement": [
+            "Stone"
+          ],
           "minRank": 2
         },
         "priceOverride": "",
@@ -13202,6 +13273,10 @@ export const mockSources = [
           "kind": "Power",
           "element": [
             "Earth"
+          ],
+          "subelement": [
+            "Stone",
+            "Ore"
           ],
           "minRank": 3
         },
@@ -13296,6 +13371,9 @@ export const mockSources = [
           "kind": "Parts",
           "element": [
             "Air"
+          ],
+          "subelement": [
+            "Gale"
           ]
         },
         "priceOverride": "",
@@ -13414,6 +13492,10 @@ export const mockSources = [
           "element": [
             "Air"
           ],
+          "subelement": [
+            "Storm",
+            "Gale"
+          ],
           "anatomySlot": "Core"
         },
         "priceOverride": "",
@@ -13507,6 +13589,9 @@ export const mockSources = [
           "kind": "Junk",
           "element": [
             "Air"
+          ],
+          "subelement": [
+            "Vacuum"
           ]
         },
         "priceOverride": "",
@@ -13577,6 +13662,9 @@ export const mockSources = [
           "element": [
             "Air"
           ],
+          "subelement": [
+            "Gale"
+          ],
           "minRank": 0
         },
         "priceOverride": "",
@@ -13598,6 +13686,9 @@ export const mockSources = [
           "kind": "Power",
           "element": [
             "Air"
+          ],
+          "subelement": [
+            "Storm"
           ],
           "minRank": 1
         },
@@ -13621,6 +13712,9 @@ export const mockSources = [
           "element": [
             "Air"
           ],
+          "subelement": [
+            "Cloud"
+          ],
           "minRank": 2
         },
         "priceOverride": "",
@@ -13642,6 +13736,9 @@ export const mockSources = [
           "kind": "Power",
           "element": [
             "Air"
+          ],
+          "subelement": [
+            "Vacuum"
           ],
           "minRank": 3
         },

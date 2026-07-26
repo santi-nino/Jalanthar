@@ -4,7 +4,8 @@ import { IconMap, IconBuildings, IconResidents, IconRoster, IconLoot, IconKey, I
 import ExportDataModal from './ExportDataModal'
 import UploadSourceModal from './UploadSourceModal'
 import ManageSourcesModal from './ManageSourcesModal'
-import { BUILD_VERSION } from '../data/version'
+import VersionHistoryModal from './VersionHistoryModal'
+import { CURRENT_VERSION } from '../data/version'
 
 const TABS = [
   { id: 'map', label: 'Map', Icon: IconMap },
@@ -19,6 +20,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
   const [exportOpen, setExportOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [manageSourcesOpen, setManageSourcesOpen] = useState(false)
+  const [versionHistoryOpen, setVersionHistoryOpen] = useState(false)
   const { isDm, logout } = useAuth()
   const visibleTabs = TABS.filter((t) => !t.dmOnly || isDm)
 
@@ -145,15 +147,20 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
             </button>
           )}
           {isDm && !collapsed && (
-            <p className="text-[10px] text-parchment/30 text-center pt-1 leading-tight" title={BUILD_VERSION}>
-              {BUILD_VERSION}
-            </p>
+            <button
+              onClick={() => setVersionHistoryOpen(true)}
+              className="w-full text-[10px] text-parchment/30 hover:text-parchment/60 text-center pt-1 transition-colors"
+              title="View version history"
+            >
+              Version {CURRENT_VERSION}
+            </button>
           )}
         </div>
       </aside>
       {exportOpen && <ExportDataModal onClose={() => setExportOpen(false)} />}
       {uploadOpen && <UploadSourceModal onClose={() => setUploadOpen(false)} />}
       {manageSourcesOpen && <ManageSourcesModal onClose={() => setManageSourcesOpen(false)} />}
+      {versionHistoryOpen && <VersionHistoryModal onClose={() => setVersionHistoryOpen(false)} />}
     </>
   )
 }

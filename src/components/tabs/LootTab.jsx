@@ -77,25 +77,27 @@ function matchesAnyPattern(itemName, patterns) {
 // anything untagged for Dragon, full stop. Everything else -- including
 // fully generic items AND items tagged for a DIFFERENT type (a Torch
 // tagged for Aberration's stomach loot is still just an ordinary shop
-// item to everyone else) -- still goes through the normal coarse
-// category restriction, same as before.
-function scopeToMonsterType(pool, monsterType, typeCategoryRestriction) {
+// item to everyone else) -- is otherwise unrestricted by monster type.
+// Used to also apply a per-type coarse CATEGORY restriction on top (the
+// old monsterTypeCategories/"Category Restrictions" DM editor) -- removed
+// per the DM ("cluttered, not necessary"): every kind-bucketed and
+// Loadout-System type already scopes eligibility far more precisely via
+// its own tags, and the handful of types still on the flat draw fallback
+// below (Undead, Monstrosity, Ooze, Plant) never really needed a second,
+// coarser layer on top of that.
+function scopeToMonsterType(pool, monsterType) {
   const tagged = monsterType ? pool.filter((i) => i.monsterTypeTags?.includes(monsterType)) : []
   const taggedSet = new Set(tagged)
   const rest = pool.filter((i) => !taggedSet.has(i))
-  const allowedRest =
-    typeCategoryRestriction !== undefined
-      ? rest.filter((i) => typeCategoryRestriction.includes(i.category))
-      : rest
-  return [...tagged, ...allowedRest]
+  return [...tagged, ...rest]
 }
 
 function drawLoot({
-  pools, sources, categories, priceMin, priceMax, count, allowDuplicates, includeVehicles, excludedPatterns, monsterType, typeCategoryRestriction,
+  pools, sources, categories, priceMin, priceMax, count, allowDuplicates, includeVehicles, excludedPatterns, monsterType,
 }) {
   let pool = pools.flatMap((p) => buildItemPool(p, sources).map((item) => ({ ...item, pool: p })))
   if (!includeVehicles) pool = pool.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
-  pool = scopeToMonsterType(pool, monsterType, typeCategoryRestriction)
+  pool = scopeToMonsterType(pool, monsterType)
   if (excludedPatterns && excludedPatterns.length > 0) {
     pool = pool.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
   }
@@ -904,32 +906,6 @@ function EditableWealthList({ items, onChange }) {
   )
 }
 
-function MonsterTypeCategoryMapper({ monsterTypes, mapping, allCategories, onChange }) {
-  const [selectedType, setSelectedType] = useState(monsterTypes[0] || '')
-  const current = mapping[selectedType] || []
-  function toggle(cat) {
-    const next = current.includes(cat) ? current.filter((c) => c !== cat) : [...current, cat]
-    onChange({ ...mapping, [selectedType]: next })
-  }
-  if (monsterTypes.length === 0) return <p className="text-xs text-ink-soft/50 italic">Add a monster type above first.</p>
-  return (
-    <div>
-      <span className="text-xs font-display uppercase text-ink-soft block mb-1">
-        Monster Type → Categories <span className="text-ink-soft/50 normal-case">(coarse pass -- which item categories are eligible at all)</span>
-      </span>
-      <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="w-full rounded-sm border border-leather bg-white/70 px-2 py-1.5 text-xs mb-1.5">
-        {monsterTypes.map((t) => <option key={t} value={t}>{t} {mapping[t]?.length ? `(${mapping[t].length} allowed)` : '(all allowed)'}</option>)}
-      </select>
-      <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
-        {allCategories.map((cat) => (
-          <button key={cat} type="button" onClick={() => toggle(cat)} className={`text-xs rounded-sm px-2 py-1 border ${current.includes(cat) ? 'bg-moss-dark text-parchment border-moss-dark' : 'bg-white/50 border-leather/40 text-ink-soft hover:border-leather'}`}>{cat}</button>
-        ))}
-        {allCategories.length === 0 && <span className="text-xs text-ink-soft/50 italic">No categories available yet.</span>}
-      </div>
-    </div>
-  )
-}
-
 // Editor for ONE attribute (e.g. Beast's "Diet"): rename it, manage its
 // options, and manage per-option excluded/guaranteed item NAME patterns
 // (free text, substring-matched -- "Sword" excludes Longsword etc.
@@ -1133,18 +1109,11 @@ function SettingRulesEditor({ settings, rules, onChange }) {
   )
 }
 
-function TaxonomyManager({ taxonomy, onSave, sources }) {
-  const allCategories = useMemo(() => categoriesForPools(['wares', 'menu', 'services'], sources, true), [sources])
+function TaxonomyManager({ taxonomy, onSave }) {
   const locationTypeIds = LOCATION_TYPES.map((t) => t.id)
   const locationTypeLabels = Object.fromEntries(LOCATION_TYPES.map((t) => [t.id, t.label]))
 
   function renameMonsterType(oldName, newName) {
-    if (taxonomy.monsterTypeCategories?.[oldName]) {
-      const next = { ...taxonomy.monsterTypeCategories }
-      next[newName] = next[oldName]
-      delete next[oldName]
-      onSave({ monsterTypeCategories: next })
-    }
     if (taxonomy.monsterTypeAttributes?.[oldName]) {
       const next = { ...taxonomy.monsterTypeAttributes }
       next[newName] = next[oldName]
@@ -1189,8 +1158,6 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
 
       <SettingRulesEditor settings={taxonomy.settings} rules={taxonomy.settingRules || {}} onChange={(v) => onSave({ settingRules: v })} />
 
-      <MonsterTypeCategoryMapper monsterTypes={taxonomy.monsterTypes} mapping={taxonomy.monsterTypeCategories || {}} allCategories={allCategories} onChange={(v) => onSave({ monsterTypeCategories: v })} />
-
       <TypeGuaranteedItemsManager
         label="Monster Type → Always Carries (baseline, e.g. Humanoid → Boots)"
         types={taxonomy.monsterTypes}
@@ -1231,7 +1198,15 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
   )
 }
 
-function PoolAndCategoryPicker({ pools, onPoolsChange, categories, onCategoriesChange, availableCategories, includeVehicles, onIncludeVehiclesChange }) {
+// hideCategories: monster entities dropped the Categories checkbox row
+// entirely per the DM ("cluttered and not necessary") -- every monster
+// type now routes through either the kind-bucketed engine or the Loadout
+// System, both of which scope eligibility far more precisely via their
+// own tags, so a coarse manual category picker on top was just noise.
+// Location loot (shops/exploration) still uses the plain flat draw with
+// no equivalent tagging system, so it keeps Categories -- this prop
+// defaults to false/shown for that reason.
+function PoolAndCategoryPicker({ pools, onPoolsChange, categories, onCategoriesChange, availableCategories, includeVehicles, onIncludeVehiclesChange, hideCategories = false }) {
   return (
     <div className="space-y-2">
       <div>
@@ -1249,7 +1224,7 @@ function PoolAndCategoryPicker({ pools, onPoolsChange, categories, onCategoriesC
           </label>
         </div>
       </div>
-      {availableCategories.length > 0 && (
+      {!hideCategories && availableCategories.length > 0 && (
         <div>
           <span className="text-xs font-display uppercase text-ink-soft block mb-1">Categories <span className="text-ink-soft/50 normal-case">(none = all)</span></span>
           <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
@@ -1391,10 +1366,9 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const availableCategories = useMemo(() => {
     let base = pools.flatMap((p) => buildItemPool(p, sources))
     if (!includeVehicles) base = base.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
-    const restriction = taxonomy.monsterTypeCategories?.[monsterType]
-    const scoped = scopeToMonsterType(base, monsterType, restriction)
+    const scoped = scopeToMonsterType(base, monsterType)
     return [...new Set(scoped.map((i) => i.category))].sort((a, b) => a.localeCompare(b))
-  }, [pools, sources, includeVehicles, taxonomy.monsterTypeCategories, monsterType])
+  }, [pools, sources, includeVehicles, monsterType])
 
   function handleMonsterTypeChange(value) {
     setMonsterType(value)
@@ -1406,10 +1380,6 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
     setFeatures({})
     setHasHorde(false)
     setHordeSize('')
-    const restriction = taxonomy.monsterTypeCategories?.[value]
-    if (restriction !== undefined) {
-      setCategories((prev) => prev.filter((c) => restriction.includes(c)))
-    }
     // Wealth only shows for types where it's toggled on -- reset it
     // cleanly on type change rather than carrying over a stale pick from
     // a wealth-using type onto one that doesn't use it at all.
@@ -1590,6 +1560,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
           availableCategories={availableCategories}
           includeVehicles={includeVehicles}
           onIncludeVehiclesChange={setIncludeVehicles}
+          hideCategories
         />
       )}
 
@@ -1831,7 +1802,6 @@ export default function LootTab() {
             ? w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
             : randomInt(fixedCount.minItems, fixedCount.maxItems)
           const gold = usesWealth && w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
-          const typeRestriction = lootTaxonomy.monsterTypeCategories?.[e.monsterType]
           const rolled = drawLoot({
             pools: e.pools,
             sources,
@@ -1843,7 +1813,6 @@ export default function LootTab() {
             includeVehicles: e.includeVehicles,
             excludedPatterns: e.excludedPatterns,
             monsterType: e.monsterType,
-            typeCategoryRestriction: typeRestriction,
           })
           const wealthLabel = usesWealth ? w?.label : null
           const fullTags = [e.monsterName || e.monsterType, ...attrTags, wealthLabel, e.setting, e.notes].filter(Boolean)
@@ -1975,7 +1944,7 @@ export default function LootTab() {
         <button type="button" onClick={() => setShowTaxonomy((s) => !s)} className="text-xs text-moss-dark underline shrink-0 whitespace-nowrap">{showTaxonomy ? 'Hide categories' : 'Edit categories'}</button>
       </div>
 
-      {showTaxonomy && <TaxonomyManager taxonomy={lootTaxonomy} onSave={saveLootTaxonomy} sources={sources} />}
+      {showTaxonomy && <TaxonomyManager taxonomy={lootTaxonomy} onSave={saveLootTaxonomy} />}
 
       <div className="border border-leather/50 rounded-sm bg-parchment paper-texture p-4 space-y-4">
         <div>
