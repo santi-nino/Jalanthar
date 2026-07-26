@@ -3,7 +3,7 @@ import { useData } from '../../contexts/DataContext'
 import { buildItemPool } from '../../utils/itemPool'
 import { formatPrice } from '../../utils/price'
 import { LOCATION_TYPES, VEHICLE_CATEGORIES } from '../../data/defaultLootTaxonomy'
-import { generateAiAssistedLoot, generateAiHordeContents, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
+import { generateAiAssistedLoot, generateAiAssistedLootDiscretion, generateAiHordeContents, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
 
 const POOL_OPTIONS = [
   { id: 'wares', label: 'Wares' },
@@ -720,6 +720,43 @@ function computeEligiblePoolForAi({ monsterType, taxonomy, sources, attributeVal
     attributeSummary: Object.entries(dimValues).map(([k, v]) => `${k}=${v || '(any)'}`).join(', '),
     balanced: SOURCE_BALANCED_TYPES.has(monsterType),
   }
+}
+
+// Loose total-item-count guidance by SRD size, used only by the
+// discretion-mode AI path below -- NOT a hard per-kind limit like
+// countsByKind above, just a sane ballpark so a Tiny creature doesn't get
+// treated the same as a Gargantuan one. Missing/unrecognized size falls
+// back to the Medium range.
+const DISCRETION_COUNT_BY_SIZE = {
+  Tiny: [1, 3], Small: [1, 3], Medium: [2, 4], Large: [3, 6], Huge: [4, 7], Gargantuan: [5, 9],
+}
+
+// The fix for "AI-assist never even runs for Owlbear": computeEligiblePoolForAi
+// above only works for kind-bucketed types (sizeLootTable has an entry),
+// which Monstrosity/Ooze/Plant/Undead never do -- so a DM picking a real,
+// named catalog monster of one of THOSE types always fell straight through
+// to the plain flat draw's hardcoded 1-2 item count (monsterTypeFixedItemCount),
+// no matter how large or noteworthy the creature actually was. Per the DM:
+// "for any specific monster in the dropdown menu we just let AI pick items
+// that work from the database at its own discretion, within reason." This
+// builds a much looser pool/guidance pair for exactly that case -- same
+// broad "tagged-for-this-type first, then everything else" pool the flat
+// draw itself would use (see scopeToMonsterType), handed to the AI with a
+// size-based ballpark count instead of rigid per-kind buckets, since these
+// types have no kind-bucket concept to bound it by in the first place.
+function computeDiscretionPoolForAi({ monsterType, sources, excludedPatterns, includeVehicles, catalogSize }) {
+  let pool = buildItemPool('wares', sources)
+  if (!includeVehicles) pool = pool.filter((i) => !VEHICLE_CATEGORIES.includes(i.category))
+  pool = scopeToMonsterType(pool, monsterType)
+  if (excludedPatterns && excludedPatterns.length > 0) {
+    pool = pool.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
+  }
+  const eligibleItems = pool.map((i) => ({
+    name: i.name, priceGp: i.priceGp, description: i.description, kind: i.lootTags?.kind || i.category,
+    anatomySlot: i.lootTags?.anatomySlot,
+  }))
+  const countRange = DISCRETION_COUNT_BY_SIZE[catalogSize] || DISCRETION_COUNT_BY_SIZE.Medium
+  return { eligibleItems, countRange }
 }
 
 // The other half of "make good guesses": baseline items that appear
@@ -1652,6 +1689,15 @@ export default function LootTab() {
         // items only when genuinely justified). Falls back to the
         // normal deterministic path on any failure, so a missing API
         // key or a network hiccup never blocks generation entirely.
+        // catalogMatch: does Specific Monster exactly match a real entry in
+        // the SRD catalog dropdown (not just freeform typed text)? Computed
+        // once up top now since both the existing kind-bucketed AI path AND
+        // the new discretion-mode path below need it.
+        const catalogMatch = (lootTaxonomy.monsterCatalog || []).find(
+          (m) => m.name.toLowerCase() === (e.monsterName || '').toLowerCase()
+        )
+        const srdContext = catalogMatch ? ` (SRD data: ${catalogMatch.size} ${catalogMatch.type}${catalogMatch.subtype ? ` (${catalogMatch.subtype})` : ''}, ${catalogMatch.alignment})` : ''
+
         const wantsAi = isKindBucketed && ((e.monsterName && e.monsterName.trim()) || (e.notes && e.notes.trim()))
         if (wantsAi) {
           const poolInfo = computeEligiblePoolForAi({
@@ -1659,10 +1705,6 @@ export default function LootTab() {
             attributeValues: e.attributeValues, excludedPatterns: e.excludedPatterns, features: e.features,
           })
           if (poolInfo) {
-            const catalogMatch = (lootTaxonomy.monsterCatalog || []).find(
-              (m) => m.name.toLowerCase() === (e.monsterName || '').toLowerCase()
-            )
-            const srdContext = catalogMatch ? ` (SRD data: ${catalogMatch.size} ${catalogMatch.type}${catalogMatch.subtype ? ` (${catalogMatch.subtype})` : ''}, ${catalogMatch.alignment})` : ''
             try {
               const aiItems = await generateAiAssistedLoot({
                 monsterType: e.monsterType,
@@ -1789,6 +1831,38 @@ export default function LootTab() {
               dimensionKey: 'subrole', dimensionValue: subrole,
             })
             mainGroup = { label, items: [...guaranteed, ...rolled], gold }
+          }
+        }
+
+        // Discretion mode -- the fix for "Owlbear always gets 1-2 items,
+        // one of them anatomically wrong": if nothing above already
+        // produced a result (so this is one of the types with no
+        // kind-bucketed/Loadout system of its own -- Monstrosity, Ooze,
+        // Plant, Undead) AND the DM picked a real catalog monster from the
+        // Specific Monster dropdown (not just typed freeform text -- that
+        // still falls to the flat draw below, same as before), let the AI
+        // pick items with real discretion instead of the flat draw's
+        // hardcoded 1-2 item count. See computeDiscretionPoolForAi above
+        // and generateAiAssistedLootDiscretion in lootAi.js.
+        if (!mainGroup && catalogMatch) {
+          const { eligibleItems, countRange } = computeDiscretionPoolForAi({
+            monsterType: e.monsterType, sources, excludedPatterns: e.excludedPatterns,
+            includeVehicles: e.includeVehicles, catalogSize: catalogMatch.size,
+          })
+          try {
+            const aiItems = await generateAiAssistedLootDiscretion({
+              monsterType: e.monsterType, monsterName: catalogMatch.name, srdContext,
+              notes: e.notes, countRange, eligibleItems,
+            })
+            mainGroup = { label, items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true }
+          } catch (err) {
+            if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI discretion loot assist failed, falling back:', err)
+            setAiNotice((prev) =>
+              prev ||
+              (err.message === LOOT_AI_UNCONFIGURED
+                ? 'AI assist isn’t configured (no API key set) — used the normal random rules instead.'
+                : 'AI assist failed — used the normal random rules instead.')
+            )
           }
         }
 

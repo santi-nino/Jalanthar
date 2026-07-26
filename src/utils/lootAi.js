@@ -341,6 +341,114 @@ export async function generateAiHordeContents({ lineage, setting, notes, targetG
 }
 
 
+// --- Discretion mode -------------------------------------------------------
+// For monster types with no kind-bucketed sizeLootTable entry (Monstrosity,
+// Ooze, Plant, Undead) -- these never had a tier/count system to bound the
+// AI by in the first place, so a DM picking a real catalog monster of one
+// of these types always fell through to the flat draw's flat 1-2 item
+// count no matter how large or notable the creature was (the "Owlbear
+// always gets 1-2 items, one of them a scale that doesn't belong on an
+// Owlbear at all" bug). Per the DM: for a monster picked from the actual
+// catalog dropdown (a real, named SRD creature, not just freeform text),
+// let the AI use real discretion -- a size-based ballpark count instead of
+// rigid per-kind buckets, and NO relaxation of the standing select-don't-
+// invent rule (see the file-top STANDING RULE comment) -- still capped at
+// 2 invented items, same as the regular path above.
+
+function buildDiscretionPrompt({ monsterType, monsterName, srdContext, notes, countRange, eligibleItems }) {
+  const poolText = eligibleItems.map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.kind} | ${i.description}`).join('\n')
+  return `
+You are helping a Dungeon Master generate believable loot for a specific, named D&D creature picked from the official monster catalog.
+
+CREATURE:
+- Name: ${monsterName}${srdContext}
+- Monster Type: ${monsterType}
+- DM's freeform notes: ${notes || '(none)'}
+
+This creature's type doesn't use the site's tier/count system, so there's no strict per-kind limit here -- use real judgment instead, informed by what you actually know about this creature (its size, temperament, habitat, whether it's the sort of thing that would even carry/guard belongings at all).
+
+LOOSE GUIDANCE: aim for roughly ${countRange[0]}-${countRange[1]} items total (a rough ballpark, not a hard wall) -- fewer for a small, simple, or feral creature that wouldn't realistically have anything on it beyond maybe a trophy-worthy body part; more for a large, territorial, or lair-keeping one that might have scavenged or hoarded things nearby. It is completely fine, and often correct, to return FEWER than the low end if this creature genuinely wouldn't carry much (a mindless ooze should get near nothing) -- the ballpark exists to stop reflexive 1-2-item answers for creatures that would plausibly have more, not to pad every single one up.
+
+ELIGIBLE ITEMS (draw primarily from this list; every item must make sense for THIS specific named creature's real anatomy/nature -- do not pick an item just because it's on the list):
+${poolText || '(no items available)'}
+
+TASK:
+1. Use what you actually know about this named creature. Reject anything anatomically or thematically wrong for it even if it's in the eligible list (e.g. no scales or exoskeleton fragments on an Owlbear -- it has fur, feathers, a beak, and talons).
+2. Select items from the ELIGIBLE ITEMS list that plausibly fit. You may invent AT MOST ONE OR TWO brand-new items, and only if this creature's real nature calls for something genuinely not covered by anything eligible -- never invent an anatomical item it plausibly wouldn't have.
+3. Land roughly within the loose guidance above, erring toward less rather than padding to hit a number.
+4. Never select two different items that both represent the same single body part.
+
+Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
+{ "items": [ { "name": string, "priceGp": number, "description": string, "kind": string, "isNew": boolean } ] }
+`.trim()
+}
+
+function normalizeDiscretionResult(raw, { maxTotal, slotByName } = {}) {
+  let items = Array.isArray(raw.items)
+    ? raw.items
+        .map((r) => ({
+          name: String(r.name || '').trim(),
+          priceGp: Number(r.priceGp) || 0,
+          description: String(r.description || '').trim(),
+          kind: String(r.kind || '').trim(),
+          isNew: !!r.isNew,
+        }))
+        .filter((r) => r.name)
+    : []
+
+  const seenNames = new Set()
+  const usedSlots = new Set()
+  const filtered = []
+  for (const r of items) {
+    const nameKey = r.name.toLowerCase()
+    if (seenNames.has(nameKey)) continue
+    const rawSlot = slotByName?.get(nameKey)
+    const slots = rawSlot ? (Array.isArray(rawSlot) ? rawSlot : [rawSlot]) : []
+    if (slots.some((s) => usedSlots.has(s))) continue
+    if (maxTotal != null && filtered.length >= maxTotal) break
+    seenNames.add(nameKey)
+    slots.forEach((s) => usedSlots.add(s))
+    filtered.push(r)
+  }
+
+  let newCount = 0
+  return filtered.filter((r) => {
+    if (!r.isNew) return true
+    newCount += 1
+    return newCount <= 2
+  })
+}
+
+export async function generateAiAssistedLootDiscretion({ monsterType, monsterName, srdContext, notes, countRange, eligibleItems }) {
+  const prompt = buildDiscretionPrompt({ monsterType, monsterName, srdContext, notes, countRange, eligibleItems })
+  const slotByName = new Map(
+    (eligibleItems || []).filter((i) => i.anatomySlot).map((i) => [i.name.toLowerCase(), i.anatomySlot])
+  )
+  // Loose safety net -- countRange's upper bound plus a little headroom
+  // (the guidance is explicitly a ballpark, not a wall), so a model that
+  // reasonably judges "this Huge creature warrants a bit more" isn't cut
+  // off, while still guarding against a runaway/malformed response.
+  const maxTotal = countRange[1] + 3
+
+  let lastError = null
+  try {
+    const result = await callGemini(prompt)
+    if (result) return normalizeDiscretionResult(result, { maxTotal, slotByName })
+  } catch (err) {
+    console.error('Gemini discretion loot assist failed, trying fallback:', err)
+    lastError = err
+  }
+  try {
+    const result = await callClaude(prompt)
+    if (result) return normalizeDiscretionResult(result, { maxTotal, slotByName })
+  } catch (err) {
+    console.error('Claude discretion loot assist failed:', err)
+    lastError = err
+  }
+  if (lastError) throw lastError
+  throw new Error(LOOT_AI_UNCONFIGURED)
+}
+
 // countsByKind: { [kind]: [min, max] } for this entity's exact tier --
 // the same numbers the deterministic engine would use. eligibleItems:
 // the same pool the deterministic engine would draw from (already

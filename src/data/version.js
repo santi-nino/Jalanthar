@@ -11,6 +11,10 @@
 // every version ever shipped, just everything from 3.1 onward.
 export const VERSION_HISTORY = [
   {
+    version: '3.6',
+    notes: 'Weapon/Armor/Ammunition +1/+2/+3 expanded from generic unusable placeholders ("Weapon, +1") into one real instance per SRD weapon/armor/ammo type (36 weapons, 12 armors, 5 ammo types, all 3 tiers each -- Shield stays generic since the SRD only has one Shield item) -- also made these newly-named magic weapons reachable from Humanoid’s Guard/Soldier magic-weapon slot with matching subrole tags. Fixed the real bug behind Owlbear (and any Monstrosity/Ooze/Plant/Undead) always getting 1-2 anatomically-wrong items: those types have no kind-bucketed system, so AI-assist never even ran for them -- added a new "discretion mode" that kicks in whenever a real catalog monster is picked from the Specific Monster dropdown, giving the AI a size-based ballpark instead of the flat draw’s hardcoded 1-2 item count.',
+  },
+  {
     version: '3.5',
     notes: 'Sidebar version text collapsed into a click-to-open History popup instead of always-on space; Humanoid loadouts reworked for reliable variety (new Personal Effects pool, non-zero minimums on Supplementary/Junk/Personal Effects at every wealth tier); removed the per-monster-type Category Restriction editor entirely (cluttered, largely unused now that most types route through their own kind-bucketed/Loadout systems); AI loot-assist prompt now explicitly excludes anatomically-wrong pool items for a named creature, not just invented ones; full item-tagging completeness pass across every source.',
   },
