@@ -231,6 +231,77 @@ const KIND_BUCKET_CONFIG = {
 // two-element array as their "count range."
 const SIZE_TABLE_META_KEYS = new Set(['priceRange', 'goldRange'])
 
+// The Setting side-loadout system: a low-to-high tier ORDER for exactly
+// the three types Setting is allowed to add supplementary items to
+// (Beast/Dragon/Elemental -- see generateSettingLoadout below). Kept
+// separate from KIND_BUCKET_CONFIG's own sizeOrder because Beast has
+// none at all (no minRank gating there) and Dragon's sizeLootTable
+// merges two entirely different tier sets into one flat object (true
+// dragon Age Category tiers alongside Drake/Draconid Habitat tiers),
+// which would make a naive Object.keys().indexOf() land on the wrong
+// index for whichever subset wasn't picked. Dragon resolves to whichever
+// array actually applies via its own dragon-type check, mirroring
+// KIND_BUCKET_CONFIG.Dragon.resolve.
+const SETTING_LOADOUT_TIER_ORDER = {
+  Beast: () => ['Tiny', 'Small', 'Medium', 'Large', 'Huge'],
+  Elemental: () => ['Mephit', 'Elemental', 'Elder Elemental', 'Myrmidon'],
+  Dragon: (attributeValues) => {
+    const dragonType = attributeValues['dragon-type']
+    if (dragonType === 'Drake' || dragonType === 'Draconid') {
+      return ['Domestic', 'Wild', 'Feral', 'Mountain', 'Swamp', 'Coastal']
+    }
+    return ['Wyrmling', 'Young', 'Adult', 'Ancient']
+  },
+}
+
+// How many items a Setting bucket contributes, given the entity's own
+// tier position (0 = lowest tier of its type). A flat, type-agnostic
+// scale -- "influenced by rank" per the DM, not tied to an exact formula
+// (same kind of approximation as the Loadout System's own ranged bands).
+function settingBucketCount(tierIndex) {
+  if (tierIndex <= 0) return [0, 1]
+  if (tierIndex === 1) return [1, 1]
+  if (tierIndex >= 3) return [1, 3]
+  return [1, 2]
+}
+
+// Draws the Setting side-loadout's extra items for one entity, ADDITIVE
+// on top of whatever the normal kind-bucketed (or AI-assisted) roll
+// already produced -- never a replacement. Only ever called for Beast/
+// Dragon/Elemental (see the dispatch in generateEncounter); every other
+// type's Setting field only ever runs through settingRules' guaranteed/
+// excluded-pattern nudge, not this. Items are still hard-scoped by
+// monsterTypeTags (same convention as everywhere else in this file), so
+// even with real content behind a bucket, an item never reaches a type
+// it wasn't tagged for -- this is what keeps "the city field adds city
+// junk" from ever overriding a type's own eligibility rules.
+function generateSettingLoadout({ monsterType, setting, attributeValues, taxonomy, sources, excludedPatterns }) {
+  const buckets = taxonomy.settingLoadouts?.[setting]
+  if (!buckets || buckets.length === 0) return []
+
+  const tierOrderFn = SETTING_LOADOUT_TIER_ORDER[monsterType]
+  const tierOrder = tierOrderFn ? tierOrderFn(attributeValues || {}) : null
+  const config = resolveKindBucketConfig(monsterType, attributeValues)
+  const sizeValue = config ? attributeValues?.[config.sizeAttr] : null
+  const tierIndex = tierOrder && sizeValue ? tierOrder.indexOf(sizeValue) : 0
+  const [min, max] = settingBucketCount(Math.max(tierIndex, 0))
+
+  const rawPool = buildItemPool('wares', sources).filter((i) => i.monsterTypeTags?.includes(monsterType))
+  const usedNames = new Set()
+  const items = []
+  for (const bucket of buckets) {
+    let avail = rawPool.filter((i) => i.lootTags?.settingBucket === bucket.id && !usedNames.has(i.name))
+    if (excludedPatterns && excludedPatterns.length > 0) {
+      avail = avail.filter((i) => !matchesAnyPattern(i.name, excludedPatterns))
+    }
+    const n = randomInt(min, max)
+    const picked = shuffled(avail).slice(0, Math.min(n, avail.length))
+    picked.forEach((i) => usedNames.add(i.name))
+    items.push(...picked)
+  }
+  return items
+}
+
 // The kind-bucketed generation engine: instead of one flat random count
 // across the whole pool, each "kind" (per sizeLootTable) gets its own
 // count rolled independently from the entity's Size/Rank, then filled
@@ -407,8 +478,16 @@ function generateKindBucketedLoot({ monsterType, taxonomy, sources, attributeVal
     items.push(...picked)
   })
 
+  // This lightweight 0-2 item flavor pull predates the Setting side-
+  // loadout system (see generateSettingLoadout/settingLoadouts above) --
+  // kept for the kind-bucketed types that DON'T get the richer, tier-
+  // scaled, named-bucket system (Aberration/Celestial/Construct/Fiend/
+  // Fey-monster). Beast/Dragon/Elemental now get Setting handled
+  // entirely by the side-loadout system instead (see the dispatch in
+  // generateEncounter), so they're excluded here to avoid double-dipping
+  // on the same Setting field.
   let flavorItems = []
-  if (setting) {
+  if (setting && !['Beast', 'Dragon', 'Elemental'].includes(monsterType)) {
     const settingPool = rawPool.filter(
       (i) => i.lootTags?.kind === 'Setting' && (!i.lootTags?.setting || i.lootTags.setting.includes(setting))
     )
@@ -471,12 +550,20 @@ function loadoutPoolFor(name, rawPool) {
       return rawPool.filter((i) => i.category === 'Focus' && i.name.startsWith('Arcane Focus'))
     case 'Clothes':
       return rawPool.filter((i) => i.tags?.includes('clothing'))
+    // Added for Humanoid: the SRD's own Tool category (Thieves' Tools,
+    // Smith's Tools, Musical Instruments, Alchemist's Supplies, etc) --
+    // same "read the catalog's own pre-existing category, no new tagging
+    // required" convention as MartialWeapon/SimpleWeapon/ArcaneFocus/
+    // Clothes above. Not hard-scoped by monsterTypeTags either, same
+    // reasoning as those four.
+    case 'Tool':
+      return rawPool.filter((i) => i.category === 'Tool')
     default:
       return rawPool.filter((i) => i.lootTags?.loadoutPool === name)
   }
 }
 
-function generateLoadoutLoot({ monsterType, role, rank, taxonomy, sources, excludedPatterns }) {
+function generateLoadoutLoot({ monsterType, role, rank, taxonomy, sources, excludedPatterns, dimensionKey, dimensionValue }) {
   const loadout = taxonomy.loadouts?.[role]
   if (!loadout) return { items: [], gold: 0 }
 
@@ -488,9 +575,25 @@ function generateLoadoutLoot({ monsterType, role, rank, taxonomy, sources, exclu
   // DO still require monsterTypeTags to include this type, same
   // hard-scoping convention as everywhere else, so a Fey-tagged whimsical
   // item never leaks into a different type's Loadout draw.
-  const rawPool = buildItemPool('wares', sources).filter(
-    (i) => !i.lootTags?.loadoutPool || i.monsterTypeTags?.includes(monsterType)
-  )
+  //
+  // dimensionKey/dimensionValue (optional): a second, finer narrowing pass
+  // on top of the monsterType gate, for types where the Loadout System
+  // itself has a themed sub-dimension -- currently only Giant Kind (see
+  // lootTags.giantKind and monsterTypeAttributes.Giant's giant-kind field).
+  // Plays the same role KIND_BUCKET_CONFIG's dimensions play for the
+  // kind-bucketed engine: items untagged for this dimension stay eligible
+  // for every value of it (a generic Ring of Protection works for any
+  // Giant Kind), while items carrying the dimension array only surface
+  // when the entity's own value is in that array (a Storm Giant's
+  // Thundercloud-Charged Warhorn never reaches a Hill Giant).
+  const rawPool = buildItemPool('wares', sources).filter((i) => {
+    if (i.lootTags?.loadoutPool && !i.monsterTypeTags?.includes(monsterType)) return false
+    if (dimensionKey && dimensionValue) {
+      const tagged = i.lootTags?.[dimensionKey]
+      if (tagged && tagged.length > 0 && !tagged.includes(dimensionValue)) return false
+    }
+    return true
+  })
 
   const items = []
   const usedNames = new Set()
@@ -1096,7 +1199,7 @@ function TaxonomyManager({ taxonomy, onSave, sources }) {
       />
 
       <TypeGuaranteedItemsManager
-        label="Monster Type → Optional Features (checkboxes per entity, e.g. Beast → Tusks, Horns, Wings -- items can require one, unchecked = excluded)"
+        label="Monster Type → Optional Features"
         types={taxonomy.monsterTypes}
         itemsByType={taxonomy.monsterTypeFeatures || {}}
         onChange={(v) => onSave({ monsterTypeFeatures: v })}
@@ -1233,6 +1336,7 @@ function ResultsPanel({ groups, onCopy, copied }) {
                     <span className="font-display text-leather-dark">{item.name}</span>
                     {item.guaranteed && <span className="ml-1.5 text-xs text-moss-dark italic">(always carries)</span>}
                     {item.flavor && <span className="ml-1.5 text-xs text-ink-soft/60 italic">(setting flavor)</span>}
+                    {item.setting && <span className="ml-1.5 text-xs text-ink-soft/60 italic">(setting gear)</span>}
                     <span className="ml-2 text-xs text-ink-soft/60 italic">{item.category}</span>
                     {item.description && <p className="text-xs text-ink-soft/70 italic">{item.description}</p>}
                   </div>
@@ -1392,17 +1496,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
               {taxonomy.wealthLevels.map((w) => <option key={w.id} value={w.id}>{w.label}</option>)}
             </select>
           </label>
-        ) : (
-          monsterType && (
-            <div className="flex items-end pb-1.5">
-              <p className="text-xs text-ink-soft/50 italic">
-                {Object.values(taxonomy.sizeLootTable?.[monsterType] || {}).some((tier) => tier.goldRange)
-                  ? `${monsterType} doesn't use Wealth — coin comes from its own field above instead.`
-                  : `${monsterType} doesn't use Wealth — no coin, only whatever's guaranteed below.`}
-              </p>
-            </div>
-          )
-        )}
+        ) : null}
       </div>
 
       {monsterType === 'Fey' && (
@@ -1414,7 +1508,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
               setAttributeValues((prev) => ({ ...prev, 'fey-is-monster': e.target.checked ? 'Monster' : 'Person', 'fey-role': '' }))
             }
           />
-          Is a Monster <span className="text-ink-soft/50 normal-case ml-1">(unchecked = a person, e.g. an eladrin -- uses Role below instead)</span>
+          Is a Monster
         </label>
       )}
 
@@ -1423,7 +1517,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
       {availableFeatures.length > 0 && (
         <div>
           <span className="text-xs font-display uppercase text-ink-soft block mb-1">
-            Optional Features <span className="text-ink-soft/50 normal-case">(unchecked = excluded entirely, e.g. no tusks means no tusk loot)</span>
+            Optional Features
           </span>
           <div className="flex flex-wrap gap-3">
             {availableFeatures.map((f) => (
@@ -1666,6 +1760,67 @@ export default function LootTab() {
           }
         }
 
+        // Giant -- always the Loadout System (no kind-bucketed body-loot
+        // path at all; giants are people, just large ones). Role comes
+        // straight from the DM-picked giant-role attribute (conditional
+        // on Giant Kind, see monsterTypeAttributes.Giant), Rank from
+        // giant-rank, and Giant Kind itself is passed through as the
+        // dimensionKey/dimensionValue pair so kind-specific items (a
+        // Storm Giant's Thundercloud-Charged Warhorn) only surface for
+        // the matching kind, same job Element plays for Elemental.
+        if (!mainGroup && e.monsterType === 'Giant') {
+          const role = e.attributeValues?.['giant-role']
+          const rank = e.attributeValues?.['giant-rank']
+          const kind = e.attributeValues?.['giant-kind']
+          if (role && rank) {
+            const { items: rolled, gold } = generateLoadoutLoot({
+              monsterType: e.monsterType, role, rank,
+              taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
+              dimensionKey: 'giantKind', dimensionValue: kind,
+            })
+            mainGroup = { label, items: [...guaranteed, ...rolled], gold }
+          }
+        }
+
+        // Humanoid -- also the Loadout System now, same mechanism as Fey
+        // Person/Devil/Giant, just with no separate Rank field: the
+        // pre-existing Wealth field's LABEL (not its id) is passed
+        // straight through as `rank`, since every loadouts entry below
+        // is keyed by the wealth labels (Destitute/Poor/Modest/
+        // Comfortable/Wealthy/Aristocratic), not a bespoke rank scale.
+        // Subrole rides along as dimensionKey/dimensionValue, same job
+        // Giant Kind plays for Giant -- only items actually tagged
+        // lootTags.subrole get narrowed by it, everything else in the
+        // Role's own loadout stays untouched, which is what gives the
+        // "80% base Role loadout, themed weapon/flavor" result.
+        //
+        // `loadouts` is ONE flat object shared across every monster type
+        // (Fey/Devil/Giant/Humanoid all read the same taxonomy.loadouts),
+        // so a bare role name can collide across types -- Fey already had
+        // its own "Noble" role/loadout before Humanoid got one too, and a
+        // plain lookup would have silently overwritten Fey's Noble
+        // profile with Humanoid's (caught via a duplicate-key lint
+        // warning while building this). Fixed by namespacing every
+        // Humanoid loadout entry as 'Humanoid:<Role>' in
+        // defaultLootTaxonomy.js and building the same prefixed key here
+        // -- Fey/Devil/Giant are untouched and keep their own bare-name
+        // entries, since none of THEIR role names collide with each
+        // other.
+        if (!mainGroup && e.monsterType === 'Humanoid') {
+          const role = e.attributeValues?.['humanoid-role']
+          const subrole = e.attributeValues?.['humanoid-subrole']
+          const w = wealthLevel(e.wealthId)
+          const rank = w?.label
+          if (role && rank) {
+            const { items: rolled, gold } = generateLoadoutLoot({
+              monsterType: e.monsterType, role: `Humanoid:${role}`, rank,
+              taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
+              dimensionKey: 'subrole', dimensionValue: subrole,
+            })
+            mainGroup = { label, items: [...guaranteed, ...rolled], gold }
+          }
+        }
+
         if (!mainGroup) {
           const w = wealthLevel(e.wealthId)
           const usesWealth = lootTaxonomy.monsterTypeUsesWealth?.[e.monsterType] === true
@@ -1693,6 +1848,22 @@ export default function LootTab() {
           const wealthLabel = usesWealth ? w?.label : null
           const fullTags = [e.monsterName || e.monsterType, ...attrTags, wealthLabel, e.setting, e.notes].filter(Boolean)
           mainGroup = { label: fullTags.join(' · ') || 'Entity', items: [...guaranteed, ...rolled], gold }
+        }
+
+        // Setting side-loadout: additive, never a replacement, and only
+        // for the three types the DM named (Beast/Dragon/Elemental) --
+        // every other type's Setting stays purely the settingRules nudge
+        // from up above. Runs AFTER mainGroup is fully resolved (whether
+        // it came from AI-assist or the deterministic roll), appending
+        // on top rather than competing with either path.
+        if (mainGroup && e.setting && ['Beast', 'Dragon', 'Elemental'].includes(e.monsterType)) {
+          const settingItems = generateSettingLoadout({
+            monsterType: e.monsterType, setting: e.setting, attributeValues: e.attributeValues,
+            taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
+          })
+          if (settingItems.length > 0) {
+            mainGroup.items = [...mainGroup.items, ...settingItems.map((i) => ({ ...i, setting: true }))]
+          }
         }
 
         const groupsForEntity = [mainGroup]

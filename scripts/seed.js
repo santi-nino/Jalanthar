@@ -92,6 +92,7 @@ const PROGRAMMATIC_SOURCE_IDS = new Set([
   'src-planebound-ledger',
   'src-changelings-trunk',
   'src-infernal-ledger',
+  'src-giants-hoard',
 ])
 
 async function updateProgrammaticSources(docs) {

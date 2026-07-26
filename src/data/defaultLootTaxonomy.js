@@ -95,7 +95,6 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // to set the same thing.
   monsterTypeUsesWealth: {
     Humanoid: true,
-    Giant: true,
     Undead: true,
   },
   // Fiend used to be here, using the generic Wealth field like Giant/
@@ -105,6 +104,12 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // Power Level (Demon lineage: body-loot amount, same role Size plays
   // for Beast) -- same reasoning as Celestial's Rank and Dragon's Horde
   // already being carved out of this list.
+  //
+  // Giant removed the same way this round: it now has its own Role field
+  // (see monsterTypeAttributes.Giant below) that routes through the
+  // Loadout System (loadouts.Brute / Guard / Chief / the five Giant
+  // Kind-specific roles), with wealth coming from each role's own
+  // goldByRank instead of the generic Wealth dropdown.
 
   // For any type NOT using Wealth, item count still has to come from
   // somewhere other than a free-standing input (same "no separate
@@ -461,14 +466,24 @@ export const DEFAULT_LOOT_TAXONOMY = {
       },
       {
         id: 'fiend-origin', name: 'Origin',
-        // The NEW final field -- "where in hell they come from," pure
-        // theming like Fey's Court or Celestial's Domain (never affects
-        // amount or wealth, only which flavor of item is eligible).
-        // Options depend on Lineage, same optionsFor mechanism as
-        // Elemental's Sub-Element and Dragon's Lineage. Devil options
-        // are the real Nine Hells layers; Demon/Yugoloth layers are
-        // invented (the Abyss doesn't have a small fixed SRD-safe list
-        // the way the Nine Hells does) -- flagged for the DM to rename.
+        // The NEW final field -- "where in the Nine Hells (or the Abyss,
+        // for demons) they come from," pure theming like Fey's Court or
+        // Celestial's Domain (never affects amount or wealth, only which
+        // flavor of item is eligible -- feeds KIND_BUCKET_CONFIG.Fiend's
+        // 'realm' dimension in LootTab.jsx for the Demon path).
+        // optionsFor needs its OWN showIf (not just Power Level/Rank's)
+        // to know fiend-lineage is the controlling field -- without it,
+        // resolveAttributeOptions in LootTab.jsx has no controllingValue
+        // to look up and silently falls back to the empty `options`
+        // array, which is exactly the "no categories showed up" bug this
+        // fixes. Every Lineage value is listed here so Origin stays
+        // visible no matter which one is picked (matches Elemental's
+        // Sub-Element listing all 4 Elements the same way). Devil
+        // options are the real Nine Hells layers; Demon/Yugoloth layers
+        // are invented (the Abyss doesn't have a small fixed SRD-safe
+        // list the way the Nine Hells does) -- flagged for the DM to
+        // rename.
+        showIf: { attr: 'fiend-lineage', values: ['Devil (Lawful)', 'Demon (Chaotic)', 'Yugoloth (Neutral)', 'Other'] },
         optionsFor: {
           'Devil (Lawful)': ['Avernus', 'Dis', 'Minauros', 'Phlegethos', 'Stygia', 'Malbolge', 'Maladomini', 'Cania', 'Nessus'],
           'Demon (Chaotic)': ['Pazunia', 'The Blood Rift', 'The Screaming Maze', 'The Obsidian Wastes', 'The Drowned Depths'],
@@ -479,6 +494,18 @@ export const DEFAULT_LOOT_TAXONOMY = {
         excludedItemPatterns: {}, guaranteedItems: {},
       },
     ],
+    // Giant runs entirely through the Loadout System (same "things found
+    // on a person" mechanism as Fey's Person path and Fiend's Devil
+    // lineage) rather than kind-bucketed body loot -- giants are people,
+    // just very large ones, not creatures that drop anatomical trophies.
+    // Giant Kind plays the role Element plays for Elemental: it's a
+    // tagging DIMENSION, not a path-switch. It narrows which loadoutPool
+    // items are eligible (see the giantKind filter generateLoadoutLoot
+    // takes in LootTab.jsx) -- untagged items stay universal across all
+    // six kinds, while a handful of kind-specific items (a Storm Giant's
+    // Thundercloud-Charged Warhorn, a Fire Giant's forge tongs) only
+    // surface for that one kind, same "generic reachable everywhere,
+    // themed narrows" convention as the rest of the catalog.
     Giant: [
       {
         id: 'giant-kind', name: 'Giant Kind',
@@ -487,7 +514,66 @@ export const DEFAULT_LOOT_TAXONOMY = {
         guaranteedItems: { Hill: ['Club'] },
       },
       { id: 'giant-temperament', name: 'Temperament', options: ['Brutish', 'Cunning', 'Noble'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        id: 'giant-rank', name: 'Rank',
+        // Shared life-stage scale across every Role below -- drives
+        // loadouts[role].rankScaled/goldByRank, same job Fey's Rank and
+        // Devil's Rank do for their own Loadout roles.
+        options: ['Young', 'Adult', 'Elder', 'Ancient'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'giant-role', name: 'Role',
+        // Conditional on Giant Kind, same optionsFor+showIf pattern as
+        // Fiend's Origin field -- Brute/Guard/Chief are available to
+        // every kind, but each kind (other than Hill, the least
+        // differentiated of the six in classic 5e lore) additionally
+        // unlocks one specialized role that only makes sense for it: a
+        // Storm Giant can be a Storm Caller, a Hill Giant can't. Each
+        // option here is its own key in loadouts below.
+        showIf: { attr: 'giant-kind', values: ['Hill', 'Stone', 'Frost', 'Fire', 'Cloud', 'Storm'] },
+        optionsFor: {
+          Hill: ['Brute', 'Guard', 'Chief'],
+          Stone: ['Brute', 'Guard', 'Chief', 'Rune Carver'],
+          Frost: ['Brute', 'Guard', 'Chief', 'Berserker'],
+          Fire: ['Brute', 'Guard', 'Chief', 'Forgemaster'],
+          Cloud: ['Brute', 'Guard', 'Chief', 'Schemer'],
+          Storm: ['Brute', 'Guard', 'Chief', 'Storm Caller'],
+        },
+        options: [],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
     ],
+    // Humanoid now routes through the Loadout System (same "things found
+    // on a person" mechanism as Fey's Person path, Devil, and Giant) --
+    // see the isHumanoid dispatch in generateEncounter, LootTab.jsx.
+    // Role picks the loadout profile/container (same job Fey's Role or
+    // Giant's Role play); the pre-existing Wealth field (still shown,
+    // still the same dropdown, monsterTypeUsesWealth.Humanoid stays true)
+    // does double duty as the `rank` input into that loadout's
+    // rankScaled/goldByRank -- no separate Rank field needed since Wealth
+    // was already exactly that concept ("how many possessions, how much
+    // gold") for this one type. Subrole is the new second field: a
+    // further specialization WITHIN a Role's own loadout/container,
+    // conditional on which Role is picked (optionsFor+showIf, same
+    // pattern as Fiend's Origin or Dragon's Lineage) -- passed to
+    // generateLoadoutLoot as dimensionKey:'subrole', same generic
+    // narrowing mechanism Giant Kind already uses for dimensionKey:
+    // 'giantKind'. Only items actually tagged lootTags.subrole (a
+    // curated set of weapons/tools in dnd5eItems.js, plus a handful of
+    // small new flavor items) are narrowed by it -- everything else in
+    // the Role's loadout (Boots, Clothes, MagicItem, Supplementary, Junk)
+    // stays untagged and universal, which is what naturally produces the
+    // "mostly the base Role's own loadout, just an Archer's weapon and a
+    // bit of Archer flavor" result the DM asked for, with no separate
+    // weighting mechanism needed -- it falls out of which items happen to
+    // carry a subrole tag at all.
+    // Four new roles added this round (Artisan/Craftsman, Sailor/
+    // Dockhand, Entertainer, Farmer/Herder) to round out the set; not
+    // every role got a Subrole (Commoner/Laborer/Traveler/Sailor/
+    // Entertainer/Farmer don't have an obvious further specialization the
+    // way a soldier or a mage does) -- see humanoid-subrole's optionsFor
+    // for exactly which 8 do.
     Humanoid: [
       {
         id: 'humanoid-role', name: 'Role',
@@ -498,6 +584,7 @@ export const DEFAULT_LOOT_TAXONOMY = {
         options: [
           'Commoner', 'Laborer', 'Merchant', 'Guard/Soldier', 'Bandit/Criminal',
           'Noble', 'Scholar', 'Mage/Caster', 'Cleric/Devout', 'Traveler',
+          'Artisan/Craftsman', 'Sailor/Dockhand', 'Entertainer', 'Farmer/Herder',
         ],
         excludedItemPatterns: {
           // The concrete example from the request: a mage specifically
@@ -513,6 +600,33 @@ export const DEFAULT_LOOT_TAXONOMY = {
           Scholar: ['Ink'],
           'Cleric/Devout': ['Holy Symbol'],
         },
+      },
+      {
+        id: 'humanoid-subrole', name: 'Subrole',
+        // Conditional on Role, same optionsFor+showIf mechanism as
+        // Fiend's Origin/Dragon's Lineage -- every Role that HAS
+        // subroles needs to be listed in showIf.values (not just have an
+        // optionsFor entry), same gotcha documented on Fiend's Origin
+        // field above.
+        showIf: {
+          attr: 'humanoid-role',
+          values: [
+            'Guard/Soldier', 'Bandit/Criminal', 'Mage/Caster', 'Cleric/Devout',
+            'Scholar', 'Merchant', 'Artisan/Craftsman', 'Noble',
+          ],
+        },
+        optionsFor: {
+          'Guard/Soldier': ['Archer', 'Swordsman', 'Spearman', 'Cavalry'],
+          'Bandit/Criminal': ['Thief', 'Thug', 'Highwayman', 'Smuggler'],
+          'Mage/Caster': ['Elementalist', 'Illusionist', 'Enchanter', 'Diviner'],
+          'Cleric/Devout': ['Battle Cleric', 'Healer', 'Inquisitor', 'Missionary'],
+          Scholar: ['Historian', 'Alchemist', 'Cartographer', 'Astronomer'],
+          Merchant: ['General Trader', 'Exotic Importer', 'Moneylender', 'Caravan Master'],
+          'Artisan/Craftsman': ['Blacksmith', 'Carpenter', 'Tailor', 'Jeweler'],
+          Noble: ['Courtier', 'Warlord', 'Merchant-Prince', 'Recluse'],
+        },
+        options: [],
+        excludedItemPatterns: {}, guaranteedItems: {},
       },
     ],
     Monstrosity: [
@@ -819,6 +933,326 @@ export const DEFAULT_LOOT_TAXONOMY = {
       ],
       goldByRank: { Lesser: [10, 50], Greater: [50, 200], 'Named/Unique': [200, 1000] },
     },
+
+    // Giant -- eight Role profiles sharing the Young/Adult/Elder/Ancient
+    // Rank scale (giant-rank). Brute/Guard/Chief are available to every
+    // Giant Kind; the other five (Rune Carver/Berserker/Forgemaster/
+    // Schemer/Storm Caller) are each unlocked by exactly one Kind (see
+    // monsterTypeAttributes.Giant's giant-role optionsFor) and lean into
+    // that kind's own flavor -- Storm Caller in particular runs heaviest
+    // on magic, matching storm giants' place at the top of the classic
+    // giant hierarchy. Counts/gold are Claude's own scale, following the
+    // same shape as Fey's roles and Devil's Rank -- flag for correction.
+    Brute: {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Young: [0, 0], Adult: [0, 1], Elder: [1, 2], Ancient: [1, 3] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Young: [5, 20], Adult: [20, 80], Elder: [80, 300], Ancient: [300, 1000] },
+    },
+    Guard: {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+        { pool: 'Boots', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Young: [0, 1], Adult: [0, 1], Elder: [1, 2], Ancient: [2, 3] } },
+        { pool: 'MagicWeapon', rankRange: { Young: [0, 0], Adult: [0, 1], Elder: [1, 1], Ancient: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+      ],
+      goldByRank: { Young: [10, 30], Adult: [30, 100], Elder: [100, 350], Ancient: [350, 1200] },
+    },
+    Chief: {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+        { pool: 'Boots', count: 1 },
+        { pool: 'Helmet', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Young: [1, 1], Adult: [1, 2], Elder: [2, 3], Ancient: [3, 4] } },
+        { pool: 'MagicWeapon', rankRange: { Young: [0, 1], Adult: [1, 1], Elder: [1, 2], Ancient: [2, 2] } },
+        { pool: 'Luxury', rankRange: { Young: [0, 1], Adult: [1, 2], Elder: [2, 3], Ancient: [3, 5] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 4 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Young: [30, 100], Adult: [100, 400], Elder: [400, 1200], Ancient: [1200, 4000] },
+    },
+    'Rune Carver': {
+      fixed: [
+        { pool: 'ArcaneFocus', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Young: [0, 1], Adult: [1, 2], Elder: [2, 3], Ancient: [3, 4] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 3 },
+      ],
+      goldByRank: { Young: [10, 40], Adult: [40, 150], Elder: [150, 500], Ancient: [500, 1500] },
+    },
+    Berserker: {
+      fixed: [
+        { pool: 'MartialWeapon', count: 2 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicWeapon', rankRange: { Young: [0, 1], Adult: [1, 1], Elder: [1, 2], Ancient: [2, 3] } },
+      ],
+      ranged: [
+        { pool: 'Junk', min: 0, max: 3 },
+      ],
+      goldByRank: { Young: [5, 20], Adult: [20, 80], Elder: [80, 250], Ancient: [250, 800] },
+    },
+    Forgemaster: {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicWeapon', rankRange: { Young: [0, 1], Adult: [1, 2], Elder: [2, 3], Ancient: [3, 4] } },
+        { pool: 'MagicItem', rankRange: { Young: [0, 1], Adult: [1, 1], Elder: [1, 2], Ancient: [2, 3] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 3 },
+      ],
+      goldByRank: { Young: [20, 60], Adult: [60, 200], Elder: [200, 600], Ancient: [600, 2000] },
+    },
+    Schemer: {
+      fixed: [
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Young: [0, 1], Adult: [1, 2], Elder: [2, 3], Ancient: [3, 5] } },
+        { pool: 'Luxury', rankRange: { Young: [1, 1], Adult: [1, 2], Elder: [2, 4], Ancient: [4, 6] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 3 },
+      ],
+      goldByRank: { Young: [40, 120], Adult: [120, 400], Elder: [400, 1200], Ancient: [1200, 4000] },
+    },
+    'Storm Caller': {
+      fixed: [
+        { pool: 'ArcaneFocus', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Young: [1, 2], Adult: [2, 3], Elder: [3, 4], Ancient: [4, 6] } },
+        { pool: 'MagicWeapon', rankRange: { Young: [0, 1], Adult: [1, 2], Elder: [2, 3], Ancient: [3, 4] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 4 },
+      ],
+      goldByRank: { Young: [50, 150], Adult: [150, 500], Elder: [500, 1500], Ancient: [1500, 5000] },
+    },
+
+    // Humanoid -- 14 Role profiles, all keyed by rank = the EXISTING
+    // Wealth field's label (Destitute/Poor/Modest/Comfortable/Wealthy/
+    // Aristocratic), not a new dedicated rank field -- see the comment on
+    // monsterTypeAttributes.Humanoid above for why. goldByRank is
+    // deliberately IDENTICAL across every single role below and matches
+    // wealthLevels' own goldMin/goldMax exactly (line ~35) -- gold comes
+    // from how rich you are, full stop, regardless of profession; only
+    // the item-slot recipe differs by role. Boots/Clothes are NOT
+    // repeated in any role's `fixed` list -- monsterTypeGuaranteedItems.
+    // Humanoid already adds those to every Humanoid regardless of Role,
+    // so putting them here too would just double them up.
+    'Humanoid:Commoner': {
+      fixed: [],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Laborer': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+        { pool: 'Tool', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Merchant': {
+      fixed: [
+        { pool: 'Tool', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
+        { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [2, 4] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Junk', min: 0, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Guard/Soldier': {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Helmet', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Junk', min: 0, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Bandit/Criminal': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Noble': {
+      fixed: [],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [2, 3] } },
+        { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 3], Aristocratic: [3, 5] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Scholar': {
+      fixed: [
+        { pool: 'Tool', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Junk', min: 0, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Mage/Caster': {
+      fixed: [
+        { pool: 'ArcaneFocus', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 2], Aristocratic: [2, 4] } },
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 1] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 3 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Cleric/Devout': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 3 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Traveler': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 4 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Artisan/Craftsman': {
+      fixed: [
+        { pool: 'Tool', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Junk', min: 0, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Sailor/Dockhand': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+        { pool: 'Tool', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Entertainer': {
+      fixed: [
+        { pool: 'Tool', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 3 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Humanoid:Farmer/Herder': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+        { pool: 'Tool', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
   },
 
   // Optional per-entity checkboxes for anatomical/nature features that
@@ -914,6 +1348,55 @@ export const DEFAULT_LOOT_TAXONOMY = {
     Riverside: { guaranteedItems: [], excludedItemPatterns: [] },
     Town: { guaranteedItems: [], excludedItemPatterns: [] },
     City: { guaranteedItems: [], excludedItemPatterns: [] },
+  },
+
+  // The "side loadout system" -- a SEPARATE mechanism from settingRules
+  // above (which only nudges the existing draw via guaranteed/excluded
+  // patterns). This one ADDS a small number of extra items on top of
+  // whatever the entity's normal kind-bucketed roll produced, drawn from
+  // Setting-and-type-specific named buckets, sized by the entity's own
+  // tier (Size for Beast, Age/Habitat for Dragon, Power Level for
+  // Elemental -- see SETTING_LOADOUT_TIER_ORDER and
+  // generateSettingLoadout in LootTab.jsx). Per the DM: only Beast,
+  // Dragon, and Elemental read this at all -- every other type's Setting
+  // field stays purely the settingRules nudge above. Also per the DM,
+  // these items must still make sense for the specific creature -- a
+  // wolf doesn't wear fancy clothes -- so every item here is framed as
+  // something SCAVENGED, CACHED, or ENTANGLED near the creature/its lair
+  // rather than worn or used, same "found near, not carried by" framing
+  // Beast's existing Den bucket already uses. Each item is tagged
+  // lootTags.settingBucket matching one of the ids below, plus the usual
+  // monsterTypeTags hard-scoping (Beast/Dragon/Elemental only, never
+  // shared across the three) so setting content still respects each
+  // type's own eligibility rules, never supersedes them.
+  //
+  // Only City and Mountain have real catalog content behind them right
+  // now (the two settings the DM gave concrete examples for -- City's
+  // Junk/Equipment split, Mountain's Survival Gear/Cold Weather Gear/
+  // Equipment split). The other ten settings are wired up with the same
+  // universal Junk/Equipment shape so the mechanism never errors, but
+  // draw from an empty pool until they get their own items -- flag for
+  // a follow-up content pass if the DM wants the rest filled in too.
+  settingLoadouts: {
+    City: [
+      { id: 'City-Junk', label: 'Junk' },
+      { id: 'City-Equipment', label: 'Equipment' },
+    ],
+    Mountain: [
+      { id: 'Mountain-Survival', label: 'Survival Gear' },
+      { id: 'Mountain-ColdWeather', label: 'Cold Weather Gear' },
+      { id: 'Mountain-Equipment', label: 'Equipment' },
+    ],
+    Town: [{ id: 'Town-Junk', label: 'Junk' }, { id: 'Town-Equipment', label: 'Equipment' }],
+    Jungle: [{ id: 'Jungle-Junk', label: 'Junk' }, { id: 'Jungle-Equipment', label: 'Equipment' }],
+    Forest: [{ id: 'Forest-Junk', label: 'Junk' }, { id: 'Forest-Equipment', label: 'Equipment' }],
+    Swamp: [{ id: 'Swamp-Junk', label: 'Junk' }, { id: 'Swamp-Equipment', label: 'Equipment' }],
+    Coast: [{ id: 'Coast-Junk', label: 'Junk' }, { id: 'Coast-Equipment', label: 'Equipment' }],
+    Desert: [{ id: 'Desert-Junk', label: 'Junk' }, { id: 'Desert-Equipment', label: 'Equipment' }],
+    Underdark: [{ id: 'Underdark-Junk', label: 'Junk' }, { id: 'Underdark-Equipment', label: 'Equipment' }],
+    Ruins: [{ id: 'Ruins-Junk', label: 'Junk' }, { id: 'Ruins-Equipment', label: 'Equipment' }],
+    Road: [{ id: 'Road-Junk', label: 'Junk' }, { id: 'Road-Equipment', label: 'Equipment' }],
+    Riverside: [{ id: 'Riverside-Junk', label: 'Junk' }, { id: 'Riverside-Equipment', label: 'Equipment' }],
   },
 
   // Shop now covers everything commerce-related -- general stores,

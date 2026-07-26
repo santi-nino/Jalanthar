@@ -8,6 +8,27 @@
 // pool first, inventing at most one or two new items only when the
 // specific flavor genuinely isn't covered by anything already eligible.
 // Reuses the same Gemini-primary/Claude-fallback pattern as sourceAi.js.
+//
+// STANDING RULE (DM directive, hard limit going forward): any entity's
+// optional Notes box having text in it is a cue to run AI -- but only to
+// SELECT items already in the database, never to CREATE/invent new ones
+// via an in-app prompt. There is no legitimate reason for an in-app AI
+// prompt to be inventing catalog content from scratch; new items belong
+// in the actual catalog (dnd5eItems.js / mockData.js), reviewed and
+// added deliberately, not generated ad hoc at loot-roll time. This
+// applies to any NEW AI-assisted item-selection feature added to this
+// file (or elsewhere) from this point forward -- it must be select-only.
+//
+// GRANDFATHERED EXCEPTIONS (explicitly exempted by the DM when this rule
+// was written -- do not "fix" these to comply, and do not treat their
+// existence as license to add further invention elsewhere without
+// asking first):
+//   1. generateAiAssistedLoot's up-to-2 invented items below (see
+//      buildPrompt's TASK step 3/4 and normalizeResult's newCount cap).
+//   2. generateAiHordeContents' ~25% invented luxury/art/curio share
+//      (see buildHordePrompt's TASK step 2) -- kept because a dragon
+//      horde's whole point is one-of-a-kind flavor that a fixed catalog
+//      can never fully anticipate.
 
 function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary, needsInference, tierOptions, balanced }) {
   const poolText = eligibleItems
