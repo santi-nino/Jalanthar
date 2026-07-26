@@ -210,6 +210,18 @@ const KIND_BUCKET_CONFIG = {
     sizeOrder: ['Minor Fey', 'Fey', 'Noble Fey', 'Arch Fey'],
     dimensions: [{ key: 'court', attr: 'fey-court' }],
   },
+  // Fiend's Demon lineage ONLY -- see fiend-lineage in
+  // defaultLootTaxonomy.js. Devil lineage never reaches this config,
+  // same split as Fey's Person path; see generateLoadoutLoot and the
+  // dispatch in generateEncounter instead. Origin (the hell-layer field)
+  // is the sole dimension (pure theming); Power Level drives amount,
+  // same role Rank plays for Fey/Celestial and Power Level plays for
+  // Elemental.
+  Fiend: {
+    sizeAttr: 'fiend-power',
+    sizeOrder: ['Manes', 'Lesser Demon', 'Greater Demon', 'Demon Lord'],
+    dimensions: [{ key: 'realm', attr: 'fiend-origin' }],
+  },
 }
 
 // Non-kind keys that can appear alongside the kind buckets in a
@@ -1555,7 +1567,13 @@ export default function LootTab() {
         // fall into the ordinary kind-bucketed or AI-assist branches
         // below (both keyed off isKindBucketed), hence overriding it here.
         const isFeyPerson = e.monsterType === 'Fey' && e.attributeValues?.['fey-is-monster'] !== 'Monster'
-        const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType] && !isFeyPerson
+        // Fiend has the same split, just driven by Lineage instead of a
+        // checkbox: Devil routes to the Loadout System (below), every
+        // other Lineage (Demon, plus Yugoloth/Other as a fallback --
+        // see fiend-lineage in defaultLootTaxonomy.js) uses the ordinary
+        // kind-bucketed engine, same as Fey's Monster path.
+        const isFiendDevil = e.monsterType === 'Fiend' && e.attributeValues?.['fiend-lineage'] === 'Devil (Lawful)'
+        const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType] && !isFeyPerson && !isFiendDevil
         const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
         const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
         const tags = [e.monsterName || e.monsterType, ...attrTags, e.setting, e.notes].filter(Boolean)
@@ -1628,6 +1646,20 @@ export default function LootTab() {
           if (role && rank) {
             const { items: rolled, gold } = generateLoadoutLoot({
               monsterType: e.monsterType, role, rank,
+              taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
+            })
+            mainGroup = { label, items: [...guaranteed, ...rolled], gold }
+          }
+        }
+
+        // Fiend's Devil lineage -- the Loadout System again, but with a
+        // single fixed profile (loadouts.Devil) instead of a DM-picked
+        // Role, since the DM only specified Rank for Devils.
+        if (!mainGroup && isFiendDevil) {
+          const rank = e.attributeValues?.['fiend-rank']
+          if (rank) {
+            const { items: rolled, gold } = generateLoadoutLoot({
+              monsterType: e.monsterType, role: 'Devil', rank,
               taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
             })
             mainGroup = { label, items: [...guaranteed, ...rolled], gold }

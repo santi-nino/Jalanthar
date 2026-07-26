@@ -95,10 +95,16 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // to set the same thing.
   monsterTypeUsesWealth: {
     Humanoid: true,
-    Fiend: true,
     Giant: true,
     Undead: true,
   },
+  // Fiend used to be here, using the generic Wealth field like Giant/
+  // Undead/Humanoid still do. Removed once Fiend got its own two
+  // dedicated economic systems instead -- Rank (Devil lineage: wealth +
+  // item-count range, plus a luxury-goods bias at higher ranks) and
+  // Power Level (Demon lineage: body-loot amount, same role Size plays
+  // for Beast) -- same reasoning as Celestial's Rank and Dragon's Horde
+  // already being carved out of this list.
 
   // For any type NOT using Wealth, item count still has to come from
   // somewhere other than a free-standing input (same "no separate
@@ -403,14 +409,75 @@ export const DEFAULT_LOOT_TAXONOMY = {
         excludedItemPatterns: {}, guaranteedItems: {},
       },
     ],
+    // Fiend has two entirely different generation paths depending on
+    // Lineage, same shape as Fey's Court/Is-Monster split:
+    //  - Devil -> routes to the Loadout System (see `loadouts.Devil`
+    //    below and generateLoadoutLoot in LootTab.jsx), same "things
+    //    found on a person" mechanism Fey's Person path uses, themed
+    //    infernal/fire/seduction instead of nature/whimsy. Gated by
+    //    Rank (wealth + item count, with a luxury-goods bias at higher
+    //    ranks -- see loadouts.Devil.luxury below), not Power Level.
+    //  - Demon -> routes to the ordinary kind-bucketed engine instead
+    //    (see sizeLootTable.Fiend and KIND_BUCKET_CONFIG.Fiend in
+    //    LootTab.jsx), same anatomical-drop mechanism Beast/Dragon use --
+    //    gated by Power Level (amount), not Rank.
+    //  - Yugoloth/Other have no dedicated path of their own (the DM
+    //    only specified Devil and Demon) -- they fall back to the
+    //    kind-bucketed Demon-style path, since a Yugoloth is closer to
+    //    "monstrous fiend that drops body parts" than "person with a
+    //    coin purse." Worth a dedicated pass later if that's wrong.
     Fiend: [
       {
-        id: 'fiend-origin', name: 'Origin',
+        id: 'fiend-lineage', name: 'Lineage',
+        // Renamed from "Origin" -- this is the field that actually
+        // determines which container/path applies (was doing that job
+        // under a name that suggested "where they're from" instead of
+        // "what kind of fiend they are"). Options unchanged from the
+        // original placeholder.
         options: ['Devil (Lawful)', 'Demon (Chaotic)', 'Yugoloth (Neutral)', 'Other'],
         excludedItemPatterns: { 'Demon (Chaotic)': ['Shield'] },
         guaranteedItems: { 'Devil (Lawful)': ['Sword'] },
       },
-      { id: 'fiend-rank', name: 'Rank', options: ['Lesser', 'Greater', 'Named/Unique'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        id: 'fiend-rank', name: 'Rank',
+        showIf: { attr: 'fiend-lineage', values: ['Devil (Lawful)'] },
+        // Devil-only. Drives both wealth (gp/gold range) and item-count
+        // range via loadouts.Devil below, same role Rank plays for
+        // Fey's Loadout System roles. Named/Unique devils (an Asmodeus,
+        // a Baalzebul) are where the luxury-goods bias kicks in hardest.
+        options: ['Lesser', 'Greater', 'Named/Unique'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'fiend-power', name: 'Power Level',
+        showIf: { attr: 'fiend-lineage', values: ['Demon (Chaotic)'] },
+        // Demon-only. Low to high, same role Power Level plays for
+        // Elemental and Size plays for Beast -- drives sizeLootTable.
+        // Fiend's Demon tiers (body-loot amount), nothing else. Manes
+        // are the mindless, weakest true demons in the classic
+        // hierarchy; Demon Lord caps it at Demogorgon/Orcus tier.
+        options: ['Manes', 'Lesser Demon', 'Greater Demon', 'Demon Lord'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        id: 'fiend-origin', name: 'Origin',
+        // The NEW final field -- "where in hell they come from," pure
+        // theming like Fey's Court or Celestial's Domain (never affects
+        // amount or wealth, only which flavor of item is eligible).
+        // Options depend on Lineage, same optionsFor mechanism as
+        // Elemental's Sub-Element and Dragon's Lineage. Devil options
+        // are the real Nine Hells layers; Demon/Yugoloth layers are
+        // invented (the Abyss doesn't have a small fixed SRD-safe list
+        // the way the Nine Hells does) -- flagged for the DM to rename.
+        optionsFor: {
+          'Devil (Lawful)': ['Avernus', 'Dis', 'Minauros', 'Phlegethos', 'Stygia', 'Malbolge', 'Maladomini', 'Cania', 'Nessus'],
+          'Demon (Chaotic)': ['Pazunia', 'The Blood Rift', 'The Screaming Maze', 'The Obsidian Wastes', 'The Drowned Depths'],
+          'Yugoloth (Neutral)': ['Gehenna', 'Hades', 'Carceri'],
+          Other: ['Unknown', 'Elsewhere'],
+        },
+        options: [],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
     ],
     Giant: [
       {
@@ -585,6 +652,24 @@ export const DEFAULT_LOOT_TAXONOMY = {
       'Elder Elemental': { Weapon: [1, 2], Parts: [2, 3], MagicParts: [1, 2], Junk: [1, 2], Power: [1, 2] },
       Myrmidon: { Weapon: [1, 2], Parts: [2, 3], MagicParts: [2, 2], Junk: [1, 2], Power: [2, 2] },
     },
+    // Fiend -- Demon lineage ONLY (see KIND_BUCKET_CONFIG.Fiend and the
+    // Lineage dispatch in generateEncounter, LootTab.jsx). Devil lineage
+    // never reaches this table at all -- it uses `loadouts.Devil`
+    // instead, same split as Fey's Monster/Person paths. Keyed by Power
+    // Level, same mechanism as Elemental. Trophy/Horn/Ichor/Hide are the
+    // anatomical kinds (the DM's "drop body parts like beasts and
+    // dragons"); Den is the fifth, SUPPLEMENTARY bucket layered on top --
+    // same additive role Elemental's Power bucket plays, except themed
+    // as "junk found in or around the demon's lair" with a bit of arcane
+    // material mixed in (a few Elemental/Aberration-style magic items
+    // dual-tagged in here too, not just mundane debris), per the DM's
+    // "slightly more arcane bent to this supplementary bucket."
+    Fiend: {
+      Manes: { Trophy: [1, 1], Horn: [0, 1], Ichor: [0, 1], Hide: [0, 0], Den: [0, 1] },
+      'Lesser Demon': { Trophy: [1, 2], Horn: [1, 1], Ichor: [1, 1], Hide: [0, 1], Den: [1, 1] },
+      'Greater Demon': { Trophy: [2, 2], Horn: [1, 2], Ichor: [1, 2], Hide: [1, 1], Den: [1, 2] },
+      'Demon Lord': { Trophy: [2, 3], Horn: [2, 2], Ichor: [2, 2], Hide: [1, 2], Den: [1, 2] },
+    },
     // Fey MONSTER path only (Is Monster checked) -- Person path bypasses
     // this table entirely and uses `loadouts` instead (see below and
     // generateLoadoutLoot in LootTab.jsx). Keyed by Rank, same mechanism
@@ -704,6 +789,35 @@ export const DEFAULT_LOOT_TAXONOMY = {
         { pool: 'Junk', min: 0, max: 4, preferMin: 2, preferMax: 3 },
       ],
       goldByRank: { 'Minor Fey': [3, 15], Fey: [15, 45], 'Noble Fey': [45, 110], 'Arch Fey': [110, 300] },
+    },
+    // Fiend's Devil lineage -- no Role subdivision the way Fey has
+    // (the DM only specified Rank), so this is a single profile keyed
+    // by fiend-rank instead of fiend-role. "Luxury" is a new pool, same
+    // mechanism as any other (reads lootTags.loadoutPool === 'Luxury'
+    // via the default case in loadoutPoolFor) -- fine art, jewelry, and
+    // gold-heavy Treasure-flavored items, meant to read as "a shard of
+    // a dragon's hoard" per the DM's own comparison. [0,0] at Lesser
+    // means no luxury items at all for rank-and-file devils; by Named/
+    // Unique, Luxury's range is sized to land around a quarter of the
+    // total item count for a typical roll -- an approximation (there's
+    // no exact-percentage mechanism here, same as Junk's "0-4 preferring
+    // 2-3" being a preference band rather than a literal formula), not
+    // a hard guarantee every single time.
+    Devil: {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+        { pool: 'Boots', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Lesser: [0, 1], Greater: [1, 2], 'Named/Unique': [2, 4] } },
+        { pool: 'Luxury', rankRange: { Lesser: [0, 0], Greater: [1, 2], 'Named/Unique': [2, 3] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 8 },
+        { pool: 'Junk', min: 0, max: 2 },
+      ],
+      goldByRank: { Lesser: [10, 50], Greater: [50, 200], 'Named/Unique': [200, 1000] },
     },
   },
 
