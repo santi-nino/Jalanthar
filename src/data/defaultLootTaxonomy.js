@@ -1628,7 +1628,22 @@ export const DEFAULT_LOOT_TAXONOMY = {
   // and matched against the 'shop-type' synthetic key LootTab.jsx merges
   // into DynamicAttributeFields' values (see the shop entity form).
   shopTavernEateryTypes: ['Street Food Stall', 'Modest Eatery', 'Fine Dining', 'Dive Bar', 'Working Tavern', 'Upscale Inn'],
-  explorationTypes: ['Dungeon', 'Ruins', 'Cave', 'Battlefield', 'Shipwreck', 'Tomb', 'Abandoned Camp'],
+  // Expanded substantially (v3.14, DM-directed -- "what if someone is
+  // looting a temple type ship") -- this is still a flat EditableList
+  // (the DM can always type in something not listed, and the exploration
+  // prompt in lootAi.js leans on Notes for exactly the "temple ship"
+  // hybrid case: pick the closest preset, e.g. Shipwreck or Sunken
+  // Temple, then use Notes to tell the AI it's actually a sunken temple
+  // built like a ship, or a warship converted into a floating shrine).
+  // Not trying to enumerate every combination -- just covering enough
+  // ground that most sites don't need a Notes workaround at all.
+  explorationTypes: [
+    'Dungeon', 'Ruins', 'Cave', 'Battlefield', 'Shipwreck', 'Tomb', 'Abandoned Camp',
+    'Temple', 'Sunken Temple', 'Crypt', 'Catacombs', 'Barrow/Cairn', 'Mine',
+    'Watchtower', 'Fortress', 'Prison/Oubliette', 'Sewer', 'Laboratory', 'Library/Archive',
+    'Armory', 'Vault', 'Shrine', 'Monastery', 'Lighthouse', 'Observatory',
+    'War Camp', 'Sacred Grove', 'Frozen Wreck', 'Volcanic Forge',
+  ],
 
   locationTypeGuaranteedItems: {},
 
@@ -1668,9 +1683,34 @@ export const DEFAULT_LOOT_TAXONOMY = {
         options: ['Rowdy', 'Quiet', 'Festive', 'Seedy'], excludedItemPatterns: {}, guaranteedItems: { Rowdy: ['Ale'] },
       },
     ],
+    // Rebuilt (v3.14, DM-directed) to match Shop's own field shape: a
+    // Size field drives the item-count budget (same "Scale sets the base
+    // number, other fields shift it" role Shop's Scale plays), Condition
+    // and Occupied By are no longer just flavor labels -- both now
+    // actually change what generateAiExplorationLoot does (see lootAi.js)
+    // instead of only coloring the description. Occupied By's Guardian
+    // Type sub-field is new: conditional on picking Guarded/Infested/
+    // Haunted, it reuses the same 14 monsterTypes every creature entity
+    // already picks from, so a guarded vault can genuinely pull in real
+    // Humanoid- or Undead-tagged flavor items as part of its own loot
+    // instead of Exploration and the monster side being two disconnected
+    // systems.
     exploration: [
+      { id: 'exploration-size', name: 'Size', options: ['Single Room', 'Small Site', 'Sprawling Complex', 'Vast Ruin'], excludedItemPatterns: {}, guaranteedItems: {} },
       { id: 'exploration-condition', name: 'Condition', options: ['Pristine', 'Already Looted', 'Ancient/Decayed', 'Trapped'], excludedItemPatterns: {}, guaranteedItems: {} },
       { id: 'exploration-occupied', name: 'Occupied By', options: ['Abandoned', 'Guarded', 'Infested', 'Haunted'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        id: 'exploration-guardian-type', name: 'Guardian Type',
+        showIf: { attr: 'exploration-occupied', values: ['Guarded', 'Infested', 'Haunted'] },
+        // Kept as its own literal rather than referencing monsterTypes
+        // above (can't self-reference within one object literal) -- must
+        // stay in sync with monsterTypes if that list ever changes.
+        options: [
+          'Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental',
+          'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead',
+        ],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
     ],
   },
 }

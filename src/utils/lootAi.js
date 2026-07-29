@@ -36,6 +36,14 @@
 //      within the parameters" this round rather than staying select-only.
 //      Still constrained to mechanically real 5.5e-style items (see its
 //      own prompt), just not select-from-catalog-only.
+//   4. generateAiExplorationLoot (added v3.14, DM-directed) -- same full
+//      invention allowance as Shop, granted explicitly ("let's give it
+//      the same allowance as the shop got, in case there's a problem")
+//      when the DM approved the Exploration redesign. Originally proposed
+//      as select-only (an exploration site "should feel like it's drawn
+//      from the world you've already built"), but the DM asked for parity
+//      with Shop instead -- noted here for the record, not treated as a
+//      mistake to walk back.
 
 function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary, needsInference, tierOptions, balanced }) {
   const poolText = eligibleItems
@@ -603,20 +611,44 @@ function rollRarity(rarityWeights) {
   return 'Common'
 }
 
-// Rolls the exact magic-item plan for this shop ONCE, up front, so the
-// prompt can hand the model a hard, specific target ("exactly 2 Common, 1
-// Uncommon") instead of a vague ceiling -- same "don't trust prompt-only
-// compliance" reasoning as everywhere else in this file, just applied
-// before generation instead of only after via normalizeShopResult.
-function rollMagicPlan(wealthId) {
+// Rolls the exact magic-item plan for this shop (or exploration site)
+// ONCE, up front, so the prompt can hand the model a hard, specific
+// target ("exactly 2 Common, 1 Uncommon") instead of a vague ceiling --
+// same "don't trust prompt-only compliance" reasoning as everywhere else
+// in this file, just applied before generation instead of only after via
+// normalizeShopResult.
+//
+// maxTotal (optional): Shop doesn't pass this -- a shop's own item-count
+// band is generous enough that WEALTH_MAGIC_PROFILE's counts always fit
+// inside it comfortably. Exploration DOES pass it, because its site-size
+// budget (SIZE_COUNT_RANGE below) is much smaller than a shop's shelf --
+// without a cap, an Aristocratic Single Room could roll 8-12 magic items
+// against a total budget of 2-4, which reads as absurd (a closet
+// shouldn't out-treasure a vault just because Wealth rolled high). When
+// trimming is needed, Common items go first -- the DM's whole point in
+// asking for this system was "so rare items feel rare," so if a small
+// site can't hold everything Wealth rolled, what it keeps should skew
+// toward the notable finds, not the filler.
+function rollMagicPlan(wealthId, maxTotal) {
   const profile = WEALTH_MAGIC_PROFILE[wealthId] || WEALTH_MAGIC_PROFILE.modest
   const [min, max] = profile.countRange
   const [preferMin, preferMax] = profile.preferred
-  const magicCount = weightedRandIntLocal(min, max, preferMin, preferMax)
+  let magicCount = weightedRandIntLocal(min, max, preferMin, preferMax)
   const breakdown = {}
   for (let i = 0; i < magicCount; i++) {
     const rarity = rollRarity(profile.rarityWeights)
     breakdown[rarity] = (breakdown[rarity] || 0) + 1
+  }
+  if (maxTotal != null && magicCount > maxTotal) {
+    let excess = magicCount - maxTotal
+    for (const rarity of RARITY_ORDER) {
+      if (excess <= 0) break
+      const trim = Math.min(excess, breakdown[rarity] || 0)
+      breakdown[rarity] = (breakdown[rarity] || 0) - trim
+      if (breakdown[rarity] === 0) delete breakdown[rarity]
+      excess -= trim
+    }
+    magicCount = maxTotal
   }
   return { magicCount, breakdown }
 }
@@ -778,6 +810,147 @@ export async function generateAiShopWares({ shopType, scale, reputation, wealth,
     if (result) return applyReputationPricing(normalizeShopResult(result, maxTotal, magicPlan), reputation)
   } catch (err) {
     console.error('Claude shop wares generation failed:', err)
+    lastError = err
+  }
+  if (lastError) throw lastError
+  throw new Error(LOOT_AI_UNCONFIGURED)
+}
+
+// --- Exploration site loot: a FOURTH loose AI mode (v3.14, DM-directed),
+// same full-invention allowance as Shop -- granted explicitly by the DM
+// ("let's give it the same allowance as the shop got, in case there's a
+// problem") rather than the select-only design originally proposed. See
+// the file-top STANDING RULE comment's exception #4.
+//
+// Mirrors Shop's architecture closely on purpose (the DM asked to keep
+// "the logic and momentum of this system"): Size plays Scale's role
+// (sets the base item-count budget), Wealth rolls the same magic-item
+// plan Shop uses (WEALTH_MAGIC_PROFILE/rollMagicPlan, shared code) just
+// capped to the site's own much smaller budget so a small room can't
+// out-treasure a shop. Condition and Occupied By are exploration-only
+// wrinkles Shop doesn't have: Condition shifts the budget itself
+// (Already Looted trims hard and suppresses magic finds -- the good
+// stuff is already gone) and colors tone; Occupied By's Guardian Type
+// blends a real monster type's own tagged item pool in as thematic
+// anchors, so a Guarded vault's loot can genuinely include Humanoid- or
+// Undead-flavored pieces instead of Exploration being disconnected from
+// the monster side entirely.
+const SIZE_COUNT_RANGE = {
+  'Single Room': [2, 4],
+  'Small Site': [4, 8],
+  'Sprawling Complex': [8, 15],
+  'Vast Ruin': [15, 25],
+}
+
+// countMultiplier shrinks/grows the Size-driven budget; magicMultiplier
+// separately shrinks/grows the maxTotal handed to rollMagicPlan's cap --
+// kept as two separate knobs because Already Looted should suppress
+// magic finds much harder than it suppresses overall count (a picked-over
+// room can still have plenty of mundane junk left behind, just not the
+// good stuff). toneNote feeds directly into the prompt.
+const CONDITION_MODIFIER = {
+  Pristine: {
+    countMultiplier: 1, magicMultiplier: 1,
+    toneNote: 'Untouched and well-preserved. Items should read as intact, in good condition for their age, and if anything skew toward the better-preserved/higher-value end of what fits this site.',
+  },
+  'Already Looted': {
+    countMultiplier: 0.5, magicMultiplier: 0.25,
+    toneNote: 'Already picked over by someone else. What remains is what previous looters missed, discarded, or couldn\'t carry -- mostly low-value scraps, dropped coin, and things not worth an earlier looter\'s time. Genuine magic items should be rare here specifically because anything obviously valuable is already gone.',
+  },
+  'Ancient/Decayed': {
+    countMultiplier: 1, magicMultiplier: 1,
+    toneNote: 'Old enough that time has taken a toll. Describe mundane items as worn, rusted, rotted, or faded -- narratively decayed -- WITHOUT changing their real mechanical stats or a magic item\'s actual enchantment; the decay is flavor, not a nerf. A few items can be narrative-only husks of what they used to be (no gp value beyond curiosity).',
+  },
+  Trapped: {
+    countMultiplier: 1, magicMultiplier: 1,
+    toneNote: 'This site\'s best find is guarded by a trap or hazard -- call this out explicitly in that item\'s description (a pressure plate, a ward, a rigged mechanism) so the DM can run it at the table. The rest of the site is normal.',
+  },
+}
+
+function buildExplorationPrompt({ explorationType, size, condition, occupied, guardianType, wealth, notes, eligibleItems, countRange, magicPlan, conditionNote }) {
+  const poolText = eligibleItems.map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.category || i.kind || 'Misc'} | ${i.description}`).join('\n')
+  const breakdownText = RARITY_ORDER
+    .map((r) => [r, magicPlan.breakdown[r] || 0])
+    .filter(([, n]) => n > 0)
+    .map(([r, n]) => `${n} ${r}`)
+    .join(', ') || 'none -- this site should have ZERO genuine magic items'
+  const guardianText = guardianType
+    ? `\n- Guardian Type: ${guardianType} (this site is ${(occupied || 'occupied').toLowerCase()} by something of this type -- some loot may plausibly belong to it or reflect its presence, alongside the site's own inherent loot)`
+    : ''
+  return `
+You are helping a Dungeon Master populate the loot found at a D&D 5.5e exploration site, working within real game mechanics but otherwise using your own judgment and creativity -- this is NOT a strict select-only task like regular creature loot on this site. Build a believable, internally consistent haul for the site below.
+
+SITE:
+- Type: ${explorationType || '(unspecified)'}
+- Size: ${size || '(unspecified)'}
+- Condition: ${condition || '(unspecified)'}
+- Occupied By: ${occupied || '(unspecified)'}${guardianText}
+- Wealth: ${wealth || '(unspecified)'}
+- DM's notes: ${notes || '(none)'}
+
+CONDITION NOTE: ${conditionNote}
+
+TARGET SIZE: roughly ${countRange[0]}-${countRange[1]} distinct items total, before Condition's own adjustment above is applied.
+
+MAGIC ITEM TARGET -- this is a HARD requirement, not a suggestion: this site's Wealth (${wealth || 'unspecified'}) has already been rolled and must produce EXACTLY this magic item mix, no more, no fewer: ${breakdownText}. Every other item found must be ORDINARY, NON-MAGICAL loot appropriate to the site -- coin, trade goods, tools, mundane weapons/armor, personal effects, raw materials, whatever this specific Type of site would plausibly contain. Do NOT add any additional genuine magic items beyond the exact mix above. A rarer magic item (Rare/Very Rare/Legendary) should feel like a genuine discovery -- give it real narrative weight (why is it here, how is it protected or hidden) rather than treating it like ordinary clutter.
+
+EXISTING DATABASE ITEMS (real 5.5e SRD items, Magical Junk Drawer items, and -- if a Guardian Type is set above -- that monster type's own tagged flavor items: use these directly by exact name/price/description wherever they genuinely fit this site; they're your anchors for what's mechanically real):
+${poolText || '(none particularly relevant -- invent within genuine 5.5e parameters instead)'}
+
+TASK:
+1. Populate the site's loot so it reads like a real, coherent find for this specific Type/Size/Condition/Occupied By combination -- a Tomb's loot looks different from a Shipwreck's, even at the same Wealth and Size. If the Type or Notes describe an unusual combination (a temple built like a ship, a sunken warship converted into a shrine, etc.), honor that specific framing rather than defaulting to the closest generic preset.
+2. Use EXISTING DATABASE ITEMS above directly wherever they fit -- exact name, price, and description, unchanged.
+3. Where the database doesn't cover something this site would obviously contain, invent it -- genuinely new items are expected and welcome here, not just a rare exception. Every invented MAGIC item must still be MECHANICALLY REAL within 5.5e's own logic: its effect must be a plausible, appropriately-costed 5.5e-style effect matching the rarity it's assigned, not a vague or overpowered ability for its stated rarity.
+4. Assign every item a "category" for display grouping -- use natural categories for this kind of find (e.g. "Coin & Valuables", "Weapons", "Armor", "Magic Items", "Tools & Supplies", "Personal Effects", "Curiosities", "Religious Items") -- pick whichever subset actually fits this site, don't force categories that don't belong.
+5. Set "isMagic": true ONLY for items with a genuine mechanical enchantment, false for everything else. For every isMagic:true item, set "rarity" to exactly one of "Common", "Uncommon", "Rare", "Very Rare", "Legendary", matching the MAGIC ITEM TARGET mix above. For every isMagic:false item, set "rarity" to "" (empty string).
+6. Hit roughly the target size above (adjusted per the CONDITION NOTE), and hit the MAGIC ITEM TARGET exactly. Do not pad with near-duplicate items just to hit the number.
+
+Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
+{ "items": [ { "name": string, "priceGp": number, "description": string, "category": string, "isMagic": boolean, "rarity": string, "isNew": boolean } ] }
+`.trim()
+}
+
+// Reuses the exact same dedup/cap logic as normalizeShopResult (name dedup,
+// maxTotal cap, per-rarity magicPlan enforcement) -- kept as a thin wrapper
+// rather than a copy-paste so the two never drift out of sync.
+function normalizeExplorationResult(raw, maxTotal, magicPlan) {
+  return normalizeShopResult(raw, maxTotal, magicPlan)
+}
+
+export async function generateAiExplorationLoot({ explorationType, size, condition, occupied, guardianType, wealth, wealthLabel, notes, eligibleItems }) {
+  const [baseLo, baseHi] = SIZE_COUNT_RANGE[size] || [4, 8]
+  const modifier = CONDITION_MODIFIER[condition] || CONDITION_MODIFIER.Pristine
+  const lo = Math.max(0, Math.round(baseLo * modifier.countMultiplier))
+  const hi = Math.max(lo + 1, Math.round(baseHi * modifier.countMultiplier))
+  const countRange = [lo, hi]
+
+  // Magic count is capped against the site's OWN budget (scaled by
+  // Condition's separate magicMultiplier), not Shop's generous headroom
+  // -- see the comment above CONDITION_MODIFIER and rollMagicPlan's
+  // maxTotal param for why this matters.
+  const magicCap = Math.max(0, Math.round(hi * 0.4 * modifier.magicMultiplier))
+  const magicPlan = rollMagicPlan(wealth, magicCap)
+
+  const prompt = buildExplorationPrompt({
+    explorationType, size, condition, occupied, guardianType,
+    wealth: wealthLabel || wealth, notes, eligibleItems, countRange, magicPlan,
+    conditionNote: modifier.toneNote,
+  })
+  const maxTotal = hi + Math.ceil(hi * 0.5)
+
+  let lastError = null
+  try {
+    const result = await callGemini(prompt)
+    if (result) return normalizeExplorationResult(result, maxTotal, magicPlan)
+  } catch (err) {
+    console.error('Gemini exploration loot generation failed, trying fallback:', err)
+    lastError = err
+  }
+  try {
+    const result = await callClaude(prompt)
+    if (result) return normalizeExplorationResult(result, maxTotal, magicPlan)
+  } catch (err) {
+    console.error('Claude exploration loot generation failed:', err)
     lastError = err
   }
   if (lastError) throw lastError

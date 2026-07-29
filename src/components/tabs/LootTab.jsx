@@ -3,7 +3,7 @@ import { useData } from '../../contexts/DataContext'
 import { buildItemPool } from '../../utils/itemPool'
 import { formatPrice } from '../../utils/price'
 import { LOCATION_TYPES, VEHICLE_CATEGORIES } from '../../data/defaultLootTaxonomy'
-import { generateAiAssistedLoot, generateAiAssistedLootDiscretion, generateAiHordeContents, generateAiShopWares, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
+import { generateAiAssistedLoot, generateAiAssistedLootDiscretion, generateAiExplorationLoot, generateAiHordeContents, generateAiShopWares, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
 
 const POOL_OPTIONS = [
   { id: 'wares', label: 'Wares' },
@@ -1708,6 +1708,12 @@ export default function LootTab() {
   const [locCategories, setLocCategories] = useState([])
   const [locAllowDuplicates, setLocAllowDuplicates] = useState(false)
   const [locIncludeVehicles, setLocIncludeVehicles] = useState(false)
+  // Shared freeform Notes box for AI-driven location generation (Shop and
+  // Exploration both use it) -- direct DM-to-AI communication, same role
+  // a monster entity's Notes field already plays, just not wired to a
+  // deterministic fallback the way that one is (both location types are
+  // AI-first now, see generateLocation below).
+  const [locNotes, setLocNotes] = useState('')
 
   const [results, setResults] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -1730,6 +1736,7 @@ export default function LootTab() {
     setSubtype('')
     setLocAttributeValues({})
     setLocPools(DEFAULT_POOLS[type] || ['wares'])
+    setLocNotes('')
     setResults(null)
   }
 
@@ -2086,16 +2093,16 @@ export default function LootTab() {
     setGenerating(false)
   }
 
-  // Shop (v3.9): fully AI-driven now, per the DM -- every field from the
-  // shop entity form gets passed to generateAiShopWares, which builds the
-  // store's whole stock with real discretion (see the STANDING RULE's
-  // third grandfathered exception in lootAi.js). Existing catalog items
-  // are still handed over as anchors (same buildItemPool('wares', ...)
-  // pool the deterministic draw used), just no longer the only source.
-  // Falls back to the old deterministic drawLoot path if AI isn't
-  // configured or the call fails, same fallback pattern used everywhere
-  // else AI assist is optional. Exploration is untouched -- still the
-  // plain deterministic draw, checkboxes and all.
+  // Shop (v3.9) and Exploration (v3.14): both fully AI-driven now, per
+  // the DM -- every field from the location entity form gets passed to
+  // generateAiShopWares/generateAiExplorationLoot, which build the
+  // store's stock (or site's find) with real discretion (see the
+  // STANDING RULE's 3rd/4th grandfathered exceptions in lootAi.js).
+  // Existing catalog items are still handed over as anchors (same
+  // buildItemPool('wares', ...) pool the deterministic draw used), just
+  // no longer the only source. Both fall back to the old deterministic
+  // drawLoot path if AI isn't configured or the call fails, same
+  // fallback pattern used everywhere else AI assist is optional.
   async function generateLocation() {
     const w = wealthLevel(locWealthId)
 
@@ -2120,13 +2127,70 @@ export default function LootTab() {
           cuisine: locAttributeValues['shop-cuisine'],
           clientele: locAttributeValues['shop-clientele'],
           atmosphere: locAttributeValues['shop-atmosphere'],
-          notes: '',
+          notes: locNotes,
           eligibleItems: eligible,
         })
         const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
         setResults([{ label: '', items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true, categorized: true }])
       } catch (err) {
         if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI shop wares generation failed, falling back:', err)
+        setAiNotice(
+          err.message === LOOT_AI_UNCONFIGURED
+            ? 'AI assist isn’t configured (no API key set) — used the normal random rules instead.'
+            : 'AI assist failed — used the normal random rules instead.'
+        )
+        const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
+        const gold = w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
+        const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
+        const rolled = drawLoot({
+          pools: locPools, sources, categories: locCategories,
+          priceMin: w?.min ?? null, priceMax: w?.max ?? null, count,
+          allowDuplicates: locAllowDuplicates, includeVehicles: locIncludeVehicles,
+          excludedPatterns: locExcludedPatterns,
+        })
+        setResults([{ label: '', items: [...guaranteed, ...rolled], gold }])
+      } finally {
+        setGenerating(false)
+      }
+      setCopied(false)
+      return
+    }
+
+    if (locationType === 'exploration') {
+      setGenerating(true)
+      setAiNotice('')
+      const guardianType = locAttributeValues['exploration-guardian-type']
+      // Site's own pool, same as Shop's eligible-items build, PLUS (if
+      // Occupied By set a Guardian Type) that monster type's own tagged
+      // pool merged in -- the whole point of the new field, so a Guarded
+      // vault's anchors can genuinely include real Humanoid/Undead/etc
+      // flavor items, not just the site's generic loot.
+      const sitePool = locPools
+        .flatMap((p) => buildItemPool(p, sources))
+        .filter((i) => locIncludeVehicles || !VEHICLE_CATEGORIES.includes(i.category))
+      const guardianPool = guardianType
+        ? buildItemPool('wares', sources).filter((i) => i.monsterTypeTags?.includes(guardianType))
+        : []
+      const seen = new Set()
+      const eligible = [...sitePool, ...guardianPool]
+        .filter((i) => (seen.has(i.name) ? false : (seen.add(i.name), true)))
+        .map((i) => ({ name: i.name, priceGp: i.priceGp, description: i.description, category: i.category }))
+      try {
+        const aiItems = await generateAiExplorationLoot({
+          explorationType: subtype,
+          size: locAttributeValues['exploration-size'],
+          condition: locAttributeValues['exploration-condition'],
+          occupied: locAttributeValues['exploration-occupied'],
+          guardianType,
+          wealth: locWealthId,
+          wealthLabel: w?.label,
+          notes: locNotes,
+          eligibleItems: eligible,
+        })
+        const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
+        setResults([{ label: '', items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true, categorized: true }])
+      } catch (err) {
+        if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI exploration loot generation failed, falling back:', err)
         setAiNotice(
           err.message === LOOT_AI_UNCONFIGURED
             ? 'AI assist isn’t configured (no API key set) — used the normal random rules instead.'
@@ -2294,6 +2358,26 @@ export default function LootTab() {
                   onChange={(attrId, val) => setLocAttributeValues((prev) => ({ ...prev, [attrId]: val }))}
                 />
 
+                {/* Notes: direct DM-to-AI freeform channel, same role a
+                    monster entity's Notes box plays -- this is what lets
+                    an odd combination the preset fields can't fully
+                    capture (a temple built like a ship, a sunken warship
+                    repurposed as a shrine) get communicated straight to
+                    the model instead of needing a new Type option for
+                    every possible hybrid. Only shown for AI-driven
+                    location types (Shop/Exploration); harmless to always
+                    render since both current location types qualify. */}
+                <label className="block">
+                  <span className="text-xs font-display uppercase text-ink-soft">Notes (to AI)</span>
+                  <textarea
+                    value={locNotes}
+                    onChange={(e) => setLocNotes(e.target.value)}
+                    rows={2}
+                    placeholder="e.g. this is a sunken temple built in the shape of a warship"
+                    className="mt-1 w-full rounded-sm border border-leather bg-white/60 px-2 py-1.5 text-sm"
+                  />
+                </label>
+
                 {(locExcludedPatterns.length > 0 || locGuaranteedPatterns.length > 0) && (
                   <div className="text-xs text-ink-soft/60 italic space-y-0.5">
                     {locExcludedPatterns.length > 0 && <p>Never carries: {locExcludedPatterns.join(', ')}</p>}
@@ -2309,7 +2393,7 @@ export default function LootTab() {
                   availableCategories={locAvailableCategories}
                   includeVehicles={locIncludeVehicles}
                   onIncludeVehiclesChange={setLocIncludeVehicles}
-                  hideCategories={locationType === 'shop'}
+                  hideCategories={locationType === 'shop' || locationType === 'exploration'}
                 />
 
                 <label className="flex items-center gap-1.5 text-xs">
