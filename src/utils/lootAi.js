@@ -904,17 +904,36 @@ TASK:
 4. Assign every item a "category" for display grouping -- use natural categories for this kind of find (e.g. "Coin & Valuables", "Weapons", "Armor", "Magic Items", "Tools & Supplies", "Personal Effects", "Curiosities", "Religious Items") -- pick whichever subset actually fits this site, don't force categories that don't belong.
 5. Set "isMagic": true ONLY for items with a genuine mechanical enchantment, false for everything else. For every isMagic:true item, set "rarity" to exactly one of "Common", "Uncommon", "Rare", "Very Rare", "Legendary", matching the MAGIC ITEM TARGET mix above. For every isMagic:false item, set "rarity" to "" (empty string).
 6. Hit roughly the target size above (adjusted per the CONDITION NOTE), and hit the MAGIC ITEM TARGET exactly. Do not pad with near-duplicate items just to hit the number.
+7. For every item where "isNew" is true (genuinely invented, not pulled from EXISTING DATABASE ITEMS): set "monsterTypeTags" to an array of zero or more of these 14 creature types -- Aberration, Beast, Celestial, Construct, Dragon, Elemental, Fey, Fiend, Giant, Humanoid, Monstrosity, Ooze, Plant, Undead -- ONLY include a type if this specific item would genuinely, plausibly turn up as THAT creature's own loot too (anatomically or thematically), not just "could theoretically exist near one." Most invented items should get an empty array -- this is deliberately conservative; a wrong tag here would let an item leak into loot it doesn't belong in. For every item where "isNew" is false, set "monsterTypeTags" to [].
 
 Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
-{ "items": [ { "name": string, "priceGp": number, "description": string, "category": string, "isMagic": boolean, "rarity": string, "isNew": boolean } ] }
+{ "items": [ { "name": string, "priceGp": number, "description": string, "category": string, "isMagic": boolean, "rarity": string, "isNew": boolean, "monsterTypeTags": string[] } ] }
 `.trim()
 }
 
-// Reuses the exact same dedup/cap logic as normalizeShopResult (name dedup,
-// maxTotal cap, per-rarity magicPlan enforcement) -- kept as a thin wrapper
-// rather than a copy-paste so the two never drift out of sync.
+// Unlike normalizeShopResult (shop-invented items are never persisted
+// anywhere, so their monsterTypeTags guess would just be dead weight),
+// Exploration's invented items DO get saved back into the catalog (see
+// generateLocation's exploration branch in LootTab.jsx) -- so this keeps
+// monsterTypeTags on the way out instead of discarding it. Otherwise
+// identical dedup/cap logic (name dedup, maxTotal cap, per-rarity
+// magicPlan enforcement).
+const VALID_MONSTER_TYPES = new Set([
+  'Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental',
+  'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead',
+])
 function normalizeExplorationResult(raw, maxTotal, magicPlan) {
-  return normalizeShopResult(raw, maxTotal, magicPlan)
+  const withTags = Array.isArray(raw.items)
+    ? raw.items.map((r) => ({
+        ...r,
+        monsterTypeTags: r.isNew && Array.isArray(r.monsterTypeTags)
+          ? r.monsterTypeTags.filter((t) => VALID_MONSTER_TYPES.has(t))
+          : [],
+      }))
+    : []
+  const filtered = normalizeShopResult({ items: withTags }, maxTotal, magicPlan)
+  const tagByName = new Map(withTags.map((r) => [String(r.name || '').trim().toLowerCase(), r.monsterTypeTags]))
+  return filtered.map((r) => ({ ...r, monsterTypeTags: tagByName.get(r.name.toLowerCase()) || [] }))
 }
 
 export async function generateAiExplorationLoot({ explorationType, size, condition, occupied, guardianType, wealth, wealthLabel, notes, eligibleItems }) {

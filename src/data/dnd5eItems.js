@@ -1971,57 +1971,15 @@ export const DND5E_ITEMS = [
   make('wares', 'Gear', 'Small Carved Luck Charm', 3, "Worn smooth from being rubbed for luck, over and over.", {tags: [], monsterTypeTags: ['Humanoid'], lootTags: {role: ['Sailor/Dockhand', 'Bandit/Criminal', 'Traveler'], loadoutPool: 'PersonalEffects'}}),
   make('wares', 'Gear', 'Faded Ribbon from a Festival', 1, "Cheap dye, long since gone dull -- kept anyway.", {tags: [], monsterTypeTags: ['Humanoid'], lootTags: {role: ['Commoner', 'Entertainer', 'Farmer/Herder'], loadoutPool: 'PersonalEffects'}}),
   make('wares', 'Gear', "Apprentice's First Attempt", 4, "Crude, clearly early work -- kept anyway, out of pride or sentiment.", {tags: [], monsterTypeTags: ['Humanoid'], lootTags: {role: ['Artisan/Craftsman', 'Mage/Caster', 'Scholar'], loadoutPool: 'PersonalEffects'}}),
-
-  // ============ OOZE ============
-  // Rebuilt from scratch (v3.13, DM-directed) -- Ooze previously had zero
-  // tagged items at all (see sizeLootTable.Ooze in defaultLootTaxonomy.js
-  // for the count ranges these three kinds feed). Composition is a pure
-  // narrowing dimension (lootTags.composition) -- items tagged to one
-  // Composition only surface for an ooze with that exact Composition,
-  // untagged items are universal, same overlap rule as everywhere else.
-  //
-  // Biological Waste: what you can actually harvest FROM the ooze itself
-  // -- slime, membrane, secretions. Mostly pure narrative with a gp
-  // value; a few double as a real reusable consumable (e.g. a vial that
-  // functions like Acid).
-  make('wares', 'Gear', 'Vial of Preserved Ooze Membrane', 3, 'A thin, rubbery sheet folded into a jar. Alchemists buy these by the dozen and never say why.', {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste'}}),
-  make('wares', 'Gear', 'Jar of Translucent Secretion', 5, "Cloudy, faintly luminous, and it never quite settles at the bottom of the jar.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste'}}),
-  make('wares', 'Gear', 'Sample of Ooze Core Matter', 8, "Denser than the rest of the mass, and it holds its shape for a few hours after extraction before slumping flat.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste'}}),
-  make('wares', 'Gear', 'Preserved Pseudopod Tissue', 4, "Still faintly twitches if you poke it. Best kept sealed.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste'}}),
-  make('wares', 'Gear', 'Bottled Digestive Fluid', 6, "Thick, faintly bubbling, and it eats through the cork if you don't reseal it fast. Functions like a vial of Acid if thrown.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste'}}),
-  make('wares', 'Gear', 'Vial of Concentrated Acid Secretion', 10, "Drawn straight from the source and still fizzing faintly. Functions like a vial of Acid.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste', composition: ['Acidic']}}),
-  make('wares', 'Gear', 'Sample of Metal-Eating Slime', 12, "Kept in a lead-lined jar for good reason -- it's already started on the lid's rivets.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste', composition: ['Corrosive']}}),
-  make('wares', 'Gear', 'Jar of Living Adhesive', 15, "Still faintly sticky through the glass. Craftsmen pay well for a controlled sample.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste', composition: ['Adhesive']}}),
-  make('wares', 'Gear', 'Vial of Caustic Residue', 10, "Fumes faintly when the jar is opened. Handle with gloves.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'BiologicalWaste', composition: ['Caustic']}}),
-
-  // Narrative Flavor: Composition-themed items that flesh out what this
-  // ooze has been dissolving lately. Several are explicitly reskinned as
-  // a real mundane item per the DM's own example (a Corroded Sword that
-  // "can function like a dagger") -- these aren't magic, just a
-  // downgraded/improvised stand-in for the item they resemble.
-  make('wares', 'Gear', 'Corroded Sword', 3, "Most of the blade has thinned to almost nothing. Can function like a Dagger.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor', composition: ['Corrosive']}}),
-  make('wares', 'Gear', 'Rust-Fused Chainmail Scrap', 2, "A fist-sized clump of links, welded together by whatever's been eating at them.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor', composition: ['Corrosive']}}),
-  make('wares', 'Gear', 'Pitted Dagger, Acid-Etched', 2, "The edge still holds despite the pitting all along the blade. Can function like a Dagger.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor', composition: ['Acidic']}}),
-  make('wares', 'Gear', 'Half-Dissolved Leather Glove', 1, "One glove, the fingertips gone entirely soft and thin.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor', composition: ['Acidic']}}),
-  make('wares', 'Gear', 'Boot, Stuck Fast in Residue', 1, "Still standing upright in a hardened puddle of the stuff. Whoever it belonged to left without it.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor', composition: ['Adhesive']}}),
-  make('wares', 'Gear', 'Coil of Tacky Residue-Coated Rope', 2, "Unpleasant to handle, but it holds a knot better than clean rope ever did. Can function like Rope (50 feet).", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor', composition: ['Adhesive']}}),
-  make('wares', 'Gear', 'Fume-Bleached Finger Bone', 1, "Bleached white and slightly porous, like the fumes got into the marrow.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor', composition: ['Caustic']}}),
-  make('wares', 'Gear', 'Chemical-Scarred Belt Buckle', 1, "The plating's gone entirely in patches, down to dull, pitted metal.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor', composition: ['Caustic']}}),
-  make('wares', 'Gear', 'Half-Dissolved Journal Page', 1, "Most of the ink has run, but a few words near the top are still legible.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor'}}),
-  make('wares', 'Gear', 'Warped Holy Symbol, Barely Recognizable', 3, "Soft at the edges now, the engraving worn down to a suggestion of what it used to be.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'NarrativeFlavor'}}),
-
-  // Supplementary: whatever was in (or near) the ooze that's still
-  // usable, same role Beast's Den bucket plays -- "recovered loot," not
-  // anatomy. Mostly mundane leftovers; a couple of genuine magic items
-  // included per the DM ("gold, arrows, maybe the occasional magic
-  // weapon") for the rare case something swallowed whole survived intact.
-  make('wares', 'Gear', 'Bent Arrow, Partially Dissolved', 0.2, "The fletching's gone soft, but the head's still sharp.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'Supplementary'}}),
-  make('wares', 'Gear', 'Corroded Coin Cluster', 4, "A handful of coins fused into one lumpy mass. Still spends, once you pry them apart.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'Supplementary'}}),
-  make('wares', 'Gear', 'Waterlogged Coin Purse', 2, "The leather's gone soft and dark, but the drawstring still cinches.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'Supplementary'}}),
-  make('wares', 'Gear', 'Dented Tin Cup, Swallowed Whole', 1, "Not much worse for wear, all things considered.", {tags: [], monsterTypeTags: ['Ooze'], lootTags: {kind: 'Supplementary'}}),
-  make('wares', 'Weapon', 'Slime-Coated Dagger, +1', 500, "Recovered intact from the ooze's mass -- the enchantment kept the residue from eating through. Grants a +1 bonus to attack and damage rolls made with this weapon.", {tags: ['magic-item'], monsterTypeTags: ['Ooze'], lootTags: {kind: 'Supplementary'}}),
-  make('wares', 'Wondrous Item', 'Ring of Protection, Pitted but Functional', 3500, "The band is scarred and discolored, but the enchantment survived the digestion intact. Grants a +1 bonus to Armor Class and to saving throws while worn.", {tags: ['magic-item'], monsterTypeTags: ['Ooze'], lootTags: {kind: 'Supplementary'}}),
 ]
+
+// Ooze's item set moved OUT of this base catalog and into its own
+// dedicated source (v3.15, DM-directed) -- see mockSources' "The
+// Dissolution Codex" entry in mockData.js. Every other kind-bucketed
+// type that gets its own flavor content (Fiend's Infernal Ledger, Beast
+// and Giant's own sources) already lives in a dedicated source rather
+// than this shared SRD-adjacent file, so Ooze catches up to that
+// convention instead of being the odd one out.
 
 export const WARES_CATEGORIES = [...new Set(DND5E_ITEMS.filter((i) => i.pool === 'wares').map((i) => i.category))]
 export const MENU_CATEGORIES = [...new Set(DND5E_ITEMS.filter((i) => i.pool === 'menu').map((i) => i.category))]

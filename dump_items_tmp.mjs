@@ -9,3 +9,5 @@ for (const src of mockSources) {
 }
 fs.writeFileSync('/tmp/all_items.json', JSON.stringify(all))
 console.log('total', all.length)
+const plant = all.filter(it => (it.monsterTypeTags||[]).includes('Plant'))
+console.log('plant items', plant.length)

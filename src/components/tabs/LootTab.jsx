@@ -235,6 +235,21 @@ const KIND_BUCKET_CONFIG = {
     sizeAttr: 'ooze-size',
     dimensions: [{ key: 'composition', attr: 'ooze-composition' }],
   },
+  // Plant (v3.16): three dimensions narrowing at once, same "an item
+  // must pass EVERY dimension's check" mechanism Monstrosity's Origin+
+  // Climate combo already established -- Lineage is the primary theming
+  // dimension (what kind of plant), Environment layers on top of it (the
+  // DM's own example: a Rooted plant's loot differs by Environment even
+  // at the same Lineage), Origin is a lighter third dimension for the
+  // occasional deeper flavor combination.
+  Plant: {
+    sizeAttr: 'plant-size',
+    dimensions: [
+      { key: 'lineage', attr: 'plant-lineage' },
+      { key: 'environment', attr: 'plant-environment' },
+      { key: 'origin', attr: 'plant-origin' },
+    ],
+  },
 }
 
 // Non-kind keys that can appear alongside the kind buckets in a
@@ -1693,7 +1708,7 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
 // --- Main tab ---------------------------------------------------------
 
 export default function LootTab() {
-  const { sources, lootTaxonomy, saveLootTaxonomy } = useData()
+  const { sources, lootTaxonomy, saveLootTaxonomy, saveSource } = useData()
   const [showTaxonomy, setShowTaxonomy] = useState(false)
 
   const [generationType, setGenerationType] = useState(null)
@@ -2103,6 +2118,57 @@ export default function LootTab() {
   // no longer the only source. Both fall back to the old deterministic
   // drawLoot path if AI isn't configured or the call fails, same
   // fallback pattern used everywhere else AI assist is optional.
+  // Exploration's invented items get saved back into a real catalog
+  // source instead of being a one-off, thrown-away result (v3.15,
+  // DM-directed -- "any new item AI makes is immediately given all the
+  // necessary tags and put into all fitting containers"). Honest scope
+  // note: monsterTypeTags is the one tag we can trust an AI response to
+  // guess at reasonably (see buildExplorationPrompt's TASK step 7, kept
+  // deliberately conservative), but a monster type's own deeper kind/
+  // container tagging (Beast's Trophy/Parts/Pelt split, Aberration's
+  // Origin/Xenotype, etc) needs the same careful reasoning this site's
+  // whole tag-audit process has been built around -- auto-assigning that
+  // from a single JSON response would risk exactly the shallow-tagging
+  // mistake the DM has pushed back on all along. So: every invented item
+  // is saved, tagged with whichever monster types it plausibly fits, and
+  // immediately reachable again in future Exploration/Shop generations
+  // (any Wares-pool draw isn't type-scoped) -- but genuinely deep
+  // per-type container placement is left for a future manual/audit pass,
+  // same as any other new catalog content on this site.
+  async function persistAiDiscoveredItems(items) {
+    const newItems = (items || []).filter((i) => i.isNew)
+    if (newItems.length === 0) return 0
+
+    const existing = sources.find((s) => s.name === 'AI-Discovered Finds')
+    const existingWares = existing?.wares || []
+    const existingNames = new Set(existingWares.map((w) => w.name.toLowerCase()))
+    const freshRows = newItems
+      .filter((i) => !existingNames.has(i.name.toLowerCase()))
+      .map((i, idx) => ({
+        rowId: `row-ai-${Date.now()}-${idx}`,
+        name: i.name,
+        basePrice: i.priceGp,
+        description: i.description,
+        category: i.category || 'Misc',
+        monsterTypeTags: i.monsterTypeTags || [],
+        tags: i.isMagic ? ['magic-item'] : [],
+        lootTags: i.isMagic && i.rarity ? { rarity: i.rarity } : null,
+        priceOverride: '',
+        quantity: 1,
+      }))
+    if (freshRows.length === 0) return 0
+
+    await saveSource({
+      id: existing?.id,
+      name: 'AI-Discovered Finds',
+      wares: [...existingWares, ...freshRows],
+      menu: existing?.menu || [],
+      services: existing?.services || [],
+      createdAt: existing?.createdAt || Date.now(),
+    })
+    return freshRows.length
+  }
+
   async function generateLocation() {
     const w = wealthLevel(locWealthId)
 
@@ -2189,6 +2255,10 @@ export default function LootTab() {
         })
         const guaranteed = resolveGuaranteedItems(locGuaranteedPatterns, locPools, sources, locIncludeVehicles)
         setResults([{ label: '', items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true, categorized: true }])
+        const savedCount = await persistAiDiscoveredItems(aiItems)
+        if (savedCount > 0) {
+          setAiNotice(`${savedCount} newly invented item${savedCount === 1 ? '' : 's'} saved to the "AI-Discovered Finds" source for future reuse.`)
+        }
       } catch (err) {
         if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI exploration loot generation failed, falling back:', err)
         setAiNotice(

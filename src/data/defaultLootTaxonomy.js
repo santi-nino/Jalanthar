@@ -690,11 +690,43 @@ export const DEFAULT_LOOT_TAXONOMY = {
     // through to the old flat 1-2 item draw (see KIND_BUCKET_CONFIG.Ooze
     // in LootTab.jsx).
     Ooze: [
-      { id: 'ooze-composition', name: 'Composition', options: ['Acidic', 'Corrosive', 'Adhesive', 'Caustic'], excludedItemPatterns: {}, guaranteedItems: {} },
+      // Expanded (v3.15, DM-directed) from the original 4 -- Poisonous/
+      // Freezing/Electrified/Putrescent/Petrifying each now have their
+      // own themed Biological Waste + Narrative Flavor items in The
+      // Dissolution Codex (mockData.js), same "tagged narrows, untagged
+      // stays universal" overlap rule as the original 4.
+      { id: 'ooze-composition', name: 'Composition', options: ['Acidic', 'Corrosive', 'Adhesive', 'Caustic', 'Poisonous', 'Freezing', 'Electrified', 'Putrescent', 'Petrifying'], excludedItemPatterns: {}, guaranteedItems: {} },
       { id: 'ooze-size', name: 'Size', options: ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
+    // Rebuilt (v3.16, DM-directed): Growth Type renamed to Lineage and
+    // expanded (was 4 options, now 10) -- Lineage is "the kind of plant
+    // this is," a pure narrowing dimension on Flora items via
+    // lootTags.lineage, same overlap rule as everywhere else. Size is
+    // new and finally gives Plant a real amount-driver, joining the
+    // kind-bucketed engine instead of the old flat 1-2 item draw (see
+    // sizeLootTable.Plant below and KIND_BUCKET_CONFIG.Plant in
+    // LootTab.jsx). Environment is also new -- reuses Monstrosity's own
+    // Climate option list verbatim (proven, and no reason for two
+    // separate "what biome is this from" vocabularies on the same site)
+    // -- and narrows loot alongside Lineage: the DM's own example is a
+    // Rooted plant's loot differing by Environment (cactus spikes in
+    // Desert, deep roots in Arctic/Tundra) even though Lineage is the
+    // same. Origin is untouched, still pure flavor, now also wired in as
+    // a third (lightly used) narrowing dimension for occasional deeper
+    // flavor combinations (an Awakened+Cursed root all reads different
+    // from a Natural one of the same Lineage/Environment).
     Plant: [
-      { id: 'plant-growth', name: 'Growth Type', options: ['Rooted', 'Mobile', 'Parasitic', 'Fungal'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'plant-lineage', name: 'Lineage', options: ['Rooted', 'Mobile', 'Carnivorous', 'Parasitic', 'Fungal', 'Moss', 'Vine/Creeper', 'Aquatic', 'Thorned/Bramble', 'Spore-Bearing'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'plant-size', name: 'Size', options: ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        id: 'plant-environment', name: 'Environment',
+        options: [
+          'Temperate', 'Desert', 'Arctic/Tundra', 'Jungle/Tropical',
+          'Swamp/Wetland', 'Mountain', 'Coastal/Aquatic',
+          'Underground/Subterranean', 'Volcanic',
+        ],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
       { id: 'plant-origin', name: 'Origin', options: ['Awakened', 'Natural', 'Cursed/Blighted'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     Undead: [
@@ -772,6 +804,25 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Large: { BiologicalWaste: [1, 2], NarrativeFlavor: [1, 2], Supplementary: [1, 1] },
       Huge: { BiologicalWaste: [2, 3], NarrativeFlavor: [1, 2], Supplementary: [1, 2] },
       Gargantuan: { BiologicalWaste: [2, 3], NarrativeFlavor: [2, 3], Supplementary: [1, 2] },
+    },
+    // Plant (v3.16, DM-directed): a single "Flora" bucket rather than
+    // Ooze's 3-way split -- the DM's own spec is that plant loot is
+    // overwhelmingly narrative-with-a-gp-value, with only the occasional
+    // item sharing a real mechanical effect with something else (a spore
+    // bulb that "functions like a Bottle of Everlasting Smoke for 4
+    // rounds," their own example) -- one homogeneous pool, not several
+    // functionally distinct ones, matches that shape better than forcing
+    // an artificial 2-3-bucket split the way other types use. Counts
+    // scale gently by Size, same "more, not dramatically more" reasoning
+    // as Ooze's own scaling (a Gargantuan plant creature is still mostly
+    // just... more plant, not more DIFFERENT kinds of loot).
+    Plant: {
+      Tiny: { Flora: [1, 2] },
+      Small: { Flora: [1, 3] },
+      Medium: { Flora: [2, 4] },
+      Large: { Flora: [3, 5] },
+      Huge: { Flora: [4, 6] },
+      Gargantuan: { Flora: [5, 8] },
     },
     // Celestial's tiers are keyed by Rank, not Size -- same mechanism,
     // different name for the same "which attribute drives amount"
