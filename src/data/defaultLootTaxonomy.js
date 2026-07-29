@@ -78,6 +78,20 @@ export const DEFAULT_LOOT_TAXONOMY = {
     Humanoid: true,
     Undead: true,
   },
+
+  // Undead rebuild (DM-directed): Wealth is no longer a flat "this type
+  // always/never has it" toggle for Undead specifically -- it now depends
+  // on which Descent got picked (see monsterTypeAttributes.Undead below).
+  // A mindless Zombie or animated Skeleton has no economic concept
+  // whatsoever, same as a wild Beast; a Vampire or Lich very much does,
+  // same as a Humanoid. monsterTypeUsesWealth.Undead (true, above) stays
+  // as the type-level default so nothing else in the map breaks, but
+  // LootTab.jsx's usesWealthFor() overrides it for Undead specifically,
+  // checking attributeValues['undead-descent'] against this list instead
+  // of trusting the flat boolean. Keep this list and Role's optionsFor
+  // (below) in sync -- every entry here needs a matching Role branch and
+  // vice versa.
+  undeadSentientDescents: ['Vampire', 'Lycanthrope', 'Lich', 'Ghost', 'Mummy', 'Revenant'],
   // Fiend used to be here, using the generic Wealth field like Giant/
   // Undead/Humanoid still do. Removed once Fiend got its own two
   // dedicated economic systems instead -- Rank (Devil lineage: wealth +
@@ -711,10 +725,13 @@ export const DEFAULT_LOOT_TAXONOMY = {
     // -- and narrows loot alongside Lineage: the DM's own example is a
     // Rooted plant's loot differing by Environment (cactus spikes in
     // Desert, deep roots in Arctic/Tundra) even though Lineage is the
-    // same. Origin is untouched, still pure flavor, now also wired in as
-    // a third (lightly used) narrowing dimension for occasional deeper
-    // flavor combinations (an Awakened+Cursed root all reads different
-    // from a Natural one of the same Lineage/Environment).
+    // same. Origin (Awakened/Natural/Cursed-Blighted) was removed per the
+    // DM's follow-up request -- Lineage + Environment alone are the two
+    // narrowing dimensions now (see KIND_BUCKET_CONFIG.Plant in
+    // LootTab.jsx, also trimmed down to just those two). Any existing
+    // catalog items still carrying lootTags.origin just have that tag go
+    // inert -- harmless, not read by anything anymore -- rather than
+    // needing a separate cleanup pass.
     Plant: [
       { id: 'plant-lineage', name: 'Lineage', options: ['Rooted', 'Mobile', 'Carnivorous', 'Parasitic', 'Fungal', 'Moss', 'Vine/Creeper', 'Aquatic', 'Thorned/Bramble', 'Spore-Bearing'], excludedItemPatterns: {}, guaranteedItems: {} },
       { id: 'plant-size', name: 'Size', options: ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'], excludedItemPatterns: {}, guaranteedItems: {} },
@@ -727,16 +744,57 @@ export const DEFAULT_LOOT_TAXONOMY = {
         ],
         excludedItemPatterns: {}, guaranteedItems: {},
       },
-      { id: 'plant-origin', name: 'Origin', options: ['Awakened', 'Natural', 'Cursed/Blighted'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
+    // Rebuilt (DM-directed): Descent replaces Origin/Sentience entirely --
+    // it's the one field that decides EVERYTHING else. "Descent" reads as
+    // "what you descended into becoming," undead-themed and a genuine
+    // synonym for Origin, per the DM's own framing. Six Descents are
+    // sentient (undeadSentientDescents above) and route through the
+    // Loadout System exactly like Humanoid -- Wealth (conditionally
+    // visible, see LootTab.jsx's usesWealthFor) sets economic tier, Role
+    // (below) picks the loadout recipe, options genuinely conditional per
+    // Descent via optionsFor (same mechanism as Dragon's Lineage). The
+    // other five are non-sentient and instead get Age (also below),
+    // driving the kind-bucketed engine (sizeLootTable.Undead,
+    // KIND_BUCKET_CONFIG.Undead in LootTab.jsx) -- Age plays the exact
+    // role Size/Rank plays everywhere else, determining BOTH power level
+    // (via lootTags.minRank gating, same mechanism as Celestial's Rank)
+    // and raw loot amount.
     Undead: [
       {
-        id: 'undead-origin', name: 'Origin',
-        options: ['Freshly Risen', 'Ancient', 'Skeletal', 'Spectral', 'Ghoulish'],
-        excludedItemPatterns: { Spectral: ['Sword', 'Shield', 'Armor'] },
-        guaranteedItems: { Skeletal: ['Sword'], 'Freshly Risen': ['Clothes'] },
+        id: 'undead-descent', name: 'Descent',
+        options: [
+          'Vampire', 'Lycanthrope', 'Lich', 'Ghost', 'Mummy', 'Revenant',
+          'Zombie', 'Skeleton', 'Ghoul', 'Wight', 'Wraith',
+        ],
+        excludedItemPatterns: {}, guaranteedItems: {},
       },
-      { id: 'undead-sentience', name: 'Sentience', options: ['Mindless', 'Malevolent Intelligence', 'Tragic Remnant'], excludedItemPatterns: {}, guaranteedItems: {} },
+      {
+        // Sentient only. Every option set below is Claude's own first
+        // pass at "what roles exist within this Descent" -- correct as
+        // needed. Namespaced 'Undead:<Role>' loadout entries (see
+        // taxonomy.loadouts) exist for every single option here.
+        id: 'undead-role', name: 'Role',
+        showIf: { attr: 'undead-descent', values: ['Vampire', 'Lycanthrope', 'Lich', 'Ghost', 'Mummy', 'Revenant'] },
+        optionsFor: {
+          Vampire: ['Blood Caster', 'Fledgling', 'Ancient Sire'],
+          Lycanthrope: ['Werewolf', 'Wererat', 'Weretiger', 'Werebear'],
+          Lich: ['Archlich', 'Death Priest'],
+          Ghost: ['Vengeful Spirit', 'Poltergeist'],
+          Mummy: ['Mummy Lord', 'Tomb Guardian'],
+          Revenant: ['Vengeance-Bound'],
+        },
+        options: [],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
+      {
+        // Non-sentient only. Drives sizeLootTable.Undead's tiers directly
+        // -- see KIND_BUCKET_CONFIG.Undead in LootTab.jsx.
+        id: 'undead-age', name: 'Age',
+        showIf: { attr: 'undead-descent', values: ['Zombie', 'Skeleton', 'Ghoul', 'Wight', 'Wraith'] },
+        options: ['Freshly Risen', 'Weathered', 'Ancient', 'Primeval'],
+        excludedItemPatterns: {}, guaranteedItems: {},
+      },
     ],
   },
 
@@ -823,6 +881,25 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Large: { Flora: [3, 5] },
       Huge: { Flora: [4, 6] },
       Gargantuan: { Flora: [5, 8] },
+    },
+    // Undead rebuild (DM-directed): keyed by Age, not Size -- only the
+    // five non-sentient Descents (Zombie/Skeleton/Ghoul/Wight/Wraith)
+    // ever reach this table at all; the six sentient ones route through
+    // the Loadout System instead (taxonomy.loadouts, 'Undead:<Role>'
+    // entries) and never touch sizeLootTable. Two kinds: Remains (loot
+    // pulled directly off/out of the body -- bones, grave dust,
+    // preserved flesh, an occasional intact organ) and Grave Goods
+    // (whatever it was buried, bound, or animated with -- a rusted
+    // holy symbol, burial wrappings, a broken chain). Age also gates
+    // power via lootTags.minRank exactly like Celestial's Rank does
+    // (see KIND_BUCKET_CONFIG.Undead.sizeOrder in LootTab.jsx) -- a
+    // Freshly Risen zombie only ever sees minRank 0 items, a Primeval
+    // one sees those and everything gated higher too.
+    Undead: {
+      'Freshly Risen': { Remains: [1, 2], GraveGoods: [0, 1] },
+      Weathered: { Remains: [1, 2], GraveGoods: [1, 2] },
+      Ancient: { Remains: [2, 3], GraveGoods: [1, 3] },
+      Primeval: { Remains: [2, 4], GraveGoods: [2, 4] },
     },
     // Celestial's tiers are keyed by Rank, not Size -- same mechanism,
     // different name for the same "which attribute drives amount"
@@ -1335,6 +1412,10 @@ export const DEFAULT_LOOT_TAXONOMY = {
     'Humanoid:Cleric/Devout': {
       fixed: [
         { pool: 'SimpleWeapon', count: 1 },
+        // Real content gap this used to have: no focus slot at all, so a
+        // Cleric/Devout could roll with no holy symbol. Fixed alongside
+        // the Undead rebuild (LootTab.jsx's DivineFocus pool case).
+        { pool: 'DivineFocus', count: 1 },
       ],
       rankScaled: [
         { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
@@ -1414,6 +1495,220 @@ export const DEFAULT_LOOT_TAXONOMY = {
       ranged: [
         { pool: 'Supplementary', min: 1, max: 2 },
         { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+
+    // Undead rebuild -- sentient Descents' Roles, namespaced
+    // 'Undead:<Role>' (same collision-avoidance convention as
+    // 'Humanoid:<Role>'/'Monstrosity:<Phenotype>' -- 'Ancient Sire' or
+    // 'Tomb Guardian' as a bare key could plausibly collide with a future
+    // type's own role someday). Rank = the shared Wealth field's LABEL,
+    // exactly like Humanoid -- one economic scale, reused rather than
+    // inventing a second one. goldByRank is identical across every Role
+    // below and matches wealthLevels' own goldMin/goldMax exactly, same
+    // reasoning as Humanoid's roles: gold comes from how rich/well-
+    // provisioned the undead is, not from its specific Role. Only the
+    // fixed slots and rankScaled bias differ, reflecting each Role's own
+    // flavor (a Fledgling is barely equipped; an Ancient Sire or Archlich
+    // leans hard into Luxury/high-end MagicItem; a Poltergeist carries
+    // almost nothing but junk and personal effects).
+    'Undead:Blood Caster': {
+      fixed: [
+        { pool: 'ArcaneFocus', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 1], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 2], Aristocratic: [2, 3] } },
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 1] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Fledgling': {
+      fixed: [
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 1] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Ancient Sire': {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 1], Poor: [0, 1], Modest: [1, 1], Comfortable: [1, 2], Wealthy: [2, 3], Aristocratic: [3, 5] } },
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 2], Aristocratic: [2, 2] } },
+        { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 1], Modest: [1, 1], Comfortable: [1, 2], Wealthy: [2, 3], Aristocratic: [3, 5] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 3 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Werewolf': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 2 },
+        { pool: 'Junk', min: 0, max: 1 },
+        { pool: 'PersonalEffects', min: 1, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Wererat': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+        { pool: 'Tool', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 3 },
+        { pool: 'Junk', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Weretiger': {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Werebear': {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Helmet', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 1], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 2], Aristocratic: [2, 2] } },
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Archlich': {
+      fixed: [
+        { pool: 'ArcaneFocus', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 1], Poor: [1, 1], Modest: [1, 2], Comfortable: [2, 2], Wealthy: [2, 3], Aristocratic: [4, 6] } },
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+        { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 1], Modest: [1, 1], Comfortable: [1, 2], Wealthy: [2, 3], Aristocratic: [3, 5] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 3 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Death Priest': {
+      fixed: [
+        { pool: 'DivineFocus', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 2], Aristocratic: [1, 3] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Vengeful Spirit': {
+      fixed: [],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 1], Modest: [0, 1], Comfortable: [1, 1], Wealthy: [1, 2], Aristocratic: [2, 3] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 0, max: 2 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Poltergeist': {
+      fixed: [],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [0, 1], Aristocratic: [1, 1] } },
+      ],
+      ranged: [
+        { pool: 'Junk', min: 1, max: 3 },
+        { pool: 'PersonalEffects', min: 0, max: 1 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Mummy Lord': {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 1], Poor: [0, 1], Modest: [1, 1], Comfortable: [1, 2], Wealthy: [2, 3], Aristocratic: [3, 5] } },
+        { pool: 'Luxury', rankRange: { Destitute: [0, 0], Poor: [0, 1], Modest: [1, 1], Comfortable: [1, 2], Wealthy: [2, 3], Aristocratic: [3, 5] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 3 },
+        { pool: 'PersonalEffects', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Tomb Guardian': {
+      fixed: [
+        { pool: 'MartialWeapon', count: 1 },
+        { pool: 'Helmet', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+        { pool: 'MagicWeapon', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 0], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 1] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 2 },
+      ],
+      goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
+    },
+    'Undead:Vengeance-Bound': {
+      fixed: [
+        { pool: 'SimpleWeapon', count: 1 },
+        { pool: 'Clothes', count: 1 },
+      ],
+      rankScaled: [
+        { pool: 'MagicItem', rankRange: { Destitute: [0, 0], Poor: [0, 0], Modest: [0, 1], Comfortable: [0, 1], Wealthy: [1, 1], Aristocratic: [1, 2] } },
+      ],
+      ranged: [
+        { pool: 'Supplementary', min: 1, max: 2 },
         { pool: 'PersonalEffects', min: 1, max: 2 },
       ],
       goldByRank: { Destitute: [0, 3], Poor: [1, 10], Modest: [5, 30], Comfortable: [15, 75], Wealthy: [50, 250], Aristocratic: [200, 1500] },
@@ -1537,6 +1832,12 @@ export const DEFAULT_LOOT_TAXONOMY = {
     Dragon: ['Very Rare+'],
     Fiend: ['Very Rare+'],
     Humanoid: ['Very Rare+'],
+    // Undead added with the rebuild -- sentient Descents now run the
+    // Loadout System with real MagicItem/MagicWeapon rankScaled entries
+    // (same shape as Humanoid), so the same "silently unreachable
+    // requiresFeature tag with no checkbox" gap would otherwise recur
+    // here too the moment any Very Rare+ item gets tagged Undead.
+    Undead: ['Very Rare+'],
   },
 
   // Dragon-only: when a DM checks "Has Horde," Horde Size picks one of
@@ -1569,6 +1870,7 @@ export const DEFAULT_LOOT_TAXONOMY = {
     thief: 'Bandit/Criminal',
     cultist: 'Cleric/Devout',
     priest: 'Cleric/Devout',
+    cleric: 'Cleric/Devout',
     acolyte: 'Cleric/Devout',
     guard: 'Guard/Soldier',
     knight: 'Guard/Soldier',

@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useData } from '../../contexts/DataContext'
 import { buildItemPool } from '../../utils/itemPool'
 import { formatPrice } from '../../utils/price'
 import { LOCATION_TYPES, VEHICLE_CATEGORIES } from '../../data/defaultLootTaxonomy'
-import { generateAiAssistedLoot, generateAiAssistedLootDiscretion, generateAiExplorationLoot, generateAiHordeContents, generateAiShopWares, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
+import { generateAiAssistedLoot, generateAiAssistedLootDiscretion, generateAiExplorationLoot, generateAiHordeContents, generateAiReskinLoot, generateAiShopWares, LOOT_AI_UNCONFIGURED } from '../../utils/lootAi'
 
 const POOL_OPTIONS = [
   { id: 'wares', label: 'Wares' },
@@ -242,13 +242,27 @@ const KIND_BUCKET_CONFIG = {
   // DM's own example: a Rooted plant's loot differs by Environment even
   // at the same Lineage), Origin is a lighter third dimension for the
   // occasional deeper flavor combination.
+  // Origin dimension removed per the DM's follow-up request -- Lineage +
+  // Environment are the only two narrowing dimensions now.
   Plant: {
     sizeAttr: 'plant-size',
     dimensions: [
       { key: 'lineage', attr: 'plant-lineage' },
       { key: 'environment', attr: 'plant-environment' },
-      { key: 'origin', attr: 'plant-origin' },
     ],
+  },
+  // Undead rebuild: this entry ONLY ever applies to the five non-sentient
+  // Descents (Zombie/Skeleton/Ghoul/Wight/Wraith) -- see isUndeadSentient
+  // in generateEncounter below, which excludes the six sentient Descents
+  // from isKindBucketed entirely so they route through the Loadout System
+  // (taxonomy.loadouts, 'Undead:<Role>' entries) instead, same mechanism
+  // Fey Person/Fiend Devil already use to split one Monster Type into two
+  // engines. sizeOrder lets Age gate power via lootTags.minRank, same
+  // role Celestial's Rank plays.
+  Undead: {
+    sizeAttr: 'undead-age',
+    sizeOrder: ['Freshly Risen', 'Weathered', 'Ancient', 'Primeval'],
+    dimensions: [{ key: 'descent', attr: 'undead-descent' }],
   },
 }
 
@@ -368,6 +382,21 @@ function resolveKindBucketConfig(monsterType, attributeValues) {
   const raw = KIND_BUCKET_CONFIG[monsterType]
   if (!raw) return null
   return raw.resolve ? raw.resolve(attributeValues) : raw
+}
+
+// Whether the Wealth field applies to THIS specific entity, not just its
+// Monster Type. Every other type still uses the flat taxonomy.
+// monsterTypeUsesWealth[type] === true boolean, same as always -- Undead
+// is the one exception (DM-directed): Wealth only applies to the six
+// sentient Descents (taxonomy.undeadSentientDescents), since a mindless
+// Zombie or animated Skeleton has no more "how rich am I" concept than a
+// wild Beast does. Reads attributeValues['undead-descent'] rather than
+// trusting the static per-type map for Undead specifically.
+function usesWealthFor(taxonomy, monsterType, attributeValues) {
+  if (monsterType === 'Undead') {
+    return (taxonomy.undeadSentientDescents || []).includes(attributeValues?.['undead-descent'])
+  }
+  return taxonomy.monsterTypeUsesWealth?.[monsterType] === true
 }
 
 // The Magical Junk Drawer's fixed Firestore doc ID -- see mockData.js.
@@ -578,6 +607,15 @@ function loadoutPoolFor(name, rawPool) {
       return rawPool.filter((i) => i.category === 'Focus' && i.name.startsWith('Arcane Focus'))
     case 'Clothes':
       return rawPool.filter((i) => i.tags?.includes('clothing'))
+    // Added alongside the Undead rebuild, fixing a real gap it exposed:
+    // 'Humanoid:Cleric/Devout' had no focus slot at all (a priest with no
+    // holy symbol), and the only focus pool that existed (ArcaneFocus)
+    // deliberately excludes Holy Symbol items by name prefix -- they were
+    // sitting in the catalog the whole time (category Focus, name starts
+    // "Holy Symbol"), just unreachable by anything. Same tag-free
+    // convention as ArcaneFocus/Clothes/Tool above.
+    case 'DivineFocus':
+      return rawPool.filter((i) => i.category === 'Focus' && i.name.startsWith('Holy Symbol'))
     // Added for Humanoid: the SRD's own Tool category (Thieves' Tools,
     // Smith's Tools, Musical Instruments, Alchemist's Supplies, etc) --
     // same "read the catalog's own pre-existing category, no new tagging
@@ -1442,6 +1480,7 @@ function ResultsPanel({ groups, onCopy, copied }) {
                     {item.guaranteed && <span className="ml-1.5 text-xs text-moss-dark italic">(always carries)</span>}
                     {item.flavor && <span className="ml-1.5 text-xs text-ink-soft/60 italic">(setting flavor)</span>}
                     {item.setting && <span className="ml-1.5 text-xs text-ink-soft/60 italic">(setting gear)</span>}
+                    {item.isReskin && <span className="ml-1.5 text-xs text-ink-soft/60 italic">{item.isNarrative ? '(narrative)' : `(reskin of ${item.reskinOf})`}</span>}
                     <span className="ml-2 text-xs text-ink-soft/60 italic">{item.category}</span>
                     {item.description && <p className="text-xs text-ink-soft/70 italic">{item.description}</p>}
                   </div>
@@ -1478,9 +1517,20 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
   const [hasHorde, setHasHorde] = useState(false)
   const [hordeSize, setHordeSize] = useState('')
 
-  const usesWealth = taxonomy.monsterTypeUsesWealth?.[monsterType] === true
+  const usesWealth = usesWealthFor(taxonomy, monsterType, attributeValues)
   const isKindBucketed = !!taxonomy.sizeLootTable?.[monsterType]
   const availableFeatures = taxonomy.monsterTypeFeatures?.[monsterType] || []
+
+  // Undead's Wealth visibility is driven by attributeValues (Descent),
+  // which changes AFTER the type is picked -- unlike every other
+  // wealth-using type, there's no single moment where it's safe to seed
+  // wealthId once and forget it. Sync it live: default it in the moment
+  // Wealth turns on (e.g. the DM just picked a sentient Descent), clear
+  // it the moment Wealth turns off (picked a non-sentient Descent, or
+  // switched Monster Type away from Undead entirely).
+  useEffect(() => {
+    setWealthId((prev) => (usesWealth ? prev || taxonomy.wealthLevels[0]?.id || '' : ''))
+  }, [usesWealth, taxonomy.wealthLevels])
 
   const typeAttributes = useMemo(() => taxonomy.monsterTypeAttributes?.[monsterType] || [], [taxonomy.monsterTypeAttributes, monsterType])
   const settingRule = taxonomy.settingRules?.[setting]
@@ -1517,8 +1567,11 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
     setHordeSize('')
     // Wealth only shows for types where it's toggled on -- reset it
     // cleanly on type change rather than carrying over a stale pick from
-    // a wealth-using type onto one that doesn't use it at all.
-    const newUsesWealth = taxonomy.monsterTypeUsesWealth?.[value] === true
+    // a wealth-using type onto one that doesn't use it at all. Undead's
+    // fresh attributeValues ({}) always evaluates to "no Descent picked
+    // yet" here, so this correctly starts Undead with Wealth hidden --
+    // the useEffect above takes over once a Descent is actually chosen.
+    const newUsesWealth = usesWealthFor(taxonomy, value, value === 'Fey' ? { 'fey-is-monster': 'Person' } : {})
     setWealthId(newUsesWealth ? taxonomy.wealthLevels[0]?.id || '' : '')
   }
 
@@ -1781,7 +1834,16 @@ export default function LootTab() {
         // see fiend-lineage in defaultLootTaxonomy.js) uses the ordinary
         // kind-bucketed engine, same as Fey's Monster path.
         const isFiendDevil = e.monsterType === 'Fiend' && e.attributeValues?.['fiend-lineage'] === 'Devil (Lawful)'
-        const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType] && !isFeyPerson && !isFiendDevil
+        // Undead's third split of the same "one Monster Type, two
+        // engines" pattern -- sentient Descent routes through the Loadout
+        // System (below, right after Humanoid), non-sentient Descent uses
+        // the ordinary kind-bucketed engine (KIND_BUCKET_CONFIG.Undead,
+        // sizeLootTable.Undead keyed by Age). No Descent picked yet reads
+        // as false here, same as Fey/Fiend before their own controlling
+        // field is set -- falls through to the flat draw fallback until
+        // the DM actually picks one.
+        const isUndeadSentient = e.monsterType === 'Undead' && (lootTaxonomy.undeadSentientDescents || []).includes(e.attributeValues?.['undead-descent'])
+        const isKindBucketed = !!lootTaxonomy.sizeLootTable?.[e.monsterType] && !isFeyPerson && !isFiendDevil && !isUndeadSentient
         const guaranteed = resolveGuaranteedItems(e.guaranteedPatterns, e.pools, sources, e.includeVehicles)
         const attrTags = Object.values(e.attributeValues || {}).filter(Boolean)
         const tags = [e.monsterName || e.monsterType, ...attrTags, e.setting, e.notes].filter(Boolean)
@@ -1940,6 +2002,32 @@ export default function LootTab() {
           }
         }
 
+        // Undead's sentient Descents -- the Loadout System again, same
+        // mechanism as Humanoid immediately above: Rank comes from the
+        // shared Wealth field's LABEL (not id), Role comes straight from
+        // undead-role, and both are namespaced 'Undead:<Role>' (see
+        // taxonomy.loadouts) to avoid colliding with any other type's
+        // bare role names, same reasoning as Humanoid's own namespacing.
+        // Descent itself rides along as dimensionKey/dimensionValue so an
+        // item can optionally narrow further within a Role (e.g. a
+        // Vampire-flavored magic item vs a generic one both eligible for
+        // Blood Caster) -- same job Subrole plays for Humanoid and Giant
+        // Kind plays for Giant.
+        if (!mainGroup && isUndeadSentient) {
+          const role = e.attributeValues?.['undead-role']
+          const w = wealthLevel(e.wealthId)
+          const rank = w?.label
+          const descent = e.attributeValues?.['undead-descent']
+          if (role && rank) {
+            const { items: rolled, gold } = generateLoadoutLoot({
+              monsterType: e.monsterType, role: `Undead:${role}`, rank,
+              taxonomy: lootTaxonomy, sources, excludedPatterns: e.excludedPatterns,
+              dimensionKey: 'descent', dimensionValue: descent,
+            })
+            mainGroup = { label, items: [...guaranteed, ...rolled], gold }
+          }
+        }
+
         // Monstrosity -- combines the Loadout System with Beast's
         // kind-bucketed "each field is its own container" approach, per
         // the DM's own framing. Phenotype picks the loadout profile (the
@@ -1976,7 +2064,8 @@ export default function LootTab() {
         // one of them anatomically wrong": if nothing above already
         // produced a result (so this is one of the types with no
         // kind-bucketed/Loadout system of its own -- Monstrosity, Ooze,
-        // Plant, Undead) AND the DM picked a real catalog monster from the
+        // Plant, and Undead with no Descent picked yet (or a sentient
+        // Descent missing Role/Wealth) AND the DM picked a real catalog monster from the
         // Specific Monster dropdown (not just typed freeform text -- that
         // still falls to the flat draw below, same as before), let the AI
         // pick items with real discretion instead of the flat draw's
@@ -2006,7 +2095,7 @@ export default function LootTab() {
 
         if (!mainGroup) {
           const w = wealthLevel(e.wealthId)
-          const usesWealth = lootTaxonomy.monsterTypeUsesWealth?.[e.monsterType] === true
+          const usesWealth = usesWealthFor(lootTaxonomy, e.monsterType, e.attributeValues)
           const fixedCount =
             lootTaxonomy.monsterTypeFixedItemCount?.[e.monsterType] ||
             lootTaxonomy.monsterTypeFixedItemCount?.default || { minItems: 1, maxItems: 1 }
@@ -2044,6 +2133,78 @@ export default function LootTab() {
           })
           if (settingItems.length > 0) {
             mainGroup.items = [...mainGroup.items, ...settingItems.map((i) => ({ ...i, setting: true }))]
+          }
+        }
+
+        // Notes-driven reskins -- exception #5 to lootAi.js's STANDING
+        // RULE (see that file's comment block for the full reasoning).
+        // Runs AFTER mainGroup is fully resolved, regardless of which
+        // path produced it (kind-bucketed/Loadout/flat/AI-assist/
+        // discretion all reach here the same way), and ONLY when Notes
+        // has real text -- an empty Notes box means this never fires,
+        // full stop. Real fix for the DM's own "orc priestess of Uthgar
+        // feels generic" complaint: up to ~10% (capped at 3) of the
+        // entity's items get swapped for a themed reskin (same
+        // mechanical identity -- category/price/tags -- new name and
+        // description) or a small purely-narrative addition, and every
+        // result gets saved into "AI-Reskinned Relics" with the SAME tag
+        // nuance the original item carried, so it re-enters the pool for
+        // future rolls too.
+        if (mainGroup && e.notes && e.notes.trim() && mainGroup.items.length > 0) {
+          const candidates = mainGroup.items.map((i) => ({
+            name: i.name, category: i.category, priceGp: i.priceGp, description: i.description,
+          }))
+          try {
+            const { reskins, narrativeItems } = await generateAiReskinLoot({
+              monsterType: e.monsterType, monsterName: e.monsterName, notes: e.notes, candidates,
+            })
+            const persistRows = []
+            if (reskins.length > 0) {
+              const itemsCopy = [...mainGroup.items]
+              for (const r of reskins) {
+                const original = itemsCopy[r.index]
+                if (!original) continue
+                // Source-sourced items carry a wrapped display category
+                // ("Source: X (Weapon)") -- see itemPool.js's
+                // sourceItemsForPool -- unwrap it before re-persisting,
+                // otherwise it'd double-wrap the next time this reskin
+                // itself gets pulled into a pool.
+                const plainCategory = String(original.category || '').replace(/^Source: .*? \((.*)\)$/, '$1') || 'Misc'
+                itemsCopy[r.index] = {
+                  ...original,
+                  name: r.newName,
+                  description: r.newDescription,
+                  category: plainCategory,
+                  isReskin: true,
+                  reskinOf: original.name,
+                }
+                persistRows.push({
+                  name: r.newName, description: r.newDescription, priceGp: original.priceGp,
+                  category: plainCategory, tags: original.tags || [], lootTags: original.lootTags || null,
+                  monsterTypeTags: original.monsterTypeTags?.length ? original.monsterTypeTags : [e.monsterType],
+                })
+              }
+              mainGroup.items = itemsCopy
+            }
+            if (narrativeItems.length > 0) {
+              const newFlavor = narrativeItems.map((n) => ({
+                name: n.newName, description: n.newDescription, priceGp: n.priceGp,
+                category: 'Personal Effects', isReskin: true, isNarrative: true,
+                monsterTypeTags: [e.monsterType], tags: [], lootTags: null,
+              }))
+              mainGroup.items = [...mainGroup.items, ...newFlavor]
+              persistRows.push(...newFlavor.map((n) => ({
+                name: n.name, description: n.description, priceGp: n.priceGp, category: n.category,
+                tags: [], lootTags: null, monsterTypeTags: [e.monsterType],
+              })))
+            }
+            if (persistRows.length > 0) await persistAiReskinLoot(persistRows)
+          } catch (err) {
+            // Non-fatal by design, same as every other AI mode on this
+            // site: the entity's REAL loot already resolved above, a
+            // reskin failure just means it stays generic instead of
+            // themed rather than blocking the roll entirely.
+            if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI reskin pass failed, skipping:', err)
           }
         }
 
@@ -2161,6 +2322,47 @@ export default function LootTab() {
     await saveSource({
       id: existing?.id,
       name: 'AI-Discovered Finds',
+      wares: [...existingWares, ...freshRows],
+      menu: existing?.menu || [],
+      services: existing?.services || [],
+      createdAt: existing?.createdAt || Date.now(),
+    })
+    return freshRows.length
+  }
+
+  // Persists notes-driven reskins/narrative items (exception #5, see
+  // lootAi.js) into their own dedicated source, same "AI-Discovered
+  // Finds" pattern persistAiDiscoveredItems already established for
+  // Exploration -- except these rows already carry the FULL tag nuance
+  // copied straight from whatever real catalog item they reskinned (see
+  // the reskin-building code in generateEncounter below), not a
+  // conservative empty-array guess, since a reskin's whole point is to be
+  // mechanically identical to something the tag-audit process already
+  // covered.
+  async function persistAiReskinLoot(rows) {
+    if (!rows || rows.length === 0) return 0
+    const existing = sources.find((s) => s.name === 'AI-Reskinned Relics')
+    const existingWares = existing?.wares || []
+    const existingNames = new Set(existingWares.map((w) => w.name.toLowerCase()))
+    const freshRows = rows
+      .filter((r) => !existingNames.has(r.name.toLowerCase()))
+      .map((r, idx) => ({
+        rowId: `row-reskin-${Date.now()}-${idx}`,
+        name: r.name,
+        basePrice: r.priceGp,
+        description: r.description,
+        category: r.category || 'Misc',
+        monsterTypeTags: r.monsterTypeTags || [],
+        tags: r.tags || [],
+        lootTags: r.lootTags || null,
+        priceOverride: '',
+        quantity: 1,
+      }))
+    if (freshRows.length === 0) return 0
+
+    await saveSource({
+      id: existing?.id,
+      name: 'AI-Reskinned Relics',
       wares: [...existingWares, ...freshRows],
       menu: existing?.menu || [],
       services: existing?.services || [],

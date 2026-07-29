@@ -44,6 +44,31 @@
 //      from the world you've already built"), but the DM asked for parity
 //      with Shop instead -- noted here for the record, not treated as a
 //      mistake to walk back.
+//   5. generateAiReskinLoot (added this round, DM-directed) -- a
+//      DELIBERATELY NARROW fifth exception, NOT the same full-invention
+//      allowance as #2-4 above. Triggered by an actual DM complaint: an
+//      "Orc Priestess of Uthgar" generated via regular creature loot came
+//      back generic and unmemorable even with Notes filled in, because
+//      regular loot is select-only by this very rule. The DM's own
+//      example: she might not carry a plain Shortsword, but a "Ceremonial
+//      Cudgel of Uthgar" that mechanically FUNCTIONS AS a Shortsword --
+//      same category/price/tags, just re-flavored. Hard constraints the
+//      DM set, all enforced in code (not just prompt text), same "don't
+//      trust compliance alone" reasoning as every other cap in this file:
+//        - Only runs when Notes is non-empty. No notes, no reskins, ever.
+//        - Capped at ~10% of the entity's total resolved item count (see
+//          reskinBudget in generateAiReskinLoot), minimum 1 so a short
+//          notes-bearing entity still gets exactly one.
+//        - Every result must be either a RESKIN (a real, already-rolled
+//          item, renamed/re-described but mechanically byte-for-byte
+//          identical -- same category/priceGp/tags/lootTags) or a pure
+//          NARRATIVE item (flavor + a gp value, no mechanical tags
+//          whatsoever) -- never a new mechanical effect, never a
+//          different price band, never a different category.
+//      Every result gets persisted into the catalog (see
+//      persistAiReskinLoot in LootTab.jsx) with the SAME tag nuance the
+//      rest of the catalog carries, so a reskin re-enters the pool for
+//      future rolls too, not just this one moment.
 
 function buildPrompt({ monsterType, monsterName, notes, tierLabel, countsByKind, eligibleItems, attributeSummary, needsInference, tierOptions, balanced }) {
   const poolText = eligibleItems
@@ -1040,6 +1065,106 @@ export async function generateAiAssistedLoot({
     if (result) return normalizeResult(result, validKinds, { maxByKind: resolveMaxByKind(result), slotByName, originByName })
   } catch (err) {
     console.error('Claude loot assist failed:', err)
+    lastError = err
+  }
+  if (lastError) throw lastError
+  throw new Error(LOOT_AI_UNCONFIGURED)
+}
+
+// --- Notes-driven reskins: a FIFTH, deliberately NARROW exception to the
+// file-top STANDING RULE -- see exception #5 in that comment block for the
+// full reasoning/constraints. Runs AFTER an entity's normal loot (kind-
+// bucketed, Loadout System, or flat draw -- doesn't matter which) has
+// already been resolved, and only ever touches a small slice of it.
+
+// Claude's own scale, capped hard: never more than 3 reskins/narrative
+// items on a single entity regardless of how large its item count is --
+// even a big Aristocratic haul with lots of Notes text shouldn't turn into
+// "everything is a unique snowflake."
+const RESKIN_MAX = 3
+
+function reskinBudget(itemCount) {
+  if (itemCount <= 0) return 0
+  return Math.max(1, Math.min(RESKIN_MAX, Math.round(itemCount * 0.1)))
+}
+
+function buildReskinPrompt({ monsterType, monsterName, notes, candidates, budget }) {
+  const poolText = candidates
+    .map((i, idx) => `${idx}. ${i.name} | ${i.category || 'Misc'} | ${i.priceGp}gp | ${i.description || ''}`)
+    .join('\n')
+  return `
+You are helping a Dungeon Master add small, memorable narrative flourishes to a D&D creature's loot, based on their freeform notes. This is a NARROW task -- you are NOT generating this creature's whole loot list (that already happened separately), you are only deciding whether up to ${budget} of the items below deserve a themed reskin, or whether one small purely-narrative item should be added.
+
+CREATURE CONTEXT:
+- Monster Type: ${monsterType}
+- Specific Monster (if given): ${monsterName || '(none)'}
+- DM's notes: ${notes}
+
+THIS CREATURE'S ALREADY-ROLLED ITEMS (0-indexed -- reskin candidates ONLY come from this exact list):
+${poolText || '(none)'}
+
+TASK: produce AT MOST ${budget} entries, each one of exactly two kinds:
+1. "reskin" -- pick one item from the numbered list above by its index and give it a new, evocative name and one-sentence description that reflects the DM's notes, WITHOUT changing what it mechanically is. The DM's own example: a Shortsword doesn't have to stay "Shortsword" for an orc priestess of Uthgar -- it could become a "Ceremonial Cudgel of Uthgar" that functions exactly like a Shortsword (same category, same price, same everything mechanical -- purely a rename + re-description). Only reskin an item if the notes genuinely suggest something more specific/thematic than the generic catalog name -- do not reskin something that's already perfectly fitting as-is.
+2. "narrative" -- a brand-new SMALL, flavorful, non-mechanical item implied by the notes but not covered by anything already rolled (a keepsake, a personal token, a small memento) -- gp value only (roughly 1-30gp, this is flavor, not treasure), no mechanical properties whatsoever.
+
+It is completely fine, and often correct, to return FEWER than ${budget} entries (including zero) if the notes don't genuinely call for any -- do not force reskins/narrative items that don't fit.
+
+Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
+{ "entries": [ { "type": "reskin", "index": number, "newName": string, "newDescription": string } | { "type": "narrative", "newName": string, "newDescription": string, "priceGp": number } ] }
+`.trim()
+}
+
+function normalizeReskinResult(raw, candidates, budget) {
+  const entries = Array.isArray(raw.entries) ? raw.entries : []
+  const usedIndexes = new Set()
+  const reskins = []
+  const narrativeItems = []
+  for (const e of entries) {
+    if (reskins.length + narrativeItems.length >= budget) break
+    if (e.type === 'reskin') {
+      const idx = Number(e.index)
+      if (!Number.isInteger(idx) || idx < 0 || idx >= candidates.length || usedIndexes.has(idx)) continue
+      const newName = String(e.newName || '').trim()
+      const newDescription = String(e.newDescription || '').trim()
+      if (!newName) continue
+      usedIndexes.add(idx)
+      reskins.push({ index: idx, original: candidates[idx], newName, newDescription })
+    } else if (e.type === 'narrative') {
+      const newName = String(e.newName || '').trim()
+      const newDescription = String(e.newDescription || '').trim()
+      if (!newName) continue
+      const priceGp = Math.max(0, Math.min(30, Number(e.priceGp) || 1))
+      narrativeItems.push({ newName, newDescription, priceGp })
+    }
+  }
+  return { reskins, narrativeItems }
+}
+
+// candidates: the entity's own already-resolved items, each as
+// {name, category, priceGp, description} (see LootTab.jsx's dispatch for
+// exactly what gets passed). Returns { reskins, narrativeItems } -- see
+// normalizeReskinResult -- caller (LootTab.jsx) is responsible for both
+// applying these to the entity's item list AND persisting them into the
+// catalog (see persistAiReskinLoot).
+export async function generateAiReskinLoot({ monsterType, monsterName, notes, candidates }) {
+  const budget = reskinBudget(candidates.length)
+  if (budget === 0 || !notes || !notes.trim()) return { reskins: [], narrativeItems: [] }
+
+  const prompt = buildReskinPrompt({ monsterType, monsterName, notes, candidates, budget })
+
+  let lastError = null
+  try {
+    const result = await callGemini(prompt)
+    if (result) return normalizeReskinResult(result, candidates, budget)
+  } catch (err) {
+    console.error('Gemini reskin generation failed, trying fallback:', err)
+    lastError = err
+  }
+  try {
+    const result = await callClaude(prompt)
+    if (result) return normalizeReskinResult(result, candidates, budget)
+  } catch (err) {
+    console.error('Claude reskin generation failed:', err)
     lastError = err
   }
   if (lastError) throw lastError
