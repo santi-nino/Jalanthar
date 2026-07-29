@@ -490,46 +490,190 @@ export async function generateAiAssistedLootDiscretion({ monsterType, monsterNam
 // tells the model how Reputation should shift both dimensions from
 // there, since "how much fancier is Prestigious than Modest" isn't a
 // clean enough number to hardcode.
+//
+// v3.12: bumped substantially per the DM's own count check (a mobile
+// magic shop came back with "too few items, all of them named magic
+// items with rarities" -- unusable at the table and nothing like a real
+// shop's shelf). Two separate problems, two separate fixes:
+// 1. Sheer count was too low across the board -- Road Merchant (the
+//    smallest Scale) now targets 20-30 wares, Guild Hall (the biggest)
+//    targets 85-100, everything else stepped between. A shop should
+//    always read as "a lot of stuff," even the smallest roadside table.
+// 2. Nothing enforced a mundane/magic BALANCE, so the model defaulted to
+//    "shop = pile of magic items," which is backwards -- most of a real
+//    shop's shelf space is boring: rope, rations, tools, trade goods,
+//    basic weapons/armor, alchemical odds and ends. See MAGIC_SHARE below
+//    and the prompt's explicit ratio instruction, plus a hard code-level
+//    cap in normalizeShopResult (same "advisory prompt text alone isn't
+//    trustworthy enough" reasoning as every other AI mode on this site).
 const SCALE_COUNT_RANGE = {
-  'Road Merchant': [4, 8],
-  'Market Stall': [6, 12],
-  'Modest Shop': [12, 24],
-  'Large Emporium': [25, 45],
-  'Guild Hall': [35, 60],
+  'Road Merchant': [20, 30],
+  'Market Stall': [30, 45],
+  'Modest Shop': [45, 65],
+  'Large Emporium': [65, 85],
+  'Guild Hall': [85, 100],
 }
 
-function buildShopPrompt({ shopType, scale, reputation, cuisine, clientele, atmosphere, notes, eligibleItems, countRange }) {
+// --- Wealth-driven magic item rarity system (v3.13, DM-directed) ----------
+// The DM's own worked example (destitute: 5% common / cap 3 / avg 0.5;
+// modest: 25% common + 10% uncommon / range 3-7 / avg 4) was explicitly
+// given as an illustration of the SHAPE they wanted, not literal numbers
+// to use -- "COME UP WITH YOUR OWN NUMBERS TO PROPERLY BALANCE THIS."
+// The two things the example actually pins down: (1) Wealth should set
+// both a magic item COUNT band (with a real average, not just a min/max)
+// AND a per-rarity CHANCE distribution that shifts with Wealth, and
+// (2) it should "feel like a bell curve" -- top rarities should stay
+// genuinely rare even at the richest tier, not just "more likely than
+// before."
+//
+// Reuses the same 6 wealthLevels ids everywhere else on the site
+// (destitute/poor/modest/comfortable/wealthy/aristocratic -- see
+// defaultLootTaxonomy.js) so a single Wealth field means the same thing
+// for a shop as it does for a body's loot. countRange/preferred feed
+// weightedRandInt (below) the same "mostly a tight preferred band,
+// sometimes the wider full range" logic already used throughout the
+// Loadout System, which is what gives the roll its bell-curve feel
+// instead of a flat uniform draw. rarityWeights are a full probability
+// distribution (always sums to 1) rolled ONCE PER magic item slot -- so
+// even Aristocratic's richest shops still only pull Legendary about 3% of
+// the time per slot, keeping it a real event rather than a guarantee.
+// Every tier's weights strictly shift mass rightward (less Common, more
+// of everything above it) as Wealth increases, which is what produces the
+// escalating-but-still-rare-at-the-top feel the DM asked for.
+const WEALTH_MAGIC_PROFILE = {
+  destitute: {
+    countRange: [0, 2], preferred: [0, 1],
+    rarityWeights: { Common: 0.95, Uncommon: 0.05 },
+  },
+  poor: {
+    countRange: [0, 3], preferred: [1, 2],
+    rarityWeights: { Common: 0.82, Uncommon: 0.16, Rare: 0.02 },
+  },
+  modest: {
+    countRange: [1, 4], preferred: [2, 3],
+    rarityWeights: { Common: 0.65, Uncommon: 0.28, Rare: 0.07 },
+  },
+  comfortable: {
+    countRange: [2, 6], preferred: [3, 5],
+    rarityWeights: { Common: 0.50, Uncommon: 0.33, Rare: 0.15, 'Very Rare': 0.02 },
+  },
+  wealthy: {
+    countRange: [4, 9], preferred: [5, 7],
+    rarityWeights: { Common: 0.35, Uncommon: 0.35, Rare: 0.22, 'Very Rare': 0.07, Legendary: 0.01 },
+  },
+  aristocratic: {
+    countRange: [6, 14], preferred: [8, 12],
+    rarityWeights: { Common: 0.22, Uncommon: 0.32, Rare: 0.28, 'Very Rare': 0.15, Legendary: 0.03 },
+  },
+}
+
+const RARITY_ORDER = ['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary']
+
+function randomIntLocal(min, max) {
+  const lo = Math.min(min, max)
+  const hi = Math.max(min, max)
+  return Math.round(lo + Math.random() * (hi - lo))
+}
+
+// Same "60% of the time draw from the tight preferred band, 40% of the
+// time draw from the full range" shape as LootTab.jsx's weightedRandInt --
+// duplicated locally rather than imported since this module is meant to
+// stay a leaf (LootTab.jsx imports FROM lootAi.js, not the other way).
+function weightedRandIntLocal(min, max, preferMin, preferMax) {
+  if (preferMin != null && preferMax != null && Math.random() < 0.6) {
+    return randomIntLocal(preferMin, preferMax)
+  }
+  return randomIntLocal(min, max)
+}
+
+function rollRarity(rarityWeights) {
+  const roll = Math.random()
+  let cumulative = 0
+  for (const rarity of RARITY_ORDER) {
+    const weight = rarityWeights[rarity]
+    if (!weight) continue
+    cumulative += weight
+    if (roll < cumulative) return rarity
+  }
+  // Floating point leftover (weights should sum to ~1) -- fall back to
+  // the richest rarity this tier actually offers.
+  for (let i = RARITY_ORDER.length - 1; i >= 0; i--) {
+    if (rarityWeights[RARITY_ORDER[i]]) return RARITY_ORDER[i]
+  }
+  return 'Common'
+}
+
+// Rolls the exact magic-item plan for this shop ONCE, up front, so the
+// prompt can hand the model a hard, specific target ("exactly 2 Common, 1
+// Uncommon") instead of a vague ceiling -- same "don't trust prompt-only
+// compliance" reasoning as everywhere else in this file, just applied
+// before generation instead of only after via normalizeShopResult.
+function rollMagicPlan(wealthId) {
+  const profile = WEALTH_MAGIC_PROFILE[wealthId] || WEALTH_MAGIC_PROFILE.modest
+  const [min, max] = profile.countRange
+  const [preferMin, preferMax] = profile.preferred
+  const magicCount = weightedRandIntLocal(min, max, preferMin, preferMax)
+  const breakdown = {}
+  for (let i = 0; i < magicCount; i++) {
+    const rarity = rollRarity(profile.rarityWeights)
+    breakdown[rarity] = (breakdown[rarity] || 0) + 1
+  }
+  return { magicCount, breakdown }
+}
+
+function buildShopPrompt({ shopType, scale, reputation, wealth, cuisine, clientele, atmosphere, notes, eligibleItems, countRange, magicPlan }) {
   const poolText = eligibleItems.map((i) => `- ${i.name} | ${i.priceGp}gp | ${i.category || i.kind || 'Misc'} | ${i.description}`).join('\n')
   const tavernFields = (cuisine || clientele || atmosphere)
     ? `\n- Cuisine Style: ${cuisine || '(unspecified)'}\n- Clientele: ${clientele || '(unspecified)'}\n- Atmosphere: ${atmosphere || '(unspecified)'}`
     : ''
+  const breakdownText = RARITY_ORDER
+    .map((r) => [r, magicPlan.breakdown[r] || 0])
+    .filter(([, n]) => n > 0)
+    .map(([r, n]) => `${n} ${r}`)
+    .join(', ') || 'none -- this shop should have ZERO genuine magic items'
   return `
 You are helping a Dungeon Master stock an entire D&D 5.5e shop with believable wares, working within real game mechanics but otherwise using your own judgment and creativity -- this is NOT a strict select-only task like other loot generation on this site. Build a fully functioning, internally consistent shop within the parameters below.
 
 SHOP:
 - Type: ${shopType || '(unspecified)'}
 - Scale: ${scale || '(unspecified)'}
-- Reputation: ${reputation || '(unspecified)'}${tavernFields}
+- Reputation: ${reputation || '(unspecified)'}
+- Wealth: ${wealth || '(unspecified)'}${tavernFields}
 - DM's notes: ${notes || '(none)'}
 
-TARGET SIZE: roughly ${countRange[0]}-${countRange[1]} distinct wares (a shop should have MUCH more stock than a single creature's body loot -- do not undershoot this). Reputation shifts this from the baseline: Shady leans toward the low end of the range (and toward cheap/illicit goods); Prestigious leans toward the high end (and toward higher-value, rarer, better-made goods). Reputation should ALSO shift the average price/rarity of what's offered -- a Prestigious emporium's median item should read as noticeably nicer than a Shady stall's, independent of count.
+TARGET SIZE: roughly ${countRange[0]}-${countRange[1]} distinct wares. A real shop's shelf is FULL -- even the smallest roadside table should read as genuinely well-stocked, not sparse. Reputation shifts this from the baseline: Shady leans toward the low end of the range (and toward cheap/illicit goods); Prestigious leans toward the high end (and toward higher-value, better-made goods). Reputation should ALSO shift the average price/quality of the MUNDANE goods offered -- a Prestigious emporium's median item should read as noticeably nicer than a Shady stall's, independent of count.
+
+MAGIC ITEM TARGET -- this is a HARD requirement, not a suggestion: this shop's Wealth (${wealth || 'unspecified'}) has already been rolled and must produce EXACTLY this magic item mix, no more, no fewer: ${breakdownText}. Every other item in the shop (the large majority of the stock) must be ORDINARY, NON-MAGICAL goods -- basic adventuring gear, trade tools, raw materials, food/drink, clothing, mundane weapons/armor, alchemical consumables (acid, oil, basic poison), containers, and the like. Do NOT add any additional genuine magic items beyond the exact mix above, and do not fall short of it either -- hit it exactly. A rarer magic item (Rare/Very Rare/Legendary) should feel like a genuine event when the mix includes one -- give it real narrative weight (why does THIS shop have it, is it guarded/displayed differently, is it priced accordingly) rather than shelving it like everything else.
+
+BASE INVENTORY -- a shop's Type has a consistent, recognizable core of goods that shows up at EVERY Scale, not just the big ones: an Apothecary sells glass vials, dried herbs, and basic tinctures whether it's a Road Merchant's cart or a Guild Hall, a Blacksmith sells nails and horseshoes and basic tools alongside weapons at every size. Bigger Scale means MORE of that same core (more vials, more variety of herbs) PLUS additional higher-tier/specialty goods layered on top -- it does NOT mean swapping the fundamentals out for something unrecognizable. Build the shop's base inventory first, then scale it up.
 
 EXISTING DATABASE ITEMS (real 5.5e SRD items and Magical Junk Drawer items -- use these directly by exact name/price/description wherever they fit this shop; they're your anchors for what's mechanically real):
 ${poolText || '(none particularly relevant -- invent within genuine 5.5e parameters instead)'}
 
 TASK:
 1. Populate the shop's stock so it reads like a real, coherent business of this Type/Scale/Reputation -- a Blacksmith sells weapons/armor/tools, not potions; a Fine Dining establishment's stock is food/drink/service items, not adventuring gear.
-2. Use EXISTING DATABASE ITEMS above directly wherever they fit -- exact name, price, and description, unchanged.
-3. Where the database doesn't cover something this shop would obviously carry, invent it -- genuinely new items are expected and welcome here, not just a rare exception. Every invented item must still be MECHANICALLY REAL within 5.5e's own logic: if you invent a magic item, its effect must be a plausible, appropriately-costed 5.5e-style effect (comparable to real Common/Uncommon/Rare/Very Rare magic items at that price point), not a vague or overpowered ability. Mundane goods (food, drink, trade goods, tools, trinkets) just need a sensible price and one-line description.
+2. Use EXISTING DATABASE ITEMS above directly wherever they fit -- exact name, price, and description, unchanged. Most of the mundane goods should come from here or be invented in the same plain, unglamorous style.
+3. Where the database doesn't cover something this shop would obviously carry, invent it -- genuinely new items are expected and welcome here, not just a rare exception, ESPECIALLY for mundane goods (a shop's core inventory is mostly things too ordinary to be individually catalogued -- rope, nails, jars, herbs, cheap tools). Every invented MAGIC item must still be MECHANICALLY REAL within 5.5e's own logic: its effect must be a plausible, appropriately-costed 5.5e-style effect matching the rarity it's assigned (Common/Uncommon effects are minor conveniences; Rare/Very Rare/Legendary effects are genuinely powerful and should be priced and described accordingly), not a vague or overpowered ability for its stated rarity.
 4. Assign every item a "category" for display grouping -- use natural shop-appropriate categories (e.g. "Weapons", "Armor", "Potions & Alchemy", "Magic Items", "Tools & Trade Goods", "Food & Drink", "Trinkets & Curios", "Clothing & Accessories", "Services") -- pick whichever subset actually fits this shop's Type, don't force categories that don't belong.
-5. Hit roughly the target size above, shaped by Reputation as described. Do not pad with near-duplicate items just to hit the number.
+5. Set "isMagic": true ONLY for items with a genuine mechanical enchantment (a real magic item), false for everything else (mundane gear, tools, consumables, trade goods, even if flavorful or expensive). For every isMagic:true item, set "rarity" to exactly one of "Common", "Uncommon", "Rare", "Very Rare", "Legendary", matching the MAGIC ITEM TARGET mix above. For every isMagic:false item, set "rarity" to "" (empty string).
+6. Hit roughly the target size above, shaped by Reputation as described, and hit the MAGIC ITEM TARGET exactly. Do not pad with near-duplicate items just to hit the number, but DO include the kind of mundane variety a real shop shelf has (don't stop at 5 kinds of rope-and-rations filler -- a Blacksmith's shelf has dozens of distinct, specific items: several weapon types, armor pieces, tools, raw materials, repair supplies).
 
 Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
-{ "items": [ { "name": string, "priceGp": number, "description": string, "category": string, "isNew": boolean } ] }
+{ "items": [ { "name": string, "priceGp": number, "description": string, "category": string, "isMagic": boolean, "rarity": string, "isNew": boolean } ] }
 `.trim()
 }
 
-function normalizeShopResult(raw, maxTotal) {
+// magicPlan: hard code-level enforcement of the rolled per-rarity mix,
+// same "advisory prompt text alone isn't trustworthy enough" reasoning as
+// every other count/cap in this file (regular loot's per-kind cap,
+// discretion's maxTotal, the invented-item cap). Mundane items are never
+// trimmed; only excess magic items -- beyond what the plan allows FOR
+// THAT SPECIFIC RARITY -- get dropped, keeping the first ones the model
+// listed per rarity (assumed roughly priority order) and cutting from the
+// tail. A magic item the model marked isMagic:true but with an unrecognized
+// rarity string is treated as excess and dropped rather than silently
+// let through uncapped.
+function normalizeShopResult(raw, maxTotal, magicPlan) {
   const items = Array.isArray(raw.items)
     ? raw.items
         .map((r) => ({
@@ -537,26 +681,85 @@ function normalizeShopResult(raw, maxTotal) {
           priceGp: Number(r.priceGp) || 0,
           description: String(r.description || '').trim(),
           category: String(r.category || 'Misc').trim() || 'Misc',
+          isMagic: !!r.isMagic,
+          rarity: r.isMagic ? String(r.rarity || '').trim() : '',
           isNew: !!r.isNew,
         }))
         .filter((r) => r.name)
     : []
   const seenNames = new Set()
   const filtered = []
+  const magicCountByRarity = {}
+  const breakdown = magicPlan?.breakdown || {}
   for (const r of items) {
     const nameKey = r.name.toLowerCase()
     if (seenNames.has(nameKey)) continue
     if (maxTotal != null && filtered.length >= maxTotal) break
+    if (r.isMagic) {
+      const allowed = RARITY_ORDER.includes(r.rarity) ? (breakdown[r.rarity] || 0) : 0
+      const soFar = magicCountByRarity[r.rarity] || 0
+      if (soFar >= allowed) continue
+      magicCountByRarity[r.rarity] = soFar + 1
+    }
     seenNames.add(nameKey)
     filtered.push(r)
   }
   return filtered
 }
 
-export async function generateAiShopWares({ shopType, scale, reputation, cuisine, clientele, atmosphere, notes, eligibleItems }) {
-  const [lo, hi] = SCALE_COUNT_RANGE[scale] || [10, 20]
+// --- Reputation-driven price markup system (v3.13, DM-directed) ----------
+// The DM's own worked example (Prestigious: mostly fair, small chance of
+// a mild premium on rare items; Shady: flat markup on everything plus a
+// chance of a steeper markup on rarer items) was, again, explicitly given
+// as illustrative shape rather than literal numbers. Applied as a
+// deterministic POST-PROCESSING pass on the model's own returned prices,
+// not left to the model to roleplay correctly -- same reasoning as every
+// other numeric guarantee in this file: a shop's whole point (per the DM)
+// is that Reputation should reliably shift how much you get overcharged,
+// and that can't depend on the model choosing to comply on any given call.
+// baseMultiplier applies to EVERY item (a Shady shop marks up the mundane
+// stuff too, not just the flashy stuff); rareUpchargeChance/Multiplier is
+// a SECOND, independent roll that only fires on items at or above
+// rareUpchargeMinRarity, layering an extra "the shady fence spotted you
+// eyeing something good" or "the collector's premium on something rare
+// even at a fair shop" markup on top of the base. Reputable/Prestigious
+// intentionally keep the base at (or under) 1.0 -- a well-regarded shop
+// doesn't gouge on the ordinary stuff, full stop -- while still allowing
+// a small, occasional premium on genuinely rare stock.
+const REPUTATION_PRICE_PROFILE = {
+  Shady: { baseMultiplier: 1.4, rareUpchargeChance: 0.22, rareUpchargeMultiplier: 1.9, rareUpchargeMinRarity: 'Uncommon' },
+  Modest: { baseMultiplier: 1.15, rareUpchargeChance: 0.12, rareUpchargeMultiplier: 1.5, rareUpchargeMinRarity: 'Rare' },
+  Reputable: { baseMultiplier: 1.0, rareUpchargeChance: 0.06, rareUpchargeMultiplier: 1.3, rareUpchargeMinRarity: 'Rare' },
+  Prestigious: { baseMultiplier: 0.98, rareUpchargeChance: 0.10, rareUpchargeMultiplier: 1.2, rareUpchargeMinRarity: 'Very Rare' },
+}
+
+// Rolled independently per item (not per shop) so a Shady stall's rack of
+// rare goods doesn't uniformly jump to 2x together -- some items catch
+// the upcharge, most don't, which reads more like an opportunistic
+// merchant than a shop-wide sale/markup event.
+function applyReputationPricing(items, reputation) {
+  const profile = REPUTATION_PRICE_PROFILE[reputation] || REPUTATION_PRICE_PROFILE.Modest
+  const minIdx = RARITY_ORDER.indexOf(profile.rareUpchargeMinRarity)
+  return items.map((item) => {
+    let multiplier = profile.baseMultiplier
+    let overcharged = false
+    const rarityIdx = RARITY_ORDER.indexOf(item.rarity)
+    const eligibleForUpcharge = item.isMagic && rarityIdx >= 0 && rarityIdx >= minIdx
+    if (eligibleForUpcharge && Math.random() < profile.rareUpchargeChance) {
+      multiplier = profile.rareUpchargeMultiplier
+      overcharged = true
+    }
+    const basePriceGp = item.priceGp
+    const priceGp = Math.max(1, Math.round(basePriceGp * multiplier))
+    return { ...item, priceGp, basePriceGp, overcharged }
+  })
+}
+
+export async function generateAiShopWares({ shopType, scale, reputation, wealth, wealthLabel, cuisine, clientele, atmosphere, notes, eligibleItems }) {
+  const [lo, hi] = SCALE_COUNT_RANGE[scale] || [20, 30]
   const countRange = [lo, hi]
-  const prompt = buildShopPrompt({ shopType, scale, reputation, cuisine, clientele, atmosphere, notes, eligibleItems, countRange })
+  const magicPlan = rollMagicPlan(wealth)
+  const prompt = buildShopPrompt({ shopType, scale, reputation, wealth: wealthLabel || wealth, cuisine, clientele, atmosphere, notes, eligibleItems, countRange, magicPlan })
   // Loose safety net, not a strict cap -- same reasoning as discretion
   // mode's headroom, just scaled up: a Prestigious Guild Hall reasonably
   // running past the stated band shouldn't get truncated mid-shelf.
@@ -565,14 +768,14 @@ export async function generateAiShopWares({ shopType, scale, reputation, cuisine
   let lastError = null
   try {
     const result = await callGemini(prompt)
-    if (result) return normalizeShopResult(result, maxTotal)
+    if (result) return applyReputationPricing(normalizeShopResult(result, maxTotal, magicPlan), reputation)
   } catch (err) {
     console.error('Gemini shop wares generation failed, trying fallback:', err)
     lastError = err
   }
   try {
     const result = await callClaude(prompt)
-    if (result) return normalizeShopResult(result, maxTotal)
+    if (result) return applyReputationPricing(normalizeShopResult(result, maxTotal, magicPlan), reputation)
   } catch (err) {
     console.error('Claude shop wares generation failed:', err)
     lastError = err

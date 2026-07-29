@@ -8922,7 +8922,8 @@ export const mockSources = [
         "lootTags": {
           "kind": "Treasure",
           "domain": [
-            "Light"
+            "Light",
+            "Life"
           ],
           "minRank": 5
         },

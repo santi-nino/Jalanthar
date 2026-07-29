@@ -679,9 +679,19 @@ export const DEFAULT_LOOT_TAXONOMY = {
         excludedItemPatterns: {}, guaranteedItems: {},
       },
     ],
+    // Ooze rebuilt down to just these two fields per the DM (v3.13):
+    // Origin was removed entirely -- Composition already carries all the
+    // theming an ooze needs, and a third field wasn't pulling its weight
+    // for a monster type this simple. Composition is now BOTH a pure
+    // flavor dimension (narrows Narrative Flavor items, same "tagged
+    // narrows, untagged stays universal" overlap rule as everywhere else)
+    // AND, newly, Size drives real amount via sizeLootTable.Ooze below --
+    // Ooze finally joins the kind-bucketed engine instead of falling
+    // through to the old flat 1-2 item draw (see KIND_BUCKET_CONFIG.Ooze
+    // in LootTab.jsx).
     Ooze: [
       { id: 'ooze-composition', name: 'Composition', options: ['Acidic', 'Corrosive', 'Adhesive', 'Caustic'], excludedItemPatterns: {}, guaranteedItems: {} },
-      { id: 'ooze-origin', name: 'Origin', options: ['Natural', 'Alchemical Accident', 'Cursed'], excludedItemPatterns: {}, guaranteedItems: {} },
+      { id: 'ooze-size', name: 'Size', options: ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan'], excludedItemPatterns: {}, guaranteedItems: {} },
     ],
     Plant: [
       { id: 'plant-growth', name: 'Growth Type', options: ['Rooted', 'Mobile', 'Parasitic', 'Fungal'], excludedItemPatterns: {}, guaranteedItems: {} },
@@ -735,6 +745,33 @@ export const DEFAULT_LOOT_TAXONOMY = {
       Medium: { Trophy: [1, 2], Parts: [1, 2], Pelt: [1, 1], Ration: [1, 1], Den: [1, 1] },
       Large: { Trophy: [2, 2], Parts: [2, 3], Pelt: [1, 2], Ration: [1, 2], Den: [1, 2] },
       Huge: { Trophy: [2, 3], Parts: [3, 4], Pelt: [2, 2], Ration: [1, 2], Den: [1, 2] },
+    },
+    // Ooze rebuilt from scratch (v3.13, DM-directed) -- previously had no
+    // sizeLootTable entry at all and fell through to the old flat 1-2
+    // item draw (the same "Owlbear always gets 1-2 anatomically-wrong
+    // items" bug class that Monstrosity/Plant/Undead used to have too).
+    // Three kinds, all new: Biological Waste (harvestable slime/secretion/
+    // membrane -- usually pure narrative with a gp value, occasionally
+    // reads like a reusable consumable, e.g. a vial that functions like
+    // Acid), Narrative Flavor (Composition-themed flavor items, several
+    // explicitly reskinned as a real mundane item per the DM's own
+    // example -- a Corroded Sword that "can function like a dagger"), and
+    // Supplementary (whatever the ooze swallowed and didn't fully
+    // dissolve -- coins, a bent arrow, and occasionally a magic item that
+    // survived intact -- same role Beast's Den bucket plays, "loot found
+    // near/in this creature" rather than "loot that came off its body").
+    // Ranges deliberately stay small and overlapping across tiers (a
+    // Gargantuan ooze reads as "somewhat more," not "ten times more") --
+    // an ooze's whole nature is that swallowing lots of stuff doesn't
+    // mean much of it survives intact, so counts grow gently with Size
+    // rather than scaling as aggressively as Beast/Aberration do.
+    Ooze: {
+      Tiny: { BiologicalWaste: [1, 1], NarrativeFlavor: [0, 1], Supplementary: [0, 1] },
+      Small: { BiologicalWaste: [1, 2], NarrativeFlavor: [0, 1], Supplementary: [0, 1] },
+      Medium: { BiologicalWaste: [1, 2], NarrativeFlavor: [1, 1], Supplementary: [0, 1] },
+      Large: { BiologicalWaste: [1, 2], NarrativeFlavor: [1, 2], Supplementary: [1, 1] },
+      Huge: { BiologicalWaste: [2, 3], NarrativeFlavor: [1, 2], Supplementary: [1, 2] },
+      Gargantuan: { BiologicalWaste: [2, 3], NarrativeFlavor: [2, 3], Supplementary: [1, 2] },
     },
     // Celestial's tiers are keyed by Rank, not Size -- same mechanism,
     // different name for the same "which attribute drives amount"

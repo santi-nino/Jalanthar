@@ -224,6 +224,17 @@ const KIND_BUCKET_CONFIG = {
     sizeOrder: ['Manes', 'Lesser Demon', 'Greater Demon', 'Demon Lord'],
     dimensions: [{ key: 'realm', attr: 'fiend-origin' }],
   },
+  // Ooze rebuilt (v3.13) down to just two fields per the DM: Composition
+  // is pure theming (narrows Narrative Flavor items via lootTags.
+  // composition, same overlap rule as every other dimension), Size drives
+  // amount via sizeLootTable.Ooze. This is the simplest kind-bucketed
+  // config on the site -- one dimension, no sizeOrder/minRank gating,
+  // since an ooze doesn't have a "power tier" the way Celestial/Elemental
+  // do, just a body size.
+  Ooze: {
+    sizeAttr: 'ooze-size',
+    dimensions: [{ key: 'composition', attr: 'ooze-composition' }],
+  },
 }
 
 // Non-kind keys that can appear alongside the kind buckets in a
@@ -1396,7 +1407,9 @@ function ResultsPanel({ groups, onCopy, copied }) {
                     <li key={`${cat}-${i}`} className="flex items-start justify-between gap-3 text-sm">
                       <div>
                         <span className="font-display text-leather-dark">{item.name}</span>
+                        {item.rarity && <span className="ml-1.5 text-xs text-moss-dark italic">({item.rarity})</span>}
                         {item.isNew && <span className="ml-1.5 text-xs text-ink-soft/50 italic">(new)</span>}
+                        {item.overcharged && <span className="ml-1.5 text-xs text-wax italic">(marked up)</span>}
                         {item.description && <p className="text-xs text-ink-soft/70 italic">{item.description}</p>}
                       </div>
                       <span className="text-xs text-ink-soft shrink-0">{item.priceGp == null ? '—' : formatPrice(item.priceGp)}</span>
@@ -2102,6 +2115,8 @@ export default function LootTab() {
           shopType: subtype,
           scale: locAttributeValues['shop-scale'],
           reputation: locAttributeValues['shop-reputation'],
+          wealth: locWealthId,
+          wealthLabel: w?.label,
           cuisine: locAttributeValues['shop-cuisine'],
           clientele: locAttributeValues['shop-clientele'],
           atmosphere: locAttributeValues['shop-atmosphere'],
@@ -2294,6 +2309,7 @@ export default function LootTab() {
                   availableCategories={locAvailableCategories}
                   includeVehicles={locIncludeVehicles}
                   onIncludeVehiclesChange={setLocIncludeVehicles}
+                  hideCategories={locationType === 'shop'}
                 />
 
                 <label className="flex items-center gap-1.5 text-xs">
