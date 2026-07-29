@@ -344,6 +344,61 @@ function generateSettingLoadout({ monsterType, setting, attributeValues, taxonom
   return items
 }
 
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// Deterministic (no AI call, no compliance risk) fix for a real DM report:
+// asking for "an orc warrior priestess of Uthgar, with a mace" didn't
+// actually put a Mace in her hands -- the Loadout System's SimpleWeapon
+// slot just rolled something random. This scans Monster Name + Notes for
+// EXACT catalog item names (case-insensitive, word-boundary matched so
+// "Mace" doesn't false-positive match inside some longer unrelated word)
+// and, wherever one is found, makes sure that specific real item is
+// actually in the final list -- swapping it into an existing same-category
+// slot if one already rolled (keeps the total item count stable), or
+// appending it if nothing of that category exists yet (a DM explicitly
+// naming something should never just get dropped for lack of a rolled
+// slot). This is still fully select-only, same as the rest of the site's
+// standing rule -- it never invents anything, it just lets a specific,
+// explicitly-named REAL catalog item win over a random one from the same
+// category. Deliberately NOT scoped by monsterTypeTags -- a Mace is a
+// Mace regardless of who's carrying it, same "tag-free" reasoning
+// loadoutPoolFor already uses for MartialWeapon/SimpleWeapon/Clothes/Tool.
+function applyNotesRequestedItems({ monsterName, notes, items, sources }) {
+  const text = `${monsterName || ''} ${notes || ''}`.toLowerCase()
+  if (!text.trim() || items.length === 0) return items
+
+  const pool = buildItemPool('wares', sources)
+  const itemsCopy = [...items]
+  const usedNames = new Set(itemsCopy.map((i) => i.name.toLowerCase()))
+  const claimedSlots = new Set()
+
+  // Longest name first, so a more specific match (if the catalog ever has
+  // both "Mace" and, say, "Ceremonial Mace") wins over the shorter one
+  // when both would technically match the same text.
+  const sortedPool = [...pool].sort((a, b) => b.name.length - a.name.length)
+
+  for (const candidate of sortedPool) {
+    if (candidate.name.length < 3) continue
+    const nameKey = candidate.name.toLowerCase()
+    if (usedNames.has(nameKey)) continue
+    const re = new RegExp(`\\b${escapeRegExp(nameKey)}\\b`)
+    if (!re.test(text)) continue
+
+    const swapIdx = itemsCopy.findIndex((i, idx) => i.category === candidate.category && !claimedSlots.has(idx))
+    if (swapIdx !== -1) {
+      itemsCopy[swapIdx] = { ...candidate, isRequested: true }
+      claimedSlots.add(swapIdx)
+    } else {
+      itemsCopy.push({ ...candidate, isRequested: true })
+      claimedSlots.add(itemsCopy.length - 1)
+    }
+    usedNames.add(nameKey)
+  }
+  return itemsCopy
+}
+
 // The kind-bucketed generation engine: instead of one flat random count
 // across the whole pool, each "kind" (per sizeLootTable) gets its own
 // count rolled independently from the entity's Size/Rank, then filled
@@ -1480,7 +1535,7 @@ function ResultsPanel({ groups, onCopy, copied }) {
                     {item.guaranteed && <span className="ml-1.5 text-xs text-moss-dark italic">(always carries)</span>}
                     {item.flavor && <span className="ml-1.5 text-xs text-ink-soft/60 italic">(setting flavor)</span>}
                     {item.setting && <span className="ml-1.5 text-xs text-ink-soft/60 italic">(setting gear)</span>}
-                    {item.isReskin && <span className="ml-1.5 text-xs text-ink-soft/60 italic">{item.isNarrative ? '(narrative)' : `(reskin of ${item.reskinOf})`}</span>}
+
                     <span className="ml-2 text-xs text-ink-soft/60 italic">{item.category}</span>
                     {item.description && <p className="text-xs text-ink-soft/70 italic">{item.description}</p>}
                   </div>
@@ -1600,6 +1655,17 @@ function EntityBuilder({ taxonomy, sources, onAdd }) {
       if (roleAttr) {
         setAttributeValues((prev) => (prev[roleAttr.id] ? prev : { ...prev, [roleAttr.id]: roleValue }))
       }
+    }
+
+    // Wealth hint, same mechanism as the Role hint just above: a leadership
+    // cue ("in charge", "chief", "noble") in the typed name bumps Wealth up
+    // from its flat default -- but ONLY while it's still sitting at that
+    // untouched default (taxonomy.wealthLevels[0].id), so a DM who
+    // deliberately picked a specific Wealth level is never overridden.
+    const wealthHint = Object.entries(taxonomy.monsterNameWealthHints || {}).find(([kw]) => lower.includes(kw))
+    if (wealthHint && wealthId === (taxonomy.wealthLevels[0]?.id || '')) {
+      const [, wealthValue] = wealthHint
+      if (taxonomy.wealthLevels.some((w) => w.id === wealthValue)) setWealthId(wealthValue)
     }
   }
 
@@ -2134,6 +2200,16 @@ export default function LootTab() {
           if (settingItems.length > 0) {
             mainGroup.items = [...mainGroup.items, ...settingItems.map((i) => ({ ...i, setting: true }))]
           }
+        }
+
+        // Notes-requested specific items (e.g. "with a mace") -- runs
+        // BEFORE the reskin pass so a forced-in real item is also eligible
+        // to get themed by it afterward (e.g. that same Mace becoming a
+        // "Ceremonial Cudgel of Uthgar" that functions like a Mace).
+        if (mainGroup && (e.monsterName || e.notes)) {
+          mainGroup.items = applyNotesRequestedItems({
+            monsterName: e.monsterName, notes: e.notes, items: mainGroup.items, sources,
+          })
         }
 
         // Notes-driven reskins -- exception #5 to lootAi.js's STANDING

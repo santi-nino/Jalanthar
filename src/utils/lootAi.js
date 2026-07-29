@@ -1104,7 +1104,7 @@ THIS CREATURE'S ALREADY-ROLLED ITEMS (0-indexed -- reskin candidates ONLY come f
 ${poolText || '(none)'}
 
 TASK: produce AT MOST ${budget} entries, each one of exactly two kinds:
-1. "reskin" -- pick one item from the numbered list above by its index and give it a new, evocative name and one-sentence description that reflects the DM's notes, WITHOUT changing what it mechanically is. The DM's own example: a Shortsword doesn't have to stay "Shortsword" for an orc priestess of Uthgar -- it could become a "Ceremonial Cudgel of Uthgar" that functions exactly like a Shortsword (same category, same price, same everything mechanical -- purely a rename + re-description). Only reskin an item if the notes genuinely suggest something more specific/thematic than the generic catalog name -- do not reskin something that's already perfectly fitting as-is.
+1. "reskin" -- pick one item from the numbered list above by its index and give it a new, evocative name and a one-sentence description that reflects the DM's notes, WITHOUT changing what it mechanically is. The DM's own example: a Shortsword doesn't have to stay "Shortsword" for an orc priestess of Uthgar -- it could become a "Ceremonial Cudgel of Uthgar" (same category, same price, same everything mechanical -- purely a rename + re-description). Only reskin an item if the notes genuinely suggest something more specific/thematic than the generic catalog name -- do not reskin something that's already perfectly fitting as-is. Do NOT write your own "functions like X" line -- that gets appended automatically afterward, just write the flavor description itself.
 2. "narrative" -- a brand-new SMALL, flavorful, non-mechanical item implied by the notes but not covered by anything already rolled (a keepsake, a personal token, a small memento) -- gp value only (roughly 1-30gp, this is flavor, not treasure), no mechanical properties whatsoever.
 
 It is completely fine, and often correct, to return FEWER than ${budget} entries (including zero) if the notes don't genuinely call for any -- do not force reskins/narrative items that don't fit.
@@ -1112,6 +1112,24 @@ It is completely fine, and often correct, to return FEWER than ${budget} entries
 Return ONLY JSON (no markdown fences, no commentary) matching exactly this shape:
 { "entries": [ { "type": "reskin", "index": number, "newName": string, "newDescription": string } | { "type": "narrative", "newName": string, "newDescription": string, "priceGp": number } ] }
 `.trim()
+}
+
+// The DM's fix (this round): the "(reskin of X)" UI badge wasn't working
+// well as the way to communicate mechanical equivalence -- replaced with a
+// plain-language phrase baked directly INTO the item's own description,
+// picked from three DM-specified variants. This is enforced here in code,
+// not left to the prompt alone (same "don't trust compliance" reasoning
+// as every other guarantee in this file) -- every reskin gets this phrase
+// appended regardless of what the model actually wrote.
+const RESKIN_EQUIVALENCE_PHRASES = [
+  (name) => `Functions like ${name}.`,
+  (name) => `Functions the same as ${name}.`,
+  (name) => `Has the same properties as ${name}.`,
+]
+
+function withEquivalencePhrase(description, originalName) {
+  const phrase = RESKIN_EQUIVALENCE_PHRASES[Math.floor(Math.random() * RESKIN_EQUIVALENCE_PHRASES.length)](originalName)
+  return description ? `${description} ${phrase}` : phrase
 }
 
 function normalizeReskinResult(raw, candidates, budget) {
@@ -1125,10 +1143,12 @@ function normalizeReskinResult(raw, candidates, budget) {
       const idx = Number(e.index)
       if (!Number.isInteger(idx) || idx < 0 || idx >= candidates.length || usedIndexes.has(idx)) continue
       const newName = String(e.newName || '').trim()
-      const newDescription = String(e.newDescription || '').trim()
+      const rawDescription = String(e.newDescription || '').trim()
       if (!newName) continue
+      const original = candidates[idx]
+      const newDescription = withEquivalencePhrase(rawDescription, original.name)
       usedIndexes.add(idx)
-      reskins.push({ index: idx, original: candidates[idx], newName, newDescription })
+      reskins.push({ index: idx, original, newName, newDescription })
     } else if (e.type === 'narrative') {
       const newName = String(e.newName || '').trim()
       const newDescription = String(e.newDescription || '').trim()

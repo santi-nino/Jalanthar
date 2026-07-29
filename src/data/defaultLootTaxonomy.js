@@ -1882,6 +1882,31 @@ export const DEFAULT_LOOT_TAXONOMY = {
     commoner: 'Commoner',
     scout: 'Traveler',
     spy: 'Bandit/Criminal',
+    warrior: 'Guard/Soldier',
+  },
+
+  // Keyword -> Wealth suggestion, same mechanism as monsterNameRoleHints
+  // right above -- added per the DM's own report: an "orc priestess of
+  // Uthgar" who is described as being IN CHARGE should read as
+  // meaningfully richer than the type's flat default (Destitute), not
+  // just get the right Role. Only ever applied when Wealth is still
+  // sitting at its untouched default (see handleMonsterNameChange in
+  // LootTab.jsx) -- a DM who deliberately picked a specific Wealth level
+  // is never overridden by a keyword match.
+  monsterNameWealthHints: {
+    'in charge': 'wealthy',
+    leader: 'wealthy',
+    chief: 'wealthy',
+    boss: 'wealthy',
+    elder: 'wealthy',
+    captain: 'comfortable',
+    veteran: 'comfortable',
+    noble: 'aristocratic',
+    lord: 'aristocratic',
+    lady: 'aristocratic',
+    'high priest': 'aristocratic',
+    king: 'aristocratic',
+    queen: 'aristocratic',
   },
 
   settings: [
