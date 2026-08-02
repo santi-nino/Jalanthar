@@ -1104,7 +1104,7 @@ THIS CREATURE'S ALREADY-ROLLED ITEMS (0-indexed -- reskin candidates ONLY come f
 ${poolText || '(none)'}
 
 TASK: produce AT MOST ${budget} entries, each one of exactly two kinds:
-1. "reskin" -- pick one item from the numbered list above by its index and give it a new, evocative name and a one-sentence description that reflects the DM's notes, WITHOUT changing what it mechanically is. The DM's own example: a Shortsword doesn't have to stay "Shortsword" for an orc priestess of Uthgar -- it could become a "Ceremonial Cudgel of Uthgar" (same category, same price, same everything mechanical -- purely a rename + re-description). Only reskin an item if the notes genuinely suggest something more specific/thematic than the generic catalog name -- do not reskin something that's already perfectly fitting as-is. Do NOT write your own "functions like X" line -- that gets appended automatically afterward, just write the flavor description itself.
+1. "reskin" -- pick one item from the numbered list above by its index and give it a new, evocative name and a one-sentence description that reflects the DM's notes, WITHOUT changing what it mechanically is. The DM's own example: a Shortsword doesn't have to stay "Shortsword" for an orc priestess of Uthgar -- it could become a "Ceremonial Cudgel of Uthgar" (same category, same price, same everything mechanical -- purely a rename + re-description). Only reskin an item if the notes genuinely suggest something more specific/thematic than the generic catalog name -- do not reskin something that's already perfectly fitting as-is. The new name must NOT reference or contain the original item's catalog name (e.g. don't call it "Ceremonial Cudgel (formerly Shortsword)") -- that equivalence belongs ONLY in the description, and gets appended there automatically afterward, so just write the flavor description itself, without your own "functions like X" line.
 2. "narrative" -- a brand-new SMALL, flavorful, non-mechanical item implied by the notes but not covered by anything already rolled (a keepsake, a personal token, a small memento) -- gp value only (roughly 1-30gp, this is flavor, not treasure), no mechanical properties whatsoever.
 
 It is completely fine, and often correct, to return FEWER than ${budget} entries (including zero) if the notes don't genuinely call for any -- do not force reskins/narrative items that don't fit.
@@ -1132,6 +1132,25 @@ function withEquivalencePhrase(description, originalName) {
   return description ? `${description} ${phrase}` : phrase
 }
 
+// Deterministic guard (same "don't trust compliance" reasoning as
+// withEquivalencePhrase above): the prompt now tells the model not to put
+// the original item's catalog name inside the new name, but nothing stops
+// it from doing so anyway. If the original name (or a parenthetical
+// referencing it, e.g. "(formerly Shortsword)" / "(was: Shortsword)")
+// shows up in the model's newName, strip it out here in code rather than
+// hoping the instruction was followed -- the original item's identity is
+// only ever supposed to live in the description, via the equivalence
+// phrase appended above.
+function stripOriginalNameReference(newName, originalName) {
+  if (!originalName) return newName
+  const escaped = originalName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  let cleaned = newName
+    .replace(new RegExp(`\\s*\\([^()]*${escaped}[^()]*\\)`, 'gi'), '')
+    .replace(new RegExp(escaped, 'gi'), '')
+  cleaned = cleaned.replace(/\s{2,}/g, ' ').replace(/\s+([,.;:])/g, '$1').trim()
+  return cleaned || newName.trim()
+}
+
 function normalizeReskinResult(raw, candidates, budget) {
   const entries = Array.isArray(raw.entries) ? raw.entries : []
   const usedIndexes = new Set()
@@ -1142,10 +1161,11 @@ function normalizeReskinResult(raw, candidates, budget) {
     if (e.type === 'reskin') {
       const idx = Number(e.index)
       if (!Number.isInteger(idx) || idx < 0 || idx >= candidates.length || usedIndexes.has(idx)) continue
-      const newName = String(e.newName || '').trim()
+      const rawName = String(e.newName || '').trim()
       const rawDescription = String(e.newDescription || '').trim()
-      if (!newName) continue
+      if (!rawName) continue
       const original = candidates[idx]
+      const newName = stripOriginalNameReference(rawName, original.name)
       const newDescription = withEquivalencePhrase(rawDescription, original.name)
       usedIndexes.add(idx)
       reskins.push({ index: idx, original, newName, newDescription })

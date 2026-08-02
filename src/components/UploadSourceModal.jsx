@@ -140,7 +140,7 @@ export default function UploadSourceModal({ onClose }) {
       setStatus('error')
       if (err.message === SOURCE_AI_UNCONFIGURED) {
         setError(
-          'No AI backend is configured yet. Add a free VITE_GEMINI_API_KEY (Google AI Studio, no card required) to your build secrets, or set VITE_ANTHROPIC_API_KEY as a paid fallback. See the README.'
+          'No assisted-generation backend is configured yet. Add a free VITE_GEMINI_API_KEY (Google AI Studio, no card required) to your build secrets, or set VITE_ANTHROPIC_API_KEY as a paid fallback. See the README.'
         )
       } else {
         setError(err.message || 'Something went wrong while scanning that file.')

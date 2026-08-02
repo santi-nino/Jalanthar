@@ -1495,7 +1495,7 @@ function ResultsPanel({ groups, onCopy, copied }) {
           {g.label && (
             <h4 className="font-display text-sm uppercase tracking-wide text-leather-dark/80 border-b border-leather/30 pb-1 mb-1.5">
               {g.label}
-              {g.aiAssisted && <span className="ml-2 text-xs normal-case italic text-moss-dark">(AI-assisted)</span>}
+              {g.aiAssisted && <span className="ml-2 text-xs normal-case italic text-moss-dark">(Assisted)</span>}
             </h4>
           )}
           {g.gold != null && <p className="text-sm font-display text-leather-dark mb-1">{g.gold} gp in coin</p>}
@@ -1958,8 +1958,8 @@ export default function LootTab() {
               setAiNotice((prev) =>
                 prev ||
                 (err.message === LOOT_AI_UNCONFIGURED
-                  ? 'AI assist isn\u2019t configured (no API key set) \u2014 used the normal random rules instead.'
-                  : 'AI assist failed \u2014 used the normal random rules instead.')
+                  ? 'Assisted generation isn\u2019t configured (no API key set) \u2014 used the normal random rules instead.'
+                  : 'Assisted generation failed \u2014 used the normal random rules instead.')
               )
             }
           }
@@ -2153,8 +2153,8 @@ export default function LootTab() {
             setAiNotice((prev) =>
               prev ||
               (err.message === LOOT_AI_UNCONFIGURED
-                ? 'AI assist isn’t configured (no API key set) — used the normal random rules instead.'
-                : 'AI assist failed — used the normal random rules instead.')
+                ? 'Assisted generation isn’t configured (no API key set) — used the normal random rules instead.'
+                : 'Assisted generation failed — used the normal random rules instead.')
             )
           }
         }
@@ -2223,7 +2223,7 @@ export default function LootTab() {
         // entity's items get swapped for a themed reskin (same
         // mechanical identity -- category/price/tags -- new name and
         // description) or a small purely-narrative addition, and every
-        // result gets saved into "AI-Reskinned Relics" with the SAME tag
+        // result gets saved into "Reforged Relics" with the SAME tag
         // nuance the original item carried, so it re-enters the pool for
         // future rolls too.
         if (mainGroup && e.notes && e.notes.trim() && mainGroup.items.length > 0) {
@@ -2326,8 +2326,8 @@ export default function LootTab() {
               setAiNotice((prev) =>
                 (prev ? prev + ' ' : '') +
                 (err.message === LOOT_AI_UNCONFIGURED
-                  ? 'AI assist isn\u2019t configured for horde generation \u2014 showing raw coin value only.'
-                  : 'AI horde fill failed \u2014 showing raw coin value only.')
+                  ? 'Assisted generation isn\u2019t configured for horde generation \u2014 showing raw coin value only.'
+                  : 'Assisted horde generation failed \u2014 showing raw coin value only.')
               )
               groupsForEntity.push({
                 label: `${label} \u2014 Horde (${e.hordeSize}, ~${targetGp}gp)`,
@@ -2376,7 +2376,7 @@ export default function LootTab() {
     const newItems = (items || []).filter((i) => i.isNew)
     if (newItems.length === 0) return 0
 
-    const existing = sources.find((s) => s.name === 'AI-Discovered Finds')
+    const existing = sources.find((s) => s.name === 'Unlogged Discoveries')
     const existingWares = existing?.wares || []
     const existingNames = new Set(existingWares.map((w) => w.name.toLowerCase()))
     const freshRows = newItems
@@ -2397,7 +2397,7 @@ export default function LootTab() {
 
     await saveSource({
       id: existing?.id,
-      name: 'AI-Discovered Finds',
+      name: 'Unlogged Discoveries',
       wares: [...existingWares, ...freshRows],
       menu: existing?.menu || [],
       services: existing?.services || [],
@@ -2407,8 +2407,8 @@ export default function LootTab() {
   }
 
   // Persists notes-driven reskins/narrative items (exception #5, see
-  // lootAi.js) into their own dedicated source, same "AI-Discovered
-  // Finds" pattern persistAiDiscoveredItems already established for
+  // lootAi.js) into their own dedicated source, same "Unlogged
+  // Discoveries" pattern persistAiDiscoveredItems already established for
   // Exploration -- except these rows already carry the FULL tag nuance
   // copied straight from whatever real catalog item they reskinned (see
   // the reskin-building code in generateEncounter below), not a
@@ -2417,7 +2417,7 @@ export default function LootTab() {
   // covered.
   async function persistAiReskinLoot(rows) {
     if (!rows || rows.length === 0) return 0
-    const existing = sources.find((s) => s.name === 'AI-Reskinned Relics')
+    const existing = sources.find((s) => s.name === 'Reforged Relics')
     const existingWares = existing?.wares || []
     const existingNames = new Set(existingWares.map((w) => w.name.toLowerCase()))
     const freshRows = rows
@@ -2438,7 +2438,7 @@ export default function LootTab() {
 
     await saveSource({
       id: existing?.id,
-      name: 'AI-Reskinned Relics',
+      name: 'Reforged Relics',
       wares: [...existingWares, ...freshRows],
       menu: existing?.menu || [],
       services: existing?.services || [],
@@ -2480,8 +2480,8 @@ export default function LootTab() {
         if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI shop wares generation failed, falling back:', err)
         setAiNotice(
           err.message === LOOT_AI_UNCONFIGURED
-            ? 'AI assist isn’t configured (no API key set) — used the normal random rules instead.'
-            : 'AI assist failed — used the normal random rules instead.'
+            ? 'Assisted generation isn’t configured (no API key set) — used the normal random rules instead.'
+            : 'Assisted generation failed — used the normal random rules instead.'
         )
         const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
         const gold = w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
@@ -2535,14 +2535,14 @@ export default function LootTab() {
         setResults([{ label: '', items: [...guaranteed, ...aiItems], gold: 0, aiAssisted: true, categorized: true }])
         const savedCount = await persistAiDiscoveredItems(aiItems)
         if (savedCount > 0) {
-          setAiNotice(`${savedCount} newly invented item${savedCount === 1 ? '' : 's'} saved to the "AI-Discovered Finds" source for future reuse.`)
+          setAiNotice(`${savedCount} newly invented item${savedCount === 1 ? '' : 's'} saved to the "Unlogged Discoveries" source for future reuse.`)
         }
       } catch (err) {
         if (err.message !== LOOT_AI_UNCONFIGURED) console.error('AI exploration loot generation failed, falling back:', err)
         setAiNotice(
           err.message === LOOT_AI_UNCONFIGURED
-            ? 'AI assist isn’t configured (no API key set) — used the normal random rules instead.'
-            : 'AI assist failed — used the normal random rules instead.'
+            ? 'Assisted generation isn’t configured (no API key set) — used the normal random rules instead.'
+            : 'Assisted generation failed — used the normal random rules instead.'
         )
         const count = w ? randomInt(w.minItems ?? 1, w.maxItems ?? 1) : 0
         const gold = w ? randomInt(w.goldMin ?? 0, w.goldMax ?? 0) : 0
@@ -2716,7 +2716,7 @@ export default function LootTab() {
                     location types (Shop/Exploration); harmless to always
                     render since both current location types qualify. */}
                 <label className="block">
-                  <span className="text-xs font-display uppercase text-ink-soft">Notes (to AI)</span>
+                  <span className="text-xs font-display uppercase text-ink-soft">Notes (for Assist)</span>
                   <textarea
                     value={locNotes}
                     onChange={(e) => setLocNotes(e.target.value)}
