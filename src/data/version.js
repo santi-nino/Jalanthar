@@ -9,7 +9,21 @@
 // versions (up through 3.0) existed but their exact wording wasn't
 // preserved, so this history is deliberately NOT a complete record of
 // every version ever shipped, just everything from 3.1 onward.
+//
+// Versioning policy (DM directive, starting at 4.0): the FIRST number is
+// what actually moves. It bumps by a whole integer once a feature is
+// genuinely finished -- not a rough draft, the real final version of it --
+// and only changes again once work starts on the NEXT feature. It's no
+// longer a running decimal tally of every round of work (3.1, 3.2, ...
+// 3.19) the way versions up through 3.19 were. A quick fix/iteration on a
+// feature that's still actively being built doesn't get a new top-level
+// number of its own; it's still part of getting to that feature's
+// eventual X.0.
 export const VERSION_HISTORY = [
+  {
+    version: '4.0',
+    notes: 'New Catalog tab (DM-only, sidebar under Loot): a single searchable table over every item in the site -- the full built-in SRD catalog plus every uploaded/generated source\'s Wares, Menu, and Services all in one place. Filterable by Source (a dropdown of every source, including "SRD Catalog (Built-in)"), Type (category, scoped to whatever Source is picked), Monster Type tag, and Tag, plus a free-text search across name/description/tags. Capped at showing the first 400 matches at a time with a note to narrow filters further, so an unfiltered "All Sources" view (~2,400 items) never tries to render everything at once. Also two DM-facing profile fixes: Cassian Pasho and Krikas Rihlo had gotten crossed in play, so their full traits/characteristics/history (species, age, personality, appearance, job, quote, and more) were swapped between them to match -- Cassian is now the ancient half-elf plant caster on his third known family line, Krikas is now the formal, status-conscious landed elf; each stayed put in their own household (spouse, kids, home) the whole time, only the personalities moved. And the Fenners: Marta is now a Goliath and the household\'s true matriarch even though Wendel holds the shop\'s proprietor title; Wendel stays just as gruff with customers, but now reads as happily deferential to Marta at home.',
+  },
   {
     version: '3.18',
     notes: 'Two real DM reports fixed. First: the reskin system\'s "(reskin of X)" UI badge wasn\'t reading well -- replaced entirely. Every reskin\'s description now gets one of three plain-language equivalence phrases appended directly into the text itself ("Functions like X," "Functions the same as X," "Has the same properties as X"), enforced in code rather than left to the AI to remember, and the badge is gone. Note: this only affects newly-generated reskins going forward -- any already saved into the live "AI-Reskinned Relics" source keep their old description text and need a manual edit in the Sources tab if you want them updated to the new phrasing; there\'s no way to reach into that saved data from here. Second: "an orc warrior priestess of Uthgar, with a mace" came back without a mace, and without the gold her being in charge implied. Root causes fixed with two small, fully deterministic (no extra AI call, no compliance risk) additions: (1) a new notes-requested-item pass scans Monster Name + Notes for exact real catalog item names and makes sure that specific item is actually in the final list -- swapped into a matching slot if one rolled, appended if not -- so naming a real item by name now reliably produces it; (2) a new Wealth keyword hint (chief/leader/in charge/noble/lord/etc.) bumps Wealth up from its flat default the same way the existing Role hint already does, only while Wealth is still untouched so a deliberately-picked level is never overridden. Also added a "warrior" keyword to the existing Role hints (-> Guard/Soldier).',

@@ -11,6 +11,7 @@ import BuildingListTab from './components/tabs/BuildingListTab'
 import RelationshipTab from './components/tabs/RelationshipTab'
 import ResidentListTab from './components/tabs/ResidentListTab'
 import LootTab from './components/tabs/LootTab'
+import CatalogTab from './components/tabs/CatalogTab'
 import { isFirebaseConfigured } from './firebase'
 
 function AppShell() {
@@ -84,6 +85,7 @@ function AppShell() {
             <ResidentListTab onEditNpc={isDm ? (n) => setEditingNpc(n) : undefined} />
           )}
           {activeTab === 'loot' && isDm && <LootTab />}
+          {activeTab === 'catalog' && isDm && <CatalogTab />}
         </div>
       </main>
 

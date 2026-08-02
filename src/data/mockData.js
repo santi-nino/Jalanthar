@@ -1987,7 +1987,7 @@ export const mockNpcs = [
   {
     "id": "npc-cassian-pasho",
     "homeBuildingId": "bld-pasho-manor",
-    "clothing": "Old, well-kept formal attire.",
+    "clothing": "Earth-toned robes, finer than they appear.",
     "relationships": [
       {
         "targetId": "npc-liora-pasho",
@@ -2007,21 +2007,21 @@ export const mockNpcs = [
       }
     ],
     "visible": false,
-    "weight": "155 lb",
-    "famousQuote": "We are Pashos. That has always been enough.",
-    "species": "Elf",
-    "hairColor": "White (once blond)",
-    "height": "5'9\"",
+    "weight": "160 lb",
+    "famousQuote": "You'll forgive me if I've heard that joke before.",
+    "species": "Half-Elf",
+    "hairColor": "Black, untouched by age",
+    "height": "6'0\"",
     "name": "Cassian Pasho",
-    "job": "None (landed)",
-    "age": 62,
-    "eyeColor": "Blue",
+    "job": "Caster (plant magic)",
+    "age": 800,
+    "eyeColor": "Deep green, faintly luminous",
     "familyName": "The Pashos",
-    "distinguishingFeatures": "A signet ring, never removed.",
-    "history": "Head of the Pasho family. Presides over the family's ancestral manor, now largely emptied of its former wealth.",
-    "personality": "Formal and status-conscious, leans on family name and title.",
+    "distinguishingFeatures": "A thin silver thread braided into his hair.",
+    "history": "A half-elf approximately 800 years old. Currently on his third known family line in Jalanthar -- the Pashos are the name he wears now. One of the town's three known casters.",
+    "personality": "Patient and controlled, accustomed to outliving those around him.",
     "gender": "Man",
-    "appearance": "Tall, thin with age."
+    "appearance": "Tall, slender, sharp cheekbones, long pointed ears."
   },
   {
     "id": "npc-cobb-thistlebrook",
@@ -2301,13 +2301,13 @@ export const mockNpcs = [
   },
   {
     "id": "npc-krikas-rihlo",
-    "famousQuote": "You'll forgive me if I've heard that joke before.",
-    "weight": "160 lb",
-    "hairColor": "Black, untouched by age",
-    "species": "Half-Elf",
+    "famousQuote": "We are Rihlos. That has always been enough.",
+    "weight": "155 lb",
+    "hairColor": "White (once blond)",
+    "species": "Elf",
     "name": "Krikas Rihlo",
-    "height": "6'0\"",
-    "clothing": "Earth-toned robes, finer than they appear.",
+    "height": "5'9\"",
+    "clothing": "Old, well-kept formal attire.",
     "homeBuildingId": "bld-rihlo-house",
     "relationships": [
       {
@@ -2328,15 +2328,15 @@ export const mockNpcs = [
       }
     ],
     "visible": false,
-    "appearance": "Tall, slender, sharp cheekbones, long pointed ears.",
-    "personality": "Patient and controlled, accustomed to outliving those around him.",
+    "appearance": "Tall, thin with age.",
+    "personality": "Formal and status-conscious, leans on family name and title.",
     "gender": "Man",
-    "job": "Caster (plant magic)",
-    "age": 800,
-    "eyeColor": "Deep green, faintly luminous",
+    "job": "None (landed)",
+    "age": 62,
+    "eyeColor": "Blue",
     "familyName": "The Rihlos",
-    "distinguishingFeatures": "A thin silver thread braided into his hair.",
-    "history": "An elf approximately 800 years old. Currently on his third known family line in Jalanthar. One of the town's three known casters."
+    "distinguishingFeatures": "A signet ring, never removed.",
+    "history": "Head of the Rihlo family. Presides over the family's ancestral home, now largely emptied of its former wealth."
   },
   {
     "id": "npc-liora-pasho",
@@ -2457,11 +2457,11 @@ export const mockNpcs = [
   },
   {
     "id": "npc-marta-fenner",
-    "weight": "140 lb",
+    "weight": "310 lb",
     "famousQuote": "People will believe whatever's more interesting than the truth. Doesn't make it true.",
-    "height": "5'6\"",
+    "height": "6'9\"",
     "name": "Marta Fenner",
-    "species": "Human",
+    "species": "Goliath",
     "hairColor": "Auburn, usually braided back",
     "relationships": [
       {
@@ -2476,13 +2476,13 @@ export const mockNpcs = [
     "clothing": "Practical dress with a coin-pouch apron, ledger always close at hand.",
     "homeBuildingId": "xmZvRARmOG5P103hNS4J",
     "visible": false,
-    "personality": "Friendlier and more talkative than her husband, but just as immovable the moment the conversation turns to their daughter.",
+    "personality": "The undisputed matriarch of the household -- friendlier and more talkative than Wendel, quick to smile with customers, but hers is the word that actually ends any disagreement in the family. Just as immovable as he is the moment the conversation turns to their daughter.",
     "gender": "Woman",
-    "appearance": "Warmer and more approachable than Wendel at first, quick to smile with customers.",
+    "appearance": "Towering and broad-shouldered even by Goliath standards, faint stone-grey mottling across her forearms; warmer and more approachable than Wendel at first, quick to smile with customers.",
     "job": "Co-runs Wares for the Clever Northman — orders and bookkeeping",
     "familyName": "The Fenners",
     "distinguishingFeatures": "A habit of absently reaching down to rest a hand on Poppy's head mid-conversation, without seeming to notice she's doing it.",
-    "history": "Handles the ordering and the books; the more visible, more approachable half of the shop.",
+    "history": "Handles the ordering and the books; the more visible, more approachable half of the shop, and, plainly if never quite said aloud, the one who actually runs the household.",
     "dndClass": "Merchant",
     "age": 41,
     "eyeColor": "Green"
@@ -3097,11 +3097,11 @@ export const mockNpcs = [
     "eyeColor": "Brown",
     "dndClass": "Merchant",
     "familyName": "The Fenners",
-    "history": "Runs the store his family has kept for two generations; adamant, whenever asked, that Poppy has \"always just been the dog.\"",
+    "history": "Runs the store his family has kept for two generations, at least in name -- everyone in the household, himself very much included, knows Marta is really the one steering things, and he's plainly, happily content to let her. Adamant, whenever asked, that Poppy has \"always just been the dog.\"",
     "distinguishingFeatures": "Surprisingly muscular for a merchant.",
     "appearance": "Solidly built, perpetually mid-task — sleeves rolled, apron never quite clean.",
     "gender": "Man",
-    "personality": "Practical and a little gruff with customers, but visibly tenses and shuts the conversation down fast if anyone asks too many questions about Poppy.",
+    "personality": "Practical and just as gruff with customers as ever, but plainly, happily deferential to Marta at home -- hers is the last word on anything that matters, and he seems genuinely content to have it that way. Still visibly tenses and shuts the conversation down fast if anyone asks too many questions about Poppy.",
     "clothing": "A heavy canvas shop apron over plain clothes.",
     "homeBuildingId": "xmZvRARmOG5P103hNS4J",
     "relationships": [

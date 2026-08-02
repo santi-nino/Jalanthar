@@ -79,6 +79,16 @@ export function IconLoot({ className }) {
   )
 }
 
+export function IconCatalog({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path d="M4.5 4.5h6.5a2 2 0 0 1 2 2V20a1.5 1.5 0 0 0-1.5-1.5H4.5V4.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M19.5 4.5H13a2 2 0 0 0-2 2V20a1.5 1.5 0 0 1 1.5-1.5h7V4.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M6.5 8h4.5M6.5 11h4.5M13.5 8H18M13.5 11H18" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function IconKey({ className }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
