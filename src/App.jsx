@@ -85,7 +85,7 @@ function AppShell() {
             <ResidentListTab onEditNpc={isDm ? (n) => setEditingNpc(n) : undefined} />
           )}
           {activeTab === 'loot' && isDm && <LootTab />}
-          {activeTab === 'catalog' && isDm && <CatalogTab />}
+          {activeTab === 'catalog' && <CatalogTab />}
         </div>
       </main>
 

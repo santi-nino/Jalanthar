@@ -13,7 +13,7 @@ const TABS = [
   { id: 'residents', label: 'Family Tree', Icon: IconResidents },
   { id: 'roster', label: 'Roster', Icon: IconRoster },
   { id: 'loot', label: 'Loot', Icon: IconLoot, dmOnly: true },
-  { id: 'catalog', label: 'Catalog', Icon: IconCatalog, dmOnly: true },
+  { id: 'catalog', label: 'Catalogue', Icon: IconCatalog },
 ]
 
 export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, onCloseMobile }) {

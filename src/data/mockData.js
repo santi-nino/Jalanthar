@@ -7890,7 +7890,7 @@ export const mockSources = [
     "id": "sGUAccXFQOl3hwTl7OYP",
     "wares": [
       {
-        "description": "A small vial on a thin leather rope worn as an amulet. Emits dim light up to 5 feet.",
+        "description": "A small vial on a thin leather rope worn as an amulet. This vial magically emits dim light up to 5 feet.",
         "basePrice": 15,
         "rowId": "row-1783553745889-i5up1",
         "quantity": 1,
@@ -7916,7 +7916,7 @@ export const mockSources = [
         "name": "Compass of Pelor",
         "quantity": 1,
         "rowId": "row-1783553745889-55yux",
-        "description": "This compass, shaped liked a sun, will magically point to the nearest temple of Pelor or any of his allies if it is within 10 miles. ",
+        "description": "This compass, shaped liked a sun, will magically point to the nearest Temple of Pelor if it is within 10 miles.",
         "basePrice": 40,
         "tags": [
           "magic-item"
@@ -7938,7 +7938,7 @@ export const mockSources = [
         "rowId": "row-1783553745889-ww25f",
         "quantity": 1,
         "priceOverride": "",
-        "description": "Golden ring imparts a wax seal to parchment signed by its wearer when pressed.",
+        "description": "Whenever this golden signet ring is pressed against a piece of parchment signed by its wearer, it magically imparts a wax seal to the parchment.",
         "basePrice": 20,
         "tags": [
           "magic-item"
@@ -8149,7 +8149,7 @@ export const mockSources = [
         "quantity": 1,
         "name": "Elminster's Earrings",
         "priceOverride": "",
-        "description": "These earrings create the effect of tiny fireworks, dancing lights, and small fluttering butterflies around the head of the wearer. Supposedly created by Elminster himself.",
+        "description": "These earrings create the effect of tiny fireworks, dancing lights, and small fluttering butterflies around the head of the wearer. Supposedly owned by Elminster himself.",
         "basePrice": 55,
         "tags": [
           "magic-item",
@@ -8168,7 +8168,7 @@ export const mockSources = [
         }
       },
       {
-        "description": "When opened, the locket shows the user a memory deliberately stored in the contraption.",
+        "description": "When opened, the locket shows the user a comforting memory of a time since passed.",
         "basePrice": 10,
         "priceOverride": "",
         "rowId": "row-1783553745889-u6ahy",
@@ -8370,7 +8370,7 @@ export const mockSources = [
         "quantity": 1,
         "rowId": "row-1783553745889-ou18e",
         "name": "Symbol of Talona",
-        "description": "Small charm has a mild repelling effect on mosquitoes, bugs, and small gnats.",
+        "description": "This small charm of the minor deity Talona, when carried, has a mild repelling effect on mosquitoes, bugs, and small gnats.",
         "basePrice": 45,
         "tags": [
           "magic-item"
@@ -8392,7 +8392,7 @@ export const mockSources = [
         "rowId": "row-1783553745889-ile0f",
         "name": "Long March Boots",
         "priceOverride": "",
-        "description": "Prevent water and rocks from getting into boots, even when submerged.",
+        "description": "These magical boots prevent both water and rocks from getting into your boots, even when submerged.",
         "basePrice": 30,
         "tags": [
           "magic-item",
@@ -8407,7 +8407,7 @@ export const mockSources = [
         }
       },
       {
-        "description": "Magical cloth removes non-magical dust, rust, grime, leaves polish. Never gets dirty. Cannot repair damage.",
+        "description": "This magical cloth removes any non-magical dust, surface rust, or grime and leaves a shining polish. It never seems to get dirty. The cloth cannot repair significant damage (such as from the Rust Monster's Antennae ability).",
         "basePrice": 10,
         "priceOverride": "",
         "rowId": "row-1783553745889-zo2w1",
@@ -8430,7 +8430,7 @@ export const mockSources = [
         "rowId": "row-1783553745889-kvvbo",
         "quantity": 1,
         "name": "Feigned Loyalty Dagger",
-        "description": "Magical dagger cannot harm its owner. Attacks with this dagger are not magical.",
+        "description": "A magical dagger that cannot be used to harm its owner. Attacks with this dagger are not magical.",
         "basePrice": 30,
         "tags": [
           "magic-item",
@@ -8448,7 +8448,7 @@ export const mockSources = [
         }
       },
       {
-        "description": "Uncorking vial makes user smell indistinguishable from a homeless person.",
+        "description": "By uncorking this vial, the magical substance inside makes you smell indistinguishable from a homeless person.",
         "basePrice": 15,
         "rowId": "row-1783553745889-bdoqk",
         "name": "Odeur de la Rue",

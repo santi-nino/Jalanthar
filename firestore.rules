@@ -65,13 +65,17 @@ service cloud.firestore {
     }
 
     // Sources are scanned reference documents (price lists, menus) the DM
-    // uploads to seed a building's wares/menu/services from. They're a
-    // DM-only authoring tool, never shown to players directly — a player
-    // only ever sees the items after the DM has pulled them into an actual
-    // building — so unlike buildings/npcs there's no player-facing read
-    // case to carve out here at all.
+    // uploads to seed a building's wares/menu/services from. The Catalogue
+    // tab now reads them directly so players can browse names/prices/
+    // descriptions themselves — only the DM can still write. Category,
+    // monster type, and tag fields stay hidden in the Catalogue UI for
+    // non-DM viewers, but (same trade-off already accepted for buildings'
+    // quantity fields above) a technically determined player reading the
+    // raw document could still see those fields; that's acceptable for a
+    // private, invite-only campaign site.
     match /sources/{sourceId} {
-      allow read, write: if request.auth != null;
+      allow read: if true;
+      allow write: if request.auth != null;
     }
 
     // The Loot tab's own independent category taxonomy (wealth levels,

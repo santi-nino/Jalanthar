@@ -149,16 +149,19 @@ export function DataProvider({ children }) {
       let unsubNpcs = () => {}
       let unsubSources = () => {}
       let unsubLootConfig = () => {}
+      // Sources are now readable by anyone (`allow read: if true` — see
+      // firestore.rules) since the Catalogue tab is player-facing, so this
+      // subscription is set up once, outside the auth branch below, and
+      // stays live for players and the DM alike.
+      unsubSources = onSnapshot(collection(db, 'sources'), (snap) =>
+        setSources(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      )
       const unsubAuth = onAuthStateChanged(auth, (user) => {
         unsubNpcs()
-        unsubSources()
         unsubLootConfig()
         if (user) {
           unsubNpcs = onSnapshot(collection(db, 'npcs'), (snap) =>
             setNpcs(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-          )
-          unsubSources = onSnapshot(collection(db, 'sources'), (snap) =>
-            setSources(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
           )
           unsubLootConfig = onSnapshot(doc(db, 'lootConfig', 'taxonomy'), (snap) => {
             setLootTaxonomy(snap.exists() ? mergeLootTaxonomy(DEFAULT_LOOT_TAXONOMY, snap.data()) : DEFAULT_LOOT_TAXONOMY)
@@ -189,13 +192,13 @@ export function DataProvider({ children }) {
             unsubVisible()
             unsubRevealed()
           }
-          // Sources and the loot taxonomy are both DM-only (`allow read: if
+          // The loot taxonomy is still DM-only (`allow read: if
           // request.auth != null`) — nothing to subscribe to as a player,
           // and no point trying. The Loot tab itself is also DM-only in
           // the UI, so lootTaxonomy just stays at its default for a player
-          // session; it's never read from there.
-          setSources([])
-          unsubSources = () => {}
+          // session; it's never read from there. Sources, unlike this, are
+          // subscribed to once above regardless of auth state — no
+          // per-branch handling needed here anymore.
           unsubLootConfig = () => {}
         }
       })
