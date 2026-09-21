@@ -5,14 +5,12 @@ import { DND5E_ITEMS } from '../../data/dnd5eItems'
 import { formatPrice, effectivePrice } from '../../utils/price'
 import { HeaderDivider } from '../decorations'
 
-// Same 14 official 5e/5.5e creature types the Loot tab's own taxonomy
-// uses (see monsterTypes in defaultLootTaxonomy.js) -- kept as a small
-// local copy rather than importing the Loot taxonomy itself, since this
-// tab is a general-purpose catalog browser, not specifically a Loot tab
-// feature, and shouldn't need to pull in that whole data module just for
-// one static list. This is also the fixed, closed universe of monster
-// type values the DM can apply to an item below -- nothing outside this
-// list can ever be added.
+// The 14 official 5e/5.5e creature types -- kept as a small local
+// constant (the now-deleted Loot generator used to own this list; this
+// tab keeps its own copy since it's a general-purpose catalogue browser,
+// not tied to that feature). This is also the fixed, closed universe of
+// monster type values the DM can apply to an item below -- nothing
+// outside this list can ever be added.
 const MONSTER_TYPES = [
   'Aberration', 'Beast', 'Celestial', 'Construct', 'Dragon', 'Elemental',
   'Fey', 'Fiend', 'Giant', 'Humanoid', 'Monstrosity', 'Ooze', 'Plant', 'Undead',

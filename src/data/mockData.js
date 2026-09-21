@@ -16632,3 +16632,1331 @@ export const mockSources = [
     "createdAt": 1785600000000
   }
 ]
+
+export const mockDeities = [
+  {
+    "id": "deity-helm",
+    "name": "Helm",
+    "title": "the Watcher",
+    "pantheon": "Faerûnian",
+    "alignment": "LN",
+    "domain": [
+      "standing eternal guard",
+      "protecting thresholds and doorways",
+      "impartial enforcement of duty",
+      "vigilance against threats",
+      "unwavering fulfillment of responsibility"
+    ],
+    "symbol": "An open, staring eye with a blue pupil, painted on the back of a right-hand gauntlet or the palm of a left-hand gauntlet",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Helm, also called the Vigilant One, was the god of guardians, protection, and protectors, long seen as a cold and focused deity who impartially took the role of defender and sometimes enforcer. He was an ancient, eternal sentry who always wore a full suit of armor representing the weight of his heavy responsibility, and he got the job at hand done without complaint. The people of the Realms widely admired his humble, reassuring dedication to duty, and he was particularly fond of children, often forgiving their minor transgressions. During the Time of Troubles he was tasked by Ao with guarding the Celestial Stairway, a duty he fulfilled so rigidly that he destroyed the goddess Mystra herself when she tried to force her way past him without the Tablets of Fate. He held special enmity for deities such as Bane, Cyric, Mask, and Shar, and for the uncontrolled destruction wrought by Garagos, Malar, and Talos.",
+    "worship": "Helmites were long respected and revered for their dedication and purpose, especially in the frontiers of the North, unfailingly pledging to defend those who called for it. They wore polished full suits of armor, often enchanted as everbright, typically topped with plumed helmets. Their hierarchy was strict and militaristic, including an order of paladins called the Vigilant Eyes of the God, and was originally headed by a single pontiff, the Supreme Watcher, though that post had been vacant since 992 DR. The faith was especially popular in Cormyr, the Dragon Coast, Tethyr, the Vilhon Reach, and the Western Heartlands. After his death and eventual return following the Second Sundering, worship of Helm steadily rebounded across Faerûn.",
+    "holidays": "Helmites celebrated a festival known as the Ceremony of Honor to Helm on Shieldmeet.",
+    "relationships": []
+  },
+  {
+    "id": "deity-ilmater",
+    "name": "Ilmater",
+    "title": "the Crying God",
+    "pantheon": "Faerûnian",
+    "alignment": "LG",
+    "domain": [
+      "willingly bearing the suffering of others",
+      "endurance through torment",
+      "aid to the oppressed and enslaved",
+      "protection of children and the innocent",
+      "martyrdom in place of the deserving"
+    ],
+    "symbol": "A pair of white hands, crossed and bound at the wrist with a blood-red cord (an older symbol was a blood-stained torture rack)",
+    "sacredAnimals": "White doves, white donkeys, field mice, sparrows",
+    "homePlane": "Martyrdom (a mountain realm within Celestia)",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Ilmater, also known as the Rack-Broken Lord and the One Who Endures, was the intermediate deity of endurance, martyrdom, perseverance, and suffering, and patron of the oppressed and persecuted. He was a willing sufferer who bore the pain of others to spare them from it, appearing as a short, burly man whose body was permanently marked by cuts, burns, and broken bones from ceaseless torture. Despite his ravaged form, Ilmater was generous, even-tempered, and endlessly forgiving, encouraging his faithful to endure hardship and to relieve the suffering of others, even taking it upon themselves. He did not anger quickly, but extreme cruelty, especially against children, could rouse him to a fearsome and violent wrath. He treasured all children and young creatures, and remained forever hopeful that even wicked beings could someday be redeemed.",
+    "worship": "Ilmater's clergy included clerics, paladins, and monks organized loosely into the Church of Ilmater, with many affiliated knightly and monastic orders. His worshipers were largely the oppressed, sick, lame, and poor, along with merchants, thieves, and a few guards who ministered to the suffering. Clerics in the field could be recognized by the coarse furred shirts they wore, and it was considered a grave wrong to harm them since they helped ease suffering; even orcs and goblins held them in some esteem. Ilmater was especially venerated in the hardy, war-torn land of Damara and was one of the most widely worshiped gods among the lower classes and slaves of Calimshan. He was a member of the Triad alongside Tyr and Torm, often found traveling with and aiding Tyr.",
+    "holidays": "No specific holy days or festivals for Ilmater are documented on the wiki.",
+    "relationships": [
+      {
+        "targetId": "deity-loviatar",
+        "type": "enemy",
+        "note": "Loviatar's cult of inflicted pain stands as the direct inversion of Ilmater's willing endurance"
+      }
+    ]
+  },
+  {
+    "id": "deity-torm",
+    "name": "Torm",
+    "title": "the True",
+    "pantheon": "Faerûnian",
+    "alignment": "LG",
+    "domain": [
+      "unwavering loyalty to a just cause",
+      "duty performed without flinching",
+      "forbearance before rash action",
+      "valor and self-sacrifice in battle",
+      "obedience to rightful authority"
+    ],
+    "symbol": "The Hand Resolute — a right-hand gauntlet held upright with the palm extended forward",
+    "sacredAnimals": "Lion (a golden lion was sent as a sign of his will)",
+    "homePlane": "Trueheart (in Mercuria, later within the House of the Triad, and finally Celestia)",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Torm was the Faerûnian patron deity of paladins and the god of duty, loyalty, righteousness, and obedience, later also law and valor. He could appear as a twelve-foot-tall man in ancient plate mail stained dusky purple, or shapeshift into a lion-headed man in combat, but in any form he was stern, dauntlessly courageous, and utterly fearless. Torm was kind and gentle to faithful friends, the weak, and the defenseless, but stern and righteous against evil and injustice. He was one of the three deities of the Triad alongside Tyr and Ilmater, tempering Tyr's zeal for justice with mercy and humility, and after Tyr's death he became the Triad's leader. He held deep enmity for Bane, Shar, and especially Cyric, whom he blamed for gravely wounding Tyr.",
+    "worship": "Known as Tormtar, Torm's worshipers consisted mainly of humans devoted to both good and law, pursuing righteousness, honesty, loyalty, and truth, with growing numbers of dwarves and elves after the Time of Troubles. By the late 15th century DR his typical worshipers were guardians, knights, and paladins who strived to maintain order and peace while remaining vigilant against corruption, even at personal risk. To atone for failings during the Time of Troubles, the Tormtar undertook the Penance of Duty, obligations including aiding the faithful of persecuted good gods and eliminating cults of Cyric and Bane. Knightly orders such as the Order of the Golden Lion, based at the Temple of Torm's Coming in Tantras, sponsored much of his worship across the continent.",
+    "holidays": "No specific holy days or festivals for Torm are documented on the wiki.",
+    "relationships": []
+  },
+  {
+    "id": "deity-bane",
+    "name": "Bane",
+    "title": "the Black Hand",
+    "pantheon": "Faerûnian",
+    "alignment": "LE",
+    "domain": [
+      "tyrannical rule through fear",
+      "domination via terror and intimidation",
+      "conquest and subjugation",
+      "ruthless top-down hierarchy",
+      "malevolent despotism"
+    ],
+    "symbol": "A black-enameled war gauntlet, worn on one fist by his clergy",
+    "sacredAnimals": "",
+    "homePlane": "Banehold (formerly the Black Bastion in Avalas, the first layer of Acheron)",
+    "status": "dead",
+    "statusNote": "Slain during the Time of Troubles; his portfolio of tyranny and hatred was absorbed by Cyric.",
+    "creatorPatron": false,
+    "description": "Bane was the Faerûnian god of tyrannical oppression, terror, and hate, regarded as the face of pure evil through malevolent despotism, ruling from his dread plane and acting through worshipers and agents to achieve total domination of Faerûn. He had a dark, shadowy appearance resembling armor, marked by a jeweled dark gauntlet, and radiated an aura of vast power and cruel intelligence. Bane believed himself the rightful ruler of all the planes and could not tolerate subservience to anyone, yet he was pragmatic enough to forge alliances with other evil deities, most notably Myrkul, when it served his ambitions. Once a mortal adventurer, he ascended to godhood alongside Bhaal and Myrkul after tricking the god of death Jergal out of his portfolio in a game of knucklebones, claiming the sphere of strife for himself.",
+    "worship": "Among the evil gods, Bane's church was among the most stable and powerful, obeying a strict hierarchy from the god's most powerful worshipers to his weakest, all of whom knew to whom they owed their blessings. Banite customs were spartan, and the church obeyed no set holidays, instead showing devotion through service and the ritual torture and sacrifice of sentient beings offensive to the god. Priests prayed for their spells at midnight, pledging eternal loyalty and service on pain of death for failure or disloyalty. His clergy included many fighters, monks, blackguards, and wizards, recognizable by the black-enameled gauntlet worn on one fist, and his presence was strongest in the Moonsea region, with Mulmaster as the seat of his church.",
+    "holidays": "Bane's followers celebrated no holidays in his honor; devotion was instead shown through continual service and the ritual torture and sacrifice of those who offended the god.",
+    "relationships": [
+      {
+        "targetId": "deity-cyric",
+        "type": "absorbed_by",
+        "note": "Absorbed Bane's portfolio of tyranny and hatred after the Time of Troubles"
+      }
+    ]
+  },
+  {
+    "id": "deity-bhaal",
+    "name": "Bhaal",
+    "title": "the Lord of Murder",
+    "pantheon": "Faerûnian",
+    "alignment": "NE",
+    "domain": [
+      "ritualistic murder as sacred duty",
+      "bloodlust and violence",
+      "patronage of assassins and their victims",
+      "judgment over the righteousness of a killing (disputed)",
+      "fear inspired by violent death"
+    ],
+    "symbol": "A white human skull bordered by a counter-clockwise stream of bloody teardrops",
+    "sacredAnimals": "",
+    "homePlane": "The Throne of Blood, on Khalas, the first layer of Gehenna",
+    "status": "dead",
+    "statusNote": "Slain by Cyric (as the Slayer) during the Time of Troubles; some hold his essence endures through the scattered Bhaalspawn.",
+    "creatorPatron": false,
+    "description": "Bhaal was the widely feared Faerûnian god of violence and ritualistic murder, a wholly evil, debased, and sadistic deity reviled by much of the pantheon, including Chauntea, Helm, Ilmater, Lathander, Lliira, and Tyr. Before his ascension he was a power-hungry mortal adventurer who, alongside Bane and Myrkul, sought and won a portion of the death god Jergal's portfolio, claiming dominion over death and murder for himself. He could take three avatar forms: the shapeshifting monstrosity Kazgoroth, the corpse-like Slayer favored in cities, and the gargantuan, horned Ravager used in rural regions. The exact nature of his portfolio was debated even among his own worshipers, some believing he punished murderers and warmongers, others that he simply craved more murder for its own sake. He was slain by the mortal Cyric during the Time of Troubles but foresaw his death and secured his eventual return through his half-mortal children, the Bhaalspawn.",
+    "worship": "The clergy of Bhaal, known as Bhaalists or Bhaalyn, formed a disorderly network of local hierarchies with little central authority, believing murder was both a sacred duty and a source of enjoyment. Each cleric of Bhaal was expected to perform at least one murder every tenday, typically in the darkest hour of the night, and worship was concentrated among those who identified as assassins, though common murderers often claimed his name to justify their crimes. Most people throughout the Realms, especially in the Moonshae Isles, regarded Bhaal and his faithful with dread rather than devotion. After his death, city-dwelling Bhaalists largely converted to worship of Cyric as Cyric-Bhaal, while rural priests maintained their faith for a time before it too faded.",
+    "holidays": "No specific holy days are documented on the wiki; clergy instead observed a standing requirement to commit at least one ritual murder every tenday rather than any calendar of festivals.",
+    "relationships": [
+      {
+        "targetId": "deity-cyric",
+        "type": "killed_by",
+        "note": "Slew Bhaal (as the Slayer) during the Time of Troubles"
+      }
+    ]
+  },
+  {
+    "id": "deity-myrkul",
+    "name": "Myrkul",
+    "title": "the Lord of Bones",
+    "pantheon": "Faerûnian",
+    "alignment": "NE",
+    "domain": [
+      "dominion over the dead and undeath",
+      "the inevitability and fear of death",
+      "instilling dread through mere presence",
+      "guarding the mysteries of the grave",
+      "nightmares and the paragon of fear"
+    ],
+    "symbol": "A white skull inset into a black triangle",
+    "sacredAnimals": "",
+    "homePlane": "The Bone Castle, within the Gray Wastes (later adrift on the Astral Plane)",
+    "status": "dead",
+    "statusNote": "Destroyed during the Time of Troubles; his portfolio of death passed first to Cyric, then to Kelemvor.",
+    "creatorPatron": false,
+    "description": "Myrkul, also known as the Lord of the Dead and the Reaper, was a god of the dead in the Faerûnian pantheon, originally a mortal necromancer named Myrkul Bey al-Kursi who ascended to godhood alongside Bhaal and Bane. His influence was built entirely on the fear of death; he was not so much worshiped as dreaded, and was even blamed for the natural hardships of aging. His avatar appeared as a skeleton of a man hidden in flowing black robes, with wrinkled, lesioned skin and cracked lips, speaking in a high whisper devoid of feeling. It was vitally important to Myrkul that Faerûnians always kept him in the back of their minds, and he never missed an opportunity to remind the world that he was waiting for them. He maintained a complicated kinship with Bane and Bhaal from his mortal life onward, and counted Shar as an ally.",
+    "worship": "Worship of Myrkul was never popular in Faerûn; his followers, often undertakers in one form or another, were a morose and secretive lot, reluctant to share their faith with outsiders. These Myrkulytes were tasked with ensuring that the people of Toril both feared and respected death, and propagated rumors that merely touching one of his priests would bring certain death to aggrandize his power. His church had no strong central organization and remained a small, meager, unorganized body of clergy compared to the followings of Bane or Bhaal. After his death at the hands of Cyric, the transition of Myrkulyte mausoleums into Cyricist temples was reportedly smooth and painless.",
+    "holidays": "No specific holy days or festivals for Myrkul are documented on the wiki.",
+    "relationships": [
+      {
+        "targetId": "deity-cyric",
+        "type": "absorbed_by",
+        "note": "Absorbed Myrkul's portfolio of death, later ceded to Kelemvor"
+      }
+    ]
+  },
+  {
+    "id": "deity-cyric",
+    "name": "Cyric",
+    "title": "the Prince of Lies",
+    "pantheon": "Faerûnian",
+    "alignment": "CE",
+    "domain": [
+      "lies and deception",
+      "sowing strife and discord",
+      "trickery and betrayal",
+      "self-glorifying madness",
+      "intrigue and manipulation"
+    ],
+    "symbol": "A jawless white skull set before a black or purple sunburst",
+    "sacredAnimals": "",
+    "homePlane": "The Supreme Throne (also called the Shattered Castle), a self-fashioned realm within Pandemonium",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Cyric was the monomaniacal Faerûnian god of lies, trickery, and strife, having previously held dominion over tyranny, murder, death, intrigue, and illusion as well. As a mortal he was a petty, selfish man who believed everyone was truly alone in life, and his ascension to godhood only magnified his worst traits: he became entirely egocentric, took immense joy from manipulating mortals into ruining their own lives, and for a time believed himself superior to all other beings. He murdered Mystra and caused the Spellplague, an act that cost him much of his following. As the youngest god of the Faerûnian pantheon, Cyric acted out like a spoiled child, becoming irrationally impatient and moody, and he was terrified of the other powers to the point of crippling paranoia. During his later descent into madness, he was overtaken by a myriad of delusions and voices, coming to believe himself the only true god of the Realms.",
+    "worship": "The Cyricist church was hated across Toril, pledged to spread strife and work murder everywhere to make folk fear the Dark Sun, and it was often riven by internal feuds and backstabbing. Cyric's clerics prayed for spells at night after moonrise and often trained as rogues or assassins, with specialty priests known as strifeleaders. The church gained most of the worshipers of Bane, Bhaal, and Myrkul upon Cyric's ascension, along with the followers of the slain goddess Leira, and later spread among the Bedine people, malevolent tieflings, and renegade githyanki. Zhentil Keep and the surrounding Moonsea were long considered the center of Cyric's worship, with the Zhentarim serving as an extension of his church.",
+    "holidays": "Cyricists celebrated few holy days and did not observe the date of Cyric's ascension. Whenever a temple acquired someone or something important enough to be sacrificed, its high priest declared a Day of the Dark Sun to mark the occasion, and eclipses were considered holy occasions accompanied by feasts, fervent prayers, and bloody sacrifices.",
+    "relationships": [
+      {
+        "targetId": "deity-bhaal",
+        "type": "killed",
+        "note": "Slew Bhaal (as the Slayer) during the Time of Troubles"
+      },
+      {
+        "targetId": "deity-bane",
+        "type": "absorbed",
+        "note": "Absorbed Bane's portfolio of tyranny and hatred after the Time of Troubles"
+      },
+      {
+        "targetId": "deity-myrkul",
+        "type": "absorbed",
+        "note": "Absorbed Myrkul's portfolio of death, later ceded to Kelemvor"
+      },
+      {
+        "targetId": "deity-leira",
+        "type": "absorbed",
+        "note": "Murdered Leira and absorbed her portfolio of illusion and deception"
+      }
+    ]
+  },
+  {
+    "id": "deity-shar",
+    "name": "Shar",
+    "title": "the Mistress of the Night",
+    "pantheon": "Faerûnian",
+    "alignment": "NE",
+    "domain": [
+      "darkness and shadow",
+      "secrets and hidden pain",
+      "loss and the erasure of memory",
+      "the Shadow Weave (dark counterpart to magic)",
+      "caverns, dungeons, and the Underdark"
+    ],
+    "symbol": "A black disk ringed with deep purple",
+    "sacredAnimals": "",
+    "homePlane": "The Towers of Night, within the Shadowfell",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Shar was the Faerûnian goddess of darkness and night, the malevolent twin counterpart to the moon goddess Selûne, and creator of the Shadow Weave, a dark counterpart to the Weave of magic. Her domain encompassed not only dark places but deeds done under darkness, secrets, loss, hidden pain, and the ability to forget. She was described as a tall, beautiful woman with dark hair that moved and swirled on its own, but the depths of her evil were too extreme to easily describe: she was twisted, perverse, and consumed by ceaseless, petty hate and envy, plotting from the shadows to undermine all creation. Though she purported to be a healer who let the grief-stricken forget their woes, she was in truth a sadist who savored inflicting the pain of loss, offering only numbness rather than true release. Even her own devoted worshipers were, in her mind, simply pawns in her endless scheme against all existence.",
+    "worship": "The clergy of Shar were a secretive organization that pursued subversive tactics rather than direct confrontation, and in cities where her worship was barred, her churches and temples operated hidden and illegal. In addition to clerics, Shar maintained an elite order of sorcerer monks able to tap into the Shadow Weave. Among her most notable worshipers were the Shadovar of Thultanthar, and she held power and influence over all who used the Shadow Weave, including the drow deity Vhaeraun's followers of shadow magic.",
+    "holidays": "No specific holy days or festivals for Shar are documented on the wiki.",
+    "relationships": [
+      {
+        "targetId": "deity-selune",
+        "type": "enemy",
+        "note": "Eternal rivalry playing out each month as the moon waxes and wanes; twin sisters"
+      }
+    ]
+  },
+  {
+    "id": "deity-selune",
+    "name": "Selûne",
+    "title": "the Moonmaiden",
+    "pantheon": "Faerûnian",
+    "alignment": "CG",
+    "domain": [
+      "guiding navigators, sailors, and travelers",
+      "watching over the moon and night sky",
+      "patronage of non-evil lycanthropes",
+      "protection of wanderers and the lost",
+      "opposition to slavery and oppression"
+    ],
+    "symbol": "A pair of eyes, sometimes depicted surrounded by stars, or a woman's face upon a silver moon disc",
+    "sacredAnimals": "Owls",
+    "homePlane": "The Gates of the Moon",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Selûne, also known as Our Lady of Silver and the Night White Lady, was the goddess of the moon, overseer of the moon, stars, and navigation, and patron of navigators, wanderers, and seekers. She governed the mysterious power that ruled the tides and reproductive cycles, caused lycanthropes to shift, and could bring a being to the brink of madness and back again, serving as the patron of were-creatures of good heart. She was locked in an eternal war with her twin sister Shar, goddess of night and darkness, playing out each month in the sky as the moon waxes and wanes; Shar's darkness devours the moonlight until the new moon, when Selûne is renewed and restored to radiance. Selûne's followers defended the weak and the oppressed and would not stand for slavery, reflecting her compassionate and protective nature.",
+    "worship": "Selûne's faithful, commonly called Selûnites, were a diverse group appealing to all who lived their lives by the moonlit night sky, with no single unified church organization or formal hierarchy. Sailors and navigators who traveled by the stars often prayed to her for protection from Umberlee, while lycanthropes of good heart or neutrality honored her as mistress of their nature. Her diverse worshipers paid homage in individually adapted, often unique rites, with many rituals honoring a woman's role as teacher and role model both in the home and in society. In the aftermath of the Time of Troubles her clergy grew markedly in strength, making pilgrimages across Faerûn to bring hope to people in desperate times.",
+    "holidays": "No specific holy days or festivals for Selûne are documented in the available wiki material.",
+    "relationships": [
+      {
+        "targetId": "deity-shar",
+        "type": "enemy",
+        "note": "Eternal rivalry playing out each month as the moon waxes and wanes; twin sisters"
+      }
+    ]
+  },
+  {
+    "id": "deity-tymora",
+    "name": "Tymora",
+    "title": "Lady Luck",
+    "pantheon": "Faerûnian",
+    "alignment": "CG",
+    "domain": [
+      "good fortune favoring the bold",
+      "skill rewarded through risk-taking",
+      "victory against long odds",
+      "patronage of adventurers",
+      "sharing luck and blessings generously"
+    ],
+    "symbol": "A face-up silver coin bearing an image of Tymora's face, surrounded by shamrocks",
+    "sacredAnimals": "",
+    "homePlane": "Seven earthmotes within the Gates of the Moon",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Tymora was the goddess of good luck in the Faerûnian pantheon, the second incarnation of the goddess of luck after her predecessor Tyche split into Tymora and her twin sister Beshaba, goddess of bad luck. Commonly known as Lady Luck, Tymora shone upon those who took risks and blessed those who dealt harshly with the followers of Beshaba, with 'Fortune favors the bold' serving as her followers' battle cry. She was a cheerful and curious goddess who inherited Tyche's grace and kindness, holding no malice or vengeance, remaining jovial even in dark times and preferring mischief and ironic justice to open violence. She was jaunty, high-spirited, and adventurous, far less serious than most of her fellow deities. Unlike her hoarding sister Beshaba, Tymora was generous, sharing her divine power freely with worshipers, allied gods, and their clerics alike.",
+    "worship": "Tymora's clergy, commonly consisting of adventurers and others who relied on a mixture of luck and skill, encouraged folk to be bold and to trust in their own luck as much as in the goddess. Priests were taught to think of themselves as their own masters, brave enough to accept both good and bad fortune as an expression of faith in themselves and their goddess, and were duty-bound to aid the daring with healing and minor magical items. Shrines and temples were widespread, wealthy, and largely independent of one another, differing in powers, manners, and titles, though clergy commonly wore the disk of Tymora on a chain and favored blue and silver in their dress. She was especially beloved in Cormyr after protecting Suzail during the Time of Troubles.",
+    "holidays": "No specific holy days or festivals for Tymora are documented on the wiki.",
+    "relationships": [
+      {
+        "targetId": "deity-beshaba",
+        "type": "enemy",
+        "note": "Split from the same goddess, Tyche; sisters at eternal odds over fortune"
+      }
+    ]
+  },
+  {
+    "id": "deity-beshaba",
+    "name": "Beshaba",
+    "title": "Lady Doom",
+    "pantheon": "Faerûnian",
+    "alignment": "CE",
+    "domain": [
+      "accidents and random misfortune",
+      "spiteful, jealous mischief",
+      "fear-based devotion",
+      "hoarded, self-serving divine power",
+      "chaotic bad luck"
+    ],
+    "symbol": "Stag horns",
+    "sacredAnimals": "Giant black stags with red eyes",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Beshaba was the chaotic evil intermediate deity of accidents, bad luck, misfortune, and random mischief, the equally acknowledged counterpart to Tymora, Lady Luck. Most people feared her presence, but few dared not invoke her name and invite her to any event, lest she take offense and wreak havoc upon all involved. Like Tymora, she arose from the corrupted form of the goddess Tyche when Tyche was split apart; Beshaba was lovely to behold, with a wild mane of pure white hair and yellow-rimmed eyes ablaze with insanity, but her heart was malicious and spiteful. She was a spiteful, petty, and purportedly insane goddess whose actions often seemed random to onlookers, primarily driven by jealousy toward her sister's more favorable public reception. Unlike Tymora, who shared her gifts freely, Beshaba hoarded her divine powers, creating a reserve rather than empowering her worshipers generously.",
+    "worship": "Beshaba was revered more out of fear than genuine faith; her doctrine held that bad luck befell everybody and the only way to avoid it was to worship her. Her priests manipulated common folk into reverence by acting mysteriously and playing on morbid fears, offering entreaties for their spells and making sacrifices of burning alcoholic beverages such as brandy or wine. Notable orders included the widely feared Doommasters, who reveled in inflicting misfortune on others, the secretive assassin order of the Black Fingers, and the Wormlucks, distinctively dressed priests who served as a focus for calamity wherever they traveled.",
+    "holidays": "Beshaba was honored with two annual festivals, held at Midsummer and Shieldmeet, both celebrated through revelry and indulgence in food and drink.",
+    "relationships": [
+      {
+        "targetId": "deity-tymora",
+        "type": "enemy",
+        "note": "Split from the same goddess, Tyche; sisters at eternal odds over fortune"
+      }
+    ]
+  },
+  {
+    "id": "deity-malar",
+    "name": "Malar",
+    "title": "the Beastlord",
+    "pantheon": "Faerûnian",
+    "alignment": "CE",
+    "domain": [
+      "the hunt and stalking of prey",
+      "bloodlust and bestial savagery",
+      "the predatory grace of beasts",
+      "opposition to the druidic Balance",
+      "primal lycanthropy"
+    ],
+    "symbol": "A four-clawed paw print",
+    "sacredAnimals": "Panthers, bears, apes, alligators, wolves, great cats",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Malar was the lesser deity of hunting, stalking, bloodlust, and bestial savagery in the Faerûnian pantheon, the epitome of the dark, bloody side of nature. In his more favorable aspects he was worshiped by those who identified with wild nature and the grace and amorality of predators, or as the hunger and hunting instinct of beasts themselves. He had two favored forms: the Beast, a twelve-foot-long feline creature with ebony fur matted in blood, and the Master of the Hunt, a humanoid figure crowned with a shifting rack of antlers who spoke only in a low growl. He held a long-standing alliance with Lolth against the Seldarine and worked with other dark deities like Bane and Loviatar, while holding particular hatred for Nobanion, who once defeated him in battle during the Time of Troubles.",
+    "worship": "Malar was never widely worshipped and was generally frowned upon by civilization, as his followers tended to wreak havoc in their wake; he was more often invoked to ward off his wrath, typically manifested through wild beasts, than to seek his favor. His faithful were historically hostile to druids, whom they hunted actively, owing to a hatred of the druidic concept of Balance between nature and civilization. The church had no formal hierarchy, instead revolving around the primal concept of the hunt, led by a huntmaster who determined the timing, prey, and location of ceremonial hunts; specialty priests wore woodland garb and headpieces fashioned from the skulls or pelts of predators they had slain themselves.",
+    "holidays": "Malar's followers observed the High Hunt, a vicious ritual in which a captured humanoid was released and had to evade prowling worshipers for a day and night to win freedom, and the Feast of the Stags, at which priests provided meat through the winter for widows, orphans, the elderly, and the infirm regardless of faith.",
+    "relationships": [
+      {
+        "targetId": "deity-mielikki",
+        "type": "enemy",
+        "note": "Former lovers turned bitter enemies over savagery versus stewardship of the wild"
+      }
+    ]
+  },
+  {
+    "id": "deity-mielikki",
+    "name": "Mielikki",
+    "title": "Lady of the Forest",
+    "pantheon": "Faerûnian",
+    "alignment": "NG",
+    "domain": [
+      "forests and forest creatures",
+      "dryads",
+      "rangers",
+      "druids",
+      "wilderness survival"
+    ],
+    "symbol": "A white unicorn's head, golden-horned and blue-eyed, facing left",
+    "sacredAnimals": "Unicorns, the white hart of the High Forest, hawks, wolves, songbirds",
+    "homePlane": "By the late 15th century DR she resided with Silvanus in the Deep Wilds",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Mielikki was the neutral good goddess of forests and forest creatures, particularly dryads, and patron of druids and rangers, embodying the archetypal ranger's outlook on the wild. She was cheerful and confident in small company but averse to formal speaking or leading large groups, and while she accepted that death was part of nature's cycle, she could not bear to leave injured animals or friends to die and often healed them herself rather than let the circle of life run its course. Her preferred avatars were the Supreme Ranger, a tall lithe woman in leather armor, and the Forest Queen, a maiden with mossy hair in gossamer robes; in either form she was ten feet tall and walked without touching the ground, leaving no tracks or sound. She served the greater god Silvanus alongside Eldath and Chauntea, and was in turn served by Gwaeron Windstrom, Lurue, and Shiallia.",
+    "worship": "Mielikki's worship was concentrated in the northern forests of Faerûn, especially the High Forest, the Delimbiyr Crescent, the Silver Marches, Silverymoon, and the Dalelands, and she was venerated by woodsmen, wood elves, half-elves, dryads, hamadryads, and treants. Rangers formed her most fervent followers, revering her as their watchful mother, though many in the North prayed instead to her demigod servant Gwaeron Windstrom, feeling Mielikki too distant and mysterious to approach directly. Woodcutters left simple shrines in thanks for the wood they took, marking the boundary of future logging, and common folk appealed to her to protect children lost in the forest. She communicated with her chosen chiefly through dreams and visions rather than public ceremony.",
+    "holidays": "On Greengrass, Midsummer Night, and Shieldmeet, Mielikki gathered great herds of unicorns to run through the forests all night, and her faithful were permitted to ride them bareback on these nights, traveling far and seeing distant lands.",
+    "relationships": [
+      {
+        "targetId": "deity-malar",
+        "type": "enemy",
+        "note": "Former lovers turned bitter enemies over savagery versus stewardship of the wild"
+      }
+    ]
+  },
+  {
+    "id": "deity-sune",
+    "name": "Sune",
+    "title": "Lady Firehair, the Lady of Love",
+    "pantheon": "Faerûnian",
+    "alignment": "CG",
+    "domain": [
+      "beauty in all its sensory forms",
+      "romantic and passionate love",
+      "obsession and love's darker tragedies",
+      "transformation of ugliness into beauty",
+      "destined and forbidden matches"
+    ],
+    "symbol": "Not verbally described in the available wiki text",
+    "sacredAnimals": "",
+    "homePlane": "Brightwater's Heartfire Quarter; after the Spellplague she moved Brightwater to Selûne's realm, the Gates of the Moon",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Sune was the greater goddess of beauty and passion, encompassing beauty in sights, sounds, smells, tastes, and touch, and love in all its forms, including its negative extremes of obsession and murderous passion as well as truer, deeper connections. She appeared as a woman of unearthly beauty with famously long red hair that always resembled flame, though her skin tone and eye color shifted between appearances. Benevolent but deeply vain, Sune abhorred the destruction of beauty, thrived on tender emotion, and reserved her deepest love for her mortal worshipers, though her own passions tended to fade once a subject's allure wore off. Her gaze and presence could enrapture or even kill, and her charm-related magic was four times as potent as normal. She was served by Lliira and Sharess and allied with Milil, Lathander, and Selûne.",
+    "worship": "Sune's clerics sought to bring beauty into the world through great works of art, patronage of promising actors, and imported luxuries like fine wines and satin, while also enjoying looking beautiful themselves and telling romantic tales. Her temples held social salons and displayed mirrors for parishioners, some even offering public baths, while her shrines often stood on busy city street corners with a small ornate roof and mirror beneath so passersby could check their appearance while honoring her. The Sisters and Brothers of the Ruby Rose, a knightly order of bards, fighters, and paladins, guarded Sunite temples and holy sites, with initiates standing vigil overnight in a temple to seek the goddess's favor.",
+    "holidays": "The wiki does not document specific named holy days or festivals for Sune; her worship instead centered on ongoing temple salons, romantic storytelling, and acts of art and beautification.",
+    "relationships": [
+      {
+        "targetId": "deity-sharess",
+        "type": "ally",
+        "note": "Close companions who have served alongside one another"
+      }
+    ]
+  },
+  {
+    "id": "deity-sharess",
+    "name": "Sharess",
+    "title": "The Dancing Lady",
+    "pantheon": "Faerûnian",
+    "alignment": "CG",
+    "domain": [
+      "festhalls",
+      "hedonism",
+      "sensual fulfillment",
+      "dance",
+      "cats"
+    ],
+    "symbol": "Not verbally described in the available wiki text",
+    "sacredAnimals": "Cats",
+    "homePlane": "Rapture, her realm within Brightwater (shared with Sune, Lliira, and Waukeen)",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Sharess, known as Bast in the Mulhorandi pantheon, was the Faerûnian goddess of festhalls, hedonism, and sensual fulfillment, with the independent, pleasure-seeking temperament of a cat. She was usually depicted as a beautiful, voluptuous woman with the head of a cat, constantly grooming herself, and was an innate flirt who moved quickly from one source of pleasure to the next once her interest waned. She allied with Selûne, Sune, Milil, Hanali Celanil, and Lliira, while opposing Loviatar and Shar. Originally Bast, patroness of cats, she absorbed the portfolios of the beast-cult deity Felidae and the Yuir elf goddess Zandilar the Dancer, gaining passionate love as part of her domain; later she experimented with darker pleasures and fell under Shar's sway before Sune freed her during the Time of Troubles.",
+    "worship": "The Church of Sharess was casual in nature, and her clergy typically ran or staffed festhalls found in large cities across Faerûn, seeking to indulge every sensory pleasure imaginable. Her faith celebrated more festivals than perhaps any other in Faerûn, collectively called the Endless Revel of Life, with even the daily rising and setting of the sun treated as cause for revelry. Sharessan clerics prayed for their spells at dusk. A loosely affiliated group of werecats called the Eyes of the Evening, devoted to both Sharess and Selûne, hunted Sharran cultists on nights of the full moon.",
+    "holidays": "Her clergy's most beloved festival was Midsummer's Eve, when the pursuit of pleasure had no boundary, held within the broader, near-constant cycle of celebrations the faith called the Endless Revel of Life.",
+    "relationships": [
+      {
+        "targetId": "deity-sune",
+        "type": "ally",
+        "note": "Close companions who have served alongside one another"
+      }
+    ]
+  },
+  {
+    "id": "deity-milil",
+    "name": "Milil",
+    "title": "Lord of Song",
+    "pantheon": "Faerûnian",
+    "alignment": "NG",
+    "domain": [
+      "song",
+      "poetry",
+      "eloquence",
+      "creativity and inspiration in performance",
+      "the whole artistic process from idea to completion"
+    ],
+    "symbol": "His sign of approval for a great artistic work was a golden-lined image of two dancing hollyphants",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Milil was venerated as the Faerûnian lesser deity of song, poetry, eloquence, creativity, and inspiration, representing not just one part of a song but the entire creative process from conception to completion, viewing life itself as a song beginning at birth and ending at death. He appeared as a young, ageless, ten-foot-tall, golden-haired troubadour of striking good looks and a hauntingly beautiful voice, dressed in bright, elegant, gold-bedecked clothing. Milil was a consummate, confident performer with an impeccable memory and broad knowledge of lore, but also egotistical, attention-craving, easily bored without an audience, and extremely flirtatious with mortals and gods alike. He served the greater god Oghma alongside Deneir and Gond, called the 'One True Hand' to Deneir's 'Scribe', maintaining good relations with Sune and Lliira, though his relationship with fellow servant Gond was somewhat strained.",
+    "worship": "Milil was predominantly worshiped by human, elf, and half-elf bards, along with troubadours, poets, and other musically inclined individuals. His organized faith attracted attractive, sensual, musically gifted followers who appreciated good food, wine, and beauty in both nature and civilized society. The Harmonious Order, a group of personable, swaggering paladins, encouraged bards to accompany them on their exploits to compose ballads in Milil's name. After Milil made a mocking ballad about the mad god Cyric, he was ejected from the pantheon and banished to the Fugue Plane for a time.",
+    "holidays": "The sourced wiki text does not document any specific holy days or annual festivals dedicated to Milil.",
+    "relationships": [
+      {
+        "targetId": "deity-oghma",
+        "type": "ally",
+        "note": "Serves as one of Oghma's \"hands\" among the Deities of Knowledge and Invention"
+      },
+      {
+        "targetId": "deity-deneir",
+        "type": "ally",
+        "note": "Fellow servant of Oghma, called the \"One True Hand\" to Deneir's \"Scribe\""
+      }
+    ]
+  },
+  {
+    "id": "deity-oghma",
+    "name": "Oghma",
+    "title": "The Binder of What is Known",
+    "pantheon": "Faerûnian",
+    "alignment": "N",
+    "domain": [
+      "knowledge and thought (spoken, written, or merely conceived)",
+      "invention and inspiration",
+      "patronage of bards",
+      "judging which ideas endure or fade",
+      "eloquence and persuasion"
+    ],
+    "symbol": "A blank scroll, plain and partially unrolled",
+    "sacredAnimals": "",
+    "homePlane": "The House of Knowledge, containing the Spring of Knowledge, Spring of Poetry, and Pool of Music",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Oghma was the neutral, greater god of inspiration, invention, and knowledge, patron of bards, and leader of the Deities of Knowledge and Invention, presiding over the whole of thought whether written, spoken, or still only held in the mind. He usually appeared as a handsome, dark-skinned man in resplendent, theatrical clothing, outwardly carefree and cheerful with a ready smile, though he carried the solemn, deeply cautious burden of deciding which new ideas and inventions would be allowed to spread and which would fade with their creator. He possessed peerless charm and persuasive power, vast magical and psionic ability, and led Milil, Deneir, and Gond as his subordinate 'hands', while allying with Azuth and Lathander and opposing Mask, Cyric, Talos, Bane, and formerly the goddess of lies, Leira.",
+    "worship": "Oghma was revered by beings of every race, social class, philosophy, and alignment, uniquely accepting clerics of any moral bent including neutral ones. His worshipers included artists, artisans, bards, cartographers, clerks, inventors, librarians, loremasters, sages, scholars, scribes, smiths, and wizards, essentially anyone who valued, preserved, shared, sought, created, or uncovered knowledge. His faith was strong in the Dalelands, the Western Heartlands, the Shaar, the North (especially the Silver Marches and Silverymoon), and was a major faith in Waterdeep.",
+    "holidays": "The sourced wiki text does not document specific holy days or festivals for Oghma; devotion centered on the ongoing pursuit, preservation, and judgment of knowledge.",
+    "relationships": [
+      {
+        "targetId": "deity-milil",
+        "type": "ally",
+        "note": "Serves as one of Oghma's \"hands\" among the Deities of Knowledge and Invention"
+      },
+      {
+        "targetId": "deity-deneir",
+        "type": "ally",
+        "note": "Deneir serves as Oghma's scribe among the Deities of Knowledge and Invention"
+      }
+    ]
+  },
+  {
+    "id": "deity-deneir",
+    "name": "Deneir",
+    "title": "The Scribe of Oghma",
+    "pantheon": "Faerûnian",
+    "alignment": "NG",
+    "domain": [
+      "art and images",
+      "cartography",
+      "glyphs",
+      "literature",
+      "scholarship"
+    ],
+    "symbol": "Depicted on the wiki via images captioned as his holy symbol, though the article gives no textual description of its design",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Deneir was the neutral good lesser deity of art, cartography, glyphs, images, knowledge, literature, and scholars, often called the Scribe of Oghma, whom he served as brother and right-hand alongside Milil and Gond among the Deities of Knowledge and Invention. He answered the prayers of his organized priesthood but was also known to personally favor anyone who genuinely embodied his ideals of inventing, creating, and learning, and he chafed against strictly hierarchical orders within his own church whose devotion to duty crowded out the joy of learning and creating. Deneir's teachings held that his followers should create with a conscience, refraining from casually designing weapons of war or death.",
+    "worship": "Deneir's churches each maintained a library, continually collecting literature and maps while also keeping records of ancient languages and artistic renderings, staffed by scribes who transcribed books to grow the collection. Notable places of worship included the Spirit Soaring cathedral built by Cadderly Bonaduce, the secret Library of Deneir hidden within a Waterdeep mountain and linked by portal to a temple of Oghma, and the Gallery Majesta in Calimport, which doubled as a museum of magical artifacts.",
+    "holidays": "The sourced wiki text does not document any specific holy days or festivals associated with Deneir; his worship instead centered on scholarship, library-keeping, and creative work.",
+    "relationships": [
+      {
+        "targetId": "deity-milil",
+        "type": "ally",
+        "note": "Fellow servant of Oghma, called the \"One True Hand\" to Deneir's \"Scribe\""
+      },
+      {
+        "targetId": "deity-oghma",
+        "type": "ally",
+        "note": "Deneir serves as Oghma's scribe among the Deities of Knowledge and Invention"
+      }
+    ]
+  },
+  {
+    "id": "deity-jergal",
+    "name": "Jergal",
+    "title": "The Final Scribe, Lord of the End of Everything",
+    "pantheon": "Faerûnian",
+    "alignment": "LN",
+    "domain": [
+      "the recorded fate of all the dead",
+      "the orderly accounting of death",
+      "sanctioned use of undeath in service of death's advance",
+      "resignation and the end of all things"
+    ],
+    "symbol": "A skull biting a scroll",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "Voluntarily ceded the greater portfolio of death ages ago out of weariness, and now serves as seneschal to Kelemvor.",
+    "creatorPatron": false,
+    "description": "Jergal was the seneschal of the Lord of the Dead, having served Myrkul, then Cyric, and now Kelemvor, and was Faerûn's original god of death before he wearily ceded his throne. Unfeeling and excessively formal, he never grew angry and spoke in a monotonous, uncaring tone, keeping meticulous records of the ultimate fate of every dead soul. He usually appeared as a wizened, mummy-like being resembling a cross between a humanoid and a praying mantis, with taut gray skin, bulbous lifeless yellow eyes, and insectoid mandibles, clutching a quill and a thick scroll of incomprehensible script. In the days of ancient Netheril he was a greater god holding the portfolios of the Dead, Murder, and Strife, until boredom led him to cede these to three mortals who became the Dead Three: Bane took Strife, Myrkul took the Dead, and Bhaal took Murder.",
+    "worship": "The church of Jergal is small and secretive, a rigidly organized, almost monastic order of scribes known as the Scriveners of Doom, based largely in lifeless stone mausoleums and dry, dusty crypts. Its members spend their days maintaining and extending vast archives of scrolls recording how the sentients under their purview died and where their souls were destined. Clerics of Jergal pray for their spells at dusk, representative of the end of the day, and his church has undergone a small renaissance only in Thay, where death is a daily fact of life.",
+    "holidays": "On the last night of the year, known as the Night of Another Year, Jergal's clergy cease their endless work for a single night and read aloud every name whose death they recorded that year before filing the scrolls away with the cry 'One Year Closer!' and resuming their labor the next day.",
+    "relationships": [
+      {
+        "targetId": "deity-kelemvor",
+        "type": "subordinate_to",
+        "note": "Voluntarily ceded the death portfolio ages ago and now serves as Kelemvor's seneschal"
+      }
+    ]
+  },
+  {
+    "id": "deity-kelemvor",
+    "name": "Kelemvor",
+    "title": "Lord of the Dead, Judge of the Damned",
+    "pantheon": "Faerûnian",
+    "alignment": "LN",
+    "domain": [
+      "death and the dead",
+      "judgment of souls after death",
+      "the natural acceptance of mortality",
+      "opposition to undeath",
+      "the afterlife's order"
+    ],
+    "symbol": "Depicted on the wiki via images captioned as his holy symbol from different eras, though the article gives no textual description of its design",
+    "sacredAnimals": "",
+    "homePlane": "The Crystal Spire, within the Fugue Plane/City of the Dead",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Kelemvor, formerly the mortal mercenary Kelemvor Lyonsbane, was the fair yet cold god of death and the dead, master of the Crystal Spire in the Fugue Plane, and the most recent in a succession of death gods after Jergal, Myrkul, and Cyric. Unlike his predecessors, whose rule made the afterlife an uncertain and fearful prospect, Kelemvor taught that death was a natural part of life not to be feared, and he held the undead in the utmost contempt as an affront to that natural order. As death god, he replaced the twisted, torturous Bone Castle with the transparent Crystal Spire, judging faithless and false souls himself rather than leaving them to eternal torment, though he was more lenient toward the virtuous and honorable among them and harsher on the cowardly and capricious. His greatest enemy was Cyric, and he opposed Velsharoon and Talona as well, while allying with Lathander against undeath.",
+    "worship": "Kelemvor's death clergy tended to the last wishes of the dying and provided burial services for those who died alone, worked to cure diseases and defend people from monsters so folk did not die before their time, and above all sought to destroy undeath in all its forms as an affront to their god. Elite priests were known as Doomguides, and servants of Kelemvor typically wore somber gray vestments and wielded hand-and-a-half or bastard swords.",
+    "holidays": "The sourced wiki text does not document any specific holy days or festivals associated with Kelemvor's worship.",
+    "relationships": [
+      {
+        "targetId": "deity-jergal",
+        "type": "patron_of",
+        "note": "Voluntarily ceded the death portfolio ages ago and now serves as Kelemvor's seneschal"
+      }
+    ]
+  },
+  {
+    "id": "deity-lathander",
+    "name": "Lathander",
+    "title": "The Morninglord",
+    "pantheon": "Faerûnian",
+    "alignment": "NG",
+    "domain": [
+      "dawn and renewal",
+      "birth and fertility",
+      "athletics",
+      "self-perfection",
+      "spring and youthful vitality"
+    ],
+    "symbol": "Depicted on the wiki via images captioned as his holy symbol (including on a flag), though the article gives no textual description of its design",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Lathander, the Morninglord, was a deity of creativity, dawn, renewal, birth, athletics, spring, self-perfection, vitality, and youth, favoring those who dispelled the undead and blessed those who planted new life, and was invoked to bless births and fertility rites. He was the central figure in the disastrous Dawn Cataclysm, an attempt to reshape the Faerûnian pantheon in his own image that killed several deities; he secretly blamed the failure on agents of Shar. He was romantically linked with Chauntea for centuries, seeing her as a kindred spirit, and allied with Tymora, Tyr, Torm, Ilmater, Sune, Selûne, Oghma, Kelemvor, and Mielikki, while opposing Cyric, Talos, and Shar. He vanished and was seemingly replaced by the resurrected sun god Amaunator before returning during the Second Sundering of 1486 DR.",
+    "worship": "Novices of the Lathanderian faith were called the Awakened, and clerics were Dawnbringers, who took a new name upon full ordination to signify Lathander's personal recognition. All followers were required to hold neutral to good alignments, and his clergy respected art, liberty, nature, and culture, promoted self-betterment, and worked to bring hope while opposing evil, especially undead and inaction that let evil prosper. Most ceremonies were held at dawn, and actions or contracts agreed to at sunrise were considered blessed by him, while funerals were held at dusk followed by a wake lasting until dawn.",
+    "holidays": "The sourced wiki text does not detail a specific festival calendar for Lathander beyond his clergy's dawn-based ceremonies, and states no distinct named holy days.",
+    "relationships": []
+  },
+  {
+    "id": "deity-loviatar",
+    "name": "Loviatar",
+    "title": "Maiden of Pain",
+    "pantheon": "Faerûnian",
+    "alignment": "LE",
+    "domain": [
+      "physical torture and agony",
+      "psychological suffering",
+      "infliction of pain as an art",
+      "self-flagellation and ritualized suffering",
+      "domination and cruelty"
+    ],
+    "symbol": "A nine-stranded whip with barbed strands",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Loviatar was the evil goddess of agony, both queen and servant to the greater god Bane, and master of inflicting physical and psychological suffering, with a portfolio encompassing hurt and torture. She appeared as a slim, beautiful maiden with thigh-length platinum-blonde hair, dressed in spiked black leather or silver-chained white silk, cold and sinister in demeanor. Calculatingly cruel and nearly impervious to fear, love, or hate herself, she took genuine sadistic pleasure in wounding others, always knowing precisely what to say to cause maximum hurt. She was formerly a servant of Bhaal and bitter rival of Talona after Talona slew Loviatar's sister Kiputytto, later fell under Shar's sway, and returned to Bane's side as his consort; her portfolio conflicted most sharply with Ilmater's mercy, and she despised Eldath and Lliira for offering reward without suffering.",
+    "worship": "Loviatans sought to bring pain and suffering to the world through physical torture or subtler psychological means, valuing beauty, intelligence, and acting, but prizing above all the ability to fully understand a victim so as to inflict maximum pain. Followers were encouraged to eradicate the worshipers of Ilmater wherever found. Her faith was the state religion of Dambrath, where the Crinti priesthood grew to the thousands.",
+    "holidays": "Loviatans practiced self-flagellation, often each morning when praying for spells, and marked each change of season with the Rite of Pain and Purity, in which followers danced across glass, thorns, or barbed wire while being whipped by senior clergy.",
+    "relationships": [
+      {
+        "targetId": "deity-ilmater",
+        "type": "enemy",
+        "note": "Loviatar's cult of inflicted pain stands as the direct inversion of Ilmater's willing endurance"
+      }
+    ]
+  },
+  {
+    "id": "deity-leira",
+    "name": "Leira",
+    "title": "The Lady of Deception, the Lady of the Mists",
+    "pantheon": "Faerûnian",
+    "alignment": "CN",
+    "domain": [
+      "illusion magic",
+      "deception and lies",
+      "misdirection",
+      "the worthlessness of literal truth",
+      "masks and disguise"
+    ],
+    "symbol": "Not explicitly described in the sourced wiki text",
+    "sacredAnimals": "",
+    "homePlane": "The Courts of Illusion, on the chaotic plane of Limbo",
+    "status": "dead",
+    "statusNote": "Murdered by Cyric shortly after the Time of Troubles, who absorbed her portfolio of illusion and deception. Persistent rumors hold she secretly survives.",
+    "creatorPatron": false,
+    "description": "Leira, also called the Lady of Deception or the Lady of the Mists, was the goddess of deception and illusions and patroness of illusionists and liars. She was an enigma who never told the truth when a falsehood would do, shrouding everything she did and said in layers of lies, and she believed that literal truth was worthless while misbelief and deliberate falsehood were what gave life meaning. Leira was allied with Mask, who ultimately betrayed her, and with Azuth, while Oghma opposed her because her lies hindered the pursuit of knowledge. Months after the Time of Troubles, Leira was slain at Blackfeather Bridge by the new god of death, Cyric, wielding Godsbane (an avatar of Mask in disguise), and her portfolio was absorbed into Cyric's; her divine power scattered into motes that coalesced into beings called glamers.",
+    "worship": "Leira had a small following of priests known as Leirans or Worshipers of the Mistshadow, who wore silver masks and often disguised themselves to deceive those around them, speaking truthfully only to fellow Leirans. High-level clerics were called Mistcallers, a specialty priesthood with limited powers of illusion. The highest concentration of her worshipers was found on the island of Nimbral and its vassal state Samarach.",
+    "holidays": "Every morning and on every moonlit night, Leirans lay face down and prayed to the Lady of the Mists, and whenever mist was present they would walk through it while praying. The faith's most revered rite was the Unmasking, a purification ceremony performed when new followers joined or a follower changed rank.",
+    "relationships": [
+      {
+        "targetId": "deity-cyric",
+        "type": "absorbed_by",
+        "note": "Murdered Leira and absorbed her portfolio of illusion and deception"
+      }
+    ]
+  },
+  {
+    "id": "deity-silvanus",
+    "name": "Silvanus",
+    "title": "Oak-Father",
+    "pantheon": "Faerûnian",
+    "alignment": "N",
+    "domain": [
+      "wild, untamed nature",
+      "the balance of growth and decay",
+      "the natural cycle (water/drought, fire/ice)",
+      "wrath against the destroyers of wilderness",
+      "nature standing apart from civilization"
+    ],
+    "symbol": "Depicted on the wiki via a labeled image, though the article gives no textual description of its design",
+    "sacredAnimals": "",
+    "homePlane": "The Deep Wilds",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Silvanus was the Celtic and Faerûnian power of wild nature, standing in deliberate contrast to Chauntea's more ordered, agrarian nature, and cared little for maintaining balance with civilization, growing wrathful toward those who threatened wild places. He manifested in several forms: the Old Father, an old bearded face floating among or sprouting from ancient trees; the Young Strider, a long-limbed youth in leaf-armor wielding a great mallet; and the silent, antlered Horned Hunter. Within nature itself he cared greatly about maintaining the balance between growth and decay, water and drought, fire and ice, and he held a special hatred for those who used fire carelessly or destructively. He had few allies or enemies, chiefly working alongside Eldath, Mielikki, Shiallia, Chauntea, and Lathander against Moander, Malar, Talona, and Talos.",
+    "worship": "Silvanus's faith included both clerics and druids, with druids more prominent given his narrow focus on wild nature rather than a broader balance with civilization; some barbarians, hermits, wilderness dwellers, and rangers worshiped him as well. His clergy worked closely with the churches of his allies Mielikki and Eldath toward shared goals, including protecting the wilderness from the encroachment of civilization, fighting diseases, planting new growth, and opposing the followers of Malar. His worship was widespread in eastern and southern Tethyr, the Dalelands, the Moonshae Isles, the Chondalwood, and the Yuirwood of Aglarond.",
+    "holidays": "The sourced wiki text does not document any specific holy days or festivals dedicated to Silvanus; his worship instead centered on the ongoing protection of wild places and the maintenance of nature's cycles.",
+    "relationships": [
+      {
+        "targetId": "deity-rillifane-rallathil",
+        "type": "ally",
+        "note": "Kindred nature deities of different pantheons, working together to protect the wild"
+      }
+    ]
+  },
+  {
+    "id": "deity-corellon-larethian",
+    "name": "Corellon Larethian",
+    "title": "Ruler of All Elves, Coronal of Arvandor, Creator of the Elves, First of the Seldarine",
+    "pantheon": "Elven (Seldarine)",
+    "alignment": "CG",
+    "domain": [
+      "art",
+      "arcane magic",
+      "poetry and music",
+      "swordsmanship",
+      "elven crafts"
+    ],
+    "symbol": "A crescent moon, or a starburst",
+    "sacredAnimals": "Gold dragons, silver dragons, unicorns, song dragons, centaurs, dryads",
+    "homePlane": "Arvandor, in Arborea",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": true,
+    "description": "Corellon was the patron and creator god of all elves, governing the arts held in highest esteem among his people: magic, music, crafts, poetry, and warfare. He was at once a warrior, poet, mage, and bard, embodying both masculine and female aspects, though he conventionally appeared as an androgynous male elf of lithe build and preternatural beauty. Highly intelligent and gifted with the mind of a supreme strategist, his true heart belonged to art and the pursuit of ever-greater creative and arcane mastery. He believed mercy, love, and pity were the most important traits a good person could hold, and blessed those who aided others while growing angry at those who defiled the dead. Despite his grace, he carried elven pride bordering on arrogance, though he remained willing to learn even from mortals.",
+    "worship": "Corellon's church centered on preserving elven culture, recovering lost elven relics and artifacts, and promoting magic, music, and craftsmanship among his people. Orders devoted to him included the Fellowship of the Forgotten Flower, the Knights of the Golden Wyrm, and the Swords of the Seldarine, mixing martial and artistic devotion. His worshipers were guardians of elven borders and traditions, and priests wandered incognito among elven communities to observe and protect craftsmen and the faithful.",
+    "holidays": "The wiki does not document specific named holy days or festivals for Corellon; his worship instead centered on ongoing devotion to art, magic, and the protection of elvenkind.",
+    "relationships": [
+      {
+        "targetId": "deity-gruumsh",
+        "type": "enemy",
+        "note": "Corellon took Gruumsh's eye in the primordial battle that gave rise to the elves"
+      },
+      {
+        "targetId": "deity-lolth",
+        "type": "enemy",
+        "note": "Exiled from the Seldarine as Araushnee after repeated attempts to usurp Corellon's power"
+      }
+    ]
+  },
+  {
+    "id": "deity-sehanine-moonbow",
+    "name": "Sehanine Moonbow",
+    "title": "Daughter of the Night Skies, Goddess of Moonlight, Lady of Dreams",
+    "pantheon": "Elven (Seldarine)",
+    "alignment": "CG",
+    "domain": [
+      "dreams and visions",
+      "death and the passage of souls",
+      "the full moon",
+      "journeys/travel",
+      "illusion magic"
+    ],
+    "symbol": "A full moon under a moonbow",
+    "sacredAnimals": "Silver dragons, celestial horses, pixies, baelnorn, lythari",
+    "homePlane": "Arvandor, in Arborea",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Sehanine Moonbow was an elven goddess of death, dreams, the heavens, journeys, the full moon, moon elves, stars, and transcendence, considered the most powerful female member of the Seldarine. Her power waxed and waned with the phases of the moon, being strongest under a full moon and nearly powerless in daylight. She was intolerant of undead and necromancy, and rather than speaking plainly she preferred to communicate through dreams and visions. Though deeply protective of elves, sending omens to warn them of danger and weaving illusions to conceal elven hideouts, she was otherwise an aloof deity who kept herself apart from the affairs of the world. She was either the daughter or consort of Corellon, and merged with Aerdrie Faenya and Hanali Celanil to form the triune goddess Angharradh.",
+    "worship": "Sehanine's faithful directed illusions to hide elven settlements, guided elves to safe havens such as Evermeet, and hunted down undead, which she despised. Elves believed in reincarnation, and held that Sehanine, together with Corellon, guided souls toward an ultimate state of perfection through successive lives. She kept a distant but supportive relationship with the rest of the Seldarine, occasionally coaxing withdrawn or troubled deities back toward calm.",
+    "holidays": "No specific holy days or festivals for Sehanine Moonbow are documented on the wiki.",
+    "relationships": [
+      {
+        "targetId": "deity-eilistraee",
+        "type": "parent",
+        "note": "Regarded by Sehanine as an adopted daughter, though their relationship remains strained and distant"
+      }
+    ]
+  },
+  {
+    "id": "deity-solonor-thelandira",
+    "name": "Solonor Thelandira",
+    "title": "God of hunting, archery, and survival in wild places",
+    "pantheon": "Elven (Seldarine)",
+    "alignment": "CG",
+    "domain": [
+      "hunting",
+      "archery",
+      "survival in wilderness",
+      "the border between wild and farmed land",
+      "tracking and stealth in nature"
+    ],
+    "symbol": "Not explicitly described in the article text",
+    "sacredAnimals": "Wolf",
+    "homePlane": "The Pale Tree, within Arvandor",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Solonor Thelandira was the elven god of hunting, archery, and survival in wild and harsh places, teaching his followers archery, moving unseen, and hiding in the wilds. He watched over the border between wilderness and farmed land, seeking to maintain balance between those who wished to exploit nature and those who wished to preserve it untouched. He always kept his word and so rarely offered it lightly, and he often came across as grim due to the complexity of the compromises his duty demanded. He hunted not for killing's sake but to maintain nature's balance and destroy evil, tracking and shooting his foes from a distance rather than engaging closely. He was regarded as the finest archer among all the gods of Faerûn.",
+    "worship": "Solonor's worshipers were invariably elves or half-elves of a natural bent, usually rangers or other warriors especially skilled with the bow. The wiki notes this section is a stub and does not document further details of his clergy's structure or specific rites.",
+    "holidays": "No documented holy days or festivals for Solonor Thelandira appear on the wiki.",
+    "relationships": []
+  },
+  {
+    "id": "deity-erevan-ilesere",
+    "name": "Erevan Ilesere",
+    "title": "The Trickster, the Chameleon, the Green Changeling",
+    "pantheon": "Elven (Seldarine)",
+    "alignment": "CN",
+    "domain": [
+      "mischief",
+      "trickery and rogues",
+      "shapechanging",
+      "pranks and gambling"
+    ],
+    "symbol": "An asymmetrical starburst",
+    "sacredAnimals": "Raccoons, tressyms",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Erevan Ilesere was the elven god of mischief and rogues, an unpredictable, flighty, fun-loving deity who delighted in harmless pranks above all else and seemed unable to focus on one task for long. A shapechanger, he appeared as an elf or as fey such as a brownie, pixie, or sprite, always wearing green somewhere on his body in tribute to the forests where fey and elves dwell. Despite his fickle nature he was fiercely loyal to the Seldarine and fiercely protective of elves and sylvan races when threatened. He had no patience for those who relied on him to solve their problems, instead favoring the self-reliant and the underdog.",
+    "worship": "Erevan's church was an unorganized, loosely affiliated group of rogues and tricksters with little contact between regional branches. Novice clerics were called the Gullible, full priests Quicksilvers, and specialty priests Mischiefmakers. Most priests were moon elves, green elves, or half-elves who taught by example and trained the skills of trickster rogues, delighting in breaking rules and upsetting the powerful.",
+    "holidays": "Erevan's holy days fell on eclipses, when the faithful sacrificed stolen treasures to him. His worshipers also held a monthly 'Midnight Gambol' under the full moon in a secret sylvan glade, featuring dancing, storytelling, wine, pranks, and the sacrifice of beautiful objects.",
+    "relationships": []
+  },
+  {
+    "id": "deity-rillifane-rallathil",
+    "name": "Rillifane Rallathil",
+    "title": "The Leaflord, the Wild One, the Great Oak, the Old Man of the Yuirwood",
+    "pantheon": "Elven (Seldarine)",
+    "alignment": "CG",
+    "domain": [
+      "woodlands and nature",
+      "wild and wood elves",
+      "druids",
+      "beasts",
+      "the seasons"
+    ],
+    "symbol": "An oak",
+    "sacredAnimals": "Badgers, bears, mountain lions, owls, stags, wolverines, wolves",
+    "homePlane": "Arvandor, in Arborea",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Rillifane Rallathil was the deity of the Seldarine who oversaw woodlands, wild elves, druids, and nature generally. The Yuir elves worshiped a giant treant known as Relkath of the Infinite Branches, considered an aspect of Rillifane, and over the centuries the Seldarine merged with the ancient gods of the Yuir, absorbing Magnar the Bear and Relkath as aspects, and the Leaflord grew increasingly primordial in spirit. He was friendly with the other Seldarine deities and many sylvan and fey powers such as Eldath, Mielikki, Silvanus, Oberon, and Titania, and stood opposed to Malar, Talos, and the Dark Seldarine.",
+    "worship": "The wiki's coverage of his worshipers is limited; Rillifane's Grove in Leuthilspar on Evermeet, though not a formal temple, served as a sacred site where wood and wild elves conducted marriages, funerals, and other ceremonies, and where moon and sun elf priests could contact the Seldarine.",
+    "holidays": "No specific holy days or festivals for Rillifane Rallathil are documented on the wiki.",
+    "relationships": [
+      {
+        "targetId": "deity-silvanus",
+        "type": "ally",
+        "note": "Kindred nature deities of different pantheons, working together to protect the wild"
+      }
+    ]
+  },
+  {
+    "id": "deity-lolth",
+    "name": "Lolth",
+    "title": "Queen of Spiders, Queen of the Demonweb Pits, Dark Mother, the Weaver",
+    "pantheon": "Drow (Dark Seldarine)",
+    "alignment": "CE",
+    "domain": [
+      "spiders",
+      "chaos and betrayal among the drow",
+      "assassination",
+      "domination of the Underdark",
+      "cruelty as a tool of control"
+    ],
+    "symbol": "A spider, commonly stylized",
+    "sacredAnimals": "Spiders (all varieties), yochlols",
+    "homePlane": "The Demonweb Pits, her own layer of the Abyss",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": true,
+    "description": "Lolth, the Queen of Spiders, was the most influential goddess of the drow within the Dark Seldarine, capable of appearing as a giant black widow spider, a beautiful female drow garbed in spiders, or a combination of both. She was a goddess of cold cruelty who thrived on torture, betrayal, and death, demanding absolute fealty from the drow while fomenting endless infighting among them to weed out the weak and amuse herself. Her favor was notoriously capricious: those who pleased her one moment could be destroyed the next. Originally the elven goddess Araushnee, consort of Corellon and one of the ruling triumvirate of the Seldarine alongside him and Sehanine, she grew jealous of her station and repeatedly conspired to seize Corellon's power.",
+    "worship": "Lolth's clergy were almost exclusively female priestesses who ruled most drow communities as absolute authorities, forcing their people into constant subservience and conflict in her name; ascension to power among them was frequently accomplished by assassination. Vestments were adorned with spider motifs, and sacrifices of both the living and treasure were offered for her glory. Orders included the all-male Militant Myrlochar and the Handmaidens of the Spider Queen.",
+    "holidays": "No specific annual holy days or festivals for Lolth are documented on the wiki; her worship instead centered on continuous ritual sacrifice, political intrigue, and the maintenance of her matriarchal power structure.",
+    "relationships": [
+      {
+        "targetId": "deity-corellon-larethian",
+        "type": "enemy",
+        "note": "Exiled from the Seldarine as Araushnee after repeated attempts to usurp Corellon's power"
+      }
+    ]
+  },
+  {
+    "id": "deity-vhaeraun",
+    "name": "Vhaeraun",
+    "title": "The Masked Lord, the Masked God of Night, the Shadow",
+    "pantheon": "Drow (Dark Seldarine)",
+    "alignment": "CE",
+    "domain": [
+      "drow males and gender equality among drow",
+      "thievery",
+      "assassins",
+      "shadow magic",
+      "surface raids and expansion"
+    ],
+    "symbol": "A black mask with blue glasses inset over the eyes",
+    "sacredAnimals": "Black cats, dead spiders, ravens",
+    "homePlane": "Ellaniath, his realm within the Demonweb Pits/Abyss",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Vhaeraun was the drow god of drow males, thievery, territory, shadow magic, and evil activity aimed at furthering drow interests on the surface. Son of Araushnee (Lolth) and Corellon Larethian, he held the unusual view among drow deities that males and females were equally valuable, and was primarily worshiped by drow males seeking to escape Lolth's matriarchal slavery. Arrogant and vindictive like other drow deities, he nonetheless remained genuinely and actively involved in his followers' lives. He worked constantly, if covertly, against his mother's power, teaching ideas that contradicted her dogma and cultivating masked traitors — double agents posing as Lolth's clergy — within her own church.",
+    "worship": "Vhaeraun's clergy consisted mainly of drow males (and some sympathetic females) who rebelled against Lolth's matriarchy, operating largely in secret even within Lolth-controlled cities such as Menzoberranzan. His faith promoted gender equality, cooperation with surface elves, and territorial and economic expansion, in direct contrast to Lolth's demand that drow society remain stagnant and hostile to surface elves.",
+    "holidays": "No specific holy days or festivals for Vhaeraun are documented on the wiki.",
+    "relationships": []
+  },
+  {
+    "id": "deity-kiaransalee",
+    "name": "Kiaransalee",
+    "title": "Lady of the Dead, the Revenancer, the Vengeful Banshee",
+    "pantheon": "Drow (Dark Seldarine)",
+    "alignment": "CE",
+    "domain": [
+      "necromancy",
+      "undeath",
+      "revenge",
+      "the reanimated dead"
+    ],
+    "symbol": "A drow hand wearing many silver rings",
+    "sacredAnimals": "",
+    "homePlane": "The city of Naratyr, in the Abyss",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Kiaransalee was the drow lesser goddess of revenge and undeath, a former lichdrow necromancer-queen consumed by thoughts of retribution before her ascension. Driven insane ages before, she nonetheless retained her twisted cunning, remembering clearly every slight against her, real or imagined, and was said to have died and returned repeatedly, each time coming back more vengeful. She preferred the company of mindless undead to sentient beings capable of independent thought, and rarely trusted anyone else to carry out her vengeance, generally seeing to it herself. She began her divine existence as an unwilling vassal forced into subservience to Lolth, gaining only limited freedom after slaying the demon lord Orcus and seizing his realm.",
+    "worship": "Kiaransalee's clergy were organized into small, secretive, regimented cells lacking overall coordination, found mostly in small drow communities or hidden enclaves. Her clerics, called Yathrinshee at higher rank, acted as agents of vengeance, organizing slaying missions to gather corpses for animation; many were also necromancers, and most eventually became undead themselves.",
+    "holidays": "Her single annual holy day was the Graverending, celebrated each Midwinter Eve, in which every cleric individually animated as many undead as she could handle, called Vengeance Hunters, who hunted down and destroyed whoever had killed them within 24 hours before returning to their graves.",
+    "relationships": []
+  },
+  {
+    "id": "deity-eilistraee",
+    "name": "Eilistraee",
+    "title": "The Dark Maiden, the Dark Dancer, Lady of the Dance, Lady Silverhair",
+    "pantheon": "Drow (Dark Seldarine)",
+    "alignment": "CG",
+    "domain": [
+      "beauty and dance",
+      "song and music",
+      "moonlight",
+      "swordwork and bladesong",
+      "hunting and redemption of the drow"
+    ],
+    "symbol": "A silver longsword standing point-upward outlined against a full moon, surrounded by a nimbus of filaments",
+    "sacredAnimals": "Silver moths, silver-striped tabby cats, silver dragons, lythari, pixies",
+    "homePlane": "Arvandor, in Arborea",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Eilistraee was the chaotic good drow goddess of beauty, song, dance, freedom, moonlight, swordwork, and hunting, serving as patroness and protector of the rare drow who longed to leave the Underdark and live peacefully on the surface among other races. Daughter of Araushnee (Lolth) and Corellon Larethian, she chose to share her mother's exile after the War of the Seldarine despite being cleared of guilt, because she foresaw that the drow would need her light in the times to come. A free-spirited, fiery, and melancholic goddess shaped by grief and the suffering of her people, she fought her sorrow by nurturing beauty and joy wherever she could, cherishing music, dance, and acts of kindness.",
+    "worship": "Eilistraee's clergy and lay followers, the Eilistraeans, helped drow and other outcasts learn to live and forge new paths in a hostile world, rediscover community, and find protection, building friendships and relationships with other races. They traveled to bring food, cures, arts, and practical aid to those in need. She was worshiped through song and dance, whenever possible on the surface under moonlight in wooded places, usually accompanied by a feast. Her faith had followings in Cormanthor, the Dalelands, Waterdeep, Skullport, and Silverymoon.",
+    "holidays": "The wiki does not name a specific fixed festival calendar for Eilistraee; worship instead took the recurring form of moonlit dance-and-song gatherings, typically held outdoors under the moon and accompanied by feasting.",
+    "relationships": [
+      {
+        "targetId": "deity-sehanine-moonbow",
+        "type": "child",
+        "note": "Regarded by Sehanine as an adopted daughter, though their relationship remains strained and distant"
+      }
+    ]
+  },
+  {
+    "id": "deity-moradin",
+    "name": "Moradin",
+    "title": "The Soul Forger, Dwarffather, All-Father",
+    "pantheon": "Dwarven (Morndinsamman)",
+    "alignment": "LG",
+    "domain": [
+      "creation of dwarves",
+      "smithing and crafting",
+      "forge magic",
+      "artisan guilds",
+      "dwarven race guidance"
+    ],
+    "symbol": "A hammer and anvil",
+    "sacredAnimals": "",
+    "homePlane": "Dwarfhome, on Solania, the fourth layer of Mount Celestia",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": true,
+    "description": "Moradin, the Soul Forger, is the chief deity of the Morndinsamman and creator of the dwarven race, said to have shaped the first dwarves at his Soul Forges and tempered their spirits there still. He personifies creation and craft, overseeing smithing, stonework, and the guilds and artisan traditions of dwarven society. As the unquestioned patriarch of his pantheon, he is stern, dutiful, and pragmatic, valuing hard work, honor, and the survival and prosperity of the dwarven people above all else. He is closely associated with forges and hearths, and dwarves believe he continues to shape their souls after death.",
+    "worship": "Moradin's temples are typically built around great forges and are decorated with anvils; priests ritually strike an anvil before surrendering weapons to a temple's guards, and worshippers demonstrate his favor by manifesting his symbol on an anvil after it is struck with a hammer. His clergy is drawn largely from smiths, warriors, and clan leaders, and his worship is deeply tied to the dwarven ideals of craftsmanship, clan loyalty, and perseverance. Nearly all dwarves venerate Moradin to some degree as the father of their race, even if their primary devotion lies with another member of the Morndinsamman.",
+    "holidays": "Moradin's holy day falls on the crescent moon, when his faithful gather at forges and hearths to honor him.",
+    "relationships": [
+      {
+        "targetId": "deity-berronar-truesilver",
+        "type": "spouse",
+        "note": ""
+      },
+      {
+        "targetId": "deity-garl-glittergold",
+        "type": "ally",
+        "note": "The gnomish and dwarven pantheons maintain a long-standing friendly alliance"
+      }
+    ]
+  },
+  {
+    "id": "deity-berronar-truesilver",
+    "name": "Berronar Truesilver",
+    "title": "The Revered Mother",
+    "pantheon": "Dwarven (Morndinsamman)",
+    "alignment": "LG",
+    "domain": [
+      "home and hearth safety",
+      "family and clan bonds",
+      "oaths and fidelity",
+      "healing",
+      "record-keeping of clan lore"
+    ],
+    "symbol": "Interlocking rings",
+    "sacredAnimals": "",
+    "homePlane": "Dwarfhome, on Solania, the fourth layer of Mount Celestia (shared with Moradin)",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Berronar Truesilver is the matriarch of the Morndinsamman and Moradin's wife, embodying the gentler, more merciful side of dwarven character while still holding to dwarven pragmatism and determination. She is the intermediate deity of safety, home, and family, and can take the form of an aged dwarf of any sex or even a stooped human crone, in which lesser guise none can detect her divine nature. She is kind and caring, with strong maternal love extending even to dwarven allies, and she prizes compassion, tradition, fidelity, and family above all. As one of the few deities Moradin trusts completely, she serves as a stabilizing, nurturing counterpart to his sterner rule.",
+    "worship": "Berronar's clerics are known as faenor, meaning 'those of the home,' and they act as guardians and protectors of dwarven clans. They archive clan lore, traditions, and family histories, and serve as teachers and healers dedicated to the good health and good character of the dwarven people.",
+    "holidays": "The wiki does not document specific named holy days or festivals for Berronar Truesilver beyond her general association with home and hearth rites.",
+    "relationships": [
+      {
+        "targetId": "deity-moradin",
+        "type": "spouse",
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "deity-clangeddin-silverbeard",
+    "name": "Clangeddin Silverbeard",
+    "title": "The Father of Battle, Lord of the Twin Axes",
+    "pantheon": "Dwarven (Morndinsamman)",
+    "alignment": "LG",
+    "domain": [
+      "honor in open warfare",
+      "battle tactics",
+      "valor",
+      "weapon-crafting for war",
+      "military leadership"
+    ],
+    "symbol": "Crossed silver war axes",
+    "sacredAnimals": "",
+    "homePlane": "Mount Clangeddin, in Abellio, the first layer of Arcadia",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Clangeddin Silverbeard is the primary dwarven god of war within the Morndinsamman, embodying battle, valor, and honor in combat. Known as the Lord of the Twin Axes and the Father of Battles, he lives and breathes warfare, representing the disciplined, honor-bound warrior spirit that makes dwarven armies formidable. He appears as a burly dwarf clad in rusty chainmail, and his domain governs righteous, tactically sound warfare rather than mindless slaughter.",
+    "worship": "Clangeddin's clergy consists largely of dwarven warriors dedicated to combat prowess, tactics, and weapon-craft, training within his divine domain to perfect their martial skill. His worship emphasizes honorable conduct in war, valor in the face of the enemy, and the refinement of weapons as both tools and art.",
+    "holidays": "The wiki does not document specific named holy days or annual festivals for Clangeddin Silverbeard.",
+    "relationships": []
+  },
+  {
+    "id": "deity-gruumsh",
+    "name": "Gruumsh",
+    "title": "The One-Eyed God, He Who Watches, First Power of the Orcs",
+    "pantheon": "Orc",
+    "alignment": "CE",
+    "domain": [
+      "conquest and holy war for territory",
+      "orc racial dominance",
+      "vengeance against elves and dwarves",
+      "unquestioning martial obedience"
+    ],
+    "symbol": "An ever-open, unblinking eye",
+    "sacredAnimals": "",
+    "homePlane": "Nishrek",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": true,
+    "description": "Gruumsh, the One-Eyed God, is the patron and greater deity of the orc pantheon, the father and unquestioned patriarch who created the orcs and drives them toward endless holy war to claim the world as their own. His symbol, an ever-open eye, represents his belief that he watches over every orc, judging their worth. He lost one eye to Corellon Larethian in a primordial battle born of Gruumsh's jealousy over the elven god's favored treatment, magic, and beauty. Driven by pride, wrath, and an unrelenting hunger for territory, Gruumsh rules over both orc mortals and the lesser orc gods as their absolute patriarch.",
+    "worship": "The Church of Gruumsh, whose clergy are called Gruumans, exists in force only within large clans, with roughly half of his priesthood made up of shamans and witch-doctors. Worship centers on war, conquest, and proving one's worth through strength and bloodshed in Gruumsh's name. Clerics pray for their spells in the dark of night.",
+    "holidays": "Gruumsh's holy days fall during the new moon, and the anniversaries of great battles against dwarves, elves, or rival orc tribes are also treated as sacred occasions for his worshippers.",
+    "relationships": [
+      {
+        "targetId": "deity-corellon-larethian",
+        "type": "enemy",
+        "note": "Corellon took Gruumsh's eye in the primordial battle that gave rise to the elves"
+      },
+      {
+        "targetId": "deity-luthic",
+        "type": "spouse",
+        "note": ""
+      },
+      {
+        "targetId": "deity-bahgtru",
+        "type": "parent",
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "deity-luthic",
+    "name": "Luthic",
+    "title": "The Cave Mother",
+    "pantheon": "Orc",
+    "alignment": "NE",
+    "domain": [
+      "caves and the earth beneath orc settlements",
+      "female orcs and childbirth",
+      "healing",
+      "domestic and tribal stability",
+      "fertility"
+    ],
+    "symbol": "Not verbally described in the available wiki text",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Luthic, the Cave Mother, is the orc goddess of caves, mate of Gruumsh, and patron of female orcs, healing, and the home. She is the maternal paragon of the orc pantheon, raising her divine and mortal brood under the earth to be strong and vicious, and she fights with the savage determination of a mother bear to protect her children. Despite her outwardly subservient position to Gruumsh, she is more dangerous and influential than she appears, one of the few beings able to sway his temper and often able to manipulate him to get what she wants. The wiki describes her as not truly faithful to her demeaning husband and recounts a secret romance with Grumbar, the god of elemental earth, which Gruumsh eventually discovered.",
+    "worship": "The Church of Luthic has no single unified organization or formal hierarchy. Luthican clerics conduct her services underground, in cave halls that serve as places of worship, reflecting her strong affinity with earth and caves as the bastion of orc strength and valor. Her most powerful disciples, the Claws of Luthic, tend to the orc brood, raising the young to be as strong and cruel as their parents from deep within the caves.",
+    "holidays": "The wiki does not document specific named holy days for Luthic.",
+    "relationships": [
+      {
+        "targetId": "deity-gruumsh",
+        "type": "spouse",
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "deity-bahgtru",
+    "name": "Bahgtru",
+    "title": "The Leg-Breaker",
+    "pantheon": "Orc",
+    "alignment": "CE",
+    "domain": [
+      "raw physical strength",
+      "tribal loyalty through dominance",
+      "brutal unarmed and melee combat",
+      "crushing weaker rivals"
+    ],
+    "symbol": "A broken bone, representing a behir's femur",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Bahgtru is the orc god of pure, physical strength, son of Gruumsh and Luthic, and patron of the average orc. Believed to have risen from a mortal orc who crushed the brains of smarter, weaker rivals with brute force, he is as awesomely strong as he is utterly oafish. He appears as a gigantic, sixteen-foot-tall, incredibly muscular orc with dirty tan skin, and his broken-bone symbol recalls a legend of him snapping a behir's legs one by one to earn his title. His dogma holds that the strong must crush the weak to strengthen the tribe.",
+    "worship": "Bahgtru's clergy, called Bahgtruns, are typically drawn from a tribe's strongest members, and his clerics must remain physically powerful or risk losing their divine abilities. They traditionally wear little more than a loincloth and favor studded leather gauntlets as weapons. Every full moon, Bahgtruns hold a Festival of Strength, staging challenges of physical ability, some lethal, meant to winnow out the weak.",
+    "holidays": "The Festival of Strength is held every full moon, featuring physical contests and challenges — some lethal — meant to test and prove the strength of Bahgtru's followers.",
+    "relationships": [
+      {
+        "targetId": "deity-gruumsh",
+        "type": "child",
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "deity-shargaas",
+    "name": "Shargaas",
+    "title": "The Night Lord",
+    "pantheon": "Orc",
+    "alignment": "CE",
+    "domain": [
+      "cold, dark, and night",
+      "stealth and assassination",
+      "undeath",
+      "cunning subterfuge distinct from open warfare"
+    ],
+    "symbol": "",
+    "sacredAnimals": "Dire bats, giant bats",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": false,
+    "description": "Shargaas is the orcish god of the cold, the dark, and the night, patron of orcs who act stealthily in the shadows, and serves as Gruumsh's head of assassins. Secretive, murderous, and frightfully cruel, he is regarded as the smartest of the orc gods, more cunning even than the general Ilneval, and he hates all life — including that of orcs and their own gods — treating his followers merely as disposable killing tools. His dogma holds that the darkness is cold and everlasting, but that the mantle of black night provides cover for a hidden blade — a portfolio of stealth and assassination distinct from Gruumsh's portfolio of open, territorial holy war.",
+    "worship": "The Church of Shargaas serves as the primary religious body dedicated to him, and formally joining his cult demands a purely evil alignment. His clergy favor stealth, deception, and murder from the shadows over open battle, often riding giant bats as sacred mounts.",
+    "holidays": "Shargaas's major holy days occur during the new moon, when the sky is clouded and dark, fitting his portfolio of night and shadow.",
+    "relationships": []
+  },
+  {
+    "id": "deity-garl-glittergold",
+    "name": "Garl Glittergold",
+    "title": "The Watchful Protector",
+    "pantheon": "Gnomish",
+    "alignment": "LG",
+    "domain": [
+      "luck",
+      "protection of gnomes",
+      "trickery and mischief",
+      "gem-cutting and lapidary craft",
+      "humor"
+    ],
+    "symbol": "Not verbally described in available text",
+    "sacredAnimals": "",
+    "homePlane": "The Golden Hills",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": true,
+    "description": "Garl Glittergold, the Watchful Protector, is the lawful good greater deity and head of the gnomish pantheon, leading the Lords of the Golden Hills as god of luck, protection, and trickery. Most rock gnomes consider him the idealized gnome, personifying mischief and merry-making, and he is also associated with gem-cutting and lapidary craft. Gnomish myth holds that he discovered the first gnomes in an underground cavern, told them a joke, and led them into the wider world; another legend tells of him letting himself be captured by the kobold god Kurtulmak only to escape and bring the roof of Kurtulmak's cavern down on his head.",
+    "worship": "Garl Glittergold has clerics across the gnomish pantheon's faithful, and is allied with Yondalla, Corellon Larethian, and Moradin. His worship emphasizes protection of gnome communities, clever problem-solving, humor, and craftsmanship, especially in gems and fine work.",
+    "holidays": "The wiki does not document specific named holy days or festivals for Garl Glittergold.",
+    "relationships": [
+      {
+        "targetId": "deity-moradin",
+        "type": "ally",
+        "note": "The gnomish and dwarven pantheons maintain a long-standing friendly alliance"
+      }
+    ]
+  },
+  {
+    "id": "deity-yondalla",
+    "name": "Yondalla",
+    "title": "The Blessed One, Protector and Provider, Nurturing Matriarch",
+    "pantheon": "Halfling (Yondalla's Children)",
+    "alignment": "LG",
+    "domain": [
+      "halfling race protection",
+      "fertility and children",
+      "home and community security",
+      "leadership and diplomacy",
+      "prosperity and the cycle of life"
+    ],
+    "symbol": "A shield, honoring her sword Hornblade as a favored weapon of her faith",
+    "sacredAnimals": "",
+    "homePlane": "Green Fields, in Venya, the third layer of the Seven Heavens",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": true,
+    "description": "Yondalla is the creator of the halfling race and matriarch not only of the halfling pantheon but of halflingkind as a whole. Known as the Protector and Provider, the Nurturing Matriarch, and the Blessed One, her broad portfolio covers protection, fertility, children, community security, leadership, diplomacy, wisdom, tradition, and prosperity. With a charming, friendly demeanor, she exemplifies the curiosity, loyalty, and sense of mischief shared by nearly all halflings, serving as their idealized example.",
+    "worship": "Despite her central role in halfling society, temples to Yondalla are unusually rare; those that exist are built to resemble well-hidden halfling burrow-homes, stocked with weapons and food so surrounding communities can hold out against invaders. Clerics of Yondalla favor the short sword in honor of her sword Hornblade, and her clergy earns notable respect from other faiths for their defensive capabilities despite halflings' small stature.",
+    "holidays": "The wiki does not document specific named holy days or festivals for Yondalla.",
+    "relationships": []
+  },
+  {
+    "id": "deity-ubtao",
+    "name": "Ubtao",
+    "title": "The Father of the Dinosaurs",
+    "pantheon": "Regional (Chult)",
+    "alignment": "N",
+    "domain": [
+      "creation and dominion over Chult",
+      "dinosaurs and jungle spirits",
+      "guardianship against Dendar the Night Serpent",
+      "founding and protection of Mezro"
+    ],
+    "symbol": "Not verbally described in available text",
+    "sacredAnimals": "Dinosaurs",
+    "homePlane": "The Labyrinth of Life, a vast labyrinthine jungle realm in the Outlands",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": true,
+    "description": "Ubtao is the patron deity of Chult, its creator and the founder of the city of Mezro, who was granted Chult as his sole dominion by the other powers of Faerûn in exchange for his eternal vigilance over Dendar the Night Serpent, imprisoned beneath the Peaks of Flame. Known as the Father of the Dinosaurs, he stays distant from both mortals and other deities, seeming to exist above the daily doings of the world and even his own followers. His main personality traits are endless patience and a striking lack of emotion. After the Time of Troubles, he began manifesting as a thunderous roar rolling across the Chultan jungle, as if every dinosaur in Chult cried out at once.",
+    "worship": "The Church of Ubtao is split into three independent sects venerating different aspects of him: the jungle itself, spirit worship, and worship of the deity directly, and is composed mainly of jungle druids, mazewalkers, and shamans rather than traditional clerics — the church has no clerics at all. Most of his clergy are drawn from the Tabaxi tribe, and they pray for spells and miracles at noon, when Ubtao is at his zenith over the jungle.",
+    "holidays": "Ubtao's faith observes scores of ceremonies and holy days, most dedicated to honoring dead ancestors; many of these rites are considered necessary prerequisites before undertaking activities such as hunting special animals or performing burials.",
+    "relationships": []
+  },
+  {
+    "id": "deity-uthgar",
+    "name": "Uthgar",
+    "title": "The Battle Father",
+    "pantheon": "Uthgardt",
+    "alignment": "CN",
+    "domain": [
+      "physical strength and prowess",
+      "tribal warrior identity",
+      "totem-beast mediation",
+      "combat training and tactics"
+    ],
+    "symbol": "Uthgardt beast-totem symbols (Black Lion, Black Raven, Blue Bear, Elk, Gray Wolf, Great Worm, Griffon, Red Tiger, Sky Pony, Tree Ghost, Thunderbeast), one per tribe",
+    "sacredAnimals": "The eleven Uthgardt totem beasts: lion, raven, bear, elk, wolf, great worm, griffon, tiger, sky pony, tree ghost, thunderbeast",
+    "homePlane": "Uthgardtheim, in Ysgard",
+    "status": "active",
+    "statusNote": "",
+    "creatorPatron": true,
+    "description": "Uthgar, the Battle Father, was once a mortal chieftain-hero, Uthgar Gardolfsson, who died of wounds suffered battling Gurt, Lord of the Pale Giants, in 123 DR; Tempus elevated him to be his exarch and battle companion, and by the 15th century DR he serves in that role. His nomadic followers named themselves the Uthgardt in his honor and organized into eleven tribes, each inspired by and venerating a distinct beast spirit Uthgar tamed in life, which mediates between him and his people. As a god, he is known for his competitive nature in combat, tireless dedication to training and tactics, and a hearty enjoyment of life's everyday pleasures — eating, drinking, hunting, and the camaraderie of fellow warriors.",
+    "worship": "Worship of Uthgar is organized around the eleven Uthgardt tribes, each centered on its own totem beast, with dogma varying from tribe to tribe. His faith is inseparable from Uthgardt tribal identity, combat culture, and totemic ritual, centered on ancestral mounds carved in the shape of each tribe's totem beast.",
+    "holidays": "The chief Uthgardt religious observance is Runemeet, a tribal gathering at which tribes set policies, venerate their gods, perform marriages, mourn their dead, and initiate new shamans. Runemeet includes the Runehunt, a rite of passage in which youths hunt down their totem's sworn enemies to prove themselves worthy of full tribal membership.",
+    "relationships": [
+      {
+        "targetId": "deity-ragna",
+        "type": "patron_of",
+        "note": "Ragna is Uthgar's demigod daughter, an emerging power within the campaign's Uthgardt lore"
+      }
+    ]
+  },
+  {
+    "id": "deity-ragna",
+    "name": "Ragna",
+    "title": "Demigod Daughter of Uthgar",
+    "pantheon": "Uthgardt",
+    "alignment": "CN",
+    "domain": [
+      "an emerging warrior cult among scattered Uthgardt-adjacent orc tribes",
+      "personal strength as proof of divine favor",
+      "campfire oaths and blood-debts",
+      "the ambition to be recognized as a true goddess"
+    ],
+    "symbol": "A crude, hand-carved wooden totem bearing a stylized blend of Uthgar's beast-totems, most often the Gray Wolf",
+    "sacredAnimals": "",
+    "homePlane": "",
+    "status": "active",
+    "statusNote": "Not yet a full deity — a demigod whose following is small, scattered, and campaign-specific (established by the Aldermoss Hill module). Her power grows as her shrine network grows.",
+    "creatorPatron": false,
+    "description": "Ragna is a campaign-specific demigod, the daughter of Uthgar, whose cult has begun taking root among orc tribes and Uthgardt-adjacent bands in and around Jalanthar. Unlike her father's long-settled tribal religion, her worship is a nascent, unofficial movement, built shrine by shrine rather than passed down through generations. She is ambitious and hungry for recognition, seeking to prove herself a goddess in her own right rather than merely her father's shadow.",
+    "worship": "Ragna's worship currently centers on a shrine network requiring active clerical upkeep to remain potent — each active shrine acts as a kind of antenna for her growing influence, and enough of them operating simultaneously would enable a full ascension ritual. The orc cult led by Yrsa of the Craven Den, established at Aldermoss Hill, is the most organized expression of her faith so far, blending Uthgardt totem-reverence with orc warband culture.",
+    "holidays": "No holy days are yet established; her faith is too young and too localized to have developed a fixed calendar of observance.",
+    "relationships": [
+      {
+        "targetId": "deity-uthgar",
+        "type": "subordinate_to",
+        "note": "Ragna is Uthgar's demigod daughter, an emerging power within the campaign's Uthgardt lore"
+      }
+    ]
+  }
+]

@@ -6,12 +6,13 @@ import DmLogin from './components/DmLogin'
 import DmEditBuildingForm from './components/DmEditBuildingForm'
 import DmEditNpcForm from './components/DmEditNpcForm'
 import DmEditFamilyForm from './components/DmEditFamilyForm'
+import DmEditDeityForm from './components/DmEditDeityForm'
 import MapTab from './components/tabs/MapTab'
 import BuildingListTab from './components/tabs/BuildingListTab'
 import RelationshipTab from './components/tabs/RelationshipTab'
 import ResidentListTab from './components/tabs/ResidentListTab'
-import LootTab from './components/tabs/LootTab'
 import CatalogTab from './components/tabs/CatalogTab'
+import PantheonTab from './components/tabs/PantheonTab'
 import { isFirebaseConfigured } from './firebase'
 
 function AppShell() {
@@ -20,6 +21,7 @@ function AppShell() {
   const [editingBuilding, setEditingBuilding] = useState(undefined) // undefined = closed, null = new
   const [editingNpc, setEditingNpc] = useState(undefined)
   const [editingFamily, setEditingFamily] = useState(undefined)
+  const [editingDeity, setEditingDeity] = useState(undefined)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const { isDm } = useAuth()
 
@@ -84,8 +86,10 @@ function AppShell() {
           {activeTab === 'roster' && (
             <ResidentListTab onEditNpc={isDm ? (n) => setEditingNpc(n) : undefined} />
           )}
-          {activeTab === 'loot' && isDm && <LootTab />}
           {activeTab === 'catalog' && <CatalogTab />}
+          {activeTab === 'pantheon' && (
+            <PantheonTab onEditDeity={isDm ? (d) => setEditingDeity(d) : undefined} />
+          )}
         </div>
       </main>
 
@@ -104,6 +108,9 @@ function AppShell() {
           family={editingFamily}
           onClose={() => setEditingFamily(undefined)}
         />
+      )}
+      {editingDeity !== undefined && (
+        <DmEditDeityForm deity={editingDeity} onClose={() => setEditingDeity(undefined)} />
       )}
     </div>
   )

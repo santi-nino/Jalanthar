@@ -13,45 +13,7 @@ import {
 } from 'firebase/firestore'
 import { onAuthStateChanged } from 'firebase/auth'
 import { db, auth, isFirebaseConfigured } from '../firebase'
-import { mockBuildings, mockNpcs, mockFamilies } from '../data/mockData'
-import { DEFAULT_LOOT_TAXONOMY } from '../data/defaultLootTaxonomy'
-
-// Every taxonomy field shaped as "dictionary keyed by monster/location type
-// (or setting, or keyword)" -- these need a DEEPER merge than a plain
-// object spread. A plain `{...DEFAULT, ...live}` replaces the WHOLE
-// dictionary the moment Firestore has ANY saved value for it, which
-// silently erases every type's entry that isn't in that saved snapshot --
-// exactly what happened when sizeLootTable.Beast was added to the code
-// after a DM's Firestore doc had already saved sizeLootTable with only
-// Aberration in it: the shallow merge kept the stale Aberration-only
-// version and Beast's rules never existed at generation time, no error,
-// no warning, it just silently fell through to the older gold-only path.
-// Merging one level deeper -- per dictionary key, defaults first, then
-// whatever's actually saved live on top -- means an old saved doc missing
-// a newer type's entry still gets that type's shipped-code defaults,
-// while any type the DM HAS actually edited keeps their edits.
-const TAXONOMY_DICTIONARY_KEYS = [
-  'monsterTypeCategories',
-  'monsterTypeUsesWealth',
-  'monsterTypeFixedItemCount',
-  'monsterTypeGuaranteedItems',
-  'monsterTypeAttributes',
-  'monsterTypeFeatures',
-  'monsterNameRoleHints',
-  'settingRules',
-  'sizeLootTable',
-  'locationTypeGuaranteedItems',
-  'locationTypeAttributes',
-  'loadouts',
-]
-
-function mergeLootTaxonomy(defaults, live) {
-  const merged = { ...defaults, ...live }
-  TAXONOMY_DICTIONARY_KEYS.forEach((key) => {
-    merged[key] = { ...(defaults[key] || {}), ...(live[key] || {}) }
-  })
-  return merged
-}
+import { mockBuildings, mockNpcs, mockFamilies, mockDeities } from '../data/mockData'
 
 const DataContext = createContext(null)
 
@@ -60,7 +22,7 @@ const LS_KEYS = {
   npcs: 'jalanthar-demo-npcs',
   families: 'jalanthar-demo-families',
   sources: 'jalanthar-demo-sources',
-  lootTaxonomy: 'jalanthar-demo-loot-taxonomy',
+  deities: 'jalanthar-demo-deities',
 }
 
 function loadDemo(key, fallback) {
@@ -96,7 +58,7 @@ export function DataProvider({ children }) {
   const [npcs, setNpcs] = useState([])
   const [families, setFamilies] = useState([])
   const [sources, setSources] = useState([])
-  const [lootTaxonomy, setLootTaxonomy] = useState(DEFAULT_LOOT_TAXONOMY)
+  const [deities, setDeities] = useState([])
   const [loading, setLoading] = useState(true)
 
   // Kept in sync every render so callbacks below can read the latest
@@ -148,7 +110,6 @@ export function DataProvider({ children }) {
       // provably fine in that case — same as it always was.
       let unsubNpcs = () => {}
       let unsubSources = () => {}
-      let unsubLootConfig = () => {}
       // Sources are now readable by anyone (`allow read: if true` — see
       // firestore.rules) since the Catalogue tab is player-facing, so this
       // subscription is set up once, outside the auth branch below, and
@@ -156,16 +117,18 @@ export function DataProvider({ children }) {
       unsubSources = onSnapshot(collection(db, 'sources'), (snap) =>
         setSources(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
       )
+      // Deities are public read too (general Realms mythology isn't a
+      // campaign spoiler the way an NPC's existence can be) -- same
+      // always-on, outside-the-auth-branch pattern as sources above.
+      const unsubDeities = onSnapshot(collection(db, 'deities'), (snap) =>
+        setDeities(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      )
       const unsubAuth = onAuthStateChanged(auth, (user) => {
         unsubNpcs()
-        unsubLootConfig()
         if (user) {
           unsubNpcs = onSnapshot(collection(db, 'npcs'), (snap) =>
             setNpcs(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
           )
-          unsubLootConfig = onSnapshot(doc(db, 'lootConfig', 'taxonomy'), (snap) => {
-            setLootTaxonomy(snap.exists() ? mergeLootTaxonomy(DEFAULT_LOOT_TAXONOMY, snap.data()) : DEFAULT_LOOT_TAXONOMY)
-          })
         } else {
           let visibleDocs = {}
           let revealedDocs = {}
@@ -192,14 +155,8 @@ export function DataProvider({ children }) {
             unsubVisible()
             unsubRevealed()
           }
-          // The loot taxonomy is still DM-only (`allow read: if
-          // request.auth != null`) — nothing to subscribe to as a player,
-          // and no point trying. The Loot tab itself is also DM-only in
-          // the UI, so lootTaxonomy just stays at its default for a player
-          // session; it's never read from there. Sources, unlike this, are
-          // subscribed to once above regardless of auth state — no
-          // per-branch handling needed here anymore.
-          unsubLootConfig = () => {}
+          // Sources are subscribed to once above regardless of auth state
+          // -- no per-branch handling needed here.
         }
       })
 
@@ -210,14 +167,14 @@ export function DataProvider({ children }) {
         unsubAuth()
         unsubNpcs()
         unsubSources()
-        unsubLootConfig()
+        unsubDeities()
       }
     } else {
       setBuildings(loadDemo(LS_KEYS.buildings, mockBuildings))
       setNpcs(loadDemo(LS_KEYS.npcs, mockNpcs))
       setFamilies(loadDemo(LS_KEYS.families, mockFamilies))
       setSources(loadDemo(LS_KEYS.sources, []))
-      setLootTaxonomy(mergeLootTaxonomy(DEFAULT_LOOT_TAXONOMY, loadDemo(LS_KEYS.lootTaxonomy, {})))
+      setDeities(loadDemo(LS_KEYS.deities, mockDeities))
       setLoading(false)
     }
   }, [])
@@ -487,22 +444,36 @@ export function DataProvider({ children }) {
     }
   }, [])
 
-  // ---- Loot taxonomy ----
-  // A single settings document, not a collection of many — the DM's own,
-  // independently-editable category lists for the Loot tab (wealth
-  // levels, classes, monster types, settings, and the four location
-  // subtype lists). Deliberately never reads from or writes to any
-  // NPC-related taxonomy (species, dndClass, etc.) — this is its own
-  // thing, per the DM's explicit request. `updates` is shallow-merged
-  // over the current taxonomy, so callers only need to pass the one key
-  // they're changing (e.g. { classes: [...] }).
-  const saveLootTaxonomy = useCallback(async (updates) => {
+  // ---- Deities (Pantheon tab) ----
+  // Public read like buildings/families (general Realms mythology isn't a
+  // spoiler), DM-only write -- see the `deities` Firestore rule. Same
+  // create-or-update-by-id shape as saveSource/saveNpc/saveFamily above.
+  const saveDeity = useCallback(async (deity) => {
     if (isFirebaseConfigured) {
-      await setDoc(doc(db, 'lootConfig', 'taxonomy'), updates, { merge: true })
+      const ref = deity.id ? doc(db, 'deities', deity.id) : doc(collection(db, 'deities'))
+      const { id: _discard, ...rest } = deity
+      await setDoc(ref, rest, { merge: true })
+      return ref.id
     } else {
-      setLootTaxonomy((prev) => {
-        const next = { ...prev, ...updates }
-        saveDemo(LS_KEYS.lootTaxonomy, next)
+      const id = deity.id || `deity-${Date.now()}`
+      setDeities((prev) => {
+        const next = deity.id
+          ? prev.map((d) => (d.id === id ? { ...d, ...deity } : d))
+          : [...prev, { ...deity, id }]
+        saveDemo(LS_KEYS.deities, next)
+        return next
+      })
+      return id
+    }
+  }, [])
+
+  const removeDeity = useCallback(async (id) => {
+    if (isFirebaseConfigured) {
+      await deleteDoc(doc(db, 'deities', id))
+    } else {
+      setDeities((prev) => {
+        const next = prev.filter((d) => d.id !== id)
+        saveDemo(LS_KEYS.deities, next)
         return next
       })
     }
@@ -515,7 +486,7 @@ export function DataProvider({ children }) {
         npcs,
         families,
         sources,
-        lootTaxonomy,
+        deities,
         loading,
         saveBuilding,
         removeBuilding,
@@ -527,7 +498,8 @@ export function DataProvider({ children }) {
         removeFamily,
         saveSource,
         removeSource,
-        saveLootTaxonomy,
+        saveDeity,
+        removeDeity,
       }}
     >
       {children}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { IconMap, IconBuildings, IconResidents, IconRoster, IconLoot, IconCatalog, IconKey, IconExit } from './icons'
+import { IconMap, IconBuildings, IconResidents, IconRoster, IconCatalog, IconPantheon, IconKey, IconExit } from './icons'
 import ExportDataModal from './ExportDataModal'
 import UploadSourceModal from './UploadSourceModal'
 import ManageSourcesModal from './ManageSourcesModal'
@@ -12,8 +12,8 @@ const TABS = [
   { id: 'buildings', label: 'Buildings', Icon: IconBuildings },
   { id: 'residents', label: 'Family Tree', Icon: IconResidents },
   { id: 'roster', label: 'Roster', Icon: IconRoster },
-  { id: 'loot', label: 'Loot', Icon: IconLoot, dmOnly: true },
   { id: 'catalog', label: 'Catalogue', Icon: IconCatalog },
+  { id: 'pantheon', label: 'Pantheon', Icon: IconPantheon },
 ]
 
 export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, onCloseMobile }) {

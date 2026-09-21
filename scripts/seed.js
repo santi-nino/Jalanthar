@@ -62,7 +62,7 @@ try {
 initializeApp({ credential: cert(serviceAccount) })
 const db = getFirestore()
 
-const { mockBuildings, mockNpcs, mockFamilies, mockSources } = await import(
+const { mockBuildings, mockNpcs, mockFamilies, mockSources, mockDeities } = await import(
   '../src/data/mockData.js'
 )
 
@@ -196,6 +196,7 @@ await seedCollection('families', mockFamilies)
 await seedCollection('sources', mockSources)
 await updateProgrammaticSources(mockSources)
 await deleteOrphanedSources()
+await seedCollection('deities', mockDeities || [])
 
 console.log('\nDone.')
 process.exit(0)
