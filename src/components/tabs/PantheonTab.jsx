@@ -93,15 +93,26 @@ function edgeLabelFor(rel) {
 // where BOTH ends belong to the same pantheon (a cross-pantheon lineage
 // edge, like Sehanine -> Eilistraee, intentionally does NOT pull two
 // different pantheons' bands together -- it just draws a long line
-// between them, same as any other cross-pantheon relationship). Within a
-// row, deities are sorted (creator/patron gods first, then alphabetical)
-// and wrapped into a fixed number of columns so no row runs off
-// indefinitely. No randomness anywhere in this function -- the same data
-// always produces the exact same layout, which is the whole point of
-// "reads like a standard family tree, everything is where it's supposed
-// to be."
-const COLS_PER_ROW = 6
+// between them, same as any other cross-pantheon relationship).
+//
+// IMPORTANT: one generation is ALWAYS exactly one row. Earlier this
+// wrapped a wide generation (Faerûnian's ~22 lineage-less gods, all
+// generation 0) into several stacked chunks of 6 -- which looked exactly
+// like several DIFFERENT generations stacked on top of each other, the
+// opposite of what a family tree is supposed to communicate. A row can
+// now run wide instead (the canvas pans/zooms to fit), but it never
+// splits, so "which row is a card in" always means exactly one thing.
+// Each row is also centered against the widest row in its own pantheon,
+// the same way a real genealogy chart centers a couple's children under
+// them rather than left-justifying everything -- narrower generations
+// (usually the ones WITH lineage ties, since a real hierarchy naturally
+// has fewer members than "everyone with no recorded family") end up
+// visually nested under the wide ones instead of sitting flush left.
+// Within a row, deities are sorted (creator/patron gods first, then
+// alphabetical). No randomness anywhere in this function -- the same
+// data always produces the exact same layout.
 const COL_SPACING = 190
+const CARD_W = 160
 const ROW_SPACING = 96
 const LABEL_HEIGHT = 40
 const BAND_GAP = 56
@@ -164,22 +175,27 @@ function layoutPantheons(deities) {
       .map(Number)
       .sort((a, b) => a - b)
 
-    let rowY = cursorY + LABEL_HEIGHT
-    sortedGens.forEach((g) => {
+    // Sort each generation's members first, then measure every row's
+    // width up front so every row in this pantheon can be centered
+    // against the widest one -- a real genealogy chart centers a
+    // couple's children under them, it doesn't left-justify everyone.
+    const rows = sortedGens.map((g) => {
       const rowMembers = byGen[g].sort((a, b) => {
         if (a.creatorPatron !== b.creatorPatron) return a.creatorPatron ? -1 : 1
         return a.name.localeCompare(b.name)
       })
-      // Wrap into sub-rows of COLS_PER_ROW so a 20+-member generation
-      // (the common case for Faerûnian, which has almost no lineage ties)
-      // doesn't run off the canvas edge indefinitely.
-      for (let i = 0; i < rowMembers.length; i += COLS_PER_ROW) {
-        const chunk = rowMembers.slice(i, i + COLS_PER_ROW)
-        chunk.forEach((m, col) => {
-          positions[m.id] = { x: col * COL_SPACING, y: rowY }
-        })
-        rowY += ROW_SPACING
-      }
+      const width = (rowMembers.length - 1) * COL_SPACING + CARD_W
+      return { members: rowMembers, width }
+    })
+    const bandWidth = Math.max(...rows.map((r) => r.width))
+
+    let rowY = cursorY + LABEL_HEIGHT
+    rows.forEach(({ members: rowMembers, width }) => {
+      const offsetX = (bandWidth - width) / 2
+      rowMembers.forEach((m, col) => {
+        positions[m.id] = { x: offsetX + col * COL_SPACING, y: rowY }
+      })
+      rowY += ROW_SPACING
     })
 
     cursorY = rowY + BAND_GAP
