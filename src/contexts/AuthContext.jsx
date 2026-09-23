@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
       try {
         await signInWithEmailAndPassword(auth, email, password)
         return true
-      } catch (err) {
+      } catch {
         setError('Incorrect email or password.')
         return false
       }

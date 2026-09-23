@@ -13,7 +13,15 @@ import {
 } from 'firebase/firestore'
 import { onAuthStateChanged } from 'firebase/auth'
 import { db, auth, isFirebaseConfigured } from '../firebase'
-import { mockBuildings, mockNpcs, mockFamilies, mockDeities } from '../data/mockData'
+// mockData.js is ~600kb (it carries every seed building/NPC/family/deity,
+// plus historically the full item catalog) and is ONLY ever read below in
+// the isFirebaseConfigured===false branch -- real deployments (this one
+// included) always have Firebase configured, so that branch never runs
+// for an actual player or DM. It used to be a static import here, which
+// meant every visitor's browser downloaded and parsed all 600kb of seed
+// data on every page load whether or not it was ever used. Now it's only
+// fetched as its own chunk on the rare path that actually needs it (local
+// dev without a configured Firebase project).
 
 const DataContext = createContext(null)
 
@@ -170,12 +178,14 @@ export function DataProvider({ children }) {
         unsubDeities()
       }
     } else {
-      setBuildings(loadDemo(LS_KEYS.buildings, mockBuildings))
-      setNpcs(loadDemo(LS_KEYS.npcs, mockNpcs))
-      setFamilies(loadDemo(LS_KEYS.families, mockFamilies))
-      setSources(loadDemo(LS_KEYS.sources, []))
-      setDeities(loadDemo(LS_KEYS.deities, mockDeities))
-      setLoading(false)
+      import('../data/mockData').then(({ mockBuildings, mockNpcs, mockFamilies, mockDeities }) => {
+        setBuildings(loadDemo(LS_KEYS.buildings, mockBuildings))
+        setNpcs(loadDemo(LS_KEYS.npcs, mockNpcs))
+        setFamilies(loadDemo(LS_KEYS.families, mockFamilies))
+        setSources(loadDemo(LS_KEYS.sources, []))
+        setDeities(loadDemo(LS_KEYS.deities, mockDeities))
+        setLoading(false)
+      })
     }
   }, [])
 

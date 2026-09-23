@@ -1,4 +1,5 @@
 import { Handle, Position } from 'reactflow'
+import { getPantheonStyle } from '../data/deityRelationshipTypes'
 
 // Same four-way-handle trick relationshipNodes.jsx uses for NPCs -- every
 // side needs to work as both a source and target since the same handle
@@ -22,19 +23,28 @@ function FourWayHandles() {
 
 // Every card is the same fixed size regardless of a deity's name length or
 // how much prose their detail page holds -- only the half-page panel that
-// opens on click shows the full picture. A dead/merged deity renders with
-// a dashed, muted border instead of a solid gold one, so the tree reads at
-// a glance which gods are still active without opening every card.
+// opens on click shows the full picture. Color is the ONLY thing that
+// marks which pantheon a card belongs to (see PANTHEON_STYLES) -- there's
+// no surrounding box or cluster anymore, so the color has to carry that
+// signal entirely on its own, on every single card, all the time. A dead/
+// merged deity keeps its pantheon color but renders with a dashed,
+// see-through border and faded text instead of a solid one, so the tree
+// reads at a glance which gods are still active without opening every card.
 export function DeityNode({ data }) {
   const isDead = data.status === 'dead' || data.status === 'merged'
+  const style = getPantheonStyle(data.pantheon)
   return (
     <button
       onClick={data.onClick}
-      className={`relative px-3 py-2 rounded-sm shadow-sm font-body text-sm w-[160px] h-[64px] text-center cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-colors ${
-        isDead
-          ? 'bg-parchment/50 border-2 border-dashed border-leather/40 text-ink-soft/70 hover:border-leather/70'
-          : 'bg-parchment border-2 border-leather text-ink hover:border-wax hover:text-wax'
-      }`}
+      className="relative px-3 py-2 rounded-sm shadow-sm font-body text-sm w-[160px] h-[64px] text-center cursor-pointer overflow-hidden flex flex-col items-center justify-center transition-transform hover:scale-[1.03]"
+      style={{
+        background: style.bg,
+        borderWidth: 2,
+        borderStyle: isDead ? 'dashed' : 'solid',
+        borderColor: style.border,
+        color: style.text,
+        opacity: isDead ? 0.6 : 1,
+      }}
       title={isDead ? `${data.label} — ${data.status}` : data.label}
     >
       <FourWayHandles />
@@ -53,22 +63,21 @@ export function DeityNode({ data }) {
   )
 }
 
-// A pantheon cluster's own header banner, same visual role FamilyNode
-// plays for the NPC tree -- collapsible, draggable, everything under it
-// moves as a unit.
-export function PantheonNode({ data }) {
+// A plain section label, NOT a draggable/collapsible cluster header the
+// way FamilyNode is on the NPC tree -- the Pantheon tab intentionally
+// doesn't work that way anymore (see the design note at the top of
+// PantheonTab.jsx). This is inert: no handles, no click target, no drag.
+// It exists only so the label pans and zooms together with its band of
+// cards instead of being a fixed HTML overlay that would drift out of
+// alignment the moment the DM pans the canvas.
+export function PantheonLabel({ data }) {
+  const style = getPantheonStyle(data.label)
   return (
-    <div className="relative px-4 py-2 rounded-sm bg-leather text-parchment border-2 border-gold shadow-md min-w-[160px] cursor-move">
-      <FourWayHandles />
-      <button
-        onClick={data.onToggleCollapse}
-        onPointerDown={(e) => e.stopPropagation()}
-        className="w-full flex items-center justify-center gap-1.5 font-display uppercase tracking-wide text-sm text-center hover:text-gold-light transition-colors cursor-pointer"
-        title={data.collapsed ? 'Expand pantheon' : 'Collapse pantheon'}
-      >
-        <span className="text-xs leading-none">{data.collapsed ? '▸' : '▾'}</span>
-        {data.label}
-      </button>
+    <div
+      className="font-display uppercase tracking-wide text-base whitespace-nowrap pointer-events-none select-none"
+      style={{ color: style.dark ? style.bg : style.border }}
+    >
+      {data.label}
     </div>
   )
 }

@@ -17425,7 +17425,7 @@ export const mockDeities = [
     "relationships": [
       {
         "targetId": "deity-eilistraee",
-        "type": "parent",
+        "type": "child",
         "note": "Regarded by Sehanine as an adopted daughter, though their relationship remains strained and distant"
       }
     ]
@@ -17609,7 +17609,7 @@ export const mockDeities = [
     "relationships": [
       {
         "targetId": "deity-sehanine-moonbow",
-        "type": "child",
+        "type": "parent",
         "note": "Regarded by Sehanine as an adopted daughter, though their relationship remains strained and distant"
       }
     ]
@@ -17737,7 +17737,7 @@ export const mockDeities = [
       },
       {
         "targetId": "deity-bahgtru",
-        "type": "parent",
+        "type": "child",
         "note": ""
       }
     ]
@@ -17796,7 +17796,7 @@ export const mockDeities = [
     "relationships": [
       {
         "targetId": "deity-gruumsh",
-        "type": "child",
+        "type": "parent",
         "note": ""
       }
     ]

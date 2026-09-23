@@ -3,19 +3,42 @@ import ReactFlow, { Background, Controls, useNodesState, useEdgesState } from 'r
 import 'reactflow/dist/style.css'
 import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { DeityNode, PantheonNode } from '../deityNodes'
+import { DeityNode, PantheonLabel } from '../deityNodes'
 import DeityDetailPanel from '../DeityDetailPanel'
-import { PANTHEONS } from '../../data/deityRelationshipTypes'
+import { PANTHEONS, PANTHEON_STYLES, getDeityRelationshipType } from '../../data/deityRelationshipTypes'
 
-const nodeTypes = { deity: DeityNode, pantheon: PantheonNode }
+// ---------------------------------------------------------------------
+// DESIGN NOTE -- this tab is intentionally NOT built like RelationshipTab
+// (the NPC family tree), even though both are ReactFlow graphs of cards
+// and lines. The DM's own call: "they should be entirely separate
+// entities with their own set of rules." Specifically, on purpose,
+// different from the family tree:
+//
+//   - Pantheons are not collapsible. Every deity card is visible at all
+//     times -- there's no cluster header to click, no expand/collapse
+//     state at all.
+//   - A pantheon is identified ONLY by card color (see PANTHEON_STYLES),
+//     not by a bounding box, a header banner drag-group, or a background
+//     panel. Nine pantheons, nine colors, always visible.
+//   - Cards barely move. RelationshipTab lets the DM drag a card anywhere
+//     on the canvas; here a card can only be nudged a short distance
+//     (MAX_DRAG_RADIUS, in canvas px) from its own computed "home"
+//     position before the drag is clamped. The DM can tidy up a crowded
+//     corner, not redesign the whole tree.
+//   - Layout is a plain, deterministic top-down grid per pantheon (see
+//     layoutPantheons below) -- no scatter jitter, no free-form cluster
+//     anchor math. The goal, per the DM's own words, is that it "reads
+//     like a standard family tree": rows align, columns align, lines are
+//     followable.
+// ---------------------------------------------------------------------
+
+const nodeTypes = { deity: DeityNode, pantheonLabel: PantheonLabel }
 
 // Nine distinct edge appearances, one per relationship kind -- see the
 // design notes in deityRelationshipTypes.js for what each one means.
-// Unlike the NPC tree (a strict genealogy), this graph is meant to show
-// real cross-pantheon connections too, so nothing here is scoped to "only
-// draws within one cluster" -- an edge renders wherever both its
-// endpoints are currently rendered, regardless of which pantheon(s)
-// they belong to.
+// This part is unchanged from before: relationships are still allowed to
+// cross pantheon lines freely (Corellon/Gruumsh, Garl Glittergold/Moradin,
+// and so on), same as a real mythology would have.
 const DEITY_EDGE_STYLE = {
   lineage: { stroke: '#33352B', strokeWidth: 1.5 },
   sibling: { stroke: '#5C6B34', strokeWidth: 1.3, strokeDasharray: '3 5' },
@@ -29,7 +52,7 @@ const DEITY_EDGE_STYLE = {
   root: { stroke: '#33352B', strokeWidth: 1, opacity: 0.5 },
 }
 
-const LEGEND = [
+const RELATIONSHIP_LEGEND = [
   { key: 'lineage', label: 'Parent / Child' },
   { key: 'sibling', label: 'Sibling' },
   { key: 'spouse', label: 'Spouse / Consort ♥' },
@@ -63,27 +86,124 @@ function edgeLabelFor(rel) {
   return undefined
 }
 
-// Deities are grouped into one cluster per pantheon and laid out on a
-// small, FIXED grid keyed off PANTHEONS' own fixed order -- deliberately
-// simpler than the NPC tree's generation-aware layout algorithm
-// (layoutFamily in RelationshipTab.jsx). That algorithm exists to solve
-// strict genealogical row placement (parents above children) for a
-// potentially large, ever-growing number of families; a pantheon list is
-// a small, fixed set of ~9 clusters, and deity relationships (ally/enemy/
-// absorbed/overlap) aren't fundamentally generational the way a family
-// tree is, so a plain grid within each cluster -- with the DM able to
-// drag any card to a manually-saved position -- covers this well without
-// that added complexity.
-const CLUSTER_COLS = 3
-const CLUSTER_COL_SPACING = 720
-const CLUSTER_ROW_SPACING = 420
-const DEITY_COLS_PER_CLUSTER = 4
-const DEITY_COL_SPACING = 180
-const DEITY_ROW_SPACING = 90
+// ---- Layout ------------------------------------------------------------
+// A plain top-down grid, one horizontal band per pantheon, stacked in
+// PANTHEONS order. Within a band, a deity's ROW is its generation --
+// computed only from parent/child and subordinate_to/patron_of edges
+// where BOTH ends belong to the same pantheon (a cross-pantheon lineage
+// edge, like Sehanine -> Eilistraee, intentionally does NOT pull two
+// different pantheons' bands together -- it just draws a long line
+// between them, same as any other cross-pantheon relationship). Within a
+// row, deities are sorted (creator/patron gods first, then alphabetical)
+// and wrapped into a fixed number of columns so no row runs off
+// indefinitely. No randomness anywhere in this function -- the same data
+// always produces the exact same layout, which is the whole point of
+// "reads like a standard family tree, everything is where it's supposed
+// to be."
+const COLS_PER_ROW = 6
+const COL_SPACING = 190
+const ROW_SPACING = 96
+const LABEL_HEIGHT = 40
+const BAND_GAP = 56
 
-function scatterJitter(seed) {
-  const x = Math.sin(seed * 12.9898) * 43758.5453
-  return x - Math.floor(x)
+const LINEAGE_TYPES = new Set(['parent', 'child', 'subordinate_to', 'patron_of'])
+
+function computeGenerations(members, byId) {
+  const gen = {}
+  const visited = new Set()
+  members.forEach((m) => {
+    if (visited.has(m.id)) return
+    gen[m.id] = 0
+    visited.add(m.id)
+    const queue = [m.id]
+    while (queue.length) {
+      const curId = queue.shift()
+      const cur = byId[curId]
+      ;(cur.relationships || []).forEach((rel) => {
+        if (!LINEAGE_TYPES.has(rel.type)) return
+        const target = byId[rel.targetId]
+        if (!target || target.pantheon !== cur.pantheon || visited.has(target.id)) return
+        const delta = getDeityRelationshipType(rel.type).genDelta || 0
+        gen[target.id] = gen[curId] + delta
+        visited.add(target.id)
+        queue.push(target.id)
+      })
+    }
+  })
+  return gen
+}
+
+function layoutPantheons(deities) {
+  const byId = Object.fromEntries(deities.map((d) => [d.id, d]))
+  const byPantheon = {}
+  PANTHEONS.forEach((p) => (byPantheon[p] = []))
+  deities.forEach((d) => {
+    const p = PANTHEONS.includes(d.pantheon) ? d.pantheon : PANTHEONS[0]
+    byPantheon[p].push(d)
+  })
+
+  const positions = {} // id -> { x, y } (the deity's fixed "home" position)
+  const labels = [] // { pantheon, x, y }
+  let cursorY = 0
+
+  PANTHEONS.forEach((pantheon) => {
+    const members = byPantheon[pantheon]
+    labels.push({ pantheon, x: 0, y: cursorY })
+    if (members.length === 0) {
+      cursorY += LABEL_HEIGHT + BAND_GAP
+      return
+    }
+
+    const gen = computeGenerations(members, byId)
+    const byGen = {}
+    members.forEach((m) => {
+      const g = gen[m.id] ?? 0
+      ;(byGen[g] ||= []).push(m)
+    })
+    const sortedGens = Object.keys(byGen)
+      .map(Number)
+      .sort((a, b) => a - b)
+
+    let rowY = cursorY + LABEL_HEIGHT
+    sortedGens.forEach((g) => {
+      const rowMembers = byGen[g].sort((a, b) => {
+        if (a.creatorPatron !== b.creatorPatron) return a.creatorPatron ? -1 : 1
+        return a.name.localeCompare(b.name)
+      })
+      // Wrap into sub-rows of COLS_PER_ROW so a 20+-member generation
+      // (the common case for Faerûnian, which has almost no lineage ties)
+      // doesn't run off the canvas edge indefinitely.
+      for (let i = 0; i < rowMembers.length; i += COLS_PER_ROW) {
+        const chunk = rowMembers.slice(i, i + COLS_PER_ROW)
+        chunk.forEach((m, col) => {
+          positions[m.id] = { x: col * COL_SPACING, y: rowY }
+        })
+        rowY += ROW_SPACING
+      }
+    })
+
+    cursorY = rowY + BAND_GAP
+  })
+
+  return { positions, labels }
+}
+
+// ---- Restrained dragging ------------------------------------------------
+// A card can be nudged, not relocated. MAX_DRAG_RADIUS is in canvas px at
+// zoom 1 -- ReactFlow's coordinate space is 1:1 with CSS px there, and a
+// typical screen is ~96-110 px/inch, so ~90px keeps a drag within roughly
+// "a couple of centimeters" of the card's home position, exactly the
+// tether the DM asked for ("semi-fixed locations"). Clamping happens live,
+// on every drag frame (via onNodesChange below), not just on drop -- the
+// card should visibly resist being dragged further, not fly off and snap
+// back after release.
+const MAX_DRAG_RADIUS = 90
+
+function clampToRadius(dx, dy, radius) {
+  const dist = Math.hypot(dx, dy)
+  if (dist <= radius || dist === 0) return { dx, dy }
+  const scale = radius / dist
+  return { dx: dx * scale, dy: dy * scale }
 }
 
 export default function PantheonTab({ onEditDeity }) {
@@ -91,82 +211,57 @@ export default function PantheonTab({ onEditDeity }) {
   const { isDm } = useAuth()
   const [selectedId, setSelectedId] = useState(null)
   const [selectedEdgeId, setSelectedEdgeId] = useState(null)
-  const [collapsedPantheons, setCollapsedPantheons] = useState(() => new Set())
 
   const deitiesById = useMemo(() => Object.fromEntries(deities.map((d) => [d.id, d])), [deities])
 
-  const byPantheon = useMemo(() => {
-    const map = {}
-    PANTHEONS.forEach((p) => (map[p] = []))
-    deities.forEach((d) => {
-      const p = PANTHEONS.includes(d.pantheon) ? d.pantheon : PANTHEONS[0]
-      ;(map[p] ||= []).push(d)
-    })
-    Object.values(map).forEach((arr) => arr.sort((a, b) => a.name.localeCompare(b.name)))
-    return map
-  }, [deities])
-
-  function toggleCollapse(pantheon) {
-    setCollapsedPantheons((prev) => {
-      const next = new Set(prev)
-      if (next.has(pantheon)) next.delete(pantheon)
-      else next.add(pantheon)
-      return next
-    })
-  }
+  const { positions, labels } = useMemo(() => layoutPantheons(deities), [deities])
 
   const computed = useMemo(() => {
     const nodes = []
-    const edges = []
 
-    PANTHEONS.forEach((pantheon, index) => {
-      const members = byPantheon[pantheon] || []
-      const collapsed = collapsedPantheons.has(pantheon)
-      const col = index % CLUSTER_COLS
-      const row = Math.floor(index / CLUSTER_COLS)
-      const headerPos = {
-        x: col * CLUSTER_COL_SPACING + (scatterJitter(index * 2 + 1) - 0.5) * 160,
-        y: row * CLUSTER_ROW_SPACING + (scatterJitter(index * 2 + 2) - 0.5) * 120,
-      }
-      const clusterNodeId = `cluster-${pantheon}`
+    labels.forEach(({ pantheon, x, y }) => {
       nodes.push({
-        id: clusterNodeId,
-        type: 'pantheon',
-        position: headerPos,
-        data: { label: pantheon, collapsed, onToggleCollapse: () => toggleCollapse(pantheon) },
+        id: `label-${pantheon}`,
+        type: 'pantheonLabel',
+        position: { x, y },
+        data: { label: pantheon },
         draggable: false,
-      })
-
-      if (collapsed || members.length === 0) return
-
-      const anchorX = headerPos.x + 90
-      const anchorY = headerPos.y
-
-      members.forEach((deity, i) => {
-        const gridX = (i % DEITY_COLS_PER_CLUSTER) * DEITY_COL_SPACING
-        const gridY = 90 + Math.floor(i / DEITY_COLS_PER_CLUSTER) * DEITY_ROW_SPACING
-        const offset = deity.treePos || { x: gridX, y: gridY }
-        nodes.push({
-          id: deity.id,
-          type: 'deity',
-          position: { x: anchorX + offset.x, y: anchorY + offset.y },
-          data: {
-            label: deity.name,
-            title: deity.title,
-            status: deity.status,
-            creatorPatron: deity.creatorPatron,
-            onClick: () => setSelectedId(deity.id),
-          },
-        })
+        selectable: false,
       })
     })
 
-    const renderedIds = new Set(nodes.filter((n) => n.type === 'deity').map((n) => n.id))
+    deities.forEach((deity) => {
+      const home = positions[deity.id]
+      if (!home) return
+      // A saved nudge is stored as a small {x,y} OFFSET from the deity's
+      // own computed home position -- not an absolute position, and not
+      // relative to any cluster/anchor node (there isn't one anymore).
+      // Re-clamped here too, defensively, in case the layout shifted
+      // under a stale saved offset (e.g. a new deity inserted earlier in
+      // sort order pushed everyone else's home position over).
+      const saved = deity.treePos || { x: 0, y: 0 }
+      const clamped = clampToRadius(saved.x, saved.y, MAX_DRAG_RADIUS)
+      nodes.push({
+        id: deity.id,
+        type: 'deity',
+        position: { x: home.x + clamped.dx, y: home.y + clamped.dy },
+        data: {
+          label: deity.name,
+          title: deity.title,
+          pantheon: deity.pantheon,
+          status: deity.status,
+          creatorPatron: deity.creatorPatron,
+          home,
+          onClick: () => setSelectedId(deity.id),
+        },
+      })
+    })
+
+    const edges = []
     const seen = new Set()
     deities.forEach((deity) => {
-      if (!renderedIds.has(deity.id)) return
       ;(deity.relationships || []).forEach((rel) => {
-        if (!renderedIds.has(rel.targetId)) return
+        if (!positions[rel.targetId] || !positions[deity.id]) return
         const key = [deity.id, rel.targetId].sort().join('|') + rel.type
         if (seen.has(key)) return
         seen.add(key)
@@ -185,9 +280,9 @@ export default function PantheonTab({ onEditDeity }) {
     })
 
     return { nodes, edges }
-  }, [deities, byPantheon, collapsedPantheons])
+  }, [deities, positions, labels])
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [nodes, setNodes, onNodesChangeRaw] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
   useEffect(() => {
@@ -195,21 +290,39 @@ export default function PantheonTab({ onEditDeity }) {
     setEdges(computed.edges)
   }, [computed, setNodes, setEdges])
 
+  // Intercepts every position change React Flow wants to apply and clamps
+  // it to MAX_DRAG_RADIUS around the node's own home position -- this is
+  // what makes the tether feel physical (the card resists mid-drag)
+  // instead of just snapping back after the fact.
+  const onNodesChange = useCallback(
+    (changes) => {
+      const clamped = changes.map((change) => {
+        if (change.type !== 'position' || !change.position) return change
+        const node = nodes.find((n) => n.id === change.id)
+        const home = node?.data?.home
+        if (!home) return change
+        const { dx, dy } = clampToRadius(
+          change.position.x - home.x,
+          change.position.y - home.y,
+          MAX_DRAG_RADIUS
+        )
+        return { ...change, position: { x: home.x + dx, y: home.y + dy } }
+      })
+      onNodesChangeRaw(clamped)
+    },
+    [nodes, onNodesChangeRaw]
+  )
+
   const handleNodeDragStop = useCallback(
     (_event, node) => {
       if (node.type !== 'deity' || !isDm) return
       const deity = deitiesById[node.id]
-      if (!deity) return
-      // Find this deity's cluster anchor to store the drag as an offset
-      // (same "relative, not absolute" convention the NPC tree uses) so a
-      // pantheon's whole cluster can still be repositioned later without
-      // scrambling every member's saved position.
-      const clusterNode = nodes.find((n) => n.id === `cluster-${deity.pantheon}`)
-      const anchorX = (clusterNode?.position.x ?? 0) + 90
-      const anchorY = clusterNode?.position.y ?? 0
-      saveDeity({ ...deity, treePos: { x: node.position.x - anchorX, y: node.position.y - anchorY } })
+      const home = node.data?.home
+      if (!deity || !home) return
+      const { dx, dy } = clampToRadius(node.position.x - home.x, node.position.y - home.y, MAX_DRAG_RADIUS)
+      saveDeity({ ...deity, treePos: { x: dx, y: dy } })
     },
-    [isDm, deitiesById, nodes, saveDeity]
+    [isDm, deitiesById, saveDeity]
   )
 
   const handleEdgeClick = useCallback(
@@ -260,30 +373,49 @@ export default function PantheonTab({ onEditDeity }) {
 
         <p className="absolute top-3 left-3 z-10 text-xs font-mono bg-ink/70 text-parchment px-2 py-1 rounded-sm max-w-xs">
           {isDm
-            ? 'Click a pantheon banner to expand/collapse it. Drag any deity card to reposition — saved automatically. Click a line to select and delete it.'
-            : 'Click a pantheon banner to expand/collapse it. Click a deity card to read more.'}
+            ? 'Every pantheon is always shown, grouped by name-card color. Cards can only be nudged a short distance from their set position. Click a line to select and delete it.'
+            : 'Every pantheon is always shown, grouped by name-card color. Click a card to read more.'}
         </p>
 
-        {/* Legend -- a small fixed key, same idea as a map legend, so the
-            nine line styles are always readable without memorizing them. */}
-        <div className="absolute bottom-3 left-3 z-10 bg-parchment/95 border border-leather/40 rounded-sm shadow px-3 py-2 text-xs space-y-1 max-w-[220px]">
-          <p className="font-display uppercase tracking-wide text-ink-soft/70 mb-1">Legend</p>
-          {LEGEND.map((l) => (
-            <div key={l.key} className="flex items-center gap-2">
-              <svg width="20" height="8" className="shrink-0">
-                <line
-                  x1="0"
-                  y1="4"
-                  x2="20"
-                  y2="4"
-                  stroke={DEITY_EDGE_STYLE[l.key].stroke}
-                  strokeWidth={DEITY_EDGE_STYLE[l.key].strokeWidth}
-                  strokeDasharray={DEITY_EDGE_STYLE[l.key].strokeDasharray}
-                />
-              </svg>
-              <span className="text-ink-soft">{l.label}</span>
-            </div>
-          ))}
+        {/* Two stacked legends, bottom-left: which color is which pantheon,
+            and which line style is which relationship. Kept in one panel
+            so nothing else on the canvas has to make room for a second
+            floating box. */}
+        <div className="absolute bottom-3 left-3 z-10 bg-parchment/95 border border-leather/40 rounded-sm shadow px-3 py-2 text-xs space-y-2 max-w-[240px] max-h-[70vh] overflow-y-auto">
+          <div className="space-y-1">
+            <p className="font-display uppercase tracking-wide text-ink-soft/70">Pantheons</p>
+            {PANTHEONS.map((p) => {
+              const style = PANTHEON_STYLES[p]
+              return (
+                <div key={p} className="flex items-center gap-2">
+                  <span
+                    className="w-3.5 h-3.5 rounded-sm shrink-0 border"
+                    style={{ background: style.bg, borderColor: style.border }}
+                  />
+                  <span className="text-ink-soft">{p}</span>
+                </div>
+              )
+            })}
+          </div>
+          <div className="space-y-1 border-t border-leather/30 pt-2">
+            <p className="font-display uppercase tracking-wide text-ink-soft/70">Relationships</p>
+            {RELATIONSHIP_LEGEND.map((l) => (
+              <div key={l.key} className="flex items-center gap-2">
+                <svg width="20" height="8" className="shrink-0">
+                  <line
+                    x1="0"
+                    y1="4"
+                    x2="20"
+                    y2="4"
+                    stroke={DEITY_EDGE_STYLE[l.key].stroke}
+                    strokeWidth={DEITY_EDGE_STYLE[l.key].strokeWidth}
+                    strokeDasharray={DEITY_EDGE_STYLE[l.key].strokeDasharray}
+                  />
+                </svg>
+                <span className="text-ink-soft">{l.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {isDm && selectedEdgeId && (

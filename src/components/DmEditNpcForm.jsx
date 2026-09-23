@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useData } from '../contexts/DataContext'
-import { SELECTABLE_TYPES, getRelationshipType, getLabel } from '../data/relationshipTypes'
+import { SELECTABLE_TYPES, getRelationshipType } from '../data/relationshipTypes'
 import { NPC_CLASSES } from '../data/npcClasses'
 
 export default function DmEditNpcForm({ npc, onClose }) {
