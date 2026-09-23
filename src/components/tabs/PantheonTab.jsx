@@ -3,7 +3,7 @@ import ReactFlow, { Background, Controls, useNodesState, useEdgesState } from 'r
 import 'reactflow/dist/style.css'
 import { useData } from '../../contexts/DataContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { DeityNode, PantheonLabel } from '../deityNodes'
+import { DeityNode, PantheonLabel, GenerationLabel } from '../deityNodes'
 import DeityDetailPanel from '../DeityDetailPanel'
 import { PANTHEONS, PANTHEON_STYLES, getDeityRelationshipType } from '../../data/deityRelationshipTypes'
 
@@ -32,7 +32,7 @@ import { PANTHEONS, PANTHEON_STYLES, getDeityRelationshipType } from '../../data
 //     followable.
 // ---------------------------------------------------------------------
 
-const nodeTypes = { deity: DeityNode, pantheonLabel: PantheonLabel }
+const nodeTypes = { deity: DeityNode, pantheonLabel: PantheonLabel, generationLabel: GenerationLabel }
 
 // Nine distinct edge appearances, one per relationship kind -- see the
 // design notes in deityRelationshipTypes.js for what each one means.
@@ -95,27 +95,37 @@ function edgeLabelFor(rel) {
 // different pantheons' bands together -- it just draws a long line
 // between them, same as any other cross-pantheon relationship).
 //
-// IMPORTANT: one generation is ALWAYS exactly one row. Earlier this
-// wrapped a wide generation (Faerûnian's ~22 lineage-less gods, all
-// generation 0) into several stacked chunks of 6 -- which looked exactly
-// like several DIFFERENT generations stacked on top of each other, the
-// opposite of what a family tree is supposed to communicate. A row can
-// now run wide instead (the canvas pans/zooms to fit), but it never
-// splits, so "which row is a card in" always means exactly one thing.
-// Each row is also centered against the widest row in its own pantheon,
-// the same way a real genealogy chart centers a couple's children under
-// them rather than left-justifying everything -- narrower generations
-// (usually the ones WITH lineage ties, since a real hierarchy naturally
-// has fewer members than "everyone with no recorded family") end up
-// visually nested under the wide ones instead of sitting flush left.
-// Within a row, deities are sorted (creator/patron gods first, then
-// alphabetical). No randomness anywhere in this function -- the same
-// data always produces the exact same layout.
+// A generation can still wrap into several sub-rows (Faerûnian has ~23
+// gods with no recorded lineage, all generation 0 -- letting that render
+// as one unbroken 23-card-wide line made the ENTIRE tab illegible, since
+// ReactFlow's fitView has to zoom out to fit every pantheon's widest row
+// at once, and it shrank everything else on the canvas down to match one
+// absurdly wide row). So: capped at MAX_COLS columns per sub-row, same as
+// every other pantheon's natural width, which keeps the whole canvas at a
+// sane, comparable scale.
+//
+// To keep "one generation, wrapped or not" from reading as several
+// different generations (the exact complaint that caused the wide-row
+// version in the first place), spacing does the disambiguating: sub-rows
+// WITHIN one generation sit close together (SUBROW_SPACING), while the
+// gap BEFORE the next actual generation is much larger (GEN_GAP) -- and
+// on any pantheon with more than one generation, a small "GEN N" marker
+// sits to the left of each generation's block as an explicit backup to
+// the spacing, so there's no ambiguity even at a glance. Every row is
+// also centered against the widest row in its own pantheon, the way a
+// real genealogy chart centers a couple's children under them rather
+// than left-justifying everyone. Within a row, deities are sorted
+// (creator/patron gods first, then alphabetical). No randomness anywhere
+// in this function -- the same data always produces the exact same
+// layout.
+const MAX_COLS = 6
 const COL_SPACING = 190
 const CARD_W = 160
-const ROW_SPACING = 96
+const SUBROW_SPACING = 78
+const GEN_GAP = 132
 const LABEL_HEIGHT = 40
-const BAND_GAP = 56
+const BAND_GAP = 64
+const GEN_LABEL_OFFSET = 34
 
 const LINEAGE_TYPES = new Set(['parent', 'child', 'subordinate_to', 'patron_of'])
 
@@ -155,6 +165,7 @@ function layoutPantheons(deities) {
 
   const positions = {} // id -> { x, y } (the deity's fixed "home" position)
   const labels = [] // { pantheon, x, y }
+  const genLabels = [] // { text, x, y }
   let cursorY = 0
 
   PANTHEONS.forEach((pantheon) => {
@@ -174,34 +185,48 @@ function layoutPantheons(deities) {
     const sortedGens = Object.keys(byGen)
       .map(Number)
       .sort((a, b) => a - b)
+    const multiGen = sortedGens.length > 1
 
-    // Sort each generation's members first, then measure every row's
-    // width up front so every row in this pantheon can be centered
-    // against the widest one -- a real genealogy chart centers a
-    // couple's children under them, it doesn't left-justify everyone.
-    const rows = sortedGens.map((g) => {
-      const rowMembers = byGen[g].sort((a, b) => {
+    // Each generation becomes one or more sub-rows (capped at MAX_COLS
+    // wide), sorted, then every sub-row's width is measured up front so
+    // it can be centered against the widest sub-row in the WHOLE
+    // pantheon -- same reasoning as before, just applied per sub-row
+    // instead of per generation.
+    const subRows = []
+    sortedGens.forEach((g) => {
+      const genMembers = byGen[g].sort((a, b) => {
         if (a.creatorPatron !== b.creatorPatron) return a.creatorPatron ? -1 : 1
         return a.name.localeCompare(b.name)
       })
-      const width = (rowMembers.length - 1) * COL_SPACING + CARD_W
-      return { members: rowMembers, width }
+      for (let i = 0; i < genMembers.length; i += MAX_COLS) {
+        const chunk = genMembers.slice(i, i + MAX_COLS)
+        const width = (chunk.length - 1) * COL_SPACING + CARD_W
+        subRows.push({ gen: g, isFirstOfGen: i === 0, members: chunk, width })
+      }
     })
-    const bandWidth = Math.max(...rows.map((r) => r.width))
+    const bandWidth = Math.max(...subRows.map((r) => r.width))
 
     let rowY = cursorY + LABEL_HEIGHT
-    rows.forEach(({ members: rowMembers, width }) => {
+    let prevGen = null
+    subRows.forEach(({ gen: g, isFirstOfGen, members: rowMembers, width }) => {
+      if (prevGen !== null) {
+        rowY += g !== prevGen ? GEN_GAP : SUBROW_SPACING
+      }
       const offsetX = (bandWidth - width) / 2
+      if (multiGen && isFirstOfGen) {
+        genLabels.push({ text: `Gen ${g}`, x: offsetX - GEN_LABEL_OFFSET, y: rowY })
+      }
       rowMembers.forEach((m, col) => {
         positions[m.id] = { x: offsetX + col * COL_SPACING, y: rowY }
       })
-      rowY += ROW_SPACING
+      prevGen = g
     })
+    rowY += SUBROW_SPACING // trailing space before the next pantheon's BAND_GAP
 
     cursorY = rowY + BAND_GAP
   })
 
-  return { positions, labels }
+  return { positions, labels, genLabels }
 }
 
 // ---- Restrained dragging ------------------------------------------------
@@ -230,7 +255,7 @@ export default function PantheonTab({ onEditDeity }) {
 
   const deitiesById = useMemo(() => Object.fromEntries(deities.map((d) => [d.id, d])), [deities])
 
-  const { positions, labels } = useMemo(() => layoutPantheons(deities), [deities])
+  const { positions, labels, genLabels } = useMemo(() => layoutPantheons(deities), [deities])
 
   const computed = useMemo(() => {
     const nodes = []
@@ -241,6 +266,17 @@ export default function PantheonTab({ onEditDeity }) {
         type: 'pantheonLabel',
         position: { x, y },
         data: { label: pantheon },
+        draggable: false,
+        selectable: false,
+      })
+    })
+
+    genLabels.forEach(({ text, x, y }, i) => {
+      nodes.push({
+        id: `genlabel-${i}`,
+        type: 'generationLabel',
+        position: { x, y },
+        data: { label: text },
         draggable: false,
         selectable: false,
       })
@@ -296,7 +332,7 @@ export default function PantheonTab({ onEditDeity }) {
     })
 
     return { nodes, edges }
-  }, [deities, positions, labels])
+  }, [deities, positions, labels, genLabels])
 
   const [nodes, setNodes, onNodesChangeRaw] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])

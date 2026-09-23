@@ -63,6 +63,20 @@ export function DeityNode({ data }) {
   )
 }
 
+// A tiny, muted marker used only on pantheons with more than one
+// generation, so a lineage that had to wrap into several sub-rows (a wide
+// generation 0 with 20+ unrelated gods, say) still reads unambiguously as
+// ONE generation, distinct from the actual next generation below it --
+// the row spacing alone (tight within a generation, loose between them)
+// carries most of that signal, this is just the explicit backup.
+export function GenerationLabel({ data }) {
+  return (
+    <div className="font-mono text-[10px] uppercase tracking-wide text-ink-soft/50 pointer-events-none select-none whitespace-nowrap">
+      {data.label}
+    </div>
+  )
+}
+
 // A plain section label, NOT a draggable/collapsible cluster header the
 // way FamilyNode is on the NPC tree -- the Pantheon tab intentionally
 // doesn't work that way anymore (see the design note at the top of
