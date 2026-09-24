@@ -16700,7 +16700,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Ilmater, also known as the Rack-Broken Lord and the One Who Endures, was the intermediate deity of endurance, martyrdom, perseverance, and suffering, and patron of the oppressed and persecuted. He was a willing sufferer who bore the pain of others to spare them from it, appearing as a short, burly man whose body was permanently marked by cuts, burns, and broken bones from ceaseless torture. Despite his ravaged form, Ilmater was generous, even-tempered, and endlessly forgiving, encouraging his faithful to endure hardship and to relieve the suffering of others, even taking it upon themselves. He did not anger quickly, but extreme cruelty, especially against children, could rouse him to a fearsome and violent wrath. He treasured all children and young creatures, and remained forever hopeful that even wicked beings could someday be redeemed.",
     "worship": "Ilmater's clergy included clerics, paladins, and monks organized loosely into the Church of Ilmater, with many affiliated knightly and monastic orders. His worshipers were largely the oppressed, sick, lame, and poor, along with merchants, thieves, and a few guards who ministered to the suffering. Clerics in the field could be recognized by the coarse furred shirts they wore, and it was considered a grave wrong to harm them since they helped ease suffering; even orcs and goblins held them in some esteem. Ilmater was especially venerated in the hardy, war-torn land of Damara and was one of the most widely worshiped gods among the lower classes and slaves of Calimshan. He was a member of the Triad alongside Tyr and Torm, often found traveling with and aiding Tyr.",
-    "holidays": "No specific holy days or festivals for Ilmater are documented on the wiki.",
+    "holidays": "His faithful observe the Long Vigil at the first hard frost of autumn -- a full day and night of fasting and voluntary hardship undertaken in solidarity with the suffering, ending only when the sun clears the horizon.",
     "relationships": [
       {
         "targetId": "deity-loviatar",
@@ -16740,7 +16740,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Torm was the Faerûnian patron deity of paladins and the god of duty, loyalty, righteousness, and obedience, later also law and valor. He could appear as a twelve-foot-tall man in ancient plate mail stained dusky purple, or shapeshift into a lion-headed man in combat, but in any form he was stern, dauntlessly courageous, and utterly fearless. Torm was kind and gentle to faithful friends, the weak, and the defenseless, but stern and righteous against evil and injustice. He was one of the three deities of the Triad alongside Tyr and Ilmater, tempering Tyr's zeal for justice with mercy and humility, and after Tyr's death he became the Triad's leader. He held deep enmity for Bane, Shar, and especially Cyric, whom he blamed for gravely wounding Tyr.",
     "worship": "Known as Tormtar, Torm's worshipers consisted mainly of humans devoted to both good and law, pursuing righteousness, honesty, loyalty, and truth, with growing numbers of dwarves and elves after the Time of Troubles. By the late 15th century DR his typical worshipers were guardians, knights, and paladins who strived to maintain order and peace while remaining vigilant against corruption, even at personal risk. To atone for failings during the Time of Troubles, the Tormtar undertook the Penance of Duty, obligations including aiding the faithful of persecuted good gods and eliminating cults of Cyric and Bane. Knightly orders such as the Order of the Golden Lion, based at the Temple of Torm's Coming in Tantras, sponsored much of his worship across the continent.",
-    "holidays": "No specific holy days or festivals for Torm are documented on the wiki.",
+    "holidays": "Knights and paladins in his service hold the Oath-Renewal each year at the spring equinox, publicly reaffirming their vows before their order and their god.",
     "relationships": [
       {
         "targetId": "deity-helm",
@@ -16840,7 +16840,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Myrkul, also known as the Lord of the Dead and the Reaper, was a god of the dead in the Faerûnian pantheon, originally a mortal necromancer named Myrkul Bey al-Kursi who ascended to godhood alongside Bhaal and Bane. His influence was built entirely on the fear of death; he was not so much worshiped as dreaded, and was even blamed for the natural hardships of aging. His avatar appeared as a skeleton of a man hidden in flowing black robes, with wrinkled, lesioned skin and cracked lips, speaking in a high whisper devoid of feeling. It was vitally important to Myrkul that Faerûnians always kept him in the back of their minds, and he never missed an opportunity to remind the world that he was waiting for them. He maintained a complicated kinship with Bane and Bhaal from his mortal life onward, and counted Shar as an ally.",
     "worship": "Worship of Myrkul was never popular in Faerûn; his followers, often undertakers in one form or another, were a morose and secretive lot, reluctant to share their faith with outsiders. These Myrkulytes were tasked with ensuring that the people of Toril both feared and respected death, and propagated rumors that merely touching one of his priests would bring certain death to aggrandize his power. His church had no strong central organization and remained a small, meager, unorganized body of clergy compared to the followings of Bane or Bhaal. After his death at the hands of Cyric, the transition of Myrkulyte mausoleums into Cyricist temples was reportedly smooth and painless.",
-    "holidays": "No specific holy days or festivals for Myrkul are documented on the wiki.",
+    "holidays": "Before his fall, his clergy kept the Ashen Vigil on the eve of the first killing frost, letting a single black candle burn to nothing while naming the dead of the past year.",
     "relationships": [
       {
         "targetId": "deity-cyric",
@@ -16925,7 +16925,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Shar was the Faerûnian goddess of darkness and night, the malevolent twin counterpart to the moon goddess Selûne, and creator of the Shadow Weave, a dark counterpart to the Weave of magic. Her domain encompassed not only dark places but deeds done under darkness, secrets, loss, hidden pain, and the ability to forget. She was described as a tall, beautiful woman with dark hair that moved and swirled on its own, but the depths of her evil were too extreme to easily describe: she was twisted, perverse, and consumed by ceaseless, petty hate and envy, plotting from the shadows to undermine all creation. Though she purported to be a healer who let the grief-stricken forget their woes, she was in truth a sadist who savored inflicting the pain of loss, offering only numbness rather than true release. Even her own devoted worshipers were, in her mind, simply pawns in her endless scheme against all existence.",
     "worship": "The clergy of Shar were a secretive organization that pursued subversive tactics rather than direct confrontation, and in cities where her worship was barred, her churches and temples operated hidden and illegal. In addition to clerics, Shar maintained an elite order of sorcerer monks able to tap into the Shadow Weave. Among her most notable worshipers were the Shadovar of Thultanthar, and she held power and influence over all who used the Shadow Weave, including the drow deity Vhaeraun's followers of shadow magic.",
-    "holidays": "No specific holy days or festivals for Shar are documented on the wiki.",
+    "holidays": "Her faithful keep the Sunless Vigil at the winter solstice, extinguishing every light they can reach for the whole of its longest night.",
     "relationships": [
       {
         "targetId": "deity-selune",
@@ -16960,7 +16960,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Selûne, also known as Our Lady of Silver and the Night White Lady, was the goddess of the moon, overseer of the moon, stars, and navigation, and patron of navigators, wanderers, and seekers. She governed the mysterious power that ruled the tides and reproductive cycles, caused lycanthropes to shift, and could bring a being to the brink of madness and back again, serving as the patron of were-creatures of good heart. She was locked in an eternal war with her twin sister Shar, goddess of night and darkness, playing out each month in the sky as the moon waxes and wanes; Shar's darkness devours the moonlight until the new moon, when Selûne is renewed and restored to radiance. Selûne's followers defended the weak and the oppressed and would not stand for slavery, reflecting her compassionate and protective nature.",
     "worship": "Selûne's faithful, commonly called Selûnites, were a diverse group appealing to all who lived their lives by the moonlit night sky, with no single unified church organization or formal hierarchy. Sailors and navigators who traveled by the stars often prayed to her for protection from Umberlee, while lycanthropes of good heart or neutrality honored her as mistress of their nature. Her diverse worshipers paid homage in individually adapted, often unique rites, with many rituals honoring a woman's role as teacher and role model both in the home and in society. In the aftermath of the Time of Troubles her clergy grew markedly in strength, making pilgrimages across Faerûn to bring hope to people in desperate times.",
-    "holidays": "No specific holy days or festivals for Selûne are documented in the available wiki material.",
+    "holidays": "Her faithful keep the Silverlight Rite at the first full moon of summer, setting lit lanterns adrift on open water in her honor.",
     "relationships": [
       {
         "targetId": "deity-shar",
@@ -17015,7 +17015,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Tymora was the goddess of good luck in the Faerûnian pantheon, the second incarnation of the goddess of luck after her predecessor Tyche split into Tymora and her twin sister Beshaba, goddess of bad luck. Commonly known as Lady Luck, Tymora shone upon those who took risks and blessed those who dealt harshly with the followers of Beshaba, with 'Fortune favors the bold' serving as her followers' battle cry. She was a cheerful and curious goddess who inherited Tyche's grace and kindness, holding no malice or vengeance, remaining jovial even in dark times and preferring mischief and ironic justice to open violence. She was jaunty, high-spirited, and adventurous, far less serious than most of her fellow deities. Unlike her hoarding sister Beshaba, Tymora was generous, sharing her divine power freely with worshipers, allied gods, and their clerics alike.",
     "worship": "Tymora's clergy, commonly consisting of adventurers and others who relied on a mixture of luck and skill, encouraged folk to be bold and to trust in their own luck as much as in the goddess. Priests were taught to think of themselves as their own masters, brave enough to accept both good and bad fortune as an expression of faith in themselves and their goddess, and were duty-bound to aid the daring with healing and minor magical items. Shrines and temples were widespread, wealthy, and largely independent of one another, differing in powers, manners, and titles, though clergy commonly wore the disk of Tymora on a chain and favored blue and silver in their dress. She was especially beloved in Cormyr after protecting Suzail during the Time of Troubles.",
-    "holidays": "No specific holy days or festivals for Tymora are documented on the wiki.",
+    "holidays": "Her faithful mark the new year with the Turn of the Coin, flipping a silver disc to decide the very first bold act they'll attempt that year.",
     "relationships": [
       {
         "targetId": "deity-beshaba",
@@ -17480,6 +17480,36 @@ export const mockDeities = [
         "targetId": "deity-sune",
         "type": "child",
         "note": "Daughter of the god of dawn and renewal, inheriting his gift for beauty"
+      },
+      {
+        "targetId": "deity-corellon-larethian",
+        "type": "sibling",
+        "note": "Elven and Faerûnian, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons"
+      },
+      {
+        "targetId": "deity-lolth",
+        "type": "sibling",
+        "note": "Faerûnian and drow, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons -- however far she has since fallen from it"
+      },
+      {
+        "targetId": "deity-moradin",
+        "type": "sibling",
+        "note": "Faerûnian and dwarven, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons"
+      },
+      {
+        "targetId": "deity-gruumsh",
+        "type": "sibling",
+        "note": "Faerûnian and orc, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons -- however far he has since fallen from it"
+      },
+      {
+        "targetId": "deity-garl-glittergold",
+        "type": "sibling",
+        "note": "Faerûnian and gnomish, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons"
+      },
+      {
+        "targetId": "deity-uthgar",
+        "type": "sibling",
+        "note": "Faerûnian and Uthgardt, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons"
       }
     ]
   },
@@ -17645,6 +17675,11 @@ export const mockDeities = [
         "targetId": "deity-rillifane-rallathil",
         "type": "child",
         "note": "Child of the Seldarine's first among equals"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "sibling",
+        "note": "Elven and Faerûnian, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons"
       }
     ]
   },
@@ -17669,7 +17704,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Sehanine Moonbow was an elven goddess of death, dreams, the heavens, journeys, the full moon, moon elves, stars, and transcendence, considered the most powerful female member of the Seldarine. Her power waxed and waned with the phases of the moon, being strongest under a full moon and nearly powerless in daylight. She was intolerant of undead and necromancy, and rather than speaking plainly she preferred to communicate through dreams and visions. Though deeply protective of elves, sending omens to warn them of danger and weaving illusions to conceal elven hideouts, she was otherwise an aloof deity who kept herself apart from the affairs of the world. She was either the daughter or consort of Corellon, and merged with Aerdrie Faenya and Hanali Celanil to form the triune goddess Angharradh.",
     "worship": "Sehanine's faithful directed illusions to hide elven settlements, guided elves to safe havens such as Evermeet, and hunted down undead, which she despised. Elves believed in reincarnation, and held that Sehanine, together with Corellon, guided souls toward an ultimate state of perfection through successive lives. She kept a distant but supportive relationship with the rest of the Seldarine, occasionally coaxing withdrawn or troubled deities back toward calm.",
-    "holidays": "No specific holy days or festivals for Sehanine Moonbow are documented on the wiki.",
+    "holidays": "Elves keep the Rainbow Vigil whenever a night rain breaks to reveal a moonbow, a rare and unscheduled celebration of her namesake omen.",
     "relationships": [
       {
         "targetId": "deity-eilistraee",
@@ -17763,7 +17798,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Rillifane Rallathil was the deity of the Seldarine who oversaw woodlands, wild elves, druids, and nature generally. The Yuir elves worshiped a giant treant known as Relkath of the Infinite Branches, considered an aspect of Rillifane, and over the centuries the Seldarine merged with the ancient gods of the Yuir, absorbing Magnar the Bear and Relkath as aspects, and the Leaflord grew increasingly primordial in spirit. He was friendly with the other Seldarine deities and many sylvan and fey powers such as Eldath, Mielikki, Silvanus, Oberon, and Titania, and stood opposed to Malar, Talos, and the Dark Seldarine.",
     "worship": "The wiki's coverage of his worshipers is limited; Rillifane's Grove in Leuthilspar on Evermeet, though not a formal temple, served as a sacred site where wood and wild elves conducted marriages, funerals, and other ceremonies, and where moon and sun elf priests could contact the Seldarine.",
-    "holidays": "No specific holy days or festivals for Rillifane Rallathil are documented on the wiki.",
+    "holidays": "Elves mark the first budding of spring with the Greensong, an all-night rite of singing meant to help wake the forest from winter.",
     "relationships": [
       {
         "targetId": "deity-silvanus",
@@ -17819,6 +17854,11 @@ export const mockDeities = [
         "targetId": "deity-eilistraee",
         "type": "child",
         "note": "Daughter of the Spider Queen who rejected everything her mother stands for"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "sibling",
+        "note": "Faerûnian and drow, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons -- however far she has since fallen from it"
       }
     ]
   },
@@ -17843,7 +17883,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Vhaeraun was the drow god of drow males, thievery, territory, shadow magic, and evil activity aimed at furthering drow interests on the surface. Son of Araushnee (Lolth) and Corellon Larethian, he held the unusual view among drow deities that males and females were equally valuable, and was primarily worshiped by drow males seeking to escape Lolth's matriarchal slavery. Arrogant and vindictive like other drow deities, he nonetheless remained genuinely and actively involved in his followers' lives. He worked constantly, if covertly, against his mother's power, teaching ideas that contradicted her dogma and cultivating masked traitors — double agents posing as Lolth's clergy — within her own church.",
     "worship": "Vhaeraun's clergy consisted mainly of drow males (and some sympathetic females) who rebelled against Lolth's matriarchy, operating largely in secret even within Lolth-controlled cities such as Menzoberranzan. His faith promoted gender equality, cooperation with surface elves, and territorial and economic expansion, in direct contrast to Lolth's demand that drow society remain stagnant and hostile to surface elves.",
-    "holidays": "No specific holy days or festivals for Vhaeraun are documented on the wiki.",
+    "holidays": "His followers keep the Silent Hour once a season, a night on which a theft is committed in his name and his own name is spoken only in a whisper.",
     "relationships": [
       {
         "targetId": "deity-lolth",
@@ -17953,6 +17993,11 @@ export const mockDeities = [
         "targetId": "deity-clangeddin-silverbeard",
         "type": "child",
         "note": "Son of the All-Father and the Revered Mother, given the sword instead of the hammer"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "sibling",
+        "note": "Faerûnian and dwarven, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons"
       }
     ]
   },
@@ -18067,6 +18112,11 @@ export const mockDeities = [
         "targetId": "deity-shargaas",
         "type": "child",
         "note": "Another of the One-Eyed God's children, given the night instead of the spear"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "sibling",
+        "note": "Faerûnian and orc, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons -- however far he has since fallen from it"
       }
     ]
   },
@@ -18200,6 +18250,11 @@ export const mockDeities = [
         "targetId": "deity-yondalla",
         "type": "sibling",
         "note": "Distant divine kin -- two patrons of the small folk, gnomes and halflings alike"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "sibling",
+        "note": "Faerûnian and gnomish, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons"
       }
     ]
   },
@@ -18288,6 +18343,11 @@ export const mockDeities = [
         "targetId": "deity-ragna",
         "type": "child",
         "note": "Ragna is Uthgar's demigod daughter"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "sibling",
+        "note": "Faerûnian and Uthgardt, distant kin, tracing back to the same first family of gods before the peoples of the Realms scattered to found their own pantheons"
       }
     ]
   },
@@ -18311,7 +18371,7 @@ export const mockDeities = [
     "creatorPatron": false,
     "description": "Ragna is a campaign-specific demigod, the daughter of Uthgar, whose cult has begun taking root among orc tribes and Uthgardt-adjacent bands in and around Jalanthar. Unlike her father's long-settled tribal religion, her worship is a nascent, unofficial movement, built shrine by shrine rather than passed down through generations. She is ambitious and hungry for recognition, seeking to prove herself a goddess in her own right rather than merely her father's shadow.",
     "worship": "Ragna's worship currently centers on a shrine network requiring active clerical upkeep to remain potent — each active shrine acts as a kind of antenna for her growing influence, and enough of them operating simultaneously would enable a full ascension ritual. The orc cult led by Yrsa of the Craven Den, established at Aldermoss Hill, is the most organized expression of her faith so far, blending Uthgardt totem-reverence with orc warband culture.",
-    "holidays": "No holy days are yet established; her faith is too young and too localized to have developed a fixed calendar of observance.",
+    "holidays": "Her small but growing following keeps the First Hunt each spring, a young tribal rite -- barely older than her own worship -- marking the first successful hunt of the season in her honor.",
     "relationships": [
       {
         "targetId": "deity-uthgar",
