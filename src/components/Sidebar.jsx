@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useData } from '../contexts/DataContext'
 import { IconMap, IconBuildings, IconResidents, IconRoster, IconCatalog, IconPantheon, IconKey, IconExit } from './icons'
 import ExportDataModal from './ExportDataModal'
 import UploadSourceModal from './UploadSourceModal'
@@ -23,7 +24,15 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
   const [manageSourcesOpen, setManageSourcesOpen] = useState(false)
   const [versionHistoryOpen, setVersionHistoryOpen] = useState(false)
   const { isDm, logout } = useAuth()
-  const visibleTabs = TABS.filter((t) => !t.dmOnly || isDm)
+  const { pantheonHidden, setPantheonHidden } = useData()
+  // Players never see the Pantheon tab while it's hidden -- this is a
+  // "we're not ready to show this yet" switch for the DM, not a spoiler
+  // mechanic, so unlike NPC visibility the DM's own view is completely
+  // unaffected: they always see it, with a small "(hidden)" tag as a
+  // reminder of what players currently see.
+  const visibleTabs = TABS.filter((t) => !t.dmOnly || isDm).filter(
+    (t) => t.id !== 'pantheon' || isDm || !pantheonHidden
+  )
 
   function selectTab(id) {
     onTabChange(id)
@@ -92,6 +101,11 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
                 }`}
               >
                 {tab.label}
+                {tab.id === 'pantheon' && isDm && pantheonHidden && (
+                  <span className="ml-1.5 text-[10px] normal-case tracking-normal text-parchment/40">
+                    (hidden)
+                  </span>
+                )}
               </span>
             </button>
           ))}
@@ -126,6 +140,26 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
             >
               <span className="w-4 h-4 shrink-0 flex items-center justify-center text-sm">⚙</span>
               <span className={collapsed ? 'md:hidden' : ''}>Manage Sources</span>
+            </button>
+          )}
+          {isDm && (
+            <button
+              onClick={() => setPantheonHidden(!pantheonHidden)}
+              className="w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide text-parchment/70 hover:text-gold-light transition-colors py-2"
+              title={
+                collapsed
+                  ? pantheonHidden
+                    ? 'Show the Pantheon tab to players'
+                    : 'Hide the Pantheon tab from players'
+                  : undefined
+              }
+            >
+              <span className="w-4 h-4 shrink-0 flex items-center justify-center text-sm">
+                {pantheonHidden ? '☆' : '★'}
+              </span>
+              <span className={collapsed ? 'md:hidden' : ''}>
+                {pantheonHidden ? 'Show Pantheon Tab' : 'Hide Pantheon Tab'}
+              </span>
             </button>
           )}
           {isDm ? (

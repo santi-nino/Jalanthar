@@ -85,5 +85,13 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null;
     }
+
+    // Site-wide DM toggles (currently just one: whether the Pantheon tab
+    // is hidden from players). Public read so every visitor's client
+    // knows whether to show the tab; only the DM can flip it.
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
   }
 }

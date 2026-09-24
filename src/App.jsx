@@ -1,6 +1,6 @@
-import { useState, lazy, Suspense } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
-import { DataProvider } from './contexts/DataContext'
+import { DataProvider, useData } from './contexts/DataContext'
 import Sidebar from './components/Sidebar'
 import DmLogin from './components/DmLogin'
 import MapTab from './components/tabs/MapTab'
@@ -45,6 +45,16 @@ function AppShell() {
   const [editingDeity, setEditingDeity] = useState(undefined)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const { isDm } = useAuth()
+  const { pantheonHidden } = useData()
+
+  // If the DM hides the Pantheon tab while a player is actually sitting on
+  // it, bounce them back to Map rather than leaving them stranded on a tab
+  // that no longer has a sidebar entry to navigate away from.
+  useEffect(() => {
+    if (activeTab === 'pantheon' && !isDm && pantheonHidden) {
+      setActiveTab('map')
+    }
+  }, [activeTab, isDm, pantheonHidden])
 
   return (
     <div className="h-screen w-screen flex overflow-hidden">

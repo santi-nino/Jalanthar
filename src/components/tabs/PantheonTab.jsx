@@ -86,48 +86,73 @@ function edgeLabelFor(rel) {
   return undefined
 }
 
-// ---- Layout ------------------------------------------------------------
-// A plain top-down grid, one horizontal band per pantheon, stacked in
-// PANTHEONS order. Within a band, a deity's ROW is its generation --
-// computed only from parent/child and subordinate_to/patron_of edges
-// where BOTH ends belong to the same pantheon (a cross-pantheon lineage
-// edge, like Sehanine -> Eilistraee, intentionally does NOT pull two
-// different pantheons' bands together -- it just draws a long line
-// between them, same as any other cross-pantheon relationship).
+// ---- Layout rules --------------------------------------------------------
+// A named, explicit rule set (not just scattered math) so the layout's
+// behavior can be reasoned about and adjusted rule-by-rule. Every rule
+// below is deterministic -- the same data always produces the same
+// layout, nothing here rolls dice.
 //
-// A generation can still wrap into several sub-rows (Faerûnian has ~23
-// gods with no recorded lineage, all generation 0 -- letting that render
-// as one unbroken 23-card-wide line made the ENTIRE tab illegible, since
-// ReactFlow's fitView has to zoom out to fit every pantheon's widest row
-// at once, and it shrank everything else on the canvas down to match one
-// absurdly wide row). So: capped at MAX_COLS columns per sub-row, same as
-// every other pantheon's natural width, which keeps the whole canvas at a
-// sane, comparable scale.
+//   RULE 1 -- MIN_CARD_GAP: cards are never closer than this, full stop
+//             (COL_SPACING - CARD_W). Prevents the "too close together"
+//             crowding the DM flagged.
+//   RULE 2 -- GENERATIONAL ROWS: a parent/patron sits exactly one row
+//             above their child/subordinate (genDelta on the relationship
+//             type, applied in computeGenerations), only within the same
+//             pantheon -- a cross-pantheon lineage tie (Sehanine ->
+//             Eilistraee) draws a long line instead of merging two
+//             pantheons' bands together.
+//   RULE 3 -- KINSHIP SHARES A ROW: siblings (and, if this data model
+//             ever adds cousins, cousins too) are pulled into the SAME
+//             generation as whichever kin they're connected to, via
+//             SAME_ROW_TYPES below (genDelta 0) -- they never end up
+//             stranded a row apart from each other.
+//   RULE 4 -- CONNECTIVITY ORDERING: within a row, cards aren't just
+//             alphabetized -- orderByConnectivity chains each member next
+//             to whichever unplaced member they're most related to (any
+//             relationship type counts), so a same-row relationship line
+//             (Shar/Selûne, the Bane/Cyric/Bhaal/Myrkul/Leira absorption
+//             chain, Milil/Oghma/Deneir, etc.) connects near-neighbors
+//             instead of zigzagging across unrelated cards to reach a
+//             relative on the other side of the row. This is the direct
+//             fix for lines "crisscrossing like a poorly designed subway
+//             system."
+//   RULE 5 -- ORTHOGONAL ROUTING: edges are drawn with ReactFlow's
+//             'smoothstep' type, not a raw diagonal straight line, and
+//             each edge picks side (left/right) handles for a same-row
+//             relationship or top/bottom handles for a cross-row one (see
+//             pickHandles) -- so a line travels in a clean, subway-map-
+//             style channel between rows/columns rather than cutting
+//             diagonally across the middle of unrelated cards.
+//   RULE 6 -- WIDTH CAP: a generation that wraps into several sub-rows
+//             (Faerûnian's ~23 lineage-less gods) is capped at MAX_COLS
+//             per sub-row and centered against the widest sub-row in its
+//             own pantheon -- see the wrapping note further down.
 //
-// To keep "one generation, wrapped or not" from reading as several
-// different generations (the exact complaint that caused the wide-row
-// version in the first place), spacing does the disambiguating: sub-rows
-// WITHIN one generation sit close together (SUBROW_SPACING), while the
-// gap BEFORE the next actual generation is much larger (GEN_GAP) -- and
-// on any pantheon with more than one generation, a small "GEN N" marker
-// sits to the left of each generation's block as an explicit backup to
-// the spacing, so there's no ambiguity even at a glance. Every row is
-// also centered against the widest row in its own pantheon, the way a
-// real genealogy chart centers a couple's children under them rather
-// than left-justifying everyone. Within a row, deities are sorted
-// (creator/patron gods first, then alphabetical). No randomness anywhere
-// in this function -- the same data always produces the exact same
-// layout.
-const MAX_COLS = 6
-const COL_SPACING = 190
+// NOTE ON HONESTY: rules 1-3 and 6 are hard guarantees. Rules 4-5 are a
+// strong, deterministic HEURISTIC, not a mathematical proof of zero
+// crossings or zero line-through-card overlaps -- true crossing-free
+// graph layout is a genuinely hard problem in general, especially with
+// cross-pantheon relationships that have to travel between bands that
+// are laid out independently of each other. What this gets you: every
+// SAME-ROW relationship (the majority of edges in this data) reads
+// cleanly, and every remaining line travels in orthogonal channels
+// instead of diagonal cuts.
+const MIN_CARD_GAP = 40
 const CARD_W = 160
-const SUBROW_SPACING = 78
-const GEN_GAP = 132
+const COL_SPACING = CARD_W + MIN_CARD_GAP
+const SUBROW_SPACING = 84
+const GEN_GAP = 140
 const LABEL_HEIGHT = 40
 const BAND_GAP = 64
 const GEN_LABEL_OFFSET = 34
+const MAX_COLS = 6
 
-const LINEAGE_TYPES = new Set(['parent', 'child', 'subordinate_to', 'patron_of'])
+// Relationship kinds that place both sides on the exact same row
+// (RULE 3). Distinct from GENERATION_TYPES below, which move a row up or
+// down instead.
+const SAME_ROW_TYPES = new Set(['sibling'])
+const GENERATION_TYPES = new Set(['parent', 'child', 'subordinate_to', 'patron_of'])
+const LINEAGE_TYPES = new Set([...SAME_ROW_TYPES, ...GENERATION_TYPES])
 
 function computeGenerations(members, byId) {
   const gen = {}
@@ -152,6 +177,62 @@ function computeGenerations(members, byId) {
     }
   })
   return gen
+}
+
+// RULE 4 -- greedy connectivity chain: start from the row's natural
+// "first" member (creator/patron, else alphabetically first), then
+// repeatedly append whichever unplaced member has the strongest
+// relationship tie to whoever was just placed. A member with no tie to
+// the current chain end falls back to the next member in the fallback
+// (alphabetical) order, so disconnected deities still end up in a fully
+// deterministic position rather than an arbitrary one. This is a
+// heuristic for the classic "minimum linear arrangement" problem, not an
+// optimal solver -- but it reliably pulls related deities next to each
+// other, which is the whole point.
+function orderByConnectivity(members) {
+  if (members.length <= 2) return members
+  const ids = new Set(members.map((m) => m.id))
+  const weight = new Map(members.map((m) => [m.id, new Map()]))
+  members.forEach((m) => {
+    ;(m.relationships || []).forEach((rel) => {
+      if (!ids.has(rel.targetId) || rel.targetId === m.id) return
+      const a = weight.get(m.id)
+      a.set(rel.targetId, (a.get(rel.targetId) || 0) + 1)
+      const b = weight.get(rel.targetId)
+      b.set(m.id, (b.get(m.id) || 0) + 1)
+    })
+  })
+  const fallbackOrder = [...members].sort((a, b) => {
+    if (a.creatorPatron !== b.creatorPatron) return a.creatorPatron ? -1 : 1
+    return a.name.localeCompare(b.name)
+  })
+  const byIdLocal = Object.fromEntries(members.map((m) => [m.id, m]))
+  const remaining = new Set(members.map((m) => m.id))
+  const placedOrder = []
+
+  let current = fallbackOrder[0].id
+  placedOrder.push(current)
+  remaining.delete(current)
+
+  while (remaining.size > 0) {
+    let best = null
+    let bestScore = 0
+    remaining.forEach((id) => {
+      const score = weight.get(current).get(id) || 0
+      if (score > bestScore) {
+        bestScore = score
+        best = id
+      }
+    })
+    if (!best) {
+      best = fallbackOrder.find((m) => remaining.has(m.id)).id
+    }
+    placedOrder.push(best)
+    remaining.delete(best)
+    current = best
+  }
+
+  return placedOrder.map((id) => byIdLocal[id])
 }
 
 function layoutPantheons(deities) {
@@ -194,10 +275,10 @@ function layoutPantheons(deities) {
     // instead of per generation.
     const subRows = []
     sortedGens.forEach((g) => {
-      const genMembers = byGen[g].sort((a, b) => {
-        if (a.creatorPatron !== b.creatorPatron) return a.creatorPatron ? -1 : 1
-        return a.name.localeCompare(b.name)
-      })
+      // RULE 4: chain related members next to each other instead of a
+      // flat alphabetical sort, so same-row relationship lines connect
+      // near-neighbors rather than cutting across the whole row.
+      const genMembers = orderByConnectivity(byGen[g])
       for (let i = 0; i < genMembers.length; i += MAX_COLS) {
         const chunk = genMembers.slice(i, i + MAX_COLS)
         const width = (chunk.length - 1) * COL_SPACING + CARD_W
@@ -245,6 +326,23 @@ function clampToRadius(dx, dy, radius) {
   if (dist <= radius || dist === 0) return { dx, dy }
   const scale = radius / dist
   return { dx: dx * scale, dy: dy * scale }
+}
+
+// RULE 5 -- same-row relationships exit/enter the SIDES of a card (so the
+// line travels along the row instead of diagonally over other cards in
+// it); anything that changes rows exits/enters the TOP or BOTTOM, in
+// whichever vertical direction it's actually traveling. Combined with
+// the 'smoothstep' edge type (set where these are used), this keeps
+// every line moving in clean horizontal/vertical legs -- a subway map,
+// not a pile of diagonal straight lines cutting through the middle of
+// the canvas.
+function pickHandles(sourcePos, targetPos) {
+  const dx = targetPos.x - sourcePos.x
+  const dy = targetPos.y - sourcePos.y
+  if (Math.abs(dy) < 4) {
+    return dx >= 0 ? { sourceHandle: 'right', targetHandle: 'left' } : { sourceHandle: 'left', targetHandle: 'right' }
+  }
+  return dy > 0 ? { sourceHandle: 'bottom', targetHandle: 'top' } : { sourceHandle: 'top', targetHandle: 'bottom' }
 }
 
 export default function PantheonTab({ onEditDeity }) {
@@ -313,17 +411,21 @@ export default function PantheonTab({ onEditDeity }) {
     const seen = new Set()
     deities.forEach((deity) => {
       ;(deity.relationships || []).forEach((rel) => {
-        if (!positions[rel.targetId] || !positions[deity.id]) return
+        const sourcePos = positions[deity.id]
+        const targetPos = positions[rel.targetId]
+        if (!sourcePos || !targetPos) return
         const key = [deity.id, rel.targetId].sort().join('|') + rel.type
         if (seen.has(key)) return
         seen.add(key)
+        const { sourceHandle, targetHandle } = pickHandles(sourcePos, targetPos)
         edges.push({
           id: `e-${key}`,
           source: deity.id,
           target: rel.targetId,
-          sourceHandle: 'bottom',
-          targetHandle: 'top',
-          type: 'straight',
+          sourceHandle,
+          targetHandle,
+          type: 'smoothstep',
+          pathOptions: { borderRadius: 12 },
           style: edgeStyleFor(rel.type),
           label: edgeLabelFor(rel),
           data: { sourceId: deity.id, targetId: rel.targetId, type: rel.type },

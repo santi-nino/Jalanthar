@@ -16874,6 +16874,11 @@ export const mockDeities = [
         "targetId": "deity-selune",
         "type": "enemy",
         "note": "Eternal rivalry playing out each month as the moon waxes and wanes; twin sisters"
+      },
+      {
+        "targetId": "deity-selune",
+        "type": "sibling",
+        "note": "Twin sisters"
       }
     ]
   },
@@ -16904,6 +16909,11 @@ export const mockDeities = [
         "targetId": "deity-shar",
         "type": "enemy",
         "note": "Eternal rivalry playing out each month as the moon waxes and wanes; twin sisters"
+      },
+      {
+        "targetId": "deity-shar",
+        "type": "sibling",
+        "note": "Twin sisters"
       }
     ]
   },
@@ -16934,6 +16944,11 @@ export const mockDeities = [
         "targetId": "deity-beshaba",
         "type": "enemy",
         "note": "Split from the same goddess, Tyche; sisters at eternal odds over fortune"
+      },
+      {
+        "targetId": "deity-beshaba",
+        "type": "sibling",
+        "note": "Sisters, both born of the splitting of Tyche"
       }
     ]
   },
@@ -16964,6 +16979,11 @@ export const mockDeities = [
         "targetId": "deity-tymora",
         "type": "enemy",
         "note": "Split from the same goddess, Tyche; sisters at eternal odds over fortune"
+      },
+      {
+        "targetId": "deity-tymora",
+        "type": "sibling",
+        "note": "Sisters, both born of the splitting of Tyche"
       }
     ]
   },

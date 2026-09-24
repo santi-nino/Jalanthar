@@ -31,6 +31,7 @@ const LS_KEYS = {
   families: 'jalanthar-demo-families',
   sources: 'jalanthar-demo-sources',
   deities: 'jalanthar-demo-deities',
+  pantheonHidden: 'jalanthar-demo-pantheon-hidden',
 }
 
 function loadDemo(key, fallback) {
@@ -67,6 +68,12 @@ export function DataProvider({ children }) {
   const [families, setFamilies] = useState([])
   const [sources, setSources] = useState([])
   const [deities, setDeities] = useState([])
+  // Whether the Pantheon tab is hidden from players -- a DM-facing escape
+  // hatch for "we didn't finish building this pantheon in time for
+  // tonight's session," not a spoiler mechanic like NPC visibility. The
+  // DM always sees the tab regardless of this flag (see Sidebar.jsx); only
+  // players are affected.
+  const [pantheonHidden, setPantheonHiddenState] = useState(false)
   const [loading, setLoading] = useState(true)
 
   // Kept in sync every render so callbacks below can read the latest
@@ -131,6 +138,13 @@ export function DataProvider({ children }) {
       const unsubDeities = onSnapshot(collection(db, 'deities'), (snap) =>
         setDeities(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
       )
+      // Same public-read, always-on pattern -- a single settings document
+      // rather than a whole collection since there's only ever this one
+      // flag today, but it's its own doc (not crammed onto some other
+      // collection) so it's easy to add more site-wide DM toggles later.
+      const unsubPantheonSettings = onSnapshot(doc(db, 'settings', 'pantheon'), (snap) =>
+        setPantheonHiddenState(snap.data()?.hidden === true)
+      )
       const unsubAuth = onAuthStateChanged(auth, (user) => {
         unsubNpcs()
         if (user) {
@@ -176,6 +190,7 @@ export function DataProvider({ children }) {
         unsubNpcs()
         unsubSources()
         unsubDeities()
+        unsubPantheonSettings()
       }
     } else {
       import('../data/mockData').then(({ mockBuildings, mockNpcs, mockFamilies, mockDeities }) => {
@@ -184,6 +199,7 @@ export function DataProvider({ children }) {
         setFamilies(loadDemo(LS_KEYS.families, mockFamilies))
         setSources(loadDemo(LS_KEYS.sources, []))
         setDeities(loadDemo(LS_KEYS.deities, mockDeities))
+        setPantheonHiddenState(loadDemo(LS_KEYS.pantheonHidden, false))
         setLoading(false)
       })
     }
@@ -489,6 +505,15 @@ export function DataProvider({ children }) {
     }
   }, [])
 
+  const setPantheonHidden = useCallback(async (hidden) => {
+    if (isFirebaseConfigured) {
+      await setDoc(doc(db, 'settings', 'pantheon'), { hidden }, { merge: true })
+    } else {
+      setPantheonHiddenState(hidden)
+      saveDemo(LS_KEYS.pantheonHidden, hidden)
+    }
+  }, [])
+
   return (
     <DataContext.Provider
       value={{
@@ -510,6 +535,8 @@ export function DataProvider({ children }) {
         removeSource,
         saveDeity,
         removeDeity,
+        pantheonHidden,
+        setPantheonHidden,
       }}
     >
       {children}
