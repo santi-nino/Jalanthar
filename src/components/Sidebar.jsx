@@ -145,11 +145,16 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
           {isDm && (
             <button
               onClick={() => setPantheonHidden(!pantheonHidden)}
-              className="w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide text-parchment/70 hover:text-gold-light transition-colors py-2"
+              aria-pressed={pantheonHidden}
+              className={`w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide transition-colors py-2 ${
+                pantheonHidden
+                  ? 'text-parchment/30 hover:text-parchment/50'
+                  : 'text-parchment/70 hover:text-gold-light'
+              }`}
               title={
                 collapsed
                   ? pantheonHidden
-                    ? 'Show the Pantheon tab to players'
+                    ? 'Pantheon tab is hidden from players -- click to unhide'
                     : 'Hide the Pantheon tab from players'
                   : undefined
               }
@@ -158,7 +163,7 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
                 {pantheonHidden ? '☆' : '★'}
               </span>
               <span className={collapsed ? 'md:hidden' : ''}>
-                {pantheonHidden ? 'Show Pantheon Tab' : 'Hide Pantheon Tab'}
+                {pantheonHidden ? 'Unhide Pantheon Tab' : 'Hide Pantheon Tab'}
               </span>
             </button>
           )}

@@ -77,14 +77,28 @@ function edgeStyleFor(typeId) {
   return DEITY_EDGE_STYLE.root
 }
 
+// Kept deliberately short -- these render as permanent on-canvas labels,
+// not tooltips, so a full sentence-length note (the kind stored in
+// rel.note for flavor) would sit on top of the lines and cards around it
+// and become one more source of clutter in an already busy diagram. The
+// full note text is still there in the data and still shown in the
+// DM edit form / detail panel -- it's just not painted onto the graph.
 function edgeLabelFor(rel) {
-  if (rel.type === 'killed' || rel.type === 'killed_by') return `💀${rel.note ? ` ${rel.note}` : ''}`
+  if (rel.type === 'killed' || rel.type === 'killed_by') return '💀'
   if (rel.type === 'spouse') return '♥'
   if (rel.type === 'absorbed' || rel.type === 'absorbed_by') return 'absorbed'
   if (rel.type === 'overlap') return 'shared domain'
   if (rel.type === 'subordinate_to' || rel.type === 'patron_of') return 'patron of'
   return undefined
 }
+
+// A small opaque backing chip behind any edge label, so "absorbed" or
+// "patron of" reads as its own label sitting ON the line rather than
+// bare text floating over whatever card or other line happens to be
+// underneath it at that point.
+const EDGE_LABEL_STYLE = { fontSize: 10, fill: '#33352B' }
+const EDGE_LABEL_BG_STYLE = { fill: '#F4ECD8', fillOpacity: 0.9 }
+const EDGE_LABEL_BG_PADDING = [3, 2]
 
 // ---- Layout rules --------------------------------------------------------
 // A named, explicit rule set (not just scattered math) so the layout's
@@ -116,6 +130,17 @@ function edgeLabelFor(rel) {
 //             relative on the other side of the row. This is the direct
 //             fix for lines "crisscrossing like a poorly designed subway
 //             system."
+//   RULE 4b -- FAMILY CLUSTERING: after that same-row chaining, every
+//             deity is required to have at least one blood relationship
+//             (parent/child/sibling -- see mockData.js), so orderByParent-
+//             Anchor pulls each row's members toward whichever column
+//             their own parent/patron ended up in on the row ABOVE (with
+//             a sibling inheriting an anchor from an anchored sibling if
+//             they don't have their own). This is what actually breaks a
+//             wide generation up into visually distinct family clusters
+//             instead of one undifferentiated wall of cards, and it's
+//             what keeps a cross-generation line short and close to
+//             vertical instead of traveling sideways across the whole row.
 //   RULE 5 -- ORTHOGONAL ROUTING: edges are drawn with ReactFlow's
 //             'smoothstep' type, not a raw diagonal straight line, and
 //             each edge picks side (left/right) handles for a same-row
@@ -137,13 +162,13 @@ function edgeLabelFor(rel) {
 // SAME-ROW relationship (the majority of edges in this data) reads
 // cleanly, and every remaining line travels in orthogonal channels
 // instead of diagonal cuts.
-const MIN_CARD_GAP = 40
+const MIN_CARD_GAP = 44
 const CARD_W = 160
 const COL_SPACING = CARD_W + MIN_CARD_GAP
-const SUBROW_SPACING = 84
-const GEN_GAP = 140
+const SUBROW_SPACING = 96
+const GEN_GAP = 180
 const LABEL_HEIGHT = 40
-const BAND_GAP = 64
+const BAND_GAP = 76
 const GEN_LABEL_OFFSET = 34
 const MAX_COLS = 6
 
@@ -153,6 +178,11 @@ const MAX_COLS = 6
 const SAME_ROW_TYPES = new Set(['sibling'])
 const GENERATION_TYPES = new Set(['parent', 'child', 'subordinate_to', 'patron_of'])
 const LINEAGE_TYPES = new Set([...SAME_ROW_TYPES, ...GENERATION_TYPES])
+// The subset of GENERATION_TYPES read from a member's own entry as "my
+// parent/patron is up a row" -- used by orderByParentAnchor (RULE 4b)
+// below to find which row-above member a given row's card should be
+// grouped near.
+const ANCHOR_TYPES = new Set(['parent', 'subordinate_to'])
 
 function computeGenerations(members, byId) {
   const gen = {}
@@ -235,6 +265,58 @@ function orderByConnectivity(members) {
   return placedOrder.map((id) => byIdLocal[id])
 }
 
+// RULE 4b -- once a row has been chain-ordered (orderByConnectivity,
+// above), pull each member toward whichever column their own
+// parent/patron ended up in on the row above, the way a real family tree
+// draws a couple's children clustered directly under them rather than
+// scattered across the width of the chart. This is what actually stops
+// a cross-generation line from having to travel sideways across a wide
+// row to find its target -- most parent/child lines end up short and
+// nearly vertical instead. A stable sort is used on purpose: members who
+// share the same anchor (siblings under the same parent) keep whatever
+// relative order orderByConnectivity already gave them, and a member
+// with no traceable parent in the row above (a root, or a cross-
+// pantheon-only tie) simply stays wherever it already was.
+function orderByParentAnchor(members, prevRowIds) {
+  if (!prevRowIds || prevRowIds.length === 0) return members
+  const indexOf = new Map(prevRowIds.map((id, i) => [id, i]))
+  const anchorOf = new Map()
+  members.forEach((m) => {
+    let best = Infinity
+    ;(m.relationships || []).forEach((rel) => {
+      if (!ANCHOR_TYPES.has(rel.type)) return
+      const i = indexOf.get(rel.targetId)
+      if (i !== undefined && i < best) best = i
+    })
+    anchorOf.set(m.id, best)
+  })
+  // A sibling with no directly recorded parent/patron of their own (Beshaba
+  // has no parent tie, only a sibling tie to Tymora) still needs to land
+  // next to their anchored sibling rather than drift to wherever the row
+  // ends up sorting "no anchor" members -- so an unanchored member borrows
+  // the best anchor of any sibling that has one. Repeats until nothing
+  // changes, so a sibling chain (A-B-C, only A anchored) fully propagates.
+  const byIdLocal = Object.fromEntries(members.map((m) => [m.id, m]))
+  let changed = true
+  while (changed) {
+    changed = false
+    members.forEach((m) => {
+      if (anchorOf.get(m.id) !== Infinity) return
+      ;(m.relationships || []).forEach((rel) => {
+        if (rel.type !== 'sibling') return
+        const sib = byIdLocal[rel.targetId]
+        if (!sib) return
+        const sibAnchor = anchorOf.get(sib.id)
+        if (sibAnchor !== undefined && sibAnchor < anchorOf.get(m.id)) {
+          anchorOf.set(m.id, sibAnchor)
+          changed = true
+        }
+      })
+    })
+  }
+  return [...members].sort((a, b) => anchorOf.get(a.id) - anchorOf.get(b.id))
+}
+
 function layoutPantheons(deities) {
   const byId = Object.fromEntries(deities.map((d) => [d.id, d]))
   const byPantheon = {}
@@ -274,16 +356,23 @@ function layoutPantheons(deities) {
     // pantheon -- same reasoning as before, just applied per sub-row
     // instead of per generation.
     const subRows = []
+    let prevRowIds = null
     sortedGens.forEach((g) => {
       // RULE 4: chain related members next to each other instead of a
       // flat alphabetical sort, so same-row relationship lines connect
       // near-neighbors rather than cutting across the whole row.
-      const genMembers = orderByConnectivity(byGen[g])
+      let genMembers = orderByConnectivity(byGen[g])
+      // RULE 4b: then pull each member toward its own parent/patron's
+      // column from the row above, so a family visibly clusters under
+      // its elder instead of spreading wherever the row-internal chain
+      // happened to put it.
+      genMembers = orderByParentAnchor(genMembers, prevRowIds)
       for (let i = 0; i < genMembers.length; i += MAX_COLS) {
         const chunk = genMembers.slice(i, i + MAX_COLS)
         const width = (chunk.length - 1) * COL_SPACING + CARD_W
         subRows.push({ gen: g, isFirstOfGen: i === 0, members: chunk, width })
       }
+      prevRowIds = genMembers.map((m) => m.id)
     })
     const bandWidth = Math.max(...subRows.map((r) => r.width))
 
@@ -428,6 +517,10 @@ export default function PantheonTab({ onEditDeity }) {
           pathOptions: { borderRadius: 12 },
           style: edgeStyleFor(rel.type),
           label: edgeLabelFor(rel),
+          labelStyle: EDGE_LABEL_STYLE,
+          labelBgStyle: EDGE_LABEL_BG_STYLE,
+          labelBgPadding: EDGE_LABEL_BG_PADDING,
+          labelBgBorderRadius: 3,
           data: { sourceId: deity.id, targetId: rel.targetId, type: rel.type },
         })
       })

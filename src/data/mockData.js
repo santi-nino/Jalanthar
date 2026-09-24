@@ -16656,7 +16656,28 @@ export const mockDeities = [
     "description": "Helm, also called the Vigilant One, was the god of guardians, protection, and protectors, long seen as a cold and focused deity who impartially took the role of defender and sometimes enforcer. He was an ancient, eternal sentry who always wore a full suit of armor representing the weight of his heavy responsibility, and he got the job at hand done without complaint. The people of the Realms widely admired his humble, reassuring dedication to duty, and he was particularly fond of children, often forgiving their minor transgressions. During the Time of Troubles he was tasked by Ao with guarding the Celestial Stairway, a duty he fulfilled so rigidly that he destroyed the goddess Mystra herself when she tried to force her way past him without the Tablets of Fate. He held special enmity for deities such as Bane, Cyric, Mask, and Shar, and for the uncontrolled destruction wrought by Garagos, Malar, and Talos.",
     "worship": "Helmites were long respected and revered for their dedication and purpose, especially in the frontiers of the North, unfailingly pledging to defend those who called for it. They wore polished full suits of armor, often enchanted as everbright, typically topped with plumed helmets. Their hierarchy was strict and militaristic, including an order of paladins called the Vigilant Eyes of the God, and was originally headed by a single pontiff, the Supreme Watcher, though that post had been vacant since 992 DR. The faith was especially popular in Cormyr, the Dragon Coast, Tethyr, the Vilhon Reach, and the Western Heartlands. After his death and eventual return following the Second Sundering, worship of Helm steadily rebounded across Faerûn.",
     "holidays": "Helmites celebrated a festival known as the Ceremony of Honor to Helm on Shieldmeet.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-jergal",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-oghma",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-torm",
+        "type": "child",
+        "note": "Dutiful son of the Watcher, sworn like his father to unwavering duty"
+      },
+      {
+        "targetId": "deity-ilmater",
+        "type": "child",
+        "note": "Child of the Watcher, who chose to bear the world's suffering rather than merely guard against it"
+      }
+    ]
   },
   {
     "id": "deity-ilmater",
@@ -16685,6 +16706,16 @@ export const mockDeities = [
         "targetId": "deity-loviatar",
         "type": "enemy",
         "note": "Loviatar's cult of inflicted pain stands as the direct inversion of Ilmater's willing endurance"
+      },
+      {
+        "targetId": "deity-helm",
+        "type": "parent",
+        "note": "Child of the Watcher, who chose to bear the world's suffering rather than merely guard against it"
+      },
+      {
+        "targetId": "deity-loviatar",
+        "type": "child",
+        "note": "Ilmater's own daughter, who turned his gift for enduring pain into a gift for inflicting it"
       }
     ]
   },
@@ -16710,7 +16741,13 @@ export const mockDeities = [
     "description": "Torm was the Faerûnian patron deity of paladins and the god of duty, loyalty, righteousness, and obedience, later also law and valor. He could appear as a twelve-foot-tall man in ancient plate mail stained dusky purple, or shapeshift into a lion-headed man in combat, but in any form he was stern, dauntlessly courageous, and utterly fearless. Torm was kind and gentle to faithful friends, the weak, and the defenseless, but stern and righteous against evil and injustice. He was one of the three deities of the Triad alongside Tyr and Ilmater, tempering Tyr's zeal for justice with mercy and humility, and after Tyr's death he became the Triad's leader. He held deep enmity for Bane, Shar, and especially Cyric, whom he blamed for gravely wounding Tyr.",
     "worship": "Known as Tormtar, Torm's worshipers consisted mainly of humans devoted to both good and law, pursuing righteousness, honesty, loyalty, and truth, with growing numbers of dwarves and elves after the Time of Troubles. By the late 15th century DR his typical worshipers were guardians, knights, and paladins who strived to maintain order and peace while remaining vigilant against corruption, even at personal risk. To atone for failings during the Time of Troubles, the Tormtar undertook the Penance of Duty, obligations including aiding the faithful of persecuted good gods and eliminating cults of Cyric and Bane. Knightly orders such as the Order of the Golden Lion, based at the Temple of Torm's Coming in Tantras, sponsored much of his worship across the continent.",
     "holidays": "No specific holy days or festivals for Torm are documented on the wiki.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-helm",
+        "type": "parent",
+        "note": "Dutiful son of the Watcher, sworn like his father to unwavering duty"
+      }
+    ]
   },
   {
     "id": "deity-bane",
@@ -16739,6 +16776,11 @@ export const mockDeities = [
         "targetId": "deity-cyric",
         "type": "absorbed_by",
         "note": "Absorbed Bane's portfolio of tyranny and hatred after the Time of Troubles"
+      },
+      {
+        "targetId": "deity-jergal",
+        "type": "parent",
+        "note": "One of the Dead Three, born of the old Lord of the Dead's waning power"
       }
     ]
   },
@@ -16769,6 +16811,11 @@ export const mockDeities = [
         "targetId": "deity-cyric",
         "type": "killed_by",
         "note": "Slew Bhaal (as the Slayer) during the Time of Troubles"
+      },
+      {
+        "targetId": "deity-jergal",
+        "type": "parent",
+        "note": "One of the Dead Three, born of the old Lord of the Dead's waning power"
       }
     ]
   },
@@ -16799,6 +16846,11 @@ export const mockDeities = [
         "targetId": "deity-cyric",
         "type": "absorbed_by",
         "note": "Absorbed Myrkul's portfolio of death, later ceded to Kelemvor"
+      },
+      {
+        "targetId": "deity-jergal",
+        "type": "parent",
+        "note": "One of the Dead Three, born of the old Lord of the Dead's waning power"
       }
     ]
   },
@@ -16844,6 +16896,11 @@ export const mockDeities = [
         "targetId": "deity-leira",
         "type": "absorbed",
         "note": "Murdered Leira and absorbed her portfolio of illusion and deception"
+      },
+      {
+        "targetId": "deity-jergal",
+        "type": "parent",
+        "note": "Rose to godhood from the same old death-power Jergal once held, claimed here as kin"
       }
     ]
   },
@@ -16914,6 +16971,26 @@ export const mockDeities = [
         "targetId": "deity-shar",
         "type": "sibling",
         "note": "Twin sisters"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-tymora",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-malar",
+        "type": "child",
+        "note": "The Moonmaiden's wild son, who turned her gift for shapeshifters toward the hunt and the kill"
+      },
+      {
+        "targetId": "deity-mielikki",
+        "type": "child",
+        "note": "Daughter of the Moonmaiden, who took to the forests instead of the night sky"
       }
     ]
   },
@@ -16949,6 +17026,11 @@ export const mockDeities = [
         "targetId": "deity-beshaba",
         "type": "sibling",
         "note": "Sisters, both born of the splitting of Tyche"
+      },
+      {
+        "targetId": "deity-selune",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
       }
     ]
   },
@@ -17014,6 +17096,11 @@ export const mockDeities = [
         "targetId": "deity-mielikki",
         "type": "enemy",
         "note": "Former lovers turned bitter enemies over savagery versus stewardship of the wild"
+      },
+      {
+        "targetId": "deity-selune",
+        "type": "parent",
+        "note": "The Moonmaiden's wild son, who turned her gift for shapeshifters toward the hunt and the kill"
       }
     ]
   },
@@ -17044,6 +17131,16 @@ export const mockDeities = [
         "targetId": "deity-malar",
         "type": "enemy",
         "note": "Former lovers turned bitter enemies over savagery versus stewardship of the wild"
+      },
+      {
+        "targetId": "deity-selune",
+        "type": "parent",
+        "note": "Daughter of the Moonmaiden, who took to the forests instead of the night sky"
+      },
+      {
+        "targetId": "deity-silvanus",
+        "type": "sibling",
+        "note": "Forest Queen and Forest Father, siblings in the wild"
       }
     ]
   },
@@ -17074,6 +17171,16 @@ export const mockDeities = [
         "targetId": "deity-sharess",
         "type": "ally",
         "note": "Close companions who have served alongside one another"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "parent",
+        "note": "Daughter of the god of dawn and renewal, inheriting his gift for beauty"
+      },
+      {
+        "targetId": "deity-sharess",
+        "type": "sibling",
+        "note": "Sisters as much as allies, both goddesses of pleasure and desire"
       }
     ]
   },
@@ -17104,6 +17211,11 @@ export const mockDeities = [
         "targetId": "deity-sune",
         "type": "ally",
         "note": "Close companions who have served alongside one another"
+      },
+      {
+        "targetId": "deity-sune",
+        "type": "sibling",
+        "note": "Sisters as much as allies, both goddesses of pleasure and desire"
       }
     ]
   },
@@ -17139,6 +17251,11 @@ export const mockDeities = [
         "targetId": "deity-deneir",
         "type": "ally",
         "note": "Fellow servant of Oghma, called the \"One True Hand\" to Deneir's \"Scribe\""
+      },
+      {
+        "targetId": "deity-oghma",
+        "type": "parent",
+        "note": "Son of the god of knowledge, given song instead of the written word"
       }
     ]
   },
@@ -17174,6 +17291,26 @@ export const mockDeities = [
         "targetId": "deity-deneir",
         "type": "ally",
         "note": "Deneir serves as Oghma's scribe among the Deities of Knowledge and Invention"
+      },
+      {
+        "targetId": "deity-helm",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-lathander",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-milil",
+        "type": "child",
+        "note": "Son of the god of knowledge, given song instead of the written word"
+      },
+      {
+        "targetId": "deity-deneir",
+        "type": "child",
+        "note": "Child of the god of knowledge, given the written word and the glyph"
       }
     ]
   },
@@ -17209,6 +17346,11 @@ export const mockDeities = [
         "targetId": "deity-oghma",
         "type": "ally",
         "note": "Deneir serves as Oghma's scribe among the Deities of Knowledge and Invention"
+      },
+      {
+        "targetId": "deity-oghma",
+        "type": "parent",
+        "note": "Child of the god of knowledge, given the written word and the glyph"
       }
     ]
   },
@@ -17235,9 +17377,39 @@ export const mockDeities = [
     "holidays": "On the last night of the year, known as the Night of Another Year, Jergal's clergy cease their endless work for a single night and read aloud every name whose death they recorded that year before filing the scrolls away with the cry 'One Year Closer!' and resuming their labor the next day.",
     "relationships": [
       {
+        "targetId": "deity-helm",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-bane",
+        "type": "child",
+        "note": "One of the Dead Three, born of the old Lord of the Dead's waning power"
+      },
+      {
+        "targetId": "deity-bhaal",
+        "type": "child",
+        "note": "One of the Dead Three, born of the old Lord of the Dead's waning power"
+      },
+      {
+        "targetId": "deity-myrkul",
+        "type": "child",
+        "note": "One of the Dead Three, born of the old Lord of the Dead's waning power"
+      },
+      {
+        "targetId": "deity-cyric",
+        "type": "child",
+        "note": "Rose to godhood from the same old death-power Jergal once held, claimed here as kin"
+      },
+      {
         "targetId": "deity-kelemvor",
-        "type": "subordinate_to",
-        "note": "Voluntarily ceded the death portfolio ages ago and now serves as Kelemvor's seneschal"
+        "type": "child",
+        "note": "The son who succeeded him as Lord of the Dead -- Jergal now serves as his herald"
+      },
+      {
+        "targetId": "deity-leira",
+        "type": "child",
+        "note": "Born of the old Lord of the Dead's waning power, later devoured by her own brother Cyric"
       }
     ]
   },
@@ -17266,8 +17438,8 @@ export const mockDeities = [
     "relationships": [
       {
         "targetId": "deity-jergal",
-        "type": "patron_of",
-        "note": "Voluntarily ceded the death portfolio ages ago and now serves as Kelemvor's seneschal"
+        "type": "parent",
+        "note": "The son who succeeded him as Lord of the Dead -- Jergal now serves as his herald"
       }
     ]
   },
@@ -17293,7 +17465,23 @@ export const mockDeities = [
     "description": "Lathander, the Morninglord, was a deity of creativity, dawn, renewal, birth, athletics, spring, self-perfection, vitality, and youth, favoring those who dispelled the undead and blessed those who planted new life, and was invoked to bless births and fertility rites. He was the central figure in the disastrous Dawn Cataclysm, an attempt to reshape the Faerûnian pantheon in his own image that killed several deities; he secretly blamed the failure on agents of Shar. He was romantically linked with Chauntea for centuries, seeing her as a kindred spirit, and allied with Tymora, Tyr, Torm, Ilmater, Sune, Selûne, Oghma, Kelemvor, and Mielikki, while opposing Cyric, Talos, and Shar. He vanished and was seemingly replaced by the resurrected sun god Amaunator before returning during the Second Sundering of 1486 DR.",
     "worship": "Novices of the Lathanderian faith were called the Awakened, and clerics were Dawnbringers, who took a new name upon full ordination to signify Lathander's personal recognition. All followers were required to hold neutral to good alignments, and his clergy respected art, liberty, nature, and culture, promoted self-betterment, and worked to bring hope while opposing evil, especially undead and inaction that let evil prosper. Most ceremonies were held at dawn, and actions or contracts agreed to at sunrise were considered blessed by him, while funerals were held at dusk followed by a wake lasting until dawn.",
     "holidays": "The sourced wiki text does not detail a specific festival calendar for Lathander beyond his clergy's dawn-based ceremonies, and states no distinct named holy days.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-oghma",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-selune",
+        "type": "sibling",
+        "note": "Among the oldest of the Faerûnian gods, siblings from the earliest days of the pantheon"
+      },
+      {
+        "targetId": "deity-sune",
+        "type": "child",
+        "note": "Daughter of the god of dawn and renewal, inheriting his gift for beauty"
+      }
+    ]
   },
   {
     "id": "deity-loviatar",
@@ -17322,6 +17510,11 @@ export const mockDeities = [
         "targetId": "deity-ilmater",
         "type": "enemy",
         "note": "Loviatar's cult of inflicted pain stands as the direct inversion of Ilmater's willing endurance"
+      },
+      {
+        "targetId": "deity-ilmater",
+        "type": "parent",
+        "note": "Ilmater's own daughter, who turned his gift for enduring pain into a gift for inflicting it"
       }
     ]
   },
@@ -17352,6 +17545,11 @@ export const mockDeities = [
         "targetId": "deity-cyric",
         "type": "absorbed_by",
         "note": "Murdered Leira and absorbed her portfolio of illusion and deception"
+      },
+      {
+        "targetId": "deity-jergal",
+        "type": "parent",
+        "note": "Born of the old Lord of the Dead's waning power, later devoured by her own brother Cyric"
       }
     ]
   },
@@ -17382,6 +17580,16 @@ export const mockDeities = [
         "targetId": "deity-rillifane-rallathil",
         "type": "ally",
         "note": "Kindred nature deities of different pantheons, working together to protect the wild"
+      },
+      {
+        "targetId": "deity-mielikki",
+        "type": "sibling",
+        "note": "Forest Queen and Forest Father, siblings in the wild"
+      },
+      {
+        "targetId": "deity-ubtao",
+        "type": "sibling",
+        "note": "Distant divine kin -- two primal figures of creation and the wild, worshiped a world apart"
       }
     ]
   },
@@ -17417,6 +17625,26 @@ export const mockDeities = [
         "targetId": "deity-lolth",
         "type": "enemy",
         "note": "Exiled from the Seldarine as Araushnee after repeated attempts to usurp Corellon's power"
+      },
+      {
+        "targetId": "deity-sehanine-moonbow",
+        "type": "child",
+        "note": "Child of the Seldarine's first among equals"
+      },
+      {
+        "targetId": "deity-solonor-thelandira",
+        "type": "child",
+        "note": "Child of the Seldarine's first among equals"
+      },
+      {
+        "targetId": "deity-erevan-ilesere",
+        "type": "child",
+        "note": "Child of the Seldarine's first among equals"
+      },
+      {
+        "targetId": "deity-rillifane-rallathil",
+        "type": "child",
+        "note": "Child of the Seldarine's first among equals"
       }
     ]
   },
@@ -17447,6 +17675,11 @@ export const mockDeities = [
         "targetId": "deity-eilistraee",
         "type": "child",
         "note": "Regarded by Sehanine as an adopted daughter, though their relationship remains strained and distant"
+      },
+      {
+        "targetId": "deity-corellon-larethian",
+        "type": "parent",
+        "note": "Child of the Seldarine's first among equals"
       }
     ]
   },
@@ -17472,7 +17705,13 @@ export const mockDeities = [
     "description": "Solonor Thelandira was the elven god of hunting, archery, and survival in wild and harsh places, teaching his followers archery, moving unseen, and hiding in the wilds. He watched over the border between wilderness and farmed land, seeking to maintain balance between those who wished to exploit nature and those who wished to preserve it untouched. He always kept his word and so rarely offered it lightly, and he often came across as grim due to the complexity of the compromises his duty demanded. He hunted not for killing's sake but to maintain nature's balance and destroy evil, tracking and shooting his foes from a distance rather than engaging closely. He was regarded as the finest archer among all the gods of Faerûn.",
     "worship": "Solonor's worshipers were invariably elves or half-elves of a natural bent, usually rangers or other warriors especially skilled with the bow. The wiki notes this section is a stub and does not document further details of his clergy's structure or specific rites.",
     "holidays": "No documented holy days or festivals for Solonor Thelandira appear on the wiki.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-corellon-larethian",
+        "type": "parent",
+        "note": "Child of the Seldarine's first among equals"
+      }
+    ]
   },
   {
     "id": "deity-erevan-ilesere",
@@ -17495,7 +17734,13 @@ export const mockDeities = [
     "description": "Erevan Ilesere was the elven god of mischief and rogues, an unpredictable, flighty, fun-loving deity who delighted in harmless pranks above all else and seemed unable to focus on one task for long. A shapechanger, he appeared as an elf or as fey such as a brownie, pixie, or sprite, always wearing green somewhere on his body in tribute to the forests where fey and elves dwell. Despite his fickle nature he was fiercely loyal to the Seldarine and fiercely protective of elves and sylvan races when threatened. He had no patience for those who relied on him to solve their problems, instead favoring the self-reliant and the underdog.",
     "worship": "Erevan's church was an unorganized, loosely affiliated group of rogues and tricksters with little contact between regional branches. Novice clerics were called the Gullible, full priests Quicksilvers, and specialty priests Mischiefmakers. Most priests were moon elves, green elves, or half-elves who taught by example and trained the skills of trickster rogues, delighting in breaking rules and upsetting the powerful.",
     "holidays": "Erevan's holy days fell on eclipses, when the faithful sacrificed stolen treasures to him. His worshipers also held a monthly 'Midnight Gambol' under the full moon in a secret sylvan glade, featuring dancing, storytelling, wine, pranks, and the sacrifice of beautiful objects.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-corellon-larethian",
+        "type": "parent",
+        "note": "Child of the Seldarine's first among equals"
+      }
+    ]
   },
   {
     "id": "deity-rillifane-rallathil",
@@ -17524,6 +17769,11 @@ export const mockDeities = [
         "targetId": "deity-silvanus",
         "type": "ally",
         "note": "Kindred nature deities of different pantheons, working together to protect the wild"
+      },
+      {
+        "targetId": "deity-corellon-larethian",
+        "type": "parent",
+        "note": "Child of the Seldarine's first among equals"
       }
     ]
   },
@@ -17554,6 +17804,21 @@ export const mockDeities = [
         "targetId": "deity-corellon-larethian",
         "type": "enemy",
         "note": "Exiled from the Seldarine as Araushnee after repeated attempts to usurp Corellon's power"
+      },
+      {
+        "targetId": "deity-vhaeraun",
+        "type": "child",
+        "note": "Child of the Spider Queen, embracing her taste for treachery"
+      },
+      {
+        "targetId": "deity-kiaransalee",
+        "type": "child",
+        "note": "Child of the Spider Queen, embracing her taste for vengeance"
+      },
+      {
+        "targetId": "deity-eilistraee",
+        "type": "child",
+        "note": "Daughter of the Spider Queen who rejected everything her mother stands for"
       }
     ]
   },
@@ -17579,7 +17844,13 @@ export const mockDeities = [
     "description": "Vhaeraun was the drow god of drow males, thievery, territory, shadow magic, and evil activity aimed at furthering drow interests on the surface. Son of Araushnee (Lolth) and Corellon Larethian, he held the unusual view among drow deities that males and females were equally valuable, and was primarily worshiped by drow males seeking to escape Lolth's matriarchal slavery. Arrogant and vindictive like other drow deities, he nonetheless remained genuinely and actively involved in his followers' lives. He worked constantly, if covertly, against his mother's power, teaching ideas that contradicted her dogma and cultivating masked traitors — double agents posing as Lolth's clergy — within her own church.",
     "worship": "Vhaeraun's clergy consisted mainly of drow males (and some sympathetic females) who rebelled against Lolth's matriarchy, operating largely in secret even within Lolth-controlled cities such as Menzoberranzan. His faith promoted gender equality, cooperation with surface elves, and territorial and economic expansion, in direct contrast to Lolth's demand that drow society remain stagnant and hostile to surface elves.",
     "holidays": "No specific holy days or festivals for Vhaeraun are documented on the wiki.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-lolth",
+        "type": "parent",
+        "note": "Child of the Spider Queen, embracing her taste for treachery"
+      }
+    ]
   },
   {
     "id": "deity-kiaransalee",
@@ -17602,7 +17873,13 @@ export const mockDeities = [
     "description": "Kiaransalee was the drow lesser goddess of revenge and undeath, a former lichdrow necromancer-queen consumed by thoughts of retribution before her ascension. Driven insane ages before, she nonetheless retained her twisted cunning, remembering clearly every slight against her, real or imagined, and was said to have died and returned repeatedly, each time coming back more vengeful. She preferred the company of mindless undead to sentient beings capable of independent thought, and rarely trusted anyone else to carry out her vengeance, generally seeing to it herself. She began her divine existence as an unwilling vassal forced into subservience to Lolth, gaining only limited freedom after slaying the demon lord Orcus and seizing his realm.",
     "worship": "Kiaransalee's clergy were organized into small, secretive, regimented cells lacking overall coordination, found mostly in small drow communities or hidden enclaves. Her clerics, called Yathrinshee at higher rank, acted as agents of vengeance, organizing slaying missions to gather corpses for animation; many were also necromancers, and most eventually became undead themselves.",
     "holidays": "Her single annual holy day was the Graverending, celebrated each Midwinter Eve, in which every cleric individually animated as many undead as she could handle, called Vengeance Hunters, who hunted down and destroyed whoever had killed them within 24 hours before returning to their graves.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-lolth",
+        "type": "parent",
+        "note": "Child of the Spider Queen, embracing her taste for vengeance"
+      }
+    ]
   },
   {
     "id": "deity-eilistraee",
@@ -17631,6 +17908,11 @@ export const mockDeities = [
         "targetId": "deity-sehanine-moonbow",
         "type": "parent",
         "note": "Regarded by Sehanine as an adopted daughter, though their relationship remains strained and distant"
+      },
+      {
+        "targetId": "deity-lolth",
+        "type": "parent",
+        "note": "Daughter of the Spider Queen who rejected everything her mother stands for"
       }
     ]
   },
@@ -17666,6 +17948,11 @@ export const mockDeities = [
         "targetId": "deity-garl-glittergold",
         "type": "ally",
         "note": "The gnomish and dwarven pantheons maintain a long-standing friendly alliance"
+      },
+      {
+        "targetId": "deity-clangeddin-silverbeard",
+        "type": "child",
+        "note": "Son of the All-Father and the Revered Mother, given the sword instead of the hammer"
       }
     ]
   },
@@ -17696,6 +17983,11 @@ export const mockDeities = [
         "targetId": "deity-moradin",
         "type": "spouse",
         "note": ""
+      },
+      {
+        "targetId": "deity-clangeddin-silverbeard",
+        "type": "child",
+        "note": "Son of the All-Father and the Revered Mother, given the sword instead of the hammer"
       }
     ]
   },
@@ -17721,7 +18013,18 @@ export const mockDeities = [
     "description": "Clangeddin Silverbeard is the primary dwarven god of war within the Morndinsamman, embodying battle, valor, and honor in combat. Known as the Lord of the Twin Axes and the Father of Battles, he lives and breathes warfare, representing the disciplined, honor-bound warrior spirit that makes dwarven armies formidable. He appears as a burly dwarf clad in rusty chainmail, and his domain governs righteous, tactically sound warfare rather than mindless slaughter.",
     "worship": "Clangeddin's clergy consists largely of dwarven warriors dedicated to combat prowess, tactics, and weapon-craft, training within his divine domain to perfect their martial skill. His worship emphasizes honorable conduct in war, valor in the face of the enemy, and the refinement of weapons as both tools and art.",
     "holidays": "The wiki does not document specific named holy days or annual festivals for Clangeddin Silverbeard.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-moradin",
+        "type": "parent",
+        "note": "Son of the All-Father and the Revered Mother, given the sword instead of the hammer"
+      },
+      {
+        "targetId": "deity-berronar-truesilver",
+        "type": "parent",
+        "note": "Son of the All-Father and the Revered Mother, given the sword instead of the hammer"
+      }
+    ]
   },
   {
     "id": "deity-gruumsh",
@@ -17759,6 +18062,11 @@ export const mockDeities = [
         "targetId": "deity-bahgtru",
         "type": "child",
         "note": ""
+      },
+      {
+        "targetId": "deity-shargaas",
+        "type": "child",
+        "note": "Another of the One-Eyed God's children, given the night instead of the spear"
       }
     ]
   },
@@ -17789,6 +18097,11 @@ export const mockDeities = [
         "targetId": "deity-gruumsh",
         "type": "spouse",
         "note": ""
+      },
+      {
+        "targetId": "deity-bahgtru",
+        "type": "child",
+        "note": "Son of the Cave Mother, alongside his father Gruumsh"
       }
     ]
   },
@@ -17818,6 +18131,11 @@ export const mockDeities = [
         "targetId": "deity-gruumsh",
         "type": "parent",
         "note": ""
+      },
+      {
+        "targetId": "deity-luthic",
+        "type": "parent",
+        "note": "Son of the Cave Mother, alongside his father Gruumsh"
       }
     ]
   },
@@ -17842,7 +18160,13 @@ export const mockDeities = [
     "description": "Shargaas is the orcish god of the cold, the dark, and the night, patron of orcs who act stealthily in the shadows, and serves as Gruumsh's head of assassins. Secretive, murderous, and frightfully cruel, he is regarded as the smartest of the orc gods, more cunning even than the general Ilneval, and he hates all life — including that of orcs and their own gods — treating his followers merely as disposable killing tools. His dogma holds that the darkness is cold and everlasting, but that the mantle of black night provides cover for a hidden blade — a portfolio of stealth and assassination distinct from Gruumsh's portfolio of open, territorial holy war.",
     "worship": "The Church of Shargaas serves as the primary religious body dedicated to him, and formally joining his cult demands a purely evil alignment. His clergy favor stealth, deception, and murder from the shadows over open battle, often riding giant bats as sacred mounts.",
     "holidays": "Shargaas's major holy days occur during the new moon, when the sky is clouded and dark, fitting his portfolio of night and shadow.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-gruumsh",
+        "type": "parent",
+        "note": "Another of the One-Eyed God's children, given the night instead of the spear"
+      }
+    ]
   },
   {
     "id": "deity-garl-glittergold",
@@ -17871,6 +18195,11 @@ export const mockDeities = [
         "targetId": "deity-moradin",
         "type": "ally",
         "note": "The gnomish and dwarven pantheons maintain a long-standing friendly alliance"
+      },
+      {
+        "targetId": "deity-yondalla",
+        "type": "sibling",
+        "note": "Distant divine kin -- two patrons of the small folk, gnomes and halflings alike"
       }
     ]
   },
@@ -17896,7 +18225,13 @@ export const mockDeities = [
     "description": "Yondalla is the creator of the halfling race and matriarch not only of the halfling pantheon but of halflingkind as a whole. Known as the Protector and Provider, the Nurturing Matriarch, and the Blessed One, her broad portfolio covers protection, fertility, children, community security, leadership, diplomacy, wisdom, tradition, and prosperity. With a charming, friendly demeanor, she exemplifies the curiosity, loyalty, and sense of mischief shared by nearly all halflings, serving as their idealized example.",
     "worship": "Despite her central role in halfling society, temples to Yondalla are unusually rare; those that exist are built to resemble well-hidden halfling burrow-homes, stocked with weapons and food so surrounding communities can hold out against invaders. Clerics of Yondalla favor the short sword in honor of her sword Hornblade, and her clergy earns notable respect from other faiths for their defensive capabilities despite halflings' small stature.",
     "holidays": "The wiki does not document specific named holy days or festivals for Yondalla.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-garl-glittergold",
+        "type": "sibling",
+        "note": "Distant divine kin -- two patrons of the small folk, gnomes and halflings alike"
+      }
+    ]
   },
   {
     "id": "deity-ubtao",
@@ -17919,7 +18254,13 @@ export const mockDeities = [
     "description": "Ubtao is the patron deity of Chult, its creator and the founder of the city of Mezro, who was granted Chult as his sole dominion by the other powers of Faerûn in exchange for his eternal vigilance over Dendar the Night Serpent, imprisoned beneath the Peaks of Flame. Known as the Father of the Dinosaurs, he stays distant from both mortals and other deities, seeming to exist above the daily doings of the world and even his own followers. His main personality traits are endless patience and a striking lack of emotion. After the Time of Troubles, he began manifesting as a thunderous roar rolling across the Chultan jungle, as if every dinosaur in Chult cried out at once.",
     "worship": "The Church of Ubtao is split into three independent sects venerating different aspects of him: the jungle itself, spirit worship, and worship of the deity directly, and is composed mainly of jungle druids, mazewalkers, and shamans rather than traditional clerics — the church has no clerics at all. Most of his clergy are drawn from the Tabaxi tribe, and they pray for spells and miracles at noon, when Ubtao is at his zenith over the jungle.",
     "holidays": "Ubtao's faith observes scores of ceremonies and holy days, most dedicated to honoring dead ancestors; many of these rites are considered necessary prerequisites before undertaking activities such as hunting special animals or performing burials.",
-    "relationships": []
+    "relationships": [
+      {
+        "targetId": "deity-silvanus",
+        "type": "sibling",
+        "note": "Distant divine kin -- two primal figures of creation and the wild, worshiped a world apart"
+      }
+    ]
   },
   {
     "id": "deity-uthgar",
@@ -17945,8 +18286,8 @@ export const mockDeities = [
     "relationships": [
       {
         "targetId": "deity-ragna",
-        "type": "patron_of",
-        "note": "Ragna is Uthgar's demigod daughter, an emerging power within the campaign's Uthgardt lore"
+        "type": "child",
+        "note": "Ragna is Uthgar's demigod daughter"
       }
     ]
   },
@@ -17974,8 +18315,8 @@ export const mockDeities = [
     "relationships": [
       {
         "targetId": "deity-uthgar",
-        "type": "subordinate_to",
-        "note": "Ragna is Uthgar's demigod daughter, an emerging power within the campaign's Uthgardt lore"
+        "type": "parent",
+        "note": "Ragna is Uthgar's demigod daughter"
       }
     ]
   }
