@@ -152,9 +152,25 @@ const EDGE_LABEL_BG_PADDING = [3, 2]
 //             (Faerûnian's ~23 lineage-less gods) is capped at MAX_COLS
 //             per sub-row and centered against the widest sub-row in its
 //             own pantheon -- see the wrapping note further down.
+//   RULE 7 -- MIN CARD DISTANCE: no two cards are ever allowed closer than
+//             MIN_CARD_DISTANCE, center to center -- not just neighbors in
+//             the same row (that's RULE 1/COL_SPACING already), but ANY
+//             two cards anywhere on the canvas, including two cards from
+//             different sub-rows of a wrapped generation that would
+//             otherwise land almost directly above/below each other. This
+//             is enforced two ways: structurally, by making SUBROW_SPACING
+//             itself never smaller than MIN_CARD_DISTANCE (so it's a
+//             geometric guarantee, not a hope -- any two cards either
+//             share a row, and RULE 1 already keeps them COL_SPACING
+//             apart, or they're in different rows, and are then at least
+//             SUBROW_SPACING apart, which is >= MIN_CARD_DISTANCE by
+//             construction); and at drag time, where the DM's manual nudge
+//             (see MAX_DRAG_RADIUS further down) is additionally blocked
+//             from placing a card within MIN_CARD_DISTANCE of any other
+//             card's current position, not just the card's own home spot.
 //
-// NOTE ON HONESTY: rules 1-3 and 6 are hard guarantees. Rules 4-5 are a
-// strong, deterministic HEURISTIC, not a mathematical proof of zero
+// NOTE ON HONESTY: rules 1-3, 6, and 7 are hard guarantees. Rules 4-5 are
+// a strong, deterministic HEURISTIC, not a mathematical proof of zero
 // crossings or zero line-through-card overlaps -- true crossing-free
 // graph layout is a genuinely hard problem in general, especially with
 // cross-pantheon relationships that have to travel between bands that
@@ -165,7 +181,8 @@ const EDGE_LABEL_BG_PADDING = [3, 2]
 const MIN_CARD_GAP = 44
 const CARD_W = 160
 const COL_SPACING = CARD_W + MIN_CARD_GAP
-const SUBROW_SPACING = 96
+const MIN_CARD_DISTANCE = 150
+const SUBROW_SPACING = Math.max(150, MIN_CARD_DISTANCE)
 const GEN_GAP = 180
 const LABEL_HEIGHT = 40
 const BAND_GAP = 76
@@ -417,6 +434,43 @@ function clampToRadius(dx, dy, radius) {
   return { dx: dx * scale, dy: dy * scale }
 }
 
+// RULE 7, drag-time half: pushes a candidate position directly away from
+// any OTHER card it's currently closer than MIN_CARD_DISTANCE to. A
+// single pass, not an iterate-to-convergence solver -- this only has to
+// resist the DM's live drag, not guarantee a perfect solution in every
+// conceivable configuration, and a single pass is what makes it feel
+// like the card is bumping into its neighbor rather than jittering.
+function pushAwayFromNeighbors(pos, otherPositions) {
+  let { x, y } = pos
+  otherPositions.forEach((other) => {
+    const dx = x - other.x
+    const dy = y - other.y
+    const dist = Math.hypot(dx, dy)
+    if (dist >= MIN_CARD_DISTANCE) return
+    if (dist < 0.01) {
+      y += MIN_CARD_DISTANCE
+      return
+    }
+    const push = MIN_CARD_DISTANCE - dist
+    x += (dx / dist) * push
+    y += (dy / dist) * push
+  })
+  return { x, y }
+}
+
+// Combines both drag-time constraints in the right order: tether to home
+// first, then push off of neighbors, then re-tether in case the push
+// carried it back outside MAX_DRAG_RADIUS -- so a card resists BOTH
+// wandering too far from its computed spot AND crowding another card,
+// with the "stay near home" rule winning if the two ever conflict.
+function clampDragPosition(rawX, rawY, home, selfId, otherNodes) {
+  const first = clampToRadius(rawX - home.x, rawY - home.y, MAX_DRAG_RADIUS)
+  const others = otherNodes.filter((n) => n.type === 'deity' && n.id !== selfId).map((n) => n.position)
+  const pushed = pushAwayFromNeighbors({ x: home.x + first.dx, y: home.y + first.dy }, others)
+  const second = clampToRadius(pushed.x - home.x, pushed.y - home.y, MAX_DRAG_RADIUS)
+  return { x: home.x + second.dx, y: home.y + second.dy }
+}
+
 // RULE 5 -- same-row relationships exit/enter the SIDES of a card (so the
 // line travels along the row instead of diagonally over other cards in
 // it); anything that changes rows exits/enters the TOP or BOTTOM, in
@@ -548,12 +602,8 @@ export default function PantheonTab({ onEditDeity }) {
         const node = nodes.find((n) => n.id === change.id)
         const home = node?.data?.home
         if (!home) return change
-        const { dx, dy } = clampToRadius(
-          change.position.x - home.x,
-          change.position.y - home.y,
-          MAX_DRAG_RADIUS
-        )
-        return { ...change, position: { x: home.x + dx, y: home.y + dy } }
+        const position = clampDragPosition(change.position.x, change.position.y, home, change.id, nodes)
+        return { ...change, position }
       })
       onNodesChangeRaw(clamped)
     },
@@ -566,10 +616,10 @@ export default function PantheonTab({ onEditDeity }) {
       const deity = deitiesById[node.id]
       const home = node.data?.home
       if (!deity || !home) return
-      const { dx, dy } = clampToRadius(node.position.x - home.x, node.position.y - home.y, MAX_DRAG_RADIUS)
-      saveDeity({ ...deity, treePos: { x: dx, y: dy } })
+      const final = clampDragPosition(node.position.x, node.position.y, home, node.id, nodes)
+      saveDeity({ ...deity, treePos: { x: final.x - home.x, y: final.y - home.y } })
     },
-    [isDm, deitiesById, saveDeity]
+    [isDm, deitiesById, saveDeity, nodes]
   )
 
   const handleEdgeClick = useCallback(
@@ -592,6 +642,23 @@ export default function PantheonTab({ onEditDeity }) {
     setSelectedEdgeId(null)
   }
 
+  // Clears every deity's saved manual nudge back to {0,0}, so every card
+  // lands exactly on its freshly computed, rule-compliant home position --
+  // the "start clean" button for whenever the layout rules themselves
+  // change enough that old manual tweaks (made under a DIFFERENT, older
+  // rule set) might now sit too close to a neighbor or otherwise no
+  // longer make sense. Only touches deities that actually have a nudge on
+  // file, so it's a no-op write-wise for a pantheon nobody's ever dragged.
+  const handleResetLayout = useCallback(() => {
+    if (!isDm) return
+    const nudged = deities.filter((d) => d.treePos && (d.treePos.x !== 0 || d.treePos.y !== 0))
+    if (nudged.length === 0) return
+    if (!window.confirm(`Reset ${nudged.length} manually-nudged card position${nudged.length === 1 ? '' : 's'} back to the computed layout?`)) {
+      return
+    }
+    nudged.forEach((d) => saveDeity({ ...d, treePos: { x: 0, y: 0 } }))
+  }, [isDm, deities, saveDeity])
+
   const displayEdges = useMemo(
     () =>
       edges.map((e) =>
@@ -609,6 +676,13 @@ export default function PantheonTab({ onEditDeity }) {
       <div className="flex-1 relative">
         {isDm && onEditDeity && (
           <div className="absolute top-3 right-3 z-10 flex gap-2">
+            <button
+              onClick={handleResetLayout}
+              title="Clear every manually-nudged card back to its computed position under the current layout rules"
+              className="text-sm font-display uppercase tracking-wide bg-parchment text-leather-dark border border-leather/40 rounded-sm px-3 py-2 hover:bg-leather/10 shadow"
+            >
+              Reset Card Positions
+            </button>
             <button
               onClick={() => onEditDeity(null)}
               className="text-sm font-display uppercase tracking-wide bg-leather text-parchment rounded-sm px-3 py-2 hover:bg-leather-dark shadow"
