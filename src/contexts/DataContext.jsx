@@ -142,8 +142,20 @@ export function DataProvider({ children }) {
       // rather than a whole collection since there's only ever this one
       // flag today, but it's its own doc (not crammed onto some other
       // collection) so it's easy to add more site-wide DM toggles later.
-      const unsubPantheonSettings = onSnapshot(doc(db, 'settings', 'pantheon'), (snap) =>
-        setPantheonHiddenState(snap.data()?.hidden === true)
+      const unsubPantheonSettings = onSnapshot(
+        doc(db, 'settings', 'pantheon'),
+        (snap) => setPantheonHiddenState(snap.data()?.hidden === true),
+        (err) => {
+          // Without this, a denied READ on settings/pantheon (e.g. the
+          // settings/{settingId} rule block was never pasted into the
+          // Firebase Console) fails completely silently -- the toggle
+          // never updates, with nothing in the UI or console explaining
+          // why. This at least makes the cause visible in devtools.
+          console.error(
+            'Could not read settings/pantheon -- the Pantheon tab will behave as if it is never hidden. This usually means the settings/{settingId} rule block from firestore.rules has not been pasted into the Firebase Console yet.',
+            err
+          )
+        }
       )
       const unsubAuth = onAuthStateChanged(auth, (user) => {
         unsubNpcs()
@@ -507,7 +519,26 @@ export function DataProvider({ children }) {
 
   const setPantheonHidden = useCallback(async (hidden) => {
     if (isFirebaseConfigured) {
-      await setDoc(doc(db, 'settings', 'pantheon'), { hidden }, { merge: true })
+      // Flip the button immediately rather than waiting on the round trip
+      // through Firestore and back via onSnapshot -- with no optimistic
+      // update here, a slow connection (or a write that silently fails,
+      // e.g. because the settings/pantheon rule was never pasted into the
+      // Firebase Console) made the button look completely unresponsive,
+      // with no feedback at all about why. If the write does fail, roll
+      // the optimistic flip back and surface exactly what went wrong
+      // instead of failing silently.
+      setPantheonHiddenState(hidden)
+      try {
+        await setDoc(doc(db, 'settings', 'pantheon'), { hidden }, { merge: true })
+      } catch (err) {
+        setPantheonHiddenState(!hidden)
+        const isPermissionError = err?.code === 'permission-denied'
+        throw new Error(
+          isPermissionError
+            ? 'Firestore rejected the write (permission-denied). Make sure the settings/{settingId} rule block from firestore.rules has been pasted into the Firebase Console -- Firestore denies any path with no matching rule by default.'
+            : `Failed to save: ${err?.message || err}`
+        )
+      }
     } else {
       setPantheonHiddenState(hidden)
       saveDemo(LS_KEYS.pantheonHidden, hidden)

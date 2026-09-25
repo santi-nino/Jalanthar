@@ -144,7 +144,17 @@ export default function Sidebar({ activeTab, onTabChange, onOpenDm, mobileOpen, 
           )}
           {isDm && (
             <button
-              onClick={() => setPantheonHidden(!pantheonHidden)}
+              onClick={() => {
+                setPantheonHidden(!pantheonHidden).catch((err) => {
+                  // The toggle itself now flips optimistically even before
+                  // this resolves (see setPantheonHidden in DataContext),
+                  // so if we're in this catch block the write actually
+                  // failed and got rolled back -- worth a loud, specific
+                  // alert rather than the button just silently reverting
+                  // with no explanation.
+                  window.alert(err.message)
+                })
+              }}
               aria-pressed={pantheonHidden}
               className={`w-full flex items-center justify-center gap-2 text-xs font-display uppercase tracking-wide transition-colors py-2 ${
                 pantheonHidden
